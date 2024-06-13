@@ -1,0 +1,3049 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12004, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PixelRect:
+    serializedVersion: 2
+    x: 0
+    y: 43
+    width: 1920
+    height: 997
+  m_ShowMode: 4
+  m_Title: Game
+  m_RootView: {fileID: 2}
+  m_MinSize: {x: 875, y: 300}
+  m_MaxSize: {x: 10000, y: 10000}
+  m_Maximized: 1
+--- !u!114 &2
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12008, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Children:
+  - {fileID: 3}
+  - {fileID: 5}
+  - {fileID: 4}
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1920
+    height: 997
+  m_MinSize: {x: 875, y: 300}
+  m_MaxSize: {x: 10000, y: 10000}
+  m_UseTopView: 1
+  m_TopViewHeight: 30
+  m_UseBottomView: 1
+  m_BottomViewHeight: 20
+--- !u!114 &3
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12011, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Children: []
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1920
+    height: 30
+  m_MinSize: {x: 0, y: 0}
+  m_MaxSize: {x: 0, y: 0}
+  m_LastLoadedLayoutName: 
+--- !u!114 &4
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12042, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Children: []
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 977
+    width: 1920
+    height: 20
+  m_MinSize: {x: 0, y: 0}
+  m_MaxSize: {x: 0, y: 0}
+--- !u!114 &5
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12010, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Children:
+  - {fileID: 6}
+  - {fileID: 11}
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 30
+    width: 1920
+    height: 947
+  m_MinSize: {x: 300, y: 100}
+  m_MaxSize: {x: 24288, y: 16192}
+  vertical: 0
+  controlID: 111
+--- !u!114 &6
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12010, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Children:
+  - {fileID: 7}
+  - {fileID: 10}
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1501
+    height: 947
+  m_MinSize: {x: 200, y: 100}
+  m_MaxSize: {x: 16192, y: 16192}
+  vertical: 1
+  controlID: 38
+--- !u!114 &7
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12010, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Children:
+  - {fileID: 8}
+  - {fileID: 9}
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1501
+    height: 693
+  m_MinSize: {x: 200, y: 50}
+  m_MaxSize: {x: 16192, y: 8096}
+  vertical: 0
+  controlID: 39
+--- !u!114 &8
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Children: []
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 355
+    height: 693
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
+  m_ActualView: {fileID: 14}
+  m_Panes:
+  - {fileID: 14}
+  m_Selected: 0
+  m_LastSelected: 0
+--- !u!114 &9
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: GameView
+  m_EditorClassIdentifier: 
+  m_Children: []
+  m_Position:
+    serializedVersion: 2
+    x: 355
+    y: 0
+    width: 1146
+    height: 693
+  m_MinSize: {x: 202, y: 221}
+  m_MaxSize: {x: 4002, y: 4021}
+  m_ActualView: {fileID: 16}
+  m_Panes:
+  - {fileID: 15}
+  - {fileID: 16}
+  m_Selected: 1
+  m_LastSelected: 0
+--- !u!114 &10
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: ConsoleWindow
+  m_EditorClassIdentifier: 
+  m_Children: []
+  m_Position:
+    serializedVersion: 2
+    x: 0
+    y: 693
+    width: 1501
+    height: 254
+  m_MinSize: {x: 101, y: 121}
+  m_MaxSize: {x: 4001, y: 4021}
+  m_ActualView: {fileID: 18}
+  m_Panes:
+  - {fileID: 17}
+  - {fileID: 18}
+  - {fileID: 12}
+  m_Selected: 1
+  m_LastSelected: 0
+--- !u!114 &11
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: InspectorWindow
+  m_EditorClassIdentifier: 
+  m_Children: []
+  m_Position:
+    serializedVersion: 2
+    x: 1501
+    y: 0
+    width: 419
+    height: 947
+  m_MinSize: {x: 276, y: 71}
+  m_MaxSize: {x: 4001, y: 4021}
+  m_ActualView: {fileID: 13}
+  m_Panes:
+  - {fileID: 13}
+  - {fileID: 19}
+  m_Selected: 0
+  m_LastSelected: 1
+--- !u!114 &12
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 12071, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MinSize: {x: 100, y: 100}
+  m_MaxSize: {x: 4000, y: 4000}
+  m_TitleContent:
+    m_Text: Animation
+    m_Image: {fileID: -8166618308981325432, guid: 0000000000000000d000000000000000,
+      type: 0}
+    m_Tooltip: 
+  m_Pos:
+    serializedVersion: 2
+    x: 0
+    y: 766
+    width: 1500
+    height: 233
+  m_SerializedDataModeController:
+    m_DataMode: 0
+    m_PreferredDataMode: 0
+    m_SupportedDataModes: 
+    isAutomatic: 1
+  m_ViewDataDictionary: {fileID: 0}
+  m_OverlayCanvas:
+    m_LastAppliedPresetName: Default
+    m_SaveData: []
+    m_OverlaysVisible: 1
+  m_LockTracker:
+    m_IsLocked: 0
+  m_LastSelectedObjectID: 451840
+--- !u!114 &13
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12019, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MinSize: {x: 275, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
+  m_TitleContent:
+    m_Text: Inspector
+    m_Image: {fileID: -2667387946076563598, guid: 0000000000000000d000000000000000,
+      type: 0}
+    m_Tooltip: 
+  m_Pos:
+    serializedVersion: 2
+    x: 1501
+    y: 73
+    width: 418
+    height: 926
+  m_SerializedDataModeController:
+    m_DataMode: 0
+    m_PreferredDataMode: 0
+    m_SupportedDataModes: 
+    isAutomatic: 1
+  m_ViewDataDictionary: {fileID: 0}
+  m_OverlayCanvas:
+    m_LastAppliedPresetName: Default
+    m_SaveData: []
+    m_OverlaysVisible: 1
+  m_ObjectsLockedBeforeSerialization: []
+  m_InstanceIDsLockedBeforeSerialization: 
+  m_PreviewResizer:
+    m_CachedPref: 160
+    m_ControlHash: -371814159
+    m_PrefName: Preview_InspectorPreview
+  m_LastInspectedObjectInstanceID: -1
+  m_LastVerticalScrollValue: 0
+  m_GlobalObjectId: 
+  m_InspectorMode: 0
+  m_LockTracker:
+    m_IsLocked: 0
+  m_PreviewWindow: {fileID: 0}
+--- !u!114 &14
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12061, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
+  m_TitleContent:
+    m_Text: Hierarchy
+    m_Image: {fileID: 7966133145522015247, guid: 0000000000000000d000000000000000,
+      type: 0}
+    m_Tooltip: 
+  m_Pos:
+    serializedVersion: 2
+    x: 0
+    y: 73
+    width: 354
+    height: 672
+  m_SerializedDataModeController:
+    m_DataMode: 0
+    m_PreferredDataMode: 0
+    m_SupportedDataModes: 
+    isAutomatic: 1
+  m_ViewDataDictionary: {fileID: 0}
+  m_OverlayCanvas:
+    m_LastAppliedPresetName: Default
+    m_SaveData: []
+    m_OverlaysVisible: 1
+  m_SceneHierarchy:
+    m_TreeViewState:
+      scrollPos: {x: 0, y: 0}
+      m_SelectedIDs: 
+      m_LastClickedID: 0
+      m_ExpandedIDs: 1c45f0ff2848f0fff04df0ff924ff0ff5854f0ff5058f0ff325af0ffd072f0ff627ef0ff1480f0ff7884f0ffc49df0ffbea0f0ff7ea6f0ffb2b7f0ff7aeef0ffecf4f0fffaf4f0ff14f5f0ff2af5f0ff62f5f0ff0cfaf0ffe8faffff9ca5050008a6050032a60500a2a60500f4a6050070a705007aa705008ca70500aab5050040b605009ab70500163a0600ac3a0600063c0600d08606007087060006880600e28806006089060050bf0600e6bf060044c0060040c10600aac1060018dd0600aedd060008df060026f60600bcf6060016f8060080f806000e14070068150700
+      m_RenameOverlay:
+        m_UserAcceptedRename: 0
+        m_Name: 
+        m_OriginalName: 
+        m_EditFieldRect:
+          serializedVersion: 2
+          x: 0
+          y: 0
+          width: 0
+          height: 0
+        m_UserData: 0
+        m_IsWaitingForDelay: 0
+        m_IsRenaming: 0
+        m_OriginalEventType: 11
+        m_IsRenamingFilename: 0
+        m_ClientGUIView: {fileID: 8}
+      m_SearchString: 
+    m_ExpandedScenes: []
+    m_CurrenRootInstanceID: 0
+    m_LockTracker:
+      m_IsLocked: 0
+    m_CurrentSortingName: TransformSorting
+  m_WindowGUID: 4c969a2b90040154d917609493e03593
+--- !u!114 &15
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12013, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
+  m_TitleContent:
+    m_Text: Scene
+    m_Image: {fileID: 2593428753322112591, guid: 0000000000000000d000000000000000,
+      type: 0}
+    m_Tooltip: 
+  m_Pos:
+    serializedVersion: 2
+    x: 355
+    y: 73
+    width: 1144
+    height: 672
+  m_SerializedDataModeController:
+    m_DataMode: 0
+    m_PreferredDataMode: 0
+    m_SupportedDataModes: 
+    isAutomatic: 1
+  m_ViewDataDictionary: {fileID: 0}
+  m_OverlayCanvas:
+    m_LastAppliedPresetName: Default
+    m_SaveData:
+    - dockPosition: 0
+      containerId: overlay-toolbar__top
+      floating: 0
+      collapsed: 0
+      displayed: 1
+      snapOffset: {x: -171, y: -26}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 3
+      id: Tool Settings
+      index: 0
+      layout: 1
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 0
+      containerId: overlay-toolbar__top
+      floating: 0
+      collapsed: 0
+      displayed: 1
+      snapOffset: {x: -141, y: 149}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 1
+      id: unity-grid-and-snap-toolbar
+      index: 1
+      layout: 1
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-toolbar__top
+      floating: 0
+      collapsed: 0
+      displayed: 1
+      snapOffset: {x: 0, y: 25}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: unity-scene-view-toolbar
+      index: 0
+      layout: 1
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-toolbar__top
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 1
+      id: unity-search-toolbar
+      index: 1
+      layout: 1
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 0
+      containerId: overlay-container--left
+      floating: 0
+      collapsed: 0
+      displayed: 1
+      snapOffset: {x: 0, y: 25}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: unity-transform-toolbar
+      index: 0
+      layout: 2
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 0
+      containerId: overlay-container--left
+      floating: 0
+      collapsed: 0
+      displayed: 1
+      snapOffset: {x: 0, y: 197}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: unity-component-tools
+      index: 1
+      layout: 2
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 0
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 1
+      snapOffset: {x: 67.5, y: 86}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Orientation
+      index: 0
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Light Settings
+      index: 2
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Camera
+      index: 1
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Cloth Constraints
+      index: 3
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Cloth Collisions
+      index: 4
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Navmesh Display
+      index: 4
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Agent Display
+      index: 5
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Obstacle Display
+      index: 6
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Occlusion Culling
+      index: 5
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Physics Debugger
+      index: 6
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Scene Visibility
+      index: 7
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Particles
+      index: 8
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Tilemap
+      index: 11
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 0, y: 0}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Tilemap Palette Helper
+      index: 12
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 48, y: 48}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/TrailRenderer
+      index: 9
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 48, y: 48}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Open Tile Palette
+      index: 0
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 0
+      snapOffset: {x: 48, y: 48}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: Scene View/Tilemap Focus
+      index: 1
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 1
+      snapOffset: {x: 48, y: 48}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: AINavigationOverlay
+      index: 10
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    - dockPosition: 1
+      containerId: overlay-container--right
+      floating: 0
+      collapsed: 0
+      displayed: 1
+      snapOffset: {x: 48, y: 48}
+      snapOffsetDelta: {x: 0, y: 0}
+      snapCorner: 0
+      id: UnityEditor.SceneViewCameraOverlay
+      index: 11
+      layout: 4
+      size: {x: 0, y: 0}
+      sizeOverriden: 0
+    m_OverlaysVisible: 1
+  m_WindowGUID: cc27987af1a868c49b0894db9c0f5429
+  m_Gizmos: 1
+  m_OverrideSceneCullingMask: 6917529027641081856
+  m_SceneIsLit: 1
+  m_SceneLighting: 1
+  m_2DMode: 1
+  m_isRotationLocked: 0
+  m_PlayAudio: 0
+  m_AudioPlay: 0
+  m_Position:
+    m_Target: {x: -504.07413, y: 365.85126, z: -6.061458}
+    speed: 2
+    m_Value: {x: -504.07413, y: 365.85126, z: -6.061458}
+  m_RenderMode: 0
+  m_CameraMode:
+    drawMode: 0
+    name: Shaded
+    section: Shading Mode
+  m_ValidateTrueMetals: 0
+  m_DoValidateTrueMetals: 0
+  m_SceneViewState:
+    m_AlwaysRefresh: 0
+    showFog: 1
+    showSkybox: 1
+    showFlares: 1
+    showImageEffects: 1
+    showParticleSystems: 1
+    showVisualEffectGraphs: 1
+    m_FxEnabled: 1
+  m_Grid:
+    xGrid:
+      m_Fade:
+        m_Target: 0
+        speed: 2
+        m_Value: 0
+      m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 0.4}
+      m_Pivot: {x: 0, y: 0, z: 0}
+      m_Size: {x: 0, y: 0}
+    yGrid:
+      m_Fade:
+        m_Target: 0
+        speed: 2
+        m_Value: 0
+      m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 0.4}
+      m_Pivot: {x: 0, y: 0, z: 0}
+      m_Size: {x: 1, y: 1}
+    zGrid:
+      m_Fade:
+        m_Target: 1
+        speed: 2
+        m_Value: 1
+      m_Color: {r: 0.5, g: 0.5, b: 0.5, a: 0.4}
+      m_Pivot: {x: 0, y: 0, z: 0}
+      m_Size: {x: 1, y: 1}
+    m_ShowGrid: 1
+    m_GridAxis: 1
+    m_gridOpacity: 0.5
+  m_Rotation:
+    m_Target: {x: 0, y: 0, z: 0, w: 1}
+    speed: 2
+    m_Value: {x: 0, y: 0, z: 0, w: 1}
+  m_Size:
+    m_Target: 639.08777
+    speed: 2
+    m_Value: 639.08777
+  m_Ortho:
+    m_Target: 1
+    speed: 2
+    m_Value: 1
+  m_CameraSettings:
+    m_Speed: 1
+    m_SpeedNormalized: 0.5
+    m_SpeedMin: 0.001
+    m_SpeedMax: 2
+    m_EasingEnabled: 1
+    m_EasingDuration: 0.4
+    m_AccelerationEnabled: 1
+    m_FieldOfViewHorizontalOrVertical: 60
+    m_NearClip: 0.03
+    m_FarClip: 10000
+    m_DynamicClip: 1
+    m_OcclusionCulling: 0
+  m_LastSceneViewRotation: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
+  m_LastSceneViewOrtho: 0
+  m_ReplacementShader: {fileID: 0}
+  m_ReplacementString: 
+  m_SceneVisActive: 1
+  m_LastLockedObject: {fileID: 0}
+  m_ViewIsLockedToObject: 0
+--- !u!114 &16
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12015, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
+  m_TitleContent:
+    m_Text: Game
+    m_Image: {fileID: -6423792434712278376, guid: 0000000000000000d000000000000000,
+      type: 0}
+    m_Tooltip: 
+  m_Pos:
+    serializedVersion: 2
+    x: 355
+    y: 73
+    width: 1144
+    height: 672
+  m_SerializedDataModeController:
+    m_DataMode: 0
+    m_PreferredDataMode: 0
+    m_SupportedDataModes: 
+    isAutomatic: 1
+  m_ViewDataDictionary: {fileID: 0}
+  m_OverlayCanvas:
+    m_LastAppliedPresetName: Default
+    m_SaveData: []
+    m_OverlaysVisible: 1
+  m_SerializedViewNames: []
+  m_SerializedViewValues: []
+  m_PlayModeViewName: GameView
+  m_ShowGizmos: 0
+  m_TargetDisplay: 0
+  m_ClearColor: {r: 0, g: 0, b: 0, a: 0}
+  m_TargetSize: {x: 1360, y: 768}
+  m_TextureFilterMode: 0
+  m_TextureHideFlags: 61
+  m_RenderIMGUI: 1
+  m_EnterPlayModeBehavior: 0
+  m_UseMipMap: 0
+  m_VSyncEnabled: 0
+  m_Gizmos: 0
+  m_Stats: 0
+  m_SelectedSizes: 07000000000000000000000000000000000000000000000000000000000000000000000000000000
+  m_ZoomArea:
+    m_HRangeLocked: 0
+    m_VRangeLocked: 0
+    hZoomLockedByDefault: 0
+    vZoomLockedByDefault: 0
+    m_HBaseRangeMin: -680
+    m_HBaseRangeMax: 680
+    m_VBaseRangeMin: -384
+    m_VBaseRangeMax: 384
+    m_HAllowExceedBaseRangeMin: 1
+    m_HAllowExceedBaseRangeMax: 1
+    m_VAllowExceedBaseRangeMin: 1
+    m_VAllowExceedBaseRangeMax: 1
+    m_ScaleWithWindow: 0
+    m_HSlider: 0
+    m_VSlider: 0
+    m_IgnoreScrollWheelUntilClicked: 0
+    m_EnableMouseInput: 1
+    m_EnableSliderZoomHorizontal: 0
+    m_EnableSliderZoomVertical: 0
+    m_UniformScale: 1
+    m_UpDirection: 1
+    m_DrawArea:
+      serializedVersion: 2
+      x: 0
+      y: 21
+      width: 1144
+      height: 651
+    m_Scale: {x: 0.84117645, y: 0.84117645}
+    m_Translation: {x: 572, y: 325.5}
+    m_MarginLeft: 0
+    m_MarginRight: 0
+    m_MarginTop: 0
+    m_MarginBottom: 0
+    m_LastShownAreaInsideMargins:
+      serializedVersion: 2
+      x: -680
+      y: -386.95804
+      width: 1360
+      height: 773.9161
+    m_MinimalGUI: 1
+  m_defaultScale: 0.84117645
+  m_LastWindowPixelSize: {x: 1144, y: 672}
+  m_ClearInEditMode: 1
+  m_NoCameraWarning: 1
+  m_LowResolutionForAspectRatios: 01000000000000000000
+  m_XRRenderMode: 0
+  m_RenderTexture: {fileID: 0}
+--- !u!114 &17
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12014, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MinSize: {x: 230, y: 250}
+  m_MaxSize: {x: 10000, y: 10000}
+  m_TitleContent:
+    m_Text: Project
+    m_Image: {fileID: -5467254957812901981, guid: 0000000000000000d000000000000000,
+      type: 0}
+    m_Tooltip: 
+  m_Pos:
+    serializedVersion: 2
+    x: 0
+    y: 766
+    width: 1500
+    height: 233
+  m_SerializedDataModeController:
+    m_DataMode: 0
+    m_PreferredDataMode: 0
+    m_SupportedDataModes: 
+    isAutomatic: 1
+  m_ViewDataDictionary: {fileID: 0}
+  m_OverlayCanvas:
+    m_LastAppliedPresetName: Default
+    m_SaveData: []
+    m_OverlaysVisible: 1
+  m_SearchFilter:
+    m_NameFilter: 
+    m_ClassNames: []
+    m_AssetLabels: []
+    m_AssetBundleNames: []
+    m_ReferencingInstanceIDs: 
+    m_SceneHandles: 
+    m_ShowAllHits: 0
+    m_SkipHidden: 0
+    m_SearchArea: 1
+    m_Folders:
+    - Assets/Resources/Database_Area/Season3
+    m_Globs: []
+    m_OriginalText: 
+    m_ImportLogFlags: 0
+    m_FilterByTypeIntersection: 0
+  m_ViewMode: 1
+  m_StartGridSize: 16
+  m_LastFolders:
+  - Assets/Resources/Database_Area/Season3
+  m_LastFoldersGridSize: 16
+  m_LastProjectPath: C:\Users\213974E\Remote Project
+  m_LockTracker:
+    m_IsLocked: 0
+  m_FolderTreeState:
+    scrollPos: {x: 0, y: 931}
+    m_SelectedIDs: 3e670000
+    m_LastClickedID: 26430
+    m_ExpandedIDs: 000000000c6600000e66000010660000126600001466000016660000186600001a6600001c6600001e6600002066000000ca9a3b
+    m_RenameOverlay:
+      m_UserAcceptedRename: 0
+      m_Name: 
+      m_OriginalName: 
+      m_EditFieldRect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 0
+        height: 0
+      m_UserData: 0
+      m_IsWaitingForDelay: 0
+      m_IsRenaming: 0
+      m_OriginalEventType: 11
+      m_IsRenamingFilename: 1
+      m_ClientGUIView: {fileID: 10}
+    m_SearchString: 
+    m_CreateAssetUtility:
+      m_EndAction: {fileID: 0}
+      m_InstanceID: 0
+      m_Path: 
+      m_Icon: {fileID: 0}
+      m_ResourceFile: 
+  m_AssetTreeState:
+    scrollPos: {x: 0, y: 0}
+    m_SelectedIDs: 
+    m_LastClickedID: 0
+    m_ExpandedIDs: 000000000c6600000e66000010660000126600001466000016660000186600001a6600001c6600001e66000020660000
+    m_RenameOverlay:
+      m_UserAcceptedRename: 0
+      m_Name: 
+      m_OriginalName: 
+      m_EditFieldRect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 0
+        height: 0
+      m_UserData: 0
+      m_IsWaitingForDelay: 0
+      m_IsRenaming: 0
+      m_OriginalEventType: 11
+      m_IsRenamingFilename: 1
+      m_ClientGUIView: {fileID: 0}
+    m_SearchString: 
+    m_CreateAssetUtility:
+      m_EndAction: {fileID: 0}
+      m_InstanceID: 0
+      m_Path: 
+      m_Icon: {fileID: 0}
+      m_ResourceFile: 
+  m_ListAreaState:
+    m_SelectedInstanceIDs: 525f0000
+    m_LastClickedInstanceID: 24402
+    m_HadKeyboardFocusLastEvent: 1
+    m_ExpandedInstanceIDs: c6230000
+    m_RenameOverlay:
+      m_UserAcceptedRename: 0
+      m_Name: 
+      m_OriginalName: 
+      m_EditFieldRect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 0
+        height: 0
+      m_UserData: 0
+      m_IsWaitingForDelay: 0
+      m_IsRenaming: 0
+      m_OriginalEventType: 11
+      m_IsRenamingFilename: 1
+      m_ClientGUIView: {fileID: 10}
+    m_CreateAssetUtility:
+      m_EndAction: {fileID: 0}
+      m_InstanceID: 0
+      m_Path: 
+      m_Icon: {fileID: 0}
+      m_ResourceFile: 
+    m_NewAssetIndexInList: -1
+    m_ScrollPosition: {x: 0, y: 0}
+    m_GridSize: 16
+  m_SkipHiddenPackages: 0
+  m_DirectoriesAreaWidth: 305
+--- !u!114 &18
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 12003, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MinSize: {x: 100, y: 100}
+  m_MaxSize: {x: 4000, y: 4000}
+  m_TitleContent:
+    m_Text: Console
+    m_Image: {fileID: -4327648978806127646, guid: 0000000000000000d000000000000000,
+      type: 0}
+    m_Tooltip: 
+  m_Pos:
+    serializedVersion: 2
+    x: 0
+    y: 766
+    width: 1500
+    height: 233
+  m_SerializedDataModeController:
+    m_DataMode: 0
+    m_PreferredDataMode: 0
+    m_SupportedDataModes: 
+    isAutomatic: 1
+  m_ViewDataDictionary: {fileID: 0}
+  m_OverlayCanvas:
+    m_LastAppliedPresetName: Default
+    m_SaveData: []
+    m_OverlaysVisible: 1
+--- !u!114 &19
+MonoBehaviour:
+  m_ObjectHideFlags: 52
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 13401, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MinSize: {x: 100, y: 100}
+  m_MaxSize: {x: 4000, y: 4000}
+  m_TitleContent:
+    m_Text: Test Runner
+    m_Image: {fileID: 0}
+    m_Tooltip: 
+  m_Pos:
+    serializedVersion: 2
+    x: 1490
+    y: 73
+    width: 429
+    height: 926
+  m_SerializedDataModeController:
+    m_DataMode: 0
+    m_PreferredDataMode: 0
+    m_SupportedDataModes: 
+    isAutomatic: 1
+  m_ViewDataDictionary: {fileID: 0}
+  m_OverlayCanvas:
+    m_LastAppliedPresetName: Default
+    m_SaveData: []
+    m_OverlaysVisible: 1
+  m_Spl:
+    ID: 141
+    splitterInitialOffset: 0
+    currentActiveSplitter: -1
+    realSizes:
+    - 642
+    - 214
+    relativeSizes:
+    - 0.75
+    - 0.25
+    minSizes:
+    - 32
+    - 32
+    maxSizes:
+    - 0
+    - 0
+    lastTotalSize: 856
+    splitSize: 6
+    xOffset: 0
+    m_Version: 1
+    oldRealSizes: 
+    oldMinSizes: 
+    oldMaxSizes: 
+    oldSplitSize: 0
+  m_TestTypeToolbarIndex: 0
+  m_PlayModeTestListGUI:
+    m_Window: {fileID: 19}
+    m_NewResultList:
+    - id: 1065
+      uniqueId: '[MeloMelo][suite]'
+      name: MeloMelo
+      fullName: MeloMelo
+      resultStatus: 2
+      duration: 1.8641642
+      messages: One or more child tests had errors
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 
+      parentUniqueId: 
+    - id: 1071
+      uniqueId: '[RunTime.dll][suite]'
+      name: RunTime.dll
+      fullName: C:/Users/213974E/Remote Project/Library/ScriptAssemblies/RunTime.dll
+      resultStatus: 2
+      duration: 1.8561907
+      messages: One or more child tests had errors
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1065
+      parentUniqueId: '[MeloMelo][suite]'
+    - id: 1014
+      uniqueId: RunTime.dll/[RunTime][Gameplay][suite]
+      name: Gameplay
+      fullName: Gameplay
+      resultStatus: 2
+      duration: 1.8549035
+      messages: One or more child tests had errors
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1013
+      parentUniqueId: '[RunTime.dll][suite]'
+    - id: 1001
+      uniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.BattleProgressMeter_Component][suite]
+      name: BattleProgressMeter_Component
+      fullName: Gameplay.BattleProgressMeter_Component
+      resultStatus: 1
+      duration: 3.062628
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1014
+      parentUniqueId: RunTime.dll/[RunTime][Gameplay][suite]
+    - id: 1004
+      uniqueId: RunTime.dll/Gameplay/BattleProgressMeter_Component/[RunTime][Gameplay.BattleProgressMeter_Component.AllEliminate]
+      name: AllEliminate
+      fullName: Gameplay.BattleProgressMeter_Component.AllEliminate
+      resultStatus: 1
+      duration: 0.5243058
+      messages: 
+      output: 'Current Result: AllEliminate
+
+        - Battle Progress: 99.51
+
+'
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1001
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.BattleProgressMeter_Component][suite]
+    - id: 1003
+      uniqueId: RunTime.dll/Gameplay/BattleProgressMeter_Component/[RunTime][Gameplay.BattleProgressMeter_Component.Cleared]
+      name: Cleared
+      fullName: Gameplay.BattleProgressMeter_Component.Cleared
+      resultStatus: 1
+      duration: 0.5038128
+      messages: 
+      output: 'Current Result: Cleared!
+
+        - Battle Progress: 79.75
+
+'
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1001
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.BattleProgressMeter_Component][suite]
+    - id: 1004
+      uniqueId: RunTime.dll/Gameplay/BattleProgressMeter_Component/[RunTime][Gameplay.BattleProgressMeter_Component.Failed]
+      name: Failed
+      fullName: Gameplay.BattleProgressMeter_Component.Failed
+      resultStatus: 1
+      duration: 0.5035326
+      messages: 
+      output: 'Current Result: Failed!
+
+        - Battle Progress: 49.1
+
+'
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1001
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.BattleProgressMeter_Component][suite]
+    - id: 1002
+      uniqueId: RunTime.dll/Gameplay/BattleProgressMeter_Component/[RunTime][Gameplay.BattleProgressMeter_Component.Missless]
+      name: Missless
+      fullName: Gameplay.BattleProgressMeter_Component.Missless
+      resultStatus: 1
+      duration: 0.5032974
+      messages: 
+      output: 'Current Result: Missless
+
+        - Battle Progress: 99.52
+
+'
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1001
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.BattleProgressMeter_Component][suite]
+    - id: 1003
+      uniqueId: RunTime.dll/Gameplay/BattleProgressMeter_Component/[RunTime][Gameplay.BattleProgressMeter_Component.Perfect]
+      name: Perfect
+      fullName: Gameplay.BattleProgressMeter_Component.Perfect
+      resultStatus: 1
+      duration: 0.5037157
+      messages: 
+      output: 'Current Result: Perfect
+
+        - Battle Progress: 99.7
+
+'
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1001
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.BattleProgressMeter_Component][suite]
+    - id: 1002
+      uniqueId: RunTime.dll/Gameplay/BattleProgressMeter_Component/[RunTime][Gameplay.BattleProgressMeter_Component.PerfectPlus]
+      name: PerfectPlus
+      fullName: Gameplay.BattleProgressMeter_Component.PerfectPlus
+      resultStatus: 1
+      duration: 0.5035884
+      messages: 
+      output: 'Current Result: Perfect+
+
+        - Battle Progress: 99.5
+
+'
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1001
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.BattleProgressMeter_Component][suite]
+    - id: 1011
+      uniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.CharacterStatus_Component][suite]
+      name: CharacterStatus_Component
+      fullName: Gameplay.CharacterStatus_Component
+      resultStatus: 2
+      duration: 1.8500624
+      messages: One or more child tests had errors
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1018
+      parentUniqueId: RunTime.dll/[RunTime][Gameplay][suite]
+    - id: 1012
+      uniqueId: RunTime.dll/Gameplay/CharacterStatus_Component/[RunTime][Gameplay.CharacterStatus_Component.Damage]
+      name: Damage
+      fullName: Gameplay.CharacterStatus_Component.Damage
+      resultStatus: 1
+      duration: 0.5123923
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1011
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.CharacterStatus_Component][suite]
+    - id: 1020
+      uniqueId: RunTime.dll/Gameplay/CharacterStatus_Component/[RunTime][Gameplay.CharacterStatus_Component.HitsFunction]
+      name: HitsFunction
+      fullName: Gameplay.CharacterStatus_Component.HitsFunction
+      resultStatus: 1
+      duration: 0.10297
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1013
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.CharacterStatus_Component][suite]
+    - id: 1014
+      uniqueId: RunTime.dll/Gameplay/CharacterStatus_Component/[RunTime][Gameplay.CharacterStatus_Component.KnockOut]
+      name: KnockOut
+      fullName: Gameplay.CharacterStatus_Component.KnockOut
+      resultStatus: 1
+      duration: 0.5069877
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1011
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.CharacterStatus_Component][suite]
+    - id: 1019
+      uniqueId: RunTime.dll/Gameplay/CharacterStatus_Component/[RunTime][Gameplay.CharacterStatus_Component.LiveMotionFunction]
+      name: LiveMotionFunction
+      fullName: Gameplay.CharacterStatus_Component.LiveMotionFunction
+      resultStatus: 1
+      duration: 0.0046056
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1013
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.CharacterStatus_Component][suite]
+    - id: 1017
+      uniqueId: RunTime.dll/Gameplay/CharacterStatus_Component/[RunTime][Gameplay.CharacterStatus_Component.MoveFunction]
+      name: MoveFunction
+      fullName: Gameplay.CharacterStatus_Component.MoveFunction
+      resultStatus: 2
+      duration: 0.1049379
+      messages: "  Expected: not equal to (0.00, 0.00, 0.00)\r\n  But was:  (0.00,
+        0.00, 0.00)\r\n"
+      output: 
+      stacktrace: 'at Gameplay.CharacterStatus_Component+<MoveFunction>d__3.MoveNext
+        () [0x0005e] in C:\Users\213974E\Remote Project\Assets\Tests\RunTime\GameplayRun_Tester.cs:221
+
+        at
+        UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a]
+        in .\Library\PackageCache\com.unity.test-framework@1.1.33\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:46
+
+'
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1013
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.CharacterStatus_Component][suite]
+    - id: 1018
+      uniqueId: RunTime.dll/Gameplay/CharacterStatus_Component/[RunTime][Gameplay.CharacterStatus_Component.PlayerBoundary]
+      name: PlayerBoundary
+      fullName: Gameplay.CharacterStatus_Component.PlayerBoundary
+      resultStatus: 1
+      duration: 0.1035464
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1013
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.CharacterStatus_Component][suite]
+    - id: 1013
+      uniqueId: RunTime.dll/Gameplay/CharacterStatus_Component/[RunTime][Gameplay.CharacterStatus_Component.Restore]
+      name: Restore
+      fullName: Gameplay.CharacterStatus_Component.Restore
+      resultStatus: 1
+      duration: 0.5034584
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1011
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.CharacterStatus_Component][suite]
+    - id: 1015
+      uniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.EnemyStatus_Component][suite]
+      name: EnemyStatus_Component
+      fullName: Gameplay.EnemyStatus_Component
+      resultStatus: 1
+      duration: 1.008736
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1020
+      parentUniqueId: RunTime.dll/[RunTime][Gameplay][suite]
+    - id: 1016
+      uniqueId: RunTime.dll/Gameplay/EnemyStatus_Component/[RunTime][Gameplay.EnemyStatus_Component.Damage]
+      name: Damage
+      fullName: Gameplay.EnemyStatus_Component.Damage
+      resultStatus: 1
+      duration: 0.5028542
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1015
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.EnemyStatus_Component][suite]
+    - id: 1016
+      uniqueId: RunTime.dll/Gameplay/EnemyStatus_Component/[RunTime][Gameplay.EnemyStatus_Component.KnockOut]
+      name: KnockOut
+      fullName: Gameplay.EnemyStatus_Component.KnockOut
+      resultStatus: 1
+      duration: 0.5036874
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1015
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.EnemyStatus_Component][suite]
+    - id: 1018
+      uniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.JudgeTimingWindow][suite]
+      name: JudgeTimingWindow
+      fullName: Gameplay.JudgeTimingWindow
+      resultStatus: 1
+      duration: 1.514894
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1025
+      parentUniqueId: RunTime.dll/[RunTime][Gameplay][suite]
+    - id: 1021
+      uniqueId: RunTime.dll/Gameplay/JudgeTimingWindow/[RunTime][Gameplay.JudgeTimingWindow.MissHit]
+      name: MissHit
+      fullName: Gameplay.JudgeTimingWindow.MissHit
+      resultStatus: 1
+      duration: 0.5021272
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1018
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.JudgeTimingWindow][suite]
+    - id: 1020
+      uniqueId: RunTime.dll/Gameplay/JudgeTimingWindow/[RunTime][Gameplay.JudgeTimingWindow.ParticleHit]
+      name: ParticleHit
+      fullName: Gameplay.JudgeTimingWindow.ParticleHit
+      resultStatus: 1
+      duration: 0.5029006
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1018
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.JudgeTimingWindow][suite]
+    - id: 1019
+      uniqueId: RunTime.dll/Gameplay/JudgeTimingWindow/[RunTime][Gameplay.JudgeTimingWindow.PerfectHit]
+      name: PerfectHit
+      fullName: Gameplay.JudgeTimingWindow.PerfectHit
+      resultStatus: 1
+      duration: 0.5035105
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1018
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.JudgeTimingWindow][suite]
+    - id: 1022
+      uniqueId: RunTime.dll/Gameplay/JudgeTimingWindow/[RunTime][Gameplay.JudgeTimingWindow.RunCombo]
+      name: RunCombo
+      fullName: Gameplay.JudgeTimingWindow.RunCombo
+      resultStatus: 1
+      duration: 0.0036132
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1018
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.JudgeTimingWindow][suite]
+    - id: 1005
+      uniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.PerformanceScore_Component][suite]
+      name: PerformanceScore_Component
+      fullName: Gameplay.PerformanceScore_Component
+      resultStatus: 1
+      duration: 1.0084931
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1014
+      parentUniqueId: RunTime.dll/[RunTime][Gameplay][suite]
+    - id: 1007
+      uniqueId: RunTime.dll/Gameplay/PerformanceScore_Component/[RunTime][Gameplay.PerformanceScore_Component.ComboPenatly]
+      name: ComboPenatly
+      fullName: Gameplay.PerformanceScore_Component.ComboPenatly
+      resultStatus: 1
+      duration: 0.503311
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1005
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.PerformanceScore_Component][suite]
+    - id: 1006
+      uniqueId: RunTime.dll/Gameplay/PerformanceScore_Component/[RunTime][Gameplay.PerformanceScore_Component.PlayScore]
+      name: PlayScore
+      fullName: Gameplay.PerformanceScore_Component.PlayScore
+      resultStatus: 1
+      duration: 0.5028619
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1005
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.PerformanceScore_Component][suite]
+    - id: 1009
+      uniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.TechnicalScore_Component][suite]
+      name: TechnicalScore_Component
+      fullName: Gameplay.TechnicalScore_Component
+      resultStatus: 1
+      duration: 0.5045718
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1014
+      parentUniqueId: RunTime.dll/[RunTime][Gameplay][suite]
+    - id: 1009
+      uniqueId: RunTime.dll/Gameplay/TechnicalScore_Component/[RunTime][Gameplay.TechnicalScore_Component.PlayScore]
+      name: PlayScore
+      fullName: Gameplay.TechnicalScore_Component.PlayScore
+      resultStatus: 1
+      duration: 0.5025647
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1008
+      parentUniqueId: RunTime.dll/Gameplay/[RunTime][Gameplay.TechnicalScore_Component][suite]
+    - id: 1015
+      uniqueId: RunTime.dll/[RunTime][TitleMenu][suite]
+      name: TitleMenu
+      fullName: TitleMenu
+      resultStatus: 2
+      duration: 0.0053702
+      messages: One or more child tests had errors
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1013
+      parentUniqueId: '[RunTime.dll][suite]'
+    - id: 1011
+      uniqueId: RunTime.dll/TitleMenu/[RunTime][TitleMenu.Network_Tester][suite]
+      name: Network_Tester
+      fullName: TitleMenu.Network_Tester
+      resultStatus: 2
+      duration: 0.0035921
+      messages: One or more child tests had errors
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1015
+      parentUniqueId: RunTime.dll/[RunTime][TitleMenu][suite]
+    - id: 1012
+      uniqueId: RunTime.dll/TitleMenu/Network_Tester/[RunTime][TitleMenu.Network_Tester.Checking_Login]
+      name: Checking_Login
+      fullName: TitleMenu.Network_Tester.Checking_Login
+      resultStatus: 2
+      duration: 0.0026299
+      messages: 'System.NullReferenceException : Object reference not set to an instance
+        of an object'
+      output: 
+      stacktrace: "  at TitleMenu.Network_Tester+<Checking_Login>d__1.MoveNext ()
+        [0x00026] in C:\\Users\\213974E\\Remote Project\\Assets\\Tests\\RunTime\\GameplayRun_Tester.cs:19
+        \r\n  at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a]
+        in .\\Library\\PackageCache\\com.unity.test-framework@1.1.33\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:46 "
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1011
+      parentUniqueId: RunTime.dll/TitleMenu/[RunTime][TitleMenu.Network_Tester][suite]
+    m_ResultText: "MoveFunction (0.105s)\n---\nExpected: not equal to (0.00, 0.00,
+      0.00)\r\n  But was:  (0.00, 0.00, 0.00)\n---\nat Gameplay.CharacterStatus_Component+<MoveFunction>d__3.MoveNext
+      () [0x0005e] in C:\\Users\\213974E\\Remote Project\\Assets\\Tests\\RunTime\\GameplayRun_Tester.cs:221\nat
+      UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in
+      .\\Library\\PackageCache\\com.unity.test-framework@1.1.33\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:46"
+    m_ResultStacktrace: 'at Gameplay.CharacterStatus_Component+<MoveFunction>d__3.MoveNext
+      () [0x0005e] in C:\Users\213974E\Remote Project\Assets\Tests\RunTime\GameplayRun_Tester.cs:221
+
+      at
+      UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in
+      .\Library\PackageCache\com.unity.test-framework@1.1.33\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:46
+
+'
+    m_TestListState:
+      scrollPos: {x: 0, y: 0}
+      m_SelectedIDs: 3efaab77
+      m_LastClickedID: 2007759422
+      m_ExpandedIDs: 722c51a36a353ac370b89cc99edd98cd3427ded4ce6f16d8fc46e8dc0be215e0123bc6f584ec4d09c92e963d4bac864771b99c4cca094c557b1f0979ffffff7f
+      m_RenameOverlay:
+        m_UserAcceptedRename: 0
+        m_Name: 
+        m_OriginalName: 
+        m_EditFieldRect:
+          serializedVersion: 2
+          x: 0
+          y: 0
+          width: 0
+          height: 0
+        m_UserData: 0
+        m_IsWaitingForDelay: 0
+        m_IsRenaming: 0
+        m_OriginalEventType: 11
+        m_IsRenamingFilename: 0
+        m_ClientGUIView: {fileID: 0}
+      m_SearchString: 
+    m_TestRunnerUIFilter:
+      PassedHidden: 0
+      FailedHidden: 0
+      NotRunHidden: 0
+      m_SearchString: 
+      selectedCategoryMask: 0
+      availableCategories:
+      - Uncategorized
+    m_SelectedOption: 0
+  m_EditModeTestListGUI:
+    m_Window: {fileID: 19}
+    m_NewResultList:
+    - id: 1000
+      uniqueId: '[MeloMelo][suite]'
+      name: MeloMelo
+      fullName: MeloMelo
+      resultStatus: 1
+      duration: 0.0361032
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 
+      parentUniqueId: 
+    - id: 1060
+      uniqueId: '[Editor.dll][suite]'
+      name: Editor.dll
+      fullName: C:/Users/213974E/Remote Project/Library/ScriptAssemblies/Editor.dll
+      resultStatus: 1
+      duration: 0.0181807
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1000
+      parentUniqueId: '[MeloMelo][suite]'
+    - id: 1061
+      uniqueId: Editor.dll/[Editor][Tests][suite]
+      name: Tests
+      fullName: Tests
+      resultStatus: 1
+      duration: 0.0174294
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1060
+      parentUniqueId: '[Editor.dll][suite]'
+    - id: 1038
+      uniqueId: Editor.dll/Tests/[Editor][Tests._1_LoginPage][suite]
+      name: _1_LoginPage
+      fullName: Tests._1_LoginPage
+      resultStatus: 2
+      duration: 0.0048267
+      messages: One or more child tests had errors
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1061
+      parentUniqueId: Editor.dll/[Editor][Tests][suite]
+    - id: 1044
+      uniqueId: Editor.dll/Tests/_1_LoginPage/[Editor][Tests._1_LoginPage.BGM_Output]
+      name: BGM_Output
+      fullName: Tests._1_LoginPage.BGM_Output
+      resultStatus: 1
+      duration: 0.0000751
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1038
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._1_LoginPage][suite]
+    - id: 1041
+      uniqueId: Editor.dll/Tests/_1_LoginPage/[Editor][Tests._1_LoginPage.LoginBtn_Input]
+      name: LoginBtn_Input
+      fullName: Tests._1_LoginPage.LoginBtn_Input
+      resultStatus: 2
+      duration: 0.0001298
+      messages: 'System.NullReferenceException : Object reference not set to an instance
+        of an object'
+      output: 
+      stacktrace: "  at Tests._1_LoginPage.<LoginBtn_Input>g__LoginCheck|2_0 () [0x0000b]
+        in C:\\Users\\213974E\\Remote Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:441
+        \r\n  at Tests._1_LoginPage.LoginBtn_Input () [0x00000] in C:\\Users\\213974E\\Remote
+        Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:445 \r\n  at (wrapper
+        managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n 
+        at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags
+        invokeAttr, System.Reflection.Binder binder, System.Object[] parameters,
+        System.Globalization.CultureInfo culture) [0x0006a] in <b89873cb176e44a995a4781c7487d410>:0 "
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1038
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._1_LoginPage][suite]
+    - id: 1042
+      uniqueId: Editor.dll/Tests/_1_LoginPage/[Editor][Tests._1_LoginPage.LoginGuestBtn_Input]
+      name: LoginGuestBtn_Input
+      fullName: Tests._1_LoginPage.LoginGuestBtn_Input
+      resultStatus: 2
+      duration: 0.0000962
+      messages: 'System.NullReferenceException : Object reference not set to an instance
+        of an object'
+      output: 
+      stacktrace: "  at Tests._1_LoginPage.<LoginGuestBtn_Input>g__LoginCheck|3_0
+        () [0x0000b] in C:\\Users\\213974E\\Remote Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:454
+        \r\n  at Tests._1_LoginPage.LoginGuestBtn_Input () [0x00000] in C:\\Users\\213974E\\Remote
+        Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:458 \r\n  at (wrapper
+        managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n 
+        at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags
+        invokeAttr, System.Reflection.Binder binder, System.Object[] parameters,
+        System.Globalization.CultureInfo culture) [0x0006a] in <b89873cb176e44a995a4781c7487d410>:0 "
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1038
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._1_LoginPage][suite]
+    - id: 1043
+      uniqueId: Editor.dll/Tests/_1_LoginPage/[Editor][Tests._1_LoginPage.Logo_Display]
+      name: Logo_Display
+      fullName: Tests._1_LoginPage.Logo_Display
+      resultStatus: 1
+      duration: 0.0000344
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1038
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._1_LoginPage][suite]
+    - id: 1040
+      uniqueId: Editor.dll/Tests/_1_LoginPage/[Editor][Tests._1_LoginPage.PassInput_Input]
+      name: PassInput_Input
+      fullName: Tests._1_LoginPage.PassInput_Input
+      resultStatus: 2
+      duration: 0.0000644
+      messages: 'System.NullReferenceException : Object reference not set to an instance
+        of an object'
+      output: 
+      stacktrace: "  at Tests._1_LoginPage.PassInput_Input () [0x00000] in C:\\Users\\213974E\\Remote
+        Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:432 \r\n  at (wrapper
+        managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n 
+        at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags
+        invokeAttr, System.Reflection.Binder binder, System.Object[] parameters,
+        System.Globalization.CultureInfo culture) [0x0006a] in <b89873cb176e44a995a4781c7487d410>:0 "
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1038
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._1_LoginPage][suite]
+    - id: 1039
+      uniqueId: Editor.dll/Tests/_1_LoginPage/[Editor][Tests._1_LoginPage.UserInput_Input]
+      name: UserInput_Input
+      fullName: Tests._1_LoginPage.UserInput_Input
+      resultStatus: 2
+      duration: 0.0000594
+      messages: 'System.NullReferenceException : Object reference not set to an instance
+        of an object'
+      output: 
+      stacktrace: "  at Tests._1_LoginPage.UserInput_Input () [0x00000] in C:\\Users\\213974E\\Remote
+        Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:426 \r\n  at (wrapper
+        managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n 
+        at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags
+        invokeAttr, System.Reflection.Binder binder, System.Object[] parameters,
+        System.Globalization.CultureInfo culture) [0x0006a] in <b89873cb176e44a995a4781c7487d410>:0 "
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1038
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._1_LoginPage][suite]
+    - id: 1045
+      uniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+      name: _10_Gameplay
+      fullName: Tests._10_Gameplay
+      resultStatus: 1
+      duration: 0.0142328
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1061
+      parentUniqueId: Editor.dll/[Editor][Tests][suite]
+    - id: 1056
+      uniqueId: Editor.dll/Tests/_10_Gameplay/[Editor][Tests._10_Gameplay.BattleProgress_Display]
+      name: BattleProgress_Display
+      fullName: Tests._10_Gameplay.BattleProgress_Display
+      resultStatus: 1
+      duration: 0.001666
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1045
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+    - id: 1059
+      uniqueId: Editor.dll/Tests/_10_Gameplay/[Editor][Tests._10_Gameplay.BossStatus_Display]
+      name: BossStatus_Display
+      fullName: Tests._10_Gameplay.BossStatus_Display
+      resultStatus: 2
+      duration: 0.0011217
+      messages: 'System.NullReferenceException : Object reference not set to an instance
+        of an object'
+      output: 
+      stacktrace: "  at Tests._10_Gameplay.BossStatus_Display () [0x00000] in C:\\Users\\213974E\\Remote
+        Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:559 \r\n  at (wrapper
+        managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n 
+        at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags
+        invokeAttr, System.Reflection.Binder binder, System.Object[] parameters,
+        System.Globalization.CultureInfo culture) [0x0006a] in <b89873cb176e44a995a4781c7487d410>:0 "
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1045
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+    - id: 1050
+      uniqueId: Editor.dll/Tests/_10_Gameplay/[Editor][Tests._10_Gameplay.Character_MainSlot]
+      name: Character_MainSlot
+      fullName: Tests._10_Gameplay.Character_MainSlot
+      resultStatus: 2
+      duration: 0.0001589
+      messages: 'System.NullReferenceException : Object reference not set to an instance
+        of an object'
+      output: 
+      stacktrace: "  at Tests._10_Gameplay.Character_MainSlot () [0x00000] in C:\\Users\\213974E\\Remote
+        Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:505 \r\n  at (wrapper
+        managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n 
+        at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags
+        invokeAttr, System.Reflection.Binder binder, System.Object[] parameters,
+        System.Globalization.CultureInfo culture) [0x0006a] in <b89873cb176e44a995a4781c7487d410>:0 "
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1045
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+    - id: 1051
+      uniqueId: Editor.dll/Tests/_10_Gameplay/[Editor][Tests._10_Gameplay.Character_SideSlot_Left]
+      name: Character_SideSlot_Left
+      fullName: Tests._10_Gameplay.Character_SideSlot_Left
+      resultStatus: 2
+      duration: 0.0001757
+      messages: 'System.NullReferenceException : Object reference not set to an instance
+        of an object'
+      output: 
+      stacktrace: "  at Tests._10_Gameplay.Character_SideSlot_Left () [0x00000] in
+        C:\\Users\\213974E\\Remote Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:511
+        \r\n  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n 
+        at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags
+        invokeAttr, System.Reflection.Binder binder, System.Object[] parameters,
+        System.Globalization.CultureInfo culture) [0x0006a] in <b89873cb176e44a995a4781c7487d410>:0 "
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1045
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+    - id: 1052
+      uniqueId: Editor.dll/Tests/_10_Gameplay/[Editor][Tests._10_Gameplay.Character_SideSlot_Right]
+      name: Character_SideSlot_Right
+      fullName: Tests._10_Gameplay.Character_SideSlot_Right
+      resultStatus: 2
+      duration: 0.0001485
+      messages: 'System.NullReferenceException : Object reference not set to an instance
+        of an object'
+      output: 
+      stacktrace: "  at Tests._10_Gameplay.Character_SideSlot_Right () [0x00000]
+        in C:\\Users\\213974E\\Remote Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:517
+        \r\n  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n 
+        at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags
+        invokeAttr, System.Reflection.Binder binder, System.Object[] parameters,
+        System.Globalization.CultureInfo culture) [0x0006a] in <b89873cb176e44a995a4781c7487d410>:0 "
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1045
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+    - id: 1054
+      uniqueId: Editor.dll/Tests/_10_Gameplay/[Editor][Tests._10_Gameplay.Enemy_MainSlot]
+      name: Enemy_MainSlot
+      fullName: Tests._10_Gameplay.Enemy_MainSlot
+      resultStatus: 1
+      duration: 0.000099
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1045
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+    - id: 1048
+      uniqueId: Editor.dll/Tests/_10_Gameplay/[Editor][Tests._10_Gameplay.Judgement_Line_Display]
+      name: Judgement_Line_Display
+      fullName: Tests._10_Gameplay.Judgement_Line_Display
+      resultStatus: 1
+      duration: 0.0000809
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1045
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+    - id: 1046
+      uniqueId: Editor.dll/Tests/_10_Gameplay/[Editor][Tests._10_Gameplay.MusicInfo_Display]
+      name: MusicInfo_Display
+      fullName: Tests._10_Gameplay.MusicInfo_Display
+      resultStatus: 1
+      duration: 0.0064968
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1045
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+    - id: 1047
+      uniqueId: Editor.dll/Tests/_10_Gameplay/[Editor][Tests._10_Gameplay.MV_Display]
+      name: MV_Display
+      fullName: Tests._10_Gameplay.MV_Display
+      resultStatus: 1
+      duration: 0.0000854
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1045
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+    - id: 1053
+      uniqueId: Editor.dll/Tests/_10_Gameplay/[Editor][Tests._10_Gameplay.PlayArea_Display]
+      name: PlayArea_Display
+      fullName: Tests._10_Gameplay.PlayArea_Display
+      resultStatus: 1
+      duration: 0.0000792
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1045
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+    - id: 1058
+      uniqueId: Editor.dll/Tests/_10_Gameplay/[Editor][Tests._10_Gameplay.RetreatBG_Display]
+      name: RetreatBG_Display
+      fullName: Tests._10_Gameplay.RetreatBG_Display
+      resultStatus: 1
+      duration: 0.0000738
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1045
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+    - id: 1055
+      uniqueId: Editor.dll/Tests/_10_Gameplay/[Editor][Tests._10_Gameplay.ScoreBoard_Display]
+      name: ScoreBoard_Display
+      fullName: Tests._10_Gameplay.ScoreBoard_Display
+      resultStatus: 2
+      duration: 0.0001285
+      messages: 'System.NullReferenceException : Object reference not set to an instance
+        of an object'
+      output: 
+      stacktrace: "  at Tests._10_Gameplay.ScoreBoard_Display () [0x00000] in C:\\Users\\213974E\\Remote
+        Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:535 \r\n  at (wrapper
+        managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n 
+        at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags
+        invokeAttr, System.Reflection.Binder binder, System.Object[] parameters,
+        System.Globalization.CultureInfo culture) [0x0006a] in <b89873cb176e44a995a4781c7487d410>:0 "
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1045
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+    - id: 1049
+      uniqueId: Editor.dll/Tests/_10_Gameplay/[Editor][Tests._10_Gameplay.SpawnPoint_Display]
+      name: SpawnPoint_Display
+      fullName: Tests._10_Gameplay.SpawnPoint_Display
+      resultStatus: 1
+      duration: 0.0000886
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1045
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+    - id: 1057
+      uniqueId: Editor.dll/Tests/_10_Gameplay/[Editor][Tests._10_Gameplay.UnitStatus_Display]
+      name: UnitStatus_Display
+      fullName: Tests._10_Gameplay.UnitStatus_Display
+      resultStatus: 1
+      duration: 0.0001679
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1045
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._10_Gameplay][suite]
+    - id: 1001
+      uniqueId: Editor.dll/Tests/[Editor][Tests._11_Result][suite]
+      name: _11_Result
+      fullName: Tests._11_Result
+      resultStatus: 2
+      duration: 0.0044712
+      messages: One or more child tests had errors
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1061
+      parentUniqueId: Editor.dll/[Editor][Tests][suite]
+    - id: 1002
+      uniqueId: Editor.dll/Tests/_11_Result/[Editor][Tests._11_Result.BGM_Output]
+      name: BGM_Output
+      fullName: Tests._11_Result.BGM_Output
+      resultStatus: 1
+      duration: 0.000072
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1001
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._11_Result][suite]
+    - id: 1003
+      uniqueId: Editor.dll/Tests/_11_Result/[Editor][Tests._11_Result.ResultInfo]
+      name: ResultInfo
+      fullName: Tests._11_Result.ResultInfo
+      resultStatus: 1
+      duration: 0.0000506
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1001
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._11_Result][suite]
+    - id: 1004
+      uniqueId: Editor.dll/Tests/_11_Result/[Editor][Tests._11_Result.TransitionBtn_Output]
+      name: TransitionBtn_Output
+      fullName: Tests._11_Result.TransitionBtn_Output
+      resultStatus: 2
+      duration: 0.0001804
+      messages: "  Not Found!\r\n  Expected: True\r\n  But was:  False\r\n"
+      output: 
+      stacktrace: 'at Tests._11_Result.TransitionBtn_Output () [0x00000] in C:\Users\213974E\Remote
+        Project\Assets\Tests\Editor\Gameplay_Tester.cs:63
+
+'
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1001
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._11_Result][suite]
+    - id: 1032
+      uniqueId: Editor.dll/Tests/[Editor][Tests._2_Menu][suite]
+      name: _2_Menu
+      fullName: Tests._2_Menu
+      resultStatus: 2
+      duration: 0.0038238
+      messages: One or more child tests had errors
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1061
+      parentUniqueId: Editor.dll/[Editor][Tests][suite]
+    - id: 1037
+      uniqueId: Editor.dll/Tests/_2_Menu/[Editor][Tests._2_Menu.BGM_Output]
+      name: BGM_Output
+      fullName: Tests._2_Menu.BGM_Output
+      resultStatus: 1
+      duration: 0.0000717
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1032
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._2_Menu][suite]
+    - id: 1034
+      uniqueId: Editor.dll/Tests/_2_Menu/[Editor][Tests._2_Menu.OptionBtn_Input]
+      name: OptionBtn_Input
+      fullName: Tests._2_Menu.OptionBtn_Input
+      resultStatus: 1
+      duration: 0.0000544
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1032
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._2_Menu][suite]
+    - id: 1036
+      uniqueId: Editor.dll/Tests/_2_Menu/[Editor][Tests._2_Menu.Profile_Display]
+      name: Profile_Display
+      fullName: Tests._2_Menu.Profile_Display
+      resultStatus: 2
+      duration: 0.0001336
+      messages: 'System.NullReferenceException : Object reference not set to an instance
+        of an object'
+      output: 
+      stacktrace: "  at Tests._2_Menu.<Profile_Display>g__checklist|3_0 () [0x0004f]
+        in C:\\Users\\213974E\\Remote Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:405
+        \r\n  at Tests._2_Menu.Profile_Display () [0x00000] in C:\\Users\\213974E\\Remote
+        Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:409 \r\n  at (wrapper
+        managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n 
+        at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags
+        invokeAttr, System.Reflection.Binder binder, System.Object[] parameters,
+        System.Globalization.CultureInfo culture) [0x0006a] in <b89873cb176e44a995a4781c7487d410>:0 "
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1032
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._2_Menu][suite]
+    - id: 1035
+      uniqueId: Editor.dll/Tests/_2_Menu/[Editor][Tests._2_Menu.QuitBtn_Input]
+      name: QuitBtn_Input
+      fullName: Tests._2_Menu.QuitBtn_Input
+      resultStatus: 1
+      duration: 0.000041
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1032
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._2_Menu][suite]
+    - id: 1033
+      uniqueId: Editor.dll/Tests/_2_Menu/[Editor][Tests._2_Menu.StartBtn_Input]
+      name: StartBtn_Input
+      fullName: Tests._2_Menu.StartBtn_Input
+      resultStatus: 1
+      duration: 0.0000303
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1032
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._2_Menu][suite]
+    - id: 1026
+      uniqueId: Editor.dll/Tests/[Editor][Tests._4_PreSelection][suite]
+      name: _4_PreSelection
+      fullName: Tests._4_PreSelection
+      resultStatus: 1
+      duration: 0.004066
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1061
+      parentUniqueId: Editor.dll/[Editor][Tests][suite]
+    - id: 1027
+      uniqueId: Editor.dll/Tests/_4_PreSelection/[Editor][Tests._4_PreSelection.BattleModeBtn_Input]
+      name: BattleModeBtn_Input
+      fullName: Tests._4_PreSelection.BattleModeBtn_Input
+      resultStatus: 1
+      duration: 0.0000803
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1026
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._4_PreSelection][suite]
+    - id: 1031
+      uniqueId: Editor.dll/Tests/_4_PreSelection/[Editor][Tests._4_PreSelection.BGM_Output]
+      name: BGM_Output
+      fullName: Tests._4_PreSelection.BGM_Output
+      resultStatus: 1
+      duration: 0.0000441
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1026
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._4_PreSelection][suite]
+    - id: 1028
+      uniqueId: Editor.dll/Tests/_4_PreSelection/[Editor][Tests._4_PreSelection.ShopBtn_Input]
+      name: ShopBtn_Input
+      fullName: Tests._4_PreSelection.ShopBtn_Input
+      resultStatus: 1
+      duration: 0.0000341
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1026
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._4_PreSelection][suite]
+    - id: 1030
+      uniqueId: Editor.dll/Tests/_4_PreSelection/[Editor][Tests._4_PreSelection.StoryModeBtn_Input]
+      name: StoryModeBtn_Input
+      fullName: Tests._4_PreSelection.StoryModeBtn_Input
+      resultStatus: 1
+      duration: 0.0000287
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1026
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._4_PreSelection][suite]
+    - id: 1029
+      uniqueId: Editor.dll/Tests/_4_PreSelection/[Editor][Tests._4_PreSelection.TutorialBtn_Input]
+      name: TutorialBtn_Input
+      fullName: Tests._4_PreSelection.TutorialBtn_Input
+      resultStatus: 1
+      duration: 0.0000277
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1026
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._4_PreSelection][suite]
+    - id: 1021
+      uniqueId: Editor.dll/Tests/[Editor][Tests._5_AreaSelection][suite]
+      name: _5_AreaSelection
+      fullName: Tests._5_AreaSelection
+      resultStatus: 1
+      duration: 0.0036694
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1061
+      parentUniqueId: Editor.dll/[Editor][Tests][suite]
+    - id: 1024
+      uniqueId: Editor.dll/Tests/_5_AreaSelection/[Editor][Tests._5_AreaSelection.AreaSelectionDisplay_Component]
+      name: AreaSelectionDisplay_Component
+      fullName: Tests._5_AreaSelection.AreaSelectionDisplay_Component
+      resultStatus: 1
+      duration: 0.0000721
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1021
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._5_AreaSelection][suite]
+    - id: 1025
+      uniqueId: Editor.dll/Tests/_5_AreaSelection/[Editor][Tests._5_AreaSelection.AreaSelectionInfo_Component]
+      name: AreaSelectionInfo_Component
+      fullName: Tests._5_AreaSelection.AreaSelectionInfo_Component
+      resultStatus: 1
+      duration: 0.0000413
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1021
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._5_AreaSelection][suite]
+    - id: 1022
+      uniqueId: Editor.dll/Tests/_5_AreaSelection/[Editor][Tests._5_AreaSelection.BGM_Output]
+      name: BGM_Output
+      fullName: Tests._5_AreaSelection.BGM_Output
+      resultStatus: 1
+      duration: 0.0000316
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1021
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._5_AreaSelection][suite]
+    - id: 1023
+      uniqueId: Editor.dll/Tests/_5_AreaSelection/[Editor][Tests._5_AreaSelection.NagivationBtn_Input]
+      name: NagivationBtn_Input
+      fullName: Tests._5_AreaSelection.NagivationBtn_Input
+      resultStatus: 1
+      duration: 0.0000444
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1021
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._5_AreaSelection][suite]
+    - id: 1016
+      uniqueId: Editor.dll/Tests/[Editor][Tests._6_MusicSelection][suite]
+      name: _6_MusicSelection
+      fullName: Tests._6_MusicSelection
+      resultStatus: 2
+      duration: 0.0043417
+      messages: One or more child tests had errors
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1061
+      parentUniqueId: Editor.dll/[Editor][Tests][suite]
+    - id: 1020
+      uniqueId: Editor.dll/Tests/_6_MusicSelection/[Editor][Tests._6_MusicSelection.Achievement_Information]
+      name: Achievement_Information
+      fullName: Tests._6_MusicSelection.Achievement_Information
+      resultStatus: 2
+      duration: 0.000228
+      messages: "  Not Found!\r\n  Expected: True\r\n  But was:  False\r\n"
+      output: 
+      stacktrace: 'at Tests._6_MusicSelection.Achievement_Information () [0x00000]
+        in C:\Users\213974E\Remote Project\Assets\Tests\Editor\Gameplay_Tester.cs:256
+
+'
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1016
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._6_MusicSelection][suite]
+    - id: 1017
+      uniqueId: Editor.dll/Tests/_6_MusicSelection/[Editor][Tests._6_MusicSelection.BGM_Output]
+      name: BGM_Output
+      fullName: Tests._6_MusicSelection.BGM_Output
+      resultStatus: 1
+      duration: 0.0000537
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1016
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._6_MusicSelection][suite]
+    - id: 1019
+      uniqueId: Editor.dll/Tests/_6_MusicSelection/[Editor][Tests._6_MusicSelection.MusicSelection_Information]
+      name: MusicSelection_Information
+      fullName: Tests._6_MusicSelection.MusicSelection_Information
+      resultStatus: 2
+      duration: 0.0001347
+      messages: 'System.NullReferenceException : Object reference not set to an instance
+        of an object'
+      output: 
+      stacktrace: "  at Tests._6_MusicSelection.<MusicSelection_Information>g__checklist|2_0
+        () [0x00036] in C:\\Users\\213974E\\Remote Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:233
+        \r\n  at Tests._6_MusicSelection.MusicSelection_Information () [0x00000]
+        in C:\\Users\\213974E\\Remote Project\\Assets\\Tests\\Editor\\Gameplay_Tester.cs:237
+        \r\n  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n 
+        at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags
+        invokeAttr, System.Reflection.Binder binder, System.Object[] parameters,
+        System.Globalization.CultureInfo culture) [0x0006a] in <b89873cb176e44a995a4781c7487d410>:0 "
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1016
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._6_MusicSelection][suite]
+    - id: 1018
+      uniqueId: Editor.dll/Tests/_6_MusicSelection/[Editor][Tests._6_MusicSelection.NagivationBtn_Input]
+      name: NagivationBtn_Input
+      fullName: Tests._6_MusicSelection.NagivationBtn_Input
+      resultStatus: 1
+      duration: 0.0000579
+      messages: 
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1016
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._6_MusicSelection][suite]
+    - id: 1011
+      uniqueId: Editor.dll/Tests/[Editor][Tests._7_BattleSetUp][suite]
+      name: _7_BattleSetUp
+      fullName: Tests._7_BattleSetUp
+      resultStatus: 0
+      duration: 0.0025632
+      messages: One or more child tests had errors
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1061
+      parentUniqueId: Editor.dll/[Editor][Tests][suite]
+    - id: 1012
+      uniqueId: Editor.dll/Tests/_7_BattleSetUp/[Editor][Tests._7_BattleSetUp.BGM_Output]
+      name: BGM_Output
+      fullName: Tests._7_BattleSetUp.BGM_Output
+      resultStatus: 0
+      duration: 0.0001313
+      messages: "  Expected: 0\r\n  But was:  1\r\n"
+      output: 
+      stacktrace: 'at Tests._7_BattleSetUp.BGM_Output () [0x0000b] in C:\Users\213974E\Remote
+        Project\Assets\Tests\Editor\Gameplay_Tester.cs:126
+
+'
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1011
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._7_BattleSetUp][suite]
+    - id: 1015
+      uniqueId: Editor.dll/Tests/_7_BattleSetUp/[Editor][Tests._7_BattleSetUp.GameplaySetting_Output]
+      name: GameplaySetting_Output
+      fullName: Tests._7_BattleSetUp.GameplaySetting_Output
+      resultStatus: 0
+      duration: 0.0001118
+      messages: "  Not Found!\r\n  Expected: True\r\n  But was:  False\r\n"
+      output: 
+      stacktrace: 'at Tests._7_BattleSetUp.GameplaySetting_Output () [0x00000] in
+        C:\Users\213974E\Remote Project\Assets\Tests\Editor\Gameplay_Tester.cs:189
+
+'
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1011
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._7_BattleSetUp][suite]
+    - id: 1013
+      uniqueId: Editor.dll/Tests/_7_BattleSetUp/[Editor][Tests._7_BattleSetUp.Process_And_Reserve_Input]
+      name: Process_And_Reserve_Input
+      fullName: Tests._7_BattleSetUp.Process_And_Reserve_Input
+      resultStatus: 0
+      duration: 0.0001019
+      messages: "  Not Found!\r\n  Expected: True\r\n  But was:  False\r\n"
+      output: 
+      stacktrace: 'at Tests._7_BattleSetUp.Process_And_Reserve_Input () [0x00000]
+        in C:\Users\213974E\Remote Project\Assets\Tests\Editor\Gameplay_Tester.cs:144
+
+'
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1011
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._7_BattleSetUp][suite]
+    - id: 1014
+      uniqueId: Editor.dll/Tests/_7_BattleSetUp/[Editor][Tests._7_BattleSetUp.UnitFormation_Output]
+      name: UnitFormation_Output
+      fullName: Tests._7_BattleSetUp.UnitFormation_Output
+      resultStatus: 0
+      duration: 0.0000986
+      messages: "  Not Found!\r\n  Expected: True\r\n  But was:  False\r\n"
+      output: 
+      stacktrace: 'at Tests._7_BattleSetUp.UnitFormation_Output () [0x00000] in C:\Users\213974E\Remote
+        Project\Assets\Tests\Editor\Gameplay_Tester.cs:170
+
+'
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1011
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._7_BattleSetUp][suite]
+    - id: 1008
+      uniqueId: Editor.dll/Tests/[Editor][Tests._8_CharacterSelection][suite]
+      name: _8_CharacterSelection
+      fullName: Tests._8_CharacterSelection
+      resultStatus: 0
+      duration: 0.0073452
+      messages: One or more child tests had errors
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1061
+      parentUniqueId: Editor.dll/[Editor][Tests][suite]
+    - id: 1009
+      uniqueId: Editor.dll/Tests/_8_CharacterSelection/[Editor][Tests._8_CharacterSelection.BGM_Output]
+      name: BGM_Output
+      fullName: Tests._8_CharacterSelection.BGM_Output
+      resultStatus: 0
+      duration: 0.0001461
+      messages: "  Expected: 0\r\n  But was:  1\r\n"
+      output: 
+      stacktrace: 'at Tests._8_CharacterSelection.BGM_Output () [0x0000b] in C:\Users\213974E\Remote
+        Project\Assets\Tests\Editor\Gameplay_Tester.cs:107
+
+'
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1008
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._8_CharacterSelection][suite]
+    - id: 1010
+      uniqueId: Editor.dll/Tests/_8_CharacterSelection/[Editor][Tests._8_CharacterSelection.CharacterSlot_Output]
+      name: CharacterSlot_Output
+      fullName: Tests._8_CharacterSelection.CharacterSlot_Output
+      resultStatus: 0
+      duration: 0.0051483
+      messages: "  Expected: 4\r\n  But was:  -1\r\n"
+      output: 
+      stacktrace: 'at Tests._8_CharacterSelection.CharacterSlot_Output () [0x00015]
+        in C:\Users\213974E\Remote Project\Assets\Tests\Editor\Gameplay_Tester.cs:115
+
+'
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1008
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._8_CharacterSelection][suite]
+    - id: 1005
+      uniqueId: Editor.dll/Tests/[Editor][Tests._9_StageTransition][suite]
+      name: _9_StageTransition
+      fullName: Tests._9_StageTransition
+      resultStatus: 0
+      duration: 0.0026116
+      messages: One or more child tests had errors
+      output: 
+      stacktrace: 
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 1
+      categories: []
+      parentId: 1061
+      parentUniqueId: Editor.dll/[Editor][Tests][suite]
+    - id: 1006
+      uniqueId: Editor.dll/Tests/_9_StageTransition/[Editor][Tests._9_StageTransition.BGM_Output]
+      name: BGM_Output
+      fullName: Tests._9_StageTransition.BGM_Output
+      resultStatus: 0
+      duration: 0.0001824
+      messages: "  Expected: 0\r\n  But was:  1\r\n"
+      output: 
+      stacktrace: 'at Tests._9_StageTransition.BGM_Output () [0x0000b] in C:\Users\213974E\Remote
+        Project\Assets\Tests\Editor\Gameplay_Tester.cs:74
+
+'
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1005
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._9_StageTransition][suite]
+    - id: 1007
+      uniqueId: Editor.dll/Tests/_9_StageTransition/[Editor][Tests._9_StageTransition.MusicInfo]
+      name: MusicInfo
+      fullName: Tests._9_StageTransition.MusicInfo
+      resultStatus: 0
+      duration: 0.0001354
+      messages: "  Not Found!\r\n  Expected: True\r\n  But was:  False\r\n"
+      output: 
+      stacktrace: 'at Tests._9_StageTransition.MusicInfo () [0x00000] in C:\Users\213974E\Remote
+        Project\Assets\Tests\Editor\Gameplay_Tester.cs:96
+
+'
+      notRunnable: 0
+      ignoredOrSkipped: 0
+      description: 
+      isSuite: 0
+      categories:
+      - Uncategorized
+      parentId: 1005
+      parentUniqueId: Editor.dll/Tests/[Editor][Tests._9_StageTransition][suite]
+    m_ResultText: MusicInfo_Display (0.006s)
+    m_ResultStacktrace: 
+    m_TestListState:
+      scrollPos: {x: 0, y: 0}
+      m_SelectedIDs: b38a8540
+      m_LastClickedID: 1082493619
+      m_ExpandedIDs: c1d164855c89eba3fc46e8dc152a36e3a4eae0eb315159f2445db4172c5a461c5f0ae848d1e44f498317df4c298fe174c7182375ffffff7f
+      m_RenameOverlay:
+        m_UserAcceptedRename: 0
+        m_Name: 
+        m_OriginalName: 
+        m_EditFieldRect:
+          serializedVersion: 2
+          x: 0
+          y: 0
+          width: 0
+          height: 0
+        m_UserData: 0
+        m_IsWaitingForDelay: 0
+        m_IsRenaming: 0
+        m_OriginalEventType: 11
+        m_IsRenamingFilename: 0
+        m_ClientGUIView: {fileID: 0}
+      m_SearchString: 
+    m_TestRunnerUIFilter:
+      PassedHidden: 0
+      FailedHidden: 0
+      NotRunHidden: 0
+      m_SearchString: 
+      selectedCategoryMask: 0
+      availableCategories:
+      - Uncategorized

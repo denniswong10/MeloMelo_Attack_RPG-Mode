@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/UI/TitleMenu/LoadScene.unity
+    guid: 8f92c2c259b006f4e960a7d8c4cbe156
+  - enabled: 1
+    path: Assets/Scenes/UI/TitleMenu/StartMenu.unity
+    guid: b0494aa1a2d7cb14f9bc26a3b3040625
+  - enabled: 1
+    path: Assets/Scenes/UI/LoginStage/ServerGateway.unity
+    guid: 67ee876ec3b024f4ba0dcd574eaab07e
+  - enabled: 1
+    path: Assets/Scenes/UI/LoginStage/LoginPage1.unity
+    guid: bb5cfe6f60adf1e4f835e048f7b985d6
+  - enabled: 1
+    path: Assets/Scenes/UI/LoginStage/LoginPage2.unity
+    guid: 452e67000bf993b46817d52f41ffe507
+  - enabled: 1
+    path: Assets/Scenes/UI/LoginStage/LoginPage3.unity
+    guid: 73de0dcbace255544a19ff2a1d4e145c
+  - enabled: 1
+    path: Assets/Scenes/UI/Menu/Menu.unity
+    guid: e85573b841cf5af4086e0668b5ef66d4
+  - enabled: 1
+    path: Assets/Scenes/UI/Selection/Ref_PreSelection.unity
+    guid: e41f55310e594524c8b1e1f729437620
+  - enabled: 1
+    path: Assets/Scenes/UI/Selection/AreaSelection.unity
+    guid: dfaccba00c8ef6645b65d4b5330b7113
+  - enabled: 1
+    path: Assets/Scenes/UI/GameMode/Music Selection Stage.unity
+    guid: 7124ad097de57be4db9f90f48822523a
+  - enabled: 1
+    path: Assets/Scenes/UI/GameMode/BattleSetup.unity
+    guid: 97aec37c7c9dd8c43af51f8e1157c5e6
+  - enabled: 1
+    path: Assets/Scenes/UI/Stage Transition.unity
+    guid: d71804d479a82a94c957bf686a82af9a
+  - enabled: 1
+    path: Assets/Scenes/Gameplay/Battleground Stage.unity
+    guid: 5eb2a2660d4b8004b8990e571cacd20b
+  - enabled: 1
+    path: Assets/Scenes/UI/Result/Result.unity
+    guid: ae0edc8ec6cae9b4aa9c62f68fe62b91
+  - enabled: 1
+    path: Assets/Scenes/UI/Menu/Options.unity
+    guid: 77c02da98334e4d43a9240b8116dba3a
+  - enabled: 1
+    path: Assets/Scenes/UI/Menu/Controls.unity
+    guid: 30cdb60aa3dd71347bfcb99a8827e27c
+  - enabled: 1
+    path: Assets/Scenes/UI/Menu/Credits.unity
+    guid: ae7b1ccecf45fa649bd978fe79eb906a
+  - enabled: 1
+    path: Assets/Scenes/UI/Menu/Review.unity
+    guid: e3eafde5b339acf4cb8b66024dec99ce
+  - enabled: 1
+    path: Assets/Scenes/UI/Menu/Achievement.unity
+    guid: ea52dc788c5ce074299e4d7ea09e9154
+  - enabled: 1
+    path: Assets/Scenes/UI/GameMode/StoryMode.unity
+    guid: 0c98dc43969aa554c99d6f9b2d4bbfd0
+  - enabled: 1
+    path: Assets/Scenes/UI/Selection/ArenaSelection.unity
+    guid: 4a5a6b080ac545b41ac1313bf2561149
+  - enabled: 1
+    path: Assets/Scenes/UI/BlackBoard.unity
+    guid: 186183a1c98e76e429d962d6b748838a
+  - enabled: 1
+    path: Assets/Scenes/UI/Menu/Collections.unity
+    guid: 57d7a2cd761334047a09e6020108b0e5
+  - enabled: 1
+    path: Assets/Scenes/UI/GameMode/MarathonSelection.unity
+    guid: d382cf7aa756b7e4fbaa1b2712e69db4
+  - enabled: 1
+    path: Assets/Scenes/UI/Ref_CharacterSelection.unity
+    guid: f672040f6f048754da9e6e0fd350d339
+  - enabled: 1
+    path: Assets/Scenes/UI/StoragePage.unity
+    guid: efe12615938f25c44ac4ea3fc7392e84
+  - enabled: 1
+    path: Assets/Scenes/UI/Selection/SeasonSelection.unity
+    guid: e097232f698a7774f8d6de01396ffbc0
+  - enabled: 1
+    path: Assets/Scenes/UI/Menu/ProfileView.unity
+    guid: 750b314bd7d295c4cb68ca6aeab6d585
+  - enabled: 1
+    path: Assets/Scenes/UI/GameMode/DungeonSelection.unity
+    guid: 6504cfc3d9b32394bb65d5065e6c7d21
+  m_configObjects: {}
