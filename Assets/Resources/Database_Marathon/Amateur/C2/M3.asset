@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M3
+  m_EditorClassIdentifier: 
+  BPM: 137.5
+  offset: 1142
+  Music: {fileID: 8300000, guid: 1e2a5a1508c1c2b4886ccc48664feb9c, type: 3}
+  PreviewTime: 50.6
+  ArtistName: Luce Twinkle Wink
+  Title: 1st Love Story
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 576ae3716385a04448791bfa1c32cfe0, type: 3}
+  ScoreObject: {fileID: 7009979187658333041, guid: 58c41808104c88d48b7edc324b7b34da,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: 4f0bbb61f79f6aa4aaaf79aaf2a27fa8, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 46a97ac561aeec0418c3113544fbfe40, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  creditPoint: --
+  BPM_Skin: 0
+  UseBPMDisplay: 0
+  MemoryCollection: 0
+  ScaleLevel: 1
+  BPM_Multi: []

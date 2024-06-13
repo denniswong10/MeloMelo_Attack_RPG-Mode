@@ -1,0 +1,495 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a57efd7dec8edc34d83ebc678b40c834, type: 3}
+  m_Name: Warrior
+  m_EditorClassIdentifier: 
+  Level:
+  - BaseDamage: 5
+    BaseHealth: 100
+    str: 1
+    mag: 0
+    vit: 1
+    NextLevelExp: 100
+  - BaseDamage: 5
+    BaseHealth: 105
+    str: 1
+    mag: 0
+    vit: 2
+    NextLevelExp: 200
+  - BaseDamage: 6
+    BaseHealth: 110
+    str: 2
+    mag: 0
+    vit: 3
+    NextLevelExp: 300
+  - BaseDamage: 7
+    BaseHealth: 115
+    str: 3
+    mag: 0
+    vit: 4
+    NextLevelExp: 400
+  - BaseDamage: 8
+    BaseHealth: 120
+    str: 3
+    mag: 0
+    vit: 5
+    NextLevelExp: 500
+  - BaseDamage: 10
+    BaseHealth: 125
+    str: 4
+    mag: 0
+    vit: 6
+    NextLevelExp: 1000
+  - BaseDamage: 12
+    BaseHealth: 135
+    str: 5
+    mag: 0
+    vit: 8
+    NextLevelExp: 1500
+  - BaseDamage: 14
+    BaseHealth: 145
+    str: 3
+    mag: 0
+    vit: 4
+    NextLevelExp: 2000
+  - BaseDamage: 16
+    BaseHealth: 155
+    str: 5
+    mag: 0
+    vit: 5
+    NextLevelExp: 3000
+  - BaseDamage: 18
+    BaseHealth: 135
+    str: 5
+    mag: 0
+    vit: 6
+    NextLevelExp: 4000
+  - BaseDamage: 20
+    BaseHealth: 145
+    str: 6
+    mag: 0
+    vit: 8
+    NextLevelExp: 5000
+  - BaseDamage: 22
+    BaseHealth: 155
+    str: 7
+    mag: 0
+    vit: 10
+    NextLevelExp: 5500
+  - BaseDamage: 24
+    BaseHealth: 165
+    str: 8
+    mag: 0
+    vit: 12
+    NextLevelExp: 6500
+  - BaseDamage: 26
+    BaseHealth: 175
+    str: 9
+    mag: 0
+    vit: 14
+    NextLevelExp: 7500
+  - BaseDamage: 28
+    BaseHealth: 185
+    str: 10
+    mag: 0
+    vit: 16
+    NextLevelExp: 8500
+  - BaseDamage: 30
+    BaseHealth: 195
+    str: 11
+    mag: 0
+    vit: 18
+    NextLevelExp: 9500
+  - BaseDamage: 35
+    BaseHealth: 205
+    str: 13
+    mag: 0
+    vit: 20
+    NextLevelExp: 11000
+  - BaseDamage: 45
+    BaseHealth: 225
+    str: 15
+    mag: 0
+    vit: 24
+    NextLevelExp: 13000
+  - BaseDamage: 55
+    BaseHealth: 250
+    str: 17
+    mag: 0
+    vit: 26
+    NextLevelExp: 15000
+  - BaseDamage: 60
+    BaseHealth: 300
+    str: 19
+    mag: 0
+    vit: 30
+    NextLevelExp: 17000
+  - BaseDamage: 65
+    BaseHealth: 400
+    str: 21
+    mag: 0
+    vit: 35
+    NextLevelExp: 19000
+  - BaseDamage: 75
+    BaseHealth: 500
+    str: 23
+    mag: 0
+    vit: 40
+    NextLevelExp: 21000
+  - BaseDamage: 85
+    BaseHealth: 600
+    str: 25
+    mag: 0
+    vit: 45
+    NextLevelExp: 23000
+  - BaseDamage: 95
+    BaseHealth: 700
+    str: 27
+    mag: 0
+    vit: 50
+    NextLevelExp: 25000
+  - BaseDamage: 105
+    BaseHealth: 800
+    str: 29
+    mag: 0
+    vit: 55
+    NextLevelExp: 27000
+  - BaseDamage: 115
+    BaseHealth: 900
+    str: 31
+    mag: 0
+    vit: 60
+    NextLevelExp: 29000
+  - BaseDamage: 125
+    BaseHealth: 1000
+    str: 33
+    mag: 0
+    vit: 65
+    NextLevelExp: 31000
+  - BaseDamage: 140
+    BaseHealth: 1050
+    str: 40
+    mag: 0
+    vit: 68
+    NextLevelExp: 35000
+  - BaseDamage: 155
+    BaseHealth: 1100
+    str: 47
+    mag: 0
+    vit: 76
+    NextLevelExp: 40000
+  - BaseDamage: 170
+    BaseHealth: 1200
+    str: 52
+    mag: 0
+    vit: 81
+    NextLevelExp: 45000
+  - BaseDamage: 195
+    BaseHealth: 1250
+    str: 57
+    mag: 0
+    vit: 88
+    NextLevelExp: 50000
+  - BaseDamage: 210
+    BaseHealth: 1300
+    str: 62
+    mag: 0
+    vit: 96
+    NextLevelExp: 55000
+  - BaseDamage: 225
+    BaseHealth: 1350
+    str: 67
+    mag: 0
+    vit: 108
+    NextLevelExp: 60000
+  - BaseDamage: 240
+    BaseHealth: 1400
+    str: 72
+    mag: 0
+    vit: 116
+    NextLevelExp: 65000
+  - BaseDamage: 255
+    BaseHealth: 1450
+    str: 77
+    mag: 0
+    vit: 126
+    NextLevelExp: 70000
+  - BaseDamage: 270
+    BaseHealth: 1500
+    str: 82
+    mag: 0
+    vit: 134
+    NextLevelExp: 75000
+  - BaseDamage: 285
+    BaseHealth: 1550
+    str: 87
+    mag: 0
+    vit: 142
+    NextLevelExp: 80000
+  - BaseDamage: 290
+    BaseHealth: 1500
+    str: 91
+    mag: 0
+    vit: 150
+    NextLevelExp: 95000
+  - BaseDamage: 300
+    BaseHealth: 1600
+    str: 102
+    mag: 0
+    vit: 160
+    NextLevelExp: 110000
+  - BaseDamage: 350
+    BaseHealth: 1700
+    str: 114
+    mag: 0
+    vit: 170
+    NextLevelExp: 125000
+  - BaseDamage: 400
+    BaseHealth: 1800
+    str: 126
+    mag: 0
+    vit: 180
+    NextLevelExp: 140000
+  - BaseDamage: 450
+    BaseHealth: 1900
+    str: 138
+    mag: 0
+    vit: 190
+    NextLevelExp: 155000
+  - BaseDamage: 500
+    BaseHealth: 2000
+    str: 150
+    mag: 0
+    vit: 200
+    NextLevelExp: 170000
+  - BaseDamage: 550
+    BaseHealth: 2100
+    str: 162
+    mag: 0
+    vit: 210
+    NextLevelExp: 185000
+  - BaseDamage: 600
+    BaseHealth: 2200
+    str: 174
+    mag: 0
+    vit: 220
+    NextLevelExp: 200000
+  - BaseDamage: 650
+    BaseHealth: 2300
+    str: 186
+    mag: 0
+    vit: 230
+    NextLevelExp: 250000
+  - BaseDamage: 700
+    BaseHealth: 2400
+    str: 198
+    mag: 0
+    vit: 240
+    NextLevelExp: 300000
+  - BaseDamage: 750
+    BaseHealth: 2500
+    str: 210
+    mag: 0
+    vit: 250
+    NextLevelExp: 350000
+  - BaseDamage: 800
+    BaseHealth: 2600
+    str: 222
+    mag: 0
+    vit: 260
+    NextLevelExp: 400000
+  - BaseDamage: 850
+    BaseHealth: 2700
+    str: 234
+    mag: 0
+    vit: 270
+    NextLevelExp: 450000
+  - BaseDamage: 900
+    BaseHealth: 2800
+    str: 246
+    mag: 0
+    vit: 280
+    NextLevelExp: 500000
+  - BaseDamage: 950
+    BaseHealth: 2900
+    str: 258
+    mag: 0
+    vit: 290
+    NextLevelExp: 550000
+  - BaseDamage: 1000
+    BaseHealth: 2800
+    str: 270
+    mag: 0
+    vit: 300
+    NextLevelExp: 600000
+  - BaseDamage: 1050
+    BaseHealth: 2900
+    str: 282
+    mag: 0
+    vit: 310
+    NextLevelExp: 650000
+  - BaseDamage: 1100
+    BaseHealth: 3000
+    str: 294
+    mag: 0
+    vit: 320
+    NextLevelExp: 700000
+  - BaseDamage: 1200
+    BaseHealth: 3050
+    str: 318
+    mag: 0
+    vit: 325
+    NextLevelExp: 750000
+  - BaseDamage: 1300
+    BaseHealth: 3100
+    str: 342
+    mag: 0
+    vit: 330
+    NextLevelExp: 800000
+  - BaseDamage: 1400
+    BaseHealth: 3150
+    str: 366
+    mag: 0
+    vit: 335
+    NextLevelExp: 850000
+  - BaseDamage: 1500
+    BaseHealth: 3200
+    str: 390
+    mag: 0
+    vit: 340
+    NextLevelExp: 900000
+  - BaseDamage: 1600
+    BaseHealth: 3250
+    str: 414
+    mag: 0
+    vit: 345
+    NextLevelExp: 950000
+  - BaseDamage: 1610
+    BaseHealth: 3350
+    str: 415
+    mag: 0
+    vit: 355
+    NextLevelExp: 1000000
+  - BaseDamage: 1620
+    BaseHealth: 3450
+    str: 416
+    mag: 0
+    vit: 365
+    NextLevelExp: 1000500
+  - BaseDamage: 1630
+    BaseHealth: 3550
+    str: 417
+    mag: 0
+    vit: 375
+    NextLevelExp: 1001000
+  - BaseDamage: 1640
+    BaseHealth: 3650
+    str: 418
+    mag: 0
+    vit: 385
+    NextLevelExp: 1001500
+  - BaseDamage: 1650
+    BaseHealth: 3750
+    str: 419
+    mag: 0
+    vit: 395
+    NextLevelExp: 1002000
+  - BaseDamage: 1660
+    BaseHealth: 3850
+    str: 420
+    mag: 0
+    vit: 405
+    NextLevelExp: 1005000
+  - BaseDamage: 1670
+    BaseHealth: 3950
+    str: 421
+    mag: 0
+    vit: 415
+    NextLevelExp: 1010000
+  - BaseDamage: 1680
+    BaseHealth: 4050
+    str: 422
+    mag: 0
+    vit: 425
+    NextLevelExp: 1020000
+  - BaseDamage: 1690
+    BaseHealth: 4150
+    str: 423
+    mag: 0
+    vit: 435
+    NextLevelExp: 1030000
+  - BaseDamage: 1700
+    BaseHealth: 4250
+    str: 424
+    mag: 0
+    vit: 445
+    NextLevelExp: 1040000
+  - BaseDamage: 1800
+    BaseHealth: 4350
+    str: 448
+    mag: 0
+    vit: 455
+    NextLevelExp: 1050000
+  - BaseDamage: 1900
+    BaseHealth: 4450
+    str: 472
+    mag: 0
+    vit: 455
+    NextLevelExp: 1100000
+  - BaseDamage: 2100
+    BaseHealth: 4550
+    str: 482
+    mag: 0
+    vit: 465
+    NextLevelExp: 1150000
+  - BaseDamage: 2300
+    BaseHealth: 4750
+    str: 492
+    mag: 0
+    vit: 475
+    NextLevelExp: 1200000
+  - BaseDamage: 2500
+    BaseHealth: 4950
+    str: 502
+    mag: 0
+    vit: 485
+    NextLevelExp: 1250000
+  - BaseDamage: 2700
+    BaseHealth: 5150
+    str: 512
+    mag: 0
+    vit: 495
+    NextLevelExp: 1300000
+  - BaseDamage: 2900
+    BaseHealth: 5220
+    str: 522
+    mag: 0
+    vit: 505
+    NextLevelExp: 1350000
+  - BaseDamage: 3100
+    BaseHealth: 5320
+    str: 532
+    mag: 0
+    vit: 515
+    NextLevelExp: 1400000
+  - BaseDamage: 3300
+    BaseHealth: 5420
+    str: 542
+    mag: 0
+    vit: 525
+    NextLevelExp: 1450000
+  - BaseDamage: 3500
+    BaseHealth: 5520
+    str: 552
+    mag: 0
+    vit: 535
+    NextLevelExp: 99999999

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M4
+  m_EditorClassIdentifier: 
+  BPM: 360
+  offset: 548
+  Music: {fileID: 8300000, guid: c3bbced798edf0249bad98220f46e150, type: 3}
+  PreviewTime: 64.9
+  ArtistName: solfa feat.Chata
+  Title: Prism lovely day
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 02a26d011cb54ac4cabcbce2cd31881c, type: 3}
+  ScoreObject: {fileID: 5134676858489804731, guid: b5109ada707334844a3e27345fc0281c,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 46a97ac561aeec0418c3113544fbfe40, type: 2}
+  - {fileID: 11400000, guid: a5ed5fda86ce4394a934af5a7f18e4bb, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  creditPoint: "Video Game - \u5F7C\u5973\u3068\u4FFA\u306E\u604B\u611B\u65E5\u5E38"
+  BPM_Skin: 180
+  UseBPMDisplay: 1
+  MemoryCollection: 0
+  ScaleLevel: 2
+  BPM_Multi: []

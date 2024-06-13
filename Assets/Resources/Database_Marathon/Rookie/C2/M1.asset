@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M1
+  m_EditorClassIdentifier: 
+  BPM: 126
+  offset: 881
+  Music: {fileID: 8300000, guid: 5c97550d7dcbc2f469a96d91f5a16621, type: 3}
+  PreviewTime: 49.8
+  ArtistName: Wataten*5
+  Title: Kimama na Tenshitachi
+  DesignerName: Jun Rong
+  Background_Cover: {fileID: 2800000, guid: fc48c8b8eb973154688ffe9ba4f717d2, type: 3}
+  ScoreObject: {fileID: 6455587790546611063, guid: 55b1f8206328cd74da3fd40020713b84,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: f43e6c05c6d1ada4fae63c18bfd1a2aa, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: c9d0474c64364bf41b0006566306fee5, type: 2}
+  - {fileID: 11400000, guid: ab2db78bba5ede9438d4ca5264b3d4e1, type: 2}
+  - {fileID: 11400000, guid: ce39b14837b11a742aca6e8620f99cfe, type: 2}
+  creditPoint: "TV\u30A2\u30CB\u30E1\u300E\u79C1\u306B\u5929\u4F7F\u304C\u821E\u3044\u964D\u308A\u305F\uFF01\u300FOP"
+  BPM_Skin: 0
+  UseBPMDisplay: 0
+  MemoryCollection: 1
+  ScaleLevel: 1
+  BPM_Multi: []

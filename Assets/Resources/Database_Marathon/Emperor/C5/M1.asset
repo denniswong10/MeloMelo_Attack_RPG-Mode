@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M1
+  m_EditorClassIdentifier: 
+  BPM: 268
+  offset: 1014
+  Music: {fileID: 8300000, guid: 73fe394bcf32d8d4fa65a49593fd9c04, type: 3}
+  PreviewTime: 58.4
+  ArtistName: SisterS
+  Title: Hidamari Days
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 4239aa54aadbd1b46aa10c7b67aee2fb, type: 3}
+  ScoreObject: {fileID: 2080561889193439693, guid: 20cffaa78fc681745b6f2af813bcd999,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 46a97ac561aeec0418c3113544fbfe40, type: 2}
+  - {fileID: 11400000, guid: a5ed5fda86ce4394a934af5a7f18e4bb, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  creditPoint: --
+  BPM_Skin: 134
+  UseBPMDisplay: 1
+  ScaleLevel: 3
+  MemoryCollection: 0
+  NewChartSystem: 0
+  addons1: []
+  addons2: []
+  addons3: []
+  addons3b: []
+  UltimateAddons: 0

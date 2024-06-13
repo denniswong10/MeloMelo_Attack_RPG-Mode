@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M2
+  m_EditorClassIdentifier: 
+  BPM: 133
+  offset: 1082
+  Music: {fileID: 8300000, guid: d8d7d4e925d554f4da5ce3b870a72559, type: 3}
+  PreviewTime: 60.6
+  ArtistName: "\u03BC's"
+  Title: Love wing bell
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 2365a376766ae0e47b1349255a28fe3a, type: 3}
+  ScoreObject: {fileID: 4930961588713396817, guid: b63c63f3036eddd45937b8dd1ca4e5f7,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: a5ed5fda86ce4394a934af5a7f18e4bb, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 94459dc1f595ab84b9fa5cf4fbf0f52d, type: 2}
+  creditPoint: --
+  BPM_Skin: 0
+  UseBPMDisplay: 0
+  MemoryCollection: 0
+  ScaleLevel: 1
+  BPM_Multi: []

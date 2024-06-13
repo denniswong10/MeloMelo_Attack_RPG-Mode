@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M2
+  m_EditorClassIdentifier: 
+  BPM: 234
+  offset: 1060
+  Music: {fileID: 8300000, guid: 8b8099a5f4336f44480c10f4cc9b8871, type: 3}
+  PreviewTime: 49.9
+  ArtistName: Tamura Yukari, Kanai Mika & Horie Yui
+  Title: Happy! Lucky! Dochy!
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: da874821cb7cef942a2361a347c1e3e6, type: 3}
+  ScoreObject: {fileID: 8242259783737791142, guid: facc5d2bfbead8a4c833919bc5264b3d,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: a5ed5fda86ce4394a934af5a7f18e4bb, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  - {fileID: 11400000, guid: ce39b14837b11a742aca6e8620f99cfe, type: 2}
+  creditPoint: "OVA\u300C\u3072\u3050\u3089\u3057\u306E\u306A\u304F\u9803\u306B \u714C\u300D\u30AA\u30FC\u30D7\u30CB\u30F3\u30B0\u30C6\u30FC\u30DE\u30DE\u30AD\u30B7\u30B7\u30F3\u30B0\u30EB"
+  BPM_Skin: 117
+  UseBPMDisplay: 1
+  MemoryCollection: 0
+  ScaleLevel: 2
+  BPM_Multi: []

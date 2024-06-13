@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M1
+  m_EditorClassIdentifier: 
+  BPM: 360
+  offset: 320
+  Music: {fileID: 8300000, guid: 065e917c8adeed54c93849d8b9728546, type: 3}
+  PreviewTime: 60
+  ArtistName: Ceui
+  Title: Kimi ni Hana
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 5a1d7bf4dad73804cadfb1de8ccf4d6d, type: 3}
+  ScoreObject: {fileID: 4712065393464858408, guid: b314e625d047adb439e648b0d383b26b,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: 14781e06d61a40648bb279b875ad5a97, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: 94459dc1f595ab84b9fa5cf4fbf0f52d, type: 2}
+  - {fileID: 11400000, guid: ce39b14837b11a742aca6e8620f99cfe, type: 2}
+  creditPoint: "\u305D\u306E\u82B1\u304C\u54B2\u3044\u305F\u3089\u3001\u307E\u305F\u50D5\u306F\u541B\u306B\u51FA\u9022\u3046"
+  BPM_Skin: 180
+  UseBPMDisplay: 1
+  ScaleLevel: 3
+  MemoryCollection: 0
+  NewChartSystem: 1
+  addons1:
+  - {fileID: 11400000, guid: dd9c664457022434a8b2b5ef8b2713ef, type: 2}
+  - {fileID: 11400000, guid: 4498614564b0b0c4e82a5ecc273335ee, type: 2}
+  - {fileID: 11400000, guid: 4ec15fbb3e8dc7645a0c401298fe44b8, type: 2}
+  - {fileID: 11400000, guid: fd40dc52f6679024f92921a6df110722, type: 2}
+  - {fileID: 11400000, guid: bfb8530341e0d3846b3c478413643cc0, type: 2}
+  - {fileID: 11400000, guid: 35c4a7f914e34bf49a90669556b7e53d, type: 2}
+  - {fileID: 11400000, guid: 72b6717543feed04eac0e762a68e647a, type: 2}
+  - {fileID: 11400000, guid: de0bd09e35ba2fb428f07c09c4327c52, type: 2}
+  - {fileID: 11400000, guid: b59bb603f608e2f439a1d5f6860b1f7e, type: 2}
+  - {fileID: 11400000, guid: 42101b4aae7c56e49a1f4d1abb099cf1, type: 2}
+  addons2: []
+  addons3: []
+  addons3b: []
+  UltimateAddons: 0

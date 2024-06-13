@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M4
+  m_EditorClassIdentifier: 
+  BPM: 298
+  offset: 1700
+  Music: {fileID: 8300000, guid: ef165d1f700875643a05db29b28fb6e9, type: 3}
+  PreviewTime: 58.5
+  ArtistName: Sol/Lull BOB
+  Title: blue moment
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: e013b755a5ef82f41b1162397a988c68, type: 3}
+  ScoreObject: {fileID: 6693778688315414238, guid: 3f77cad52f9d842409b57387276bce53,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  creditPoint: --
+  BPM_Skin: 149
+  UseBPMDisplay: 1
+  ScaleLevel: 3
+  MemoryCollection: 0
+  NewChartSystem: 0
+  addons1: []
+  addons2: []
+  addons3: []
+  addons3b: []
+  UltimateAddons: 0

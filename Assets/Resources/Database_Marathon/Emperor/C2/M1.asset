@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M1
+  m_EditorClassIdentifier: 
+  BPM: 290
+  offset: 4866
+  Music: {fileID: 8300000, guid: b7bc3519ed90d5b45a192c85147b94f9, type: 3}
+  PreviewTime: 59.5
+  ArtistName: Hanazawa Kana
+  Title: Inochi Mijikashi Koiseyo Otome
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 396d1aa41b9b8ab488ed9304e741dd03, type: 3}
+  ScoreObject: {fileID: 7449976099125205292, guid: 09e425e2b6410584e9ca548ee1e671c3,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: 849745b7c499dac4c9c0a2c16c8025e2, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 46a97ac561aeec0418c3113544fbfe40, type: 2}
+  - {fileID: 11400000, guid: a5ed5fda86ce4394a934af5a7f18e4bb, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  creditPoint: --
+  BPM_Skin: 145
+  UseBPMDisplay: 1
+  ScaleLevel: 3
+  MemoryCollection: 0
+  NewChartSystem: 0
+  addons1: []
+  addons2: []
+  addons3: []
+  addons3b: []
+  UltimateAddons: 0

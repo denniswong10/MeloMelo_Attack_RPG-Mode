@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M1
+  m_EditorClassIdentifier: 
+  BPM: 181
+  offset: 808
+  Music: {fileID: 8300000, guid: 1d7774dd480bf704aa0c099d68674e78, type: 3}
+  PreviewTime: 58.1
+  ArtistName: 'Latina (CV: Takao Kanon)'
+  Title: "I\u2019m with you"
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 657f4001a5877c74894fbe8259031b23, type: 3}
+  ScoreObject: {fileID: 3754465150079671569, guid: c6a347fb8eccf77498fdb886e09b7498,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: cd8bd3facda44f74daceb7a6c7f4b6ab, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 220ab7e1822bcfc47a2246ca670b666e, type: 2}
+  - {fileID: 11400000, guid: a9756ba2020c5f94aaea55f6fdfd488e, type: 2}
+  - {fileID: 11400000, guid: 94459dc1f595ab84b9fa5cf4fbf0f52d, type: 2}
+  creditPoint: --
+  BPM_Skin: 0
+  UseBPMDisplay: 0
+  MemoryCollection: 1
+  ScaleLevel: 0
+  BPM_Multi: []

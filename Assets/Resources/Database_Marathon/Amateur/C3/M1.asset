@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M1
+  m_EditorClassIdentifier: 
+  BPM: 194
+  offset: 590
+  Music: {fileID: 8300000, guid: 0ff9f490ea02b0c408cdcbd2bd0f6bc2, type: 3}
+  PreviewTime: 35.5
+  ArtistName: 'Null (CV: Waki Azumi), Peta (CV: Ueda Reina)'
+  Title: '#NULL!*Peta'
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 167d54a7a46cd5946adc51d81cbbb08b, type: 3}
+  ScoreObject: {fileID: 2047595288474356043, guid: e868f55b3f7bfc34689ace16a123cc46,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: a5ed5fda86ce4394a934af5a7f18e4bb, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  - {fileID: 11400000, guid: ce39b14837b11a742aca6e8620f99cfe, type: 2}
+  creditPoint: --
+  BPM_Skin: 0
+  UseBPMDisplay: 0
+  MemoryCollection: 0
+  ScaleLevel: 1
+  BPM_Multi: []

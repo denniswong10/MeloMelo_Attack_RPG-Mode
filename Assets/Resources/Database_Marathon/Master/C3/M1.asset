@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M1
+  m_EditorClassIdentifier: 
+  BPM: 180
+  offset: 1062
+  Music: {fileID: 8300000, guid: 22a9f25a2f2b8e34b91d8d349228facd, type: 3}
+  PreviewTime: 65.8
+  ArtistName: Lapis Re:LiGHTs Stars
+  Title: Watashitachi no STARTRAIL
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 82031c7ce3cc266458f2c77361d4a296, type: 3}
+  ScoreObject: {fileID: 4538076082693585562, guid: f29cd4d1745c03c409b38a63db323aeb,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: 73ef1767bbf83ba4281e719c76239124, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 220ab7e1822bcfc47a2246ca670b666e, type: 2}
+  - {fileID: 11400000, guid: a9756ba2020c5f94aaea55f6fdfd488e, type: 2}
+  - {fileID: 11400000, guid: 94459dc1f595ab84b9fa5cf4fbf0f52d, type: 2}
+  creditPoint: --
+  BPM_Skin: 0
+  UseBPMDisplay: 0
+  MemoryCollection: 1
+  ScaleLevel: 0
+  BPM_Multi: []

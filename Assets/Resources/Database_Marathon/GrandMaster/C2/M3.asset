@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M3
+  m_EditorClassIdentifier: 
+  BPM: 268
+  offset: 288
+  Music: {fileID: 8300000, guid: 888ae724264884b42af2222dd31d03e6, type: 3}
+  PreviewTime: 48.1
+  ArtistName: TrySail
+  Title: adrenaline!!!
+  DesignerName: Jing Yuan
+  Background_Cover: {fileID: 2800000, guid: 25e04f075743c894db2fc18250e0dcbf, type: 3}
+  ScoreObject: {fileID: 1770637780235745790, guid: 455178209280c204f9330e2d28b03169,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: ee7fe77b33a30e3469d774bb9d91e62b, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: a5ed5fda86ce4394a934af5a7f18e4bb, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 94459dc1f595ab84b9fa5cf4fbf0f52d, type: 2}
+  creditPoint: --
+  BPM_Skin: 0
+  UseBPMDisplay: 0
+  MemoryCollection: 1
+  ScaleLevel: 0
+  BPM_Multi: []

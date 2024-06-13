@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M4
+  m_EditorClassIdentifier: 
+  BPM: 175
+  offset: 1350
+  Music: {fileID: 8300000, guid: 0821d322a9a57bc4db9867b8cca30c16, type: 3}
+  PreviewTime: 66.3
+  ArtistName: ClariS
+  Title: Connect
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 72b9d8cd697c6c44eaa5db3760f850e2, type: 3}
+  ScoreObject: {fileID: 8094066982200569273, guid: 13b6e30ba39c1444883a116ad5a0aee8,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: d451c613bc088fb4d95a67bda5595ac4, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 46a97ac561aeec0418c3113544fbfe40, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  creditPoint: --
+  BPM_Skin: 0
+  UseBPMDisplay: 0
+  MemoryCollection: 0
+  ScaleLevel: 1
+  BPM_Multi: []

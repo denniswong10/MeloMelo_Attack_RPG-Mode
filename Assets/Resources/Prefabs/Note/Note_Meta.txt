@@ -1,0 +1,9 @@
+1 - Enemy
+2 - Item
+3 - Obstacle (Ground)
+4 - Health
+5 - Enemy Attack
+6 - Enemy (Air)
+7 - Obstacle (Air)
+8 - Item (Breaker)
+9 - Enemy Attack (Air)

@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf93b958aa3623a4da8365170344febc, type: 3}
+  m_Name: B_WitchWoods
+  m_EditorClassIdentifier: 
+  StoryTitle: Witch Woods
+  StoryBG: {fileID: 2800000, guid: b7d587d2d610fa74caad99553e2c441e, type: 3}
+  S_Type: 2
+  Stage:
+  - numberOfSteps: 25
+    HeadTitle: Welcome to my woods
+    StoryDetail: WitchWoods_1
+    Quest_Stage: {fileID: 11400000, guid: 0a025f1ed7915b54483ae528882ec23a, type: 2}
+    myQuestLog:
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    myEpi_Manage: 3
+  - numberOfSteps: 25
+    HeadTitle: Feeling weak and dizzy
+    StoryDetail: WitchWoods_2
+    Quest_Stage: {fileID: 11400000, guid: 64028e4ebd9484b4397831a176d20ae4, type: 2}
+    myQuestLog:
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    myEpi_Manage: 3
+  - numberOfSteps: 50
+    HeadTitle: Falling over inside
+    StoryDetail: WitchWoods_3
+    Quest_Stage: {fileID: 11400000, guid: 30fc2332dbeb2744aa53123e37768b01, type: 2}
+    myQuestLog:
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    myEpi_Manage: 0
+  - numberOfSteps: 100
+    HeadTitle: Getting out of here
+    StoryDetail: WitchWoods_4
+    Quest_Stage: {fileID: 11400000, guid: 1494bd4417f92b946a9914d29e5493f8, type: 2}
+    myQuestLog:
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    myEpi_Manage: 0

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M4
+  m_EditorClassIdentifier: 
+  BPM: 181
+  offset: 10980
+  Music: {fileID: 8300000, guid: a91231cafae424a4981c33bad300b671, type: 3}
+  PreviewTime: 64.1
+  ArtistName: HTT
+  Title: NO, Thank You!
+  DesignerName: Jing Yuan
+  Background_Cover: {fileID: 2800000, guid: ca8a00d6c5f6775478bdb4a5bdf2ef74, type: 3}
+  ScoreObject: {fileID: 1008149254118937872, guid: 8e09d3daa7118db4cb9244dddd52d973,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  - {fileID: 11400000, guid: ce39b14837b11a742aca6e8620f99cfe, type: 2}
+  creditPoint: --
+  BPM_Skin: 0
+  UseBPMDisplay: 0
+  MemoryCollection: 0
+  ScaleLevel: 1
+  BPM_Multi: []

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M2
+  m_EditorClassIdentifier: 
+  BPM: 366
+  offset: 5428
+  Music: {fileID: 8300000, guid: df3cb0ce4d2606a4f9a86ca1915a2f3c, type: 3}
+  PreviewTime: 49.5
+  ArtistName: solfa feat. Ceui
+  Title: Jewelry Kiss
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 8eed77f16af3c064da32711fde850a3d, type: 3}
+  ScoreObject: {fileID: 8008359844815485351, guid: ea77fc38313564848ba1e4956d1f2dc1,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: ab2db78bba5ede9438d4ca5264b3d4e1, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  creditPoint: "Video Game - \u59EB\u3068\u4E59\u5973\u306E\u30E4\u30AD\u30E2\u30C1\uFF2C\uFF2F\uFF36\uFF25"
+  BPM_Skin: 183
+  UseBPMDisplay: 1
+  MemoryCollection: 0
+  ScaleLevel: 2
+  BPM_Multi: []

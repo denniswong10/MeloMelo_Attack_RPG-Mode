@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M3
+  m_EditorClassIdentifier: 
+  BPM: 160
+  offset: 2625
+  Music: {fileID: 8300000, guid: bff67ecb6ec40e544a3a22d45ded2fc3, type: 3}
+  PreviewTime: 57.2
+  ArtistName: Chata
+  Title: Precious Wing
+  DesignerName: Jun Rong
+  Background_Cover: {fileID: 2800000, guid: bc41e4aebbc84704696b8b9c0adc3622, type: 3}
+  ScoreObject: {fileID: 3384366441946478056, guid: c09e3f632f3dd984bb3b1e7c6d2df087,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 220ab7e1822bcfc47a2246ca670b666e, type: 2}
+  - {fileID: 11400000, guid: a9756ba2020c5f94aaea55f6fdfd488e, type: 2}
+  - {fileID: 11400000, guid: 94459dc1f595ab84b9fa5cf4fbf0f52d, type: 2}
+  creditPoint: --
+  BPM_Skin: 0
+  UseBPMDisplay: 0
+  MemoryCollection: 1
+  ScaleLevel: 0
+  BPM_Multi: []

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M2
+  m_EditorClassIdentifier: 
+  BPM: 340
+  offset: 741
+  Music: {fileID: 8300000, guid: 9133c22f513db2940bbb59bee0b9e834, type: 3}
+  PreviewTime: 62.2
+  ArtistName: nonet
+  Title: Now On Stage!!
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 43db1f3177e11ea43a422234e1243853, type: 3}
+  ScoreObject: {fileID: 4418046401719668088, guid: c8c9cced5a2389f4c9dbf972cab945be,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: a5ed5fda86ce4394a934af5a7f18e4bb, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  - {fileID: 11400000, guid: ce39b14837b11a742aca6e8620f99cfe, type: 2}
+  creditPoint: Ameba Girlfriend Note
+  BPM_Skin: 170
+  UseBPMDisplay: 1
+  ScaleLevel: 2
+  MemoryCollection: 1
+  NewChartSystem: 0
+  addons1: []
+  addons2: []
+  addons3: []
+  addons3b: []
+  UltimateAddons: 0

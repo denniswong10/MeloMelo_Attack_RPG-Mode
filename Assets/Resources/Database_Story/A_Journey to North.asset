@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf93b958aa3623a4da8365170344febc, type: 3}
+  m_Name: A_Journey to North
+  m_EditorClassIdentifier: 
+  StoryTitle: Journey To North
+  StoryBG: {fileID: 2800000, guid: 5ba17bd59e9cb684eb4180df9c5055ad, type: 3}
+  S_Type: 2
+  Stage:
+  - numberOfSteps: 50
+    HeadTitle: The Long Path
+    StoryDetail: JourneyToNorth_1
+    Quest_Stage: {fileID: 11400000, guid: 7e96c4801585dd9439ea9c6fbf9b7ab4, type: 2}
+    myQuestLog:
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 1
+    myEpi_Manage: 1
+  - numberOfSteps: 100
+    HeadTitle: Journey Onwards
+    StoryDetail: JourneyToNorth_1b
+    Quest_Stage: {fileID: 11400000, guid: 8918359eedd65124495a2be4cefc0cee, type: 2}
+    myQuestLog:
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 1
+    myEpi_Manage: 1
+  - numberOfSteps: 200
+    HeadTitle: Break Ahead of Time
+    StoryDetail: JourneyToNorth_2
+    Quest_Stage: {fileID: 11400000, guid: f18cb5c78b77ec146a09da6a63bdc038, type: 2}
+    myQuestLog:
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 1
+    myEpi_Manage: 1
+  - numberOfSteps: 300
+    HeadTitle: No Turning Back
+    StoryDetail: JourneyToNorth_3
+    Quest_Stage: {fileID: 11400000, guid: c17618529df4ec840bcd7404b4a928df, type: 2}
+    myQuestLog:
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 1
+    myEpi_Manage: 1
+  - numberOfSteps: 500
+    HeadTitle: The Path to Light
+    StoryDetail: --
+    Quest_Stage: {fileID: 11400000, guid: 3be64873b20f99047966ddc6861c973b, type: 2}
+    myQuestLog:
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 0
+    - slotOpen: 0
+      clearSlot: 0
+      mySlotTypte: 1
+    myEpi_Manage: 0

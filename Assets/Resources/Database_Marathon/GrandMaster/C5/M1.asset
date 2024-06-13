@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M1
+  m_EditorClassIdentifier: 
+  BPM: 180
+  offset: 472
+  Music: {fileID: 8300000, guid: f2af3c1cc4ae857488ab238d77e8d1b9, type: 3}
+  PreviewTime: 53.1
+  ArtistName: AKINO with bless4
+  Title: EXTRA MAGIC HOUR
+  DesignerName: Jun Rong
+  Background_Cover: {fileID: 2800000, guid: 2da11982d51ad5647b901b2528bed50d, type: 3}
+  ScoreObject: {fileID: 1970614296177532120, guid: 0575ac8d289c7c44eb7eedb39f480a2a,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: 2502410c295224d43b96a50f4e61dd62, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  - {fileID: 11400000, guid: ce39b14837b11a742aca6e8620f99cfe, type: 2}
+  creditPoint: "TV\u30A2\u30CB\u30E1 \u300E\u7518\u57CE\u30D6\u30EA\u30EA\u30A2\u30F3\u30C8\u30D1\u30FC\u30AF\u300FOP"
+  BPM_Skin: 0
+  UseBPMDisplay: 0
+  MemoryCollection: 0
+  ScaleLevel: 1
+  BPM_Multi: []
