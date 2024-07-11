@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M1
+  m_EditorClassIdentifier: 
+  BPM: 350
+  offset: 574
+  Music: {fileID: 8300000, guid: a3fa5cb72f8fdd04bae41c03e92ba673, type: 3}
+  PreviewTime: 54
+  ArtistName: EGOIST
+  Title: KABANERI OF THE IRON FORTRESS
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 8034c87816376d54ca4d741f86b98e7c, type: 3}
+  ScoreObject: {fileID: 1777098747288493813, guid: 8bbcd690d24fc674090e9209b3724652,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: 9e7e50da80dd9ce439bdd38b9e369ea9, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  creditPoint: --
+  BPM_Skin: 175
+  UseBPMDisplay: 1
+  ScaleLevel: 3
+  seasonNo: 2
+  NewChartSystem: 0
+  addons1: []
+  addons2: []
+  addons3: []
+  addons3b: []
+  UltimateAddons: 0

@@ -26,10 +26,7 @@ public class GuestLogin_Script : MonoBehaviour
     void Start()
     {
         thisScript = this;
-
-        PlayerPrefs.DeleteKey("SelectedGuestEntry");
-        for (int entry = 0; entry < entrytitle.Length; entry++) entrytitle[entry] = string.Empty;
-        LoadProfileLocal();
+        LoadExistingPlayerProfile();
     }
 
     void Update()
@@ -118,7 +115,44 @@ public class GuestLogin_Script : MonoBehaviour
         {
             localPlayer = new Authenticate_LocalData(guestLoginEntry, "StreamingAssets/LocalData/MeloMelo_LocalPlayer_AuthenticateList");
             localPlayer.SelectFileForAction("localplayer_guest_list.txt");
+
+            // Cache
+            if (!PlayerPrefs.HasKey("AccountSync"))
+            {
+                PlayerPrefs.SetString("AccountSync_PlayerID", localPlayer.GetUserLocalByPlayerId());
+                PlayerPrefs.SetString("AccountSync_UniqueID", localPlayer.GetUserLocalByUniqueId());
+            }
         }
+    }
+    #endregion
+
+    #region SETUP (NEW FEATURES!)
+    [SerializeField] private GameObject[] PlayerMenu = new GameObject[2];
+    [SerializeField] private Text Player_Name;
+
+    private void LoadExistingPlayerProfile()
+    {
+        PlayerMenu[PlayerPrefs.HasKey("AccountSync") ? 1 : 0].SetActive(true);
+
+        if (PlayerPrefs.HasKey("AccountSync"))
+        {
+            Player_Name.text = PlayerPrefs.GetString("AccountSync_PlayerID");
+            UpdateGuestEntryName(PlayerPrefs.GetString("AccountSync_PlayerID"));
+        }
+        else
+        {
+            PlayerPrefs.DeleteKey("SelectedGuestEntry");
+            for (int entry = 0; entry < entrytitle.Length; entry++) entrytitle[entry] = string.Empty;
+            LoadProfileLocal();
+        }
+    }
+    #endregion
+
+    #region MAIN (NEW FEATURES!)
+    public void RejectUsingExistingPlayer()
+    {
+        PlayerPrefs.DeleteKey("AccountSync");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("LoginPage3");
     }
     #endregion
 

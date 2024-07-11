@@ -164,13 +164,13 @@ namespace MeloMelo_ExtraComponent
 
             if (scoreMax + i < 0)
             {
-                MeloMelo_ScoreSystem.thisSystem.ReceivedComboPenatly(GameManager.thisManager.getJudgeWindow.getCombo - GameManager.thisManager.getJudgeWindow.getMaxCombo);
+               // MeloMelo_ScoreSystem.thisSystem.ReceivedComboPenatly(GameManager.thisManager.getJudgeWindow.getCombo - GameManager.thisManager.getJudgeWindow.getMaxCombo);
                 return GameManager.thisManager.getJudgeWindow.getCombo - GameManager.thisManager.getJudgeWindow.getMaxCombo;
             }
 
             else
             {
-                MeloMelo_ScoreSystem.thisSystem.ReceivedComboPenatly(i);
+                //MeloMelo_ScoreSystem.thisSystem.ReceivedComboPenatly(i);
                 return i;
             }
         }
@@ -1225,6 +1225,8 @@ namespace MeloMelo_Local
         public bool HTP;
         public bool Control_N;
         public bool battleGuide;
+        public bool isOptionVisited;
+        public bool isTransferDone;
 
         public PlayerSettingsDatabase GetSettingsData(string format)
         {
@@ -1244,6 +1246,8 @@ namespace MeloMelo_Local
         public int ScoreDisplay1;
         public int ScoreDisplay2;
         public int JudgeMeterSetup;
+        public int JudgeFeedback_TypeA;
+        public int JudgeFeedback_TypeB;
 
         public PlayerGameplaySettings GetSettingsData(string format)
         {
@@ -1293,6 +1297,7 @@ namespace MeloMelo_Local
     {
         public int ratePoint;
         public int playedCount;
+        public int creditValue;
 
         public ProfileProgressDatabase GetProfileData(string format)
         {
@@ -1614,6 +1619,8 @@ namespace MeloMelo_Local
                 PlayerPrefs.SetString("HowToPlay_Notice", data.HTP ? "T" : "F");
                 PlayerPrefs.SetString("Control_notice", data.Control_N ? "T" : "F");
                 PlayerPrefs.SetString("BattleSetup_Guide", data.battleGuide ? "T" : "F");
+                if (data.isOptionVisited) PlayerPrefs.SetInt("ReviewOption", 1);
+                if (data.isTransferDone) PlayerPrefs.SetInt("ReviewTransfer", 1);
             }
 
             return true;
@@ -1633,6 +1640,8 @@ namespace MeloMelo_Local
                 PlayerPrefs.SetInt("ScoreDisplay", data.ScoreDisplay1);
                 PlayerPrefs.SetInt("ScoreDisplay2", data.ScoreDisplay2);
                 PlayerPrefs.SetInt("JudgeMeter_Setup", data.JudgeMeterSetup);
+                PlayerPrefs.SetInt("Feedback_Display_Type_B", data.JudgeFeedback_TypeA);
+                PlayerPrefs.SetInt("Feedback_Display_Type", data.JudgeFeedback_TypeB);
             }
 
             return true;
@@ -1660,6 +1669,7 @@ namespace MeloMelo_Local
                 PlayerPrefs.SetInt(user + "totalRatePoint", data.ratePoint);
                 PlayerPrefs.SetInt(user + "UserRatePointToggle", data.ratePoint);
                 PlayerPrefs.SetInt(user + "PlayedCount_Data", data.playedCount);
+                PlayerPrefs.SetInt(user + "_Credit", data.creditValue);
             }
 
             return true;
@@ -1808,6 +1818,8 @@ namespace MeloMelo_Local
             data.HTP = false;
             data.Control_N = false;
             data.battleGuide = false;
+            data.isOptionVisited = PlayerPrefs.HasKey("ReviewOption");
+            data.isTransferDone = PlayerPrefs.HasKey("ReviewTransfer");
 
             JsonFormat += JsonUtility.ToJson(data);
             WriteToFile(JsonFormat);
@@ -1827,6 +1839,9 @@ namespace MeloMelo_Local
             data.ScoreDisplay1 = PlayerPrefs.GetInt("ScoreDisplay", 0);
             data.ScoreDisplay2 = PlayerPrefs.GetInt("ScoreDisplay2", 0);
             data.JudgeMeterSetup = PlayerPrefs.GetInt("JudgeMeter_Setup", 0);
+
+            data.JudgeFeedback_TypeA = PlayerPrefs.GetInt("Feedback_Display_Type_B", 0);
+            data.JudgeFeedback_TypeB = PlayerPrefs.GetInt("Feedback_Display_Type", 1);
 
             JsonFormat += JsonUtility.ToJson(data);
             WriteToFile(JsonFormat);
@@ -1877,6 +1892,7 @@ namespace MeloMelo_Local
 
             data.ratePoint = PlayerPrefs.GetInt(user + "totalRatePoint", 0);
             data.playedCount = PlayerPrefs.GetInt(user + "PlayedCount_Data", 0) + 1;
+            data.creditValue = PlayerPrefs.GetInt(user + "_Credit", 0);
 
             JsonFormat += JsonUtility.ToJson(data);
             WriteToFile(JsonFormat);

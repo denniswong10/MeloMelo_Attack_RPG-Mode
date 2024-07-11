@@ -27,6 +27,7 @@ TagManager:
   - SetupCompleted
   - TrackList
   - RankID_System
+  - Challenge_Storage
   layers:
   - Default
   - TransparentFX

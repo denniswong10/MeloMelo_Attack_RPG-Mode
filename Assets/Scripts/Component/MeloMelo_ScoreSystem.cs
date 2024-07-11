@@ -152,6 +152,7 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
         ScoreDisplay2_HiScore();
         MinScoreDisplay();
         MaxScoreDisplay();
+        ReceivedComboPenatly();
 
         // Score With Rank
         RankCalculateDisplay(GameManager.thisManager.get_score1.get_score);
@@ -160,11 +161,8 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
         HiScoreDisplay();
     }
 
-    public void ReceivedComboPenatly(float _receive)
+    public void ReceivedComboPenatly()
     {
-        // Add combo pentaly
-        score3.ModifyScore((int)_receive);
-
         // Display panel
         ComboPenatlyOnDisplay();
         ComboPenatlyOnDisplay2();
@@ -184,7 +182,7 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
             estimatedScore = hiScore - (maxScore - minScore) - hiScore;
 
             // Display Score
-            SecondaryScoreDisplay("HI-SCORE", ColorBasic((int)estimatedScore), Binder(estimatedScore) + " / " + hiScore);
+            SecondaryScoreDisplay("HI-SCORE", ColorBasic((int)estimatedScore), " (" + hiScore + ")");
         }
     }
     #endregion
@@ -244,7 +242,10 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
         if (PlayerPrefs.GetInt("ScoreDisplay2") == 2)
         {
             // Display Score 
-            SecondaryScoreDisplay("COMBO PENALTY", ColorBasic((int)-score3.get_score), score3.get_score.ToString());
+            SecondaryScoreDisplay("COMBO PENALTY", ColorBasic(GameManager.thisManager.CurrentValueMultipler() >= 1 ? 1 : -1), 
+                string.Empty);
+
+            GameObject.FindGameObjectWithTag("SecondScoreDisplay").GetComponent<Text>().text = "x" + GameManager.thisManager.CurrentValueMultipler();
         }
     }
     #endregion
@@ -270,8 +271,8 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
     {
         if (RankTxt != null)
         {
-            string currentRank = MeloMelo_GameSettings.GetScoreRankStructure((int)score).rank;
-            Color colorBorder = MeloMelo_GameSettings.GetScoreRankStructure((int)score).colorBorder;
+            string currentRank = MeloMelo_GameSettings.GetScoreRankStructure(score.ToString()).rank;
+            Color colorBorder = MeloMelo_GameSettings.GetScoreRankStructure(score.ToString()).colorBorder;
 
             RankTxt.text = currentRank;
             RankTxt.color = colorBorder;
@@ -282,8 +283,8 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
     {
         if (scoreTxt != null)
         {
-            scoreTxt.color = ColorBasic((int)-score3.get_score);
-            scoreTxt.text = score3.get_score.ToString();
+            scoreTxt.color = ColorBasic(GameManager.thisManager.CurrentValueMultipler() >= 1 ? 1 : -1);
+            scoreTxt.text = "x" + GameManager.thisManager.CurrentValueMultipler();
         }
     }
     #endregion
@@ -312,7 +313,7 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
 
     private Color ColorDetails(int score)
     {
-        return MeloMelo_GameSettings.GetScoreRankStructure(score).colorBorder;
+        return MeloMelo_GameSettings.GetScoreRankStructure(score.ToString()).colorBorder;
     }
 
     private string Binder(float reference)

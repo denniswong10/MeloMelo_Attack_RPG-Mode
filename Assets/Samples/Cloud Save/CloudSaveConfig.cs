@@ -37,10 +37,10 @@ public class CloudSaveConfig : MonoBehaviour
         MeloMelo_GameSettings.GetLocalFileChartNew
     };
 
-    async void Start()
+    void Start()
     {
         if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_GameSettings.LoginType.GuestLogin) 
-            await GetContentAccountID();
+            GetContentAccountID();
     }
 
     #region MAIN
@@ -130,6 +130,7 @@ public class CloudSaveConfig : MonoBehaviour
 
             if (PlayerPrefs.HasKey(key)) PlayerPrefs.DeleteKey(key);
             PlayerPrefs.SetString(key, getToken.Value.GetAs<string>());
+            PlayerPrefs.SetInt("ReviewTransfer", 1);
         }
     }
     #endregion
@@ -161,9 +162,9 @@ public class CloudSaveConfig : MonoBehaviour
     #endregion
 
     #region MISC
-    private async Task GetContentAccountID()
+    private void GetContentAccountID()
     {
-        string id = await GetComponent<Auto_Authenticate_Config>().GetAccountID();
+        string id = GetComponent<Auto_Authenticate_Config>().GetAccountID();
 
         if (id == string.Empty)
         {

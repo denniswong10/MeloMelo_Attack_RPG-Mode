@@ -54,6 +54,9 @@ public class Menu : MonoBehaviour
 
         BGM = GameObject.FindGameObjectsWithTag("BGM");
         if (BGM.Length > 1) { for (int i = 1; i < BGM.Length; i++) { Destroy(BGM[i]); } }
+
+        GameObject.Find("CreidtCounter").transform.GetChild(0).GetComponent<Text>().text = 
+            "Credit: " + PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_Credit", 0);
     }
 
     public void Menu_InteractANDTransition(string scene)

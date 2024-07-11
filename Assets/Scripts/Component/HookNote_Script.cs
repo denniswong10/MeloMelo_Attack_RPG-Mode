@@ -169,16 +169,14 @@ public class HookNote_Script : MonoBehaviour
         try
         {
             GameManager.thisManager.UpdateNoteStatus("Perfect_2");
-
-            if (!GameManager.thisManager.DeveloperMode) { AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/EnemyAttack"), new Vector3(0, 0, -10f)); }
-            GameManager.thisManager.UpdateScore(BeatConductor.thisBeat.get_scorePerfect + scoreF.score_combo());
+            GameManager.thisManager.UpdateScore(BeatConductor.thisBeat.get_scorePerfect);
         }
         catch
         {
             TutorialManager.thisManager.UpdateNoteStatus("Perfect_2");
-            AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/EnemyAttack"), new Vector3(0, 0, -10f));
         }
 
+        AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/EnemyAttack"), new Vector3(0, 0, -10f));
         Destroy(gameObject);
     }
 

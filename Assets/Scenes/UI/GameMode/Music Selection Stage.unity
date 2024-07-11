@@ -16263,8 +16263,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 96, y: 0}
-  m_SizeDelta: {x: 104.5, y: 101.45}
+  m_AnchoredPosition: {x: 94, y: 1.2809}
+  m_SizeDelta: {x: 60, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &1051821877
 Animator:
@@ -16306,7 +16306,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: dccca450991987c4285e738872c6913f, type: 3}
+  m_Texture: {fileID: 2800000, guid: 2c85066ea99cfbe4f90294bf295ce543, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -19145,7 +19145,9 @@ MonoBehaviour:
   UnitPower: {fileID: 409923566}
   CheckCounter: {fileID: 1363463618}
   FinalPhaseDisplay: {fileID: 1994360560}
-  DifficultyDisplay: {fileID: 351734542}
+  PlayerProfileQuickChecker: {fileID: 1249400368}
+  ToggleLocked: {fileID: 1051821875}
+  BackBtn: {fileID: 773173668}
   leaderBoard_sign:
   - {fileID: 2137791714}
   - {fileID: 769843878}
@@ -22339,7 +22341,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 446.89996, y: 301.55}
+  m_AnchoredPosition: {x: 50, y: 339}
   m_SizeDelta: {x: 296.9, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1363463620
@@ -31169,7 +31171,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000048637, y: -139.2}
+  m_AnchoredPosition: {x: 5, y: -49}
   m_SizeDelta: {x: 91.6, y: 91.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1967358686

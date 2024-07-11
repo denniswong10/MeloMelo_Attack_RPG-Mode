@@ -60,9 +60,16 @@ public class LoginPage_Script : MonoBehaviour
         button.interactable = false;
 
         string playerid = PlayerPrefs.HasKey("TempPass_PlayerId") ? PlayerPrefs.GetString("TempPass_PlayerId") : string.Empty;
+        string user = PlayerPrefs.GetString("AccountSync_PlayerID");
+        string pass = PlayerPrefs.GetString("AccountSync_UniqueID");
+
         PlayerPrefs.DeleteAll();
 
         if (playerid != string.Empty) PlayerPrefs.SetString("TempPass_PlayerId", playerid);
+        PlayerPrefs.SetInt("AccountSync", 1);
+        PlayerPrefs.SetString("AccountSync_PlayerID", user);
+        PlayerPrefs.SetString("AccountSync_UniqueID", pass);
+
         LoadAllProgress(button);
     }
 

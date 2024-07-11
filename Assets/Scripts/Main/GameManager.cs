@@ -57,14 +57,12 @@ public class GameManager : MonoBehaviour, IGameManager
     private bool bonus_enable = true;
 
     private float NextRetreatTime = 0;
-    private int RetreatCounter = 3;
-    private bool RetreatButton = false;
+    private int RetreatCounter = 4;
     private bool RetreatSuccess = false;
     public GameObject Alert_Retreat;
 
     [Header("Health-Bar Additional")]
     public GameObject HealthBar_E;
-    public GameObject HealthBar;
     public GameObject OverKill_Bar;
 
     private string ResMelo = string.Empty;
@@ -72,14 +70,13 @@ public class GameManager : MonoBehaviour, IGameManager
     [SerializeField] private GameObject[] JudgeCounterParticle;
     [SerializeField] private GameObject[] JudgeTextLine;
 
+    [SerializeField] private GameObject[] characterSlotStatus;
+
     // Load Gameplay UI and function
     void Start()
     {
         thisManager = this;
-
-       // PlayerPrefs.SetInt("Feedback_Display_Type_B", 1);
-        //PlayerPrefs.SetInt("Feedback_Display_Type", 1);
-        //PlayerPrefs.SetInt("JudgeMeter_Setup", 1);
+        //PreSet_BattleSetup();
 
         if (JudgeCounter) IntiJudgeCounterContent();
 
@@ -91,18 +88,29 @@ public class GameManager : MonoBehaviour, IGameManager
         gameplayWindow = new GameplayObjectComponent();
         playField = new BattleGroundFieldComponent();
 
+        // Extra Setup
+        UnitStatusSlot();
+
         ResMelo = PlayerPrefs.GetString("Resoultion_Melo", string.Empty);
         try { GameObject.Find("SideUI_MusicInfo").GetComponent<Animator>().SetBool("Open" + ResMelo, true); } catch { }
 
-        try { GameObject.Find("RetreatBG").GetComponent<RawImage>().texture = ((PlayerPrefs.HasKey("Mission_Played")) ? Resources.Load<Texture>("Background/BG1C") : PreSelection_Script.thisPre.get_AreaData.BG); } catch { }
+        try { GameObject.Find("RetreatBG").GetComponent<RawImage>().texture = 
+                PlayerPrefs.HasKey("MarathonPermit") ? Resources.Load<Texture>("Background/BG11") : PreSelection_Script.thisPre.get_AreaData.BG; 
+            } 
+        catch { }
+
         Invoke("Calcuate_Combo", 0.1f);
         Invoke("CheckForPlayAreaDesicion", 3);
 
         // Remove Point
         PlayerPrefs.DeleteKey("Point_Scoring");
 
-        MeloMelo_GameSettings.GetScoreStructureSetup();
-        MeloMelo_GameSettings.GetStatusRemarkStructureSetup();
+        // Scoring Structure
+        if (Application.isEditor)
+        {
+            MeloMelo_GameSettings.GetScoreStructureSetup();
+            MeloMelo_GameSettings.GetStatusRemarkStructureSetup();
+        }
 
         // Cursor
         if (Cursor.visible) Cursor.visible = false;
@@ -113,7 +121,7 @@ public class GameManager : MonoBehaviour, IGameManager
     {
         if (!DeveloperMode) CheckingBonusStatus();
         CheckingRetreatStatus();
-        CheckingBattleStatus();
+        EndOfPlay();
     }
 
     #region Setup Stats (Checking and setting up display)
@@ -130,7 +138,7 @@ public class GameManager : MonoBehaviour, IGameManager
         // Set Point
         point = new GameSystem_Score();
         point.SetMaxScore(judgeWindow.getOverallCombo * 3);
-        
+
         // Set technical
         score2 = new GameSystem_Score();
 
@@ -394,72 +402,23 @@ public class GameManager : MonoBehaviour, IGameManager
         }
     }
 
-    // Game Settings: Retreat Sign - Status
-    void CheckingRetreatStatus()
-    {
-        if (Input.GetKey(KeyCode.Escape) && !RetreatSuccess && BeatConductor.thisBeat.get_startNote)
-        {
-            if (!RetreatButton)
-            {
-                NextRetreatTime = Time.time + 1;
-                RetreatButton = true;
-
-                Alert_Retreat.SetActive(true);
-                Alert_Retreat.transform.GetChild(0).GetComponent<Text>().text = "RETREAT FROM BATTLE IN " + RetreatCounter + "...";
-            }
-
-            if (Time.time >= NextRetreatTime)
-            {
-                NextRetreatTime = Time.time + 1;
-                RetreatCounter--;
-                Alert_Retreat.transform.GetChild(0).GetComponent<Text>().text = "RETREAT FROM BATTLE IN " + RetreatCounter + "...";
-
-                if (RetreatCounter <= 0)
-                {
-                    RetreatTrigger();
-                }
-            }
-        }
-        else if (RetreatButton && !RetreatSuccess)
-        {
-            Alert_Retreat.SetActive(false);
-            RetreatButton = false;
-            RetreatCounter = 3;
-        }
-    }
-
-    public void RetreatTrigger()
-    {
-        RetreatSuccess = true;
-        GameObject.Find("RetreatBG").GetComponent<Animator>().SetTrigger("Retreat");
-        StartCoroutine(ProgressResult());
-    }
-
-    // Game Condtion: Check Battle - Status
-    void CheckingBattleStatus()
-    {
-        if (!GameObject.Find("PlayArea").GetComponent<AudioSource>().isPlaying && BeatConductor.thisBeat.get_startNote && !GameManager.thisManager.DeveloperMode)
-        {
-            //if (PlayerPrefs.GetInt("SpeedMeter_valve", 0) == 0) BeatConductor.thisBeat.SpeedMeter.Stop();
-            Invoke("BattleOver", 4);
-        }
-    }
-
     // Clone: Force End: Function 
     IEnumerator ProgressResult()
     {
         yield return new WaitForSeconds(5);
 
-        // Skip stage ahead
-        if (PlayerPrefs.GetInt("Marathon_Challenge", 0) == 1)
-        {
-            int count = PlayerPrefs.GetInt("MarathonChallenge_MCount", 1);
-            PlayerPrefs.SetInt("MarathonChallenge_MCount", (count + 1));
-        }
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Music Selection Stage");
 
-        // Scene Transition
-        bool findChallengeEnd = PlayerPrefs.HasKey("MarathonChallenge_MCount") && PlayerPrefs.GetInt("MarathonChallenge_MCount", 1) > 4 ? true : false;
-        UnityEngine.SceneManagement.SceneManager.LoadScene((findChallengeEnd ? "MarathonSelection" : (PlayerPrefs.HasKey("Mission_Played") ? "BlackBoard" : "Music Selection Stage")));
+        //// Skip stage ahead
+        //if (PlayerPrefs.HasKey("MarathonPermit"))
+        //{
+        //    int count = PlayerPrefs.GetInt("MarathonChallenge_MCount", 1);
+        //    PlayerPrefs.SetInt("MarathonChallenge_MCount", count + 1);
+        //}
+
+        //// Scene Transition
+        //bool findChallengeEnd = PlayerPrefs.HasKey("MarathonChallenge_MCount") && PlayerPrefs.GetInt("MarathonChallenge_MCount", 1) > 4 ? true : false;
+        //UnityEngine.SceneManagement.SceneManager.LoadScene((findChallengeEnd ? "MarathonSelection" : (PlayerPrefs.HasKey("Mission_Played") ? "BlackBoard" : "Music Selection Stage")));
     }
     #endregion
 
@@ -467,96 +426,12 @@ public class GameManager : MonoBehaviour, IGameManager
     // Game Signal: Controller
     public void GameStarting()
     {
-        GameStarting2();
-        /*
-        try
-        {
-            if (PlayerPrefs.GetString("CharacterFront", "NA") != "NA")
-            {
-                SkillAlert.SetActive(true);
-                SkillAlert.GetComponent<Animator>().SetTrigger("Open");
-                Invoke("GameStarting2", 5);
-            }
-            else { GameStarting2(); }
-        }
-        catch { } */
-    }
-
-    void GameStarting2()
-    {
-        if (SkillAlert.activeInHierarchy) { SkillAlert.SetActive(false); }
-
-        Alert_sign.gameObject.SetActive(true);
-        Alert_sign.GetComponent<Animator>().SetTrigger("Play");
-        Invoke("GameBegin", 5);
-    }
-
-    void GameBegin()
-    {
-        if (PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0) == 5)
-        { PlayerPrefs.SetString("CounterDefeat", "T"); }
-        else { PlayerPrefs.SetString("CounterDefeat", "F"); }
-
-        try { Alert_sign.transform.GetChild(0).GetComponent<Text>().text = "MUSIC START!"; } catch { }
-        BeatConductor.thisBeat.Invoke("StartMusicButton", 1);
-    }
-
-    // Game Condition: Game Completed
-    void BattleOver()
-    {
-        if (!DeveloperMode)
-        {
-            if (!Bonus_sign.activeInHierarchy)
-            {
-                Alert_sign.gameObject.SetActive(true);
-                Alert_sign.transform.GetChild(0).GetComponent<Text>().text = progressMeter.GetProgressPassNFailStatus();
-            }
-
-            LoadResultCache();
-            Invoke("TransitionToResult", 3);
-        }
-    }
-
-    // Game Condition: Game End
-    void Game_over()
-    {
-        GameOver.SetActive(true);
-        GameOver.GetComponent<Animator>().SetTrigger("Opening");
-        GameObject.Find("PlayArea").GetComponent<AudioSource>().mute = true;
-        LoadResultCache();
-
-        // Update battle field
-        playField.FinishedStageField(5);
-
-        if (PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0) > 4)
-        {
-            PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 5);
-        }
-
-        // Update miss count
-        int remaining = judgeWindow.getOverallCombo - judgeWindow.get_perfect2 - judgeWindow.get_perfect - judgeWindow.get_bad;
-        PlayerPrefs.SetInt("Miss_count", remaining);
-
-        MeloMelo_GameSettings.GetRecentStatusRemark = 5;
-        Invoke("TransitionToResult", 3);
-    }
-
-    void LoadResultCache()
-    {
-        PlayerPrefs.SetInt("Perfect2_count", judgeWindow.get_perfect2);
-        PlayerPrefs.SetInt("Perfect_count", judgeWindow.get_perfect);
-        PlayerPrefs.SetInt("Bad_count", judgeWindow.get_bad);
-        PlayerPrefs.SetInt("Miss_count", judgeWindow.get_miss);
-        PlayerPrefs.SetInt("OverallCombo", judgeWindow.getOverallCombo);
-        PlayerPrefs.SetInt("MaxCombo_count", judgeWindow.getMaxCombo);
-        PlayerPrefs.SetFloat("PerformanceScore", score1.get_score);
-        PlayerPrefs.SetInt("TechScore", (int)score2.get_score);
+        // Display skill features
+        SkillFeatures();
     }
 
     void TransitionToResult() { UnityEngine.SceneManagement.SceneManager.LoadScene("Result"); }
     #endregion
-
-    #region Update Stats (Get update from user)
 
     #region SETUP (Score Updater)
     public float ScoreRefactoring()
@@ -591,51 +466,139 @@ public class GameManager : MonoBehaviour, IGameManager
             Score2.text = score2.get_score.ToString();
         }
     }
+
+    public void UpdatePoint(int _point)
+    {
+        if (point != null) point.ModifyScore(_point);
+    }
     #endregion
 
     // Update Auto: All Note (Perfect, Bad, Miss)
-    public void UpdateNoteStatus(string index)
+    #region SETUP (Play Condition)
+    private void PreSet_BattleSetup()
     {
-        Update_Counter(index, true);
+        if (StartMenu_Script.thisMenu == null)
+        {
+            PlayerPrefs.SetInt("DifficultyLevel_valve", 1);
+            PlayerPrefs.SetInt("Feedback_Display_Type_B", 0);
+            PlayerPrefs.SetInt("Feedback_Display_Type", 0);
+            PlayerPrefs.SetInt("JudgeMeter_Setup", 1);
+            PlayerPrefs.SetInt("ScoreDisplay2", 5);
+        }
+    }
+
+    private void SkillFeatures()
+    {
+        if (SkillAlert.activeInHierarchy) { SkillAlert.SetActive(false); }
+
+        Alert_sign.gameObject.SetActive(true);
+        Alert_sign.GetComponent<Animator>().SetTrigger("Play");
+        Invoke("StartOfPlay", 5);
+    }
+
+    private void StartOfPlay()
+    {
+       if (Alert_sign) Alert_sign.transform.GetChild(0).GetComponent<Text>().text = "MUSIC START!";
+       BeatConductor.thisBeat.Invoke("StartMusicButton", 1);
+    }
+
+    private void EndOfPlay()
+    {
+        if (!GameObject.Find("PlayArea").GetComponent<AudioSource>().isPlaying && BeatConductor.thisBeat.get_startNote)
+            Invoke("EndOfBattle", 4);
+    }
+    #endregion
+
+    #region MAIN (Play Condition)
+    private void Game_over()
+    {
+        GameOverDisplay(true);
+        ForfeitTheGamePlay();
+
+        MeloMelo_GameSettings.GetRecentStatusRemark = 5;
+        Invoke("TransitionToResult", 3);
+    }
+
+    private void ForfeitTheGamePlay()
+    {
+        // Update battle field
+        playField.FinishedStageField(5);
+
+        // Status default goes to defeated
+        if (PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0) > 4)
+            PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 5);
+
+        // Update miss count
+        int remaining = judgeWindow.getOverallCombo - judgeWindow.get_perfect2 - judgeWindow.get_perfect - judgeWindow.get_bad;
+        PlayerPrefs.SetInt("Miss_count", remaining);
+    }
+
+    private void EndOfBattle()
+    {
+        if (!Bonus_sign.activeInHierarchy)
+        {
+            Alert_sign.gameObject.SetActive(true);
+            Alert_sign.transform.GetChild(0).GetComponent<Text>().text = progressMeter.GetProgressPassNFailStatus();
+        }
+
+        // Update miss count
+        PlayerPrefs.SetInt("Miss_count", judgeWindow.get_miss);
+        Invoke("TransitionToResult", 3);
+    }
+    #endregion
+
+    #region MAIN (User Play Condition)
+    public void RetreatTrigger()
+    {
+        RetreatSuccess = true;
+        GameObject.Find("RetreatBG").GetComponent<Animator>().SetTrigger("Retreat");
+        StartCoroutine(ProgressResult());
+    }
+
+    private void CheckingRetreatStatus()
+    {
+        if (GameObject.Find("Character").GetComponent<Character>().get_character.getInput.GetForInputExitPlay() 
+            && !RetreatSuccess && BeatConductor.thisBeat.get_startNote)
+        {
+            if (Time.time >= NextRetreatTime)
+            {
+                NextRetreatTime = Time.time + 1;
+                RetreatCounter--;
+                RetreatDisplay(true);
+
+                if (RetreatCounter <= 0) RetreatTrigger();
+            }
+        }
+        else if (!RetreatSuccess)
+        {
+            RetreatDisplay(false);
+            RetreatCounter = 4;
+        }
+    }
+    #endregion
+
+    #region MAIN (Note Patcher)
+    public void UpdateNoteStatus(string judge_string)
+    {
+        // Raise counter to judgeWindow
+        Update_Counter(judge_string, true);
+
+        // Raise judge with off-beat timing
         ModifyMainJudge();
 
-        if (DeveloperMode) GameObject.Find(index).GetComponent<Text>().text = index + ": " + Update_Counter(index, false);
+        // Update text judge counter or Create feedback on character
+        if (DeveloperMode) GameObject.Find(judge_string).GetComponent<Text>().text = judge_string + ": " + Update_Counter(judge_string, false);
         else
         {
             Vector3 position = new Vector3(GameObject.Find("Character").transform.position.x, GameObject.Find("Judgement Line").transform.position.y, GameObject.Find("Judgement Line").transform.position.z);
-            
-            if ((PlayerPrefs.GetInt("Feedback_Display_Type_B") == 1 && index != "Perfect_2") || PlayerPrefs.GetInt("Feedback_Display_Type_B") == 0)
-                Instantiate(Resources.Load<GameObject>("Prefabs/PopUp/" + index), position, Quaternion.identity);
-        }
 
-        if (index == "Miss") { PlayerPrefs.SetInt("MissCP", judgeWindow.get_miss); }
-
-        // Update point
-        UpdatePoint_Counter(index);
-    }
-
-    protected void UpdatePoint_Counter(string index)
-    {
-        switch (index)
-        {
-            case "Perfect_2":
-                point.ModifyScore(3);
-                break;
-
-            case "Perfect":
-                point.ModifyScore(2);
-                break;
-
-            case "Bad":
-                point.ModifyScore(1);
-                break;
-
-            default:
-                break;
+            // Extra: Judgement only shown determine on settings
+            if ((PlayerPrefs.GetInt("Feedback_Display_Type_B") == 1 && judge_string != "Perfect_2") || PlayerPrefs.GetInt("Feedback_Display_Type_B") == 0)
+                Instantiate(Resources.Load<GameObject>("Prefabs/PopUp/" + judge_string), position, Quaternion.identity);
         }
     }
 
-    protected int Update_Counter(string index, bool set)
+    private int Update_Counter(string index, bool set)
     {
         switch (index)
         {
@@ -659,33 +622,49 @@ public class GameManager : MonoBehaviour, IGameManager
                 return 0;
         }
     }
+    #endregion
 
-    // Update Auto: Combo Increase
-    //protected void UpdateCombo(bool miss)
-    //{
-    //    if (!miss) judgeWindow.ModifyCombo(1);
-    //    if (DeveloperMode) { GameObject.Find("Combo").GetComponent<Text>().text = "Combo: " + judgeWindow.getMaxCombo + " / " + judgeWindow.getOverallCombo; }
-    //}
-
+    #region MAIN (RPG Starter)
     // Update Auto: Character Health
     public void UpdateCharacter_Health(int amount, bool setHP)
     {
-        if (setHP)
-        {
-            characterStatus.SetMaxHealth(amount);
-            characterStatus.ModifyHealth(characterStatus.get_maxHealth);
-            HealthBar.GetComponent<Slider>().maxValue = characterStatus.get_maxHealth;
-        }
-        else
-        {
-            if (amount < 0 && !KO_Message2.activeInHierarchy) { GameObject.FindGameObjectWithTag("PartyStatus").GetComponent<Animator>().SetTrigger("Damage" + ResMelo); }
-            else { GameObject.FindGameObjectWithTag("PartyStatus").GetComponent<Animator>().SetTrigger("Heal" + ResMelo); }
-            characterStatus.ModifyHealth(amount);
-        }
+        GameObject slotStatus = GameObject.FindGameObjectWithTag("PartyStatus");
+        GameObject characterHealth = GameObject.FindGameObjectWithTag("Character_Health");
 
-        GameObject.FindGameObjectWithTag("Character_Health").GetComponent<Text>().text = "HP: " + ((characterStatus.get_maxHealth == 1) ? "0/0" : characterStatus.get_health.ToString());
-        if (characterStatus.get_health <= 0 && GameObject.Find("Character").GetComponent<Character>().stats.get_name != "NA" && !RetreatSuccess) { KO_Message2.SetActive(true); Game_over(); }
-        else { HealthBar.GetComponent<Slider>().value = characterStatus.get_health; }
+        if (slotStatus != null)
+        {
+            if (setHP)
+            {
+                characterStatus.SetMaxHealth(amount);
+                characterStatus.ModifyHealth(characterStatus.get_maxHealth);
+
+                if (slotStatus.transform.GetChild(1).GetChild(0).GetComponent<Slider>() != null)
+                    slotStatus.transform.GetChild(1).GetChild(0).GetComponent<Slider>().maxValue = characterStatus.get_maxHealth;
+            }
+            else
+            {
+                if (slotStatus.GetComponent<Animator>() != null)
+                {
+                    if (amount < 0 && !KO_Message2.activeInHierarchy)
+                        slotStatus.GetComponent<Animator>().SetTrigger("Damage" + ResMelo);
+
+                    else
+                        slotStatus.GetComponent<Animator>().SetTrigger("Heal" + ResMelo);
+                }
+
+                characterStatus.ModifyHealth(amount);
+            }
+
+            if (characterHealth != null)
+            {
+                characterHealth.GetComponent<Text>().text = "HP: " + ((characterStatus.get_maxHealth == 1) ? "0/0" : characterStatus.get_health.ToString());
+                if (characterStatus.get_health <= 0 && GameObject.Find("Character").GetComponent<Character>().stats.get_name != "NA" && !RetreatSuccess)
+                    { KO_Message2.SetActive(true); Game_over(); }
+                else
+                    if (slotStatus.transform.GetChild(1).GetChild(0).GetComponent<Slider>() != null)
+                        slotStatus.transform.GetChild(1).GetChild(0).GetComponent<Slider>().value = characterStatus.get_health;
+            }
+        }
     }
 
     // Update Auto: Enemy Health
@@ -740,11 +719,6 @@ public class GameManager : MonoBehaviour, IGameManager
         GameObject.Find("ProgressBar").transform.GetChild(1).GetChild(0).GetComponent<Image>().color = border;
     }
     #endregion
-
-    public void AutoPlayDisplay(bool enable)
-    {
-        AutoPlayText.SetActive(enable);
-    }
 
     #region EXTRA (Offbeat Timing Management)
     private void IntiJudgeCounterContent()
@@ -809,11 +783,11 @@ public class GameManager : MonoBehaviour, IGameManager
 
     private bool Feeback_Settings_Filter(int mainJudge, int subJudge)
     {
-        if (PlayerPrefs.GetInt("Feedback_Display_Type", 0) == 0) 
+        if (PlayerPrefs.GetInt("Feedback_Display_Type", 0) == 0)
             return true;
-        else if (PlayerPrefs.GetInt("Feedback_Display_Type", 0) == 1 && mainJudge != 1 && subJudge != 1) 
+        else if (PlayerPrefs.GetInt("Feedback_Display_Type", 0) == 1 && mainJudge != 1 && subJudge != 1)
             return true;
-        else 
+        else
             return false;
     }
 
@@ -843,7 +817,7 @@ public class GameManager : MonoBehaviour, IGameManager
         if (PlayerPrefs.GetInt("JudgeMeter_Setup") == 1)
         {
             for (int judge = 0; judge < MeloMelo_GameSettings.GetMainJudgeStats.Length; judge++)
-                JudgeCounter.transform.GetChild(judge + MeloMelo_GameSettings.GetJudgeFastOrLate.Length).GetComponent<Text>().text = MeloMelo_GameSettings.GetMainJudgeStats[judge] + ": " + 
+                JudgeCounter.transform.GetChild(judge + MeloMelo_GameSettings.GetJudgeFastOrLate.Length).GetComponent<Text>().text = MeloMelo_GameSettings.GetMainJudgeStats[judge] + ": " +
                     GetMainJudgeValue(judge);
         }
     }
@@ -865,6 +839,75 @@ public class GameManager : MonoBehaviour, IGameManager
                 return judgeWindow.get_miss;
         }
     }
+    #endregion
 
+    #region EXTRA (Score Multipler)
+    public void FinalScoreMultipler(float raw_score)
+    {
+        float addons = raw_score * CurrentValueMultipler();
+
+        // Update score to gameplay
+        UpdateScore(addons);
+    }
+
+    public float CurrentValueMultipler()
+    {
+        float raw_value = 100f / judgeWindow.getOverallCombo * (judgeWindow.getOverallCombo - judgeWindow.get_miss) * 0.01f;
+        return raw_value;
+    }
+    #endregion
+
+    #region EXTRA (Gameplay Status)
+    public void AutoPlayDisplay(bool enable)
+    {
+        AutoPlayText.SetActive(enable);
+    }
+
+    private void GameOverDisplay(bool stopAudio)
+    {
+        GameOver.SetActive(true);
+        GameOver.GetComponent<Animator>().SetTrigger("Opening");
+        GameObject.Find("PlayArea").GetComponent<AudioSource>().mute = stopAudio;
+    }
+
+    private void RetreatDisplay(bool active)
+    {
+        if ("ScoreEditor" != UnityEngine.SceneManagement.SceneManager.GetActiveScene().name)
+        {
+            Alert_Retreat.SetActive(active);
+            Alert_Retreat.transform.GetChild(0).GetComponent<Text>().text = "RETREAT FROM BATTLE IN " + RetreatCounter + "...";
+        }
+    }
+
+    private void UnitStatusSlot()
+    {
+        for (int currentSlot = 0; currentSlot < characterSlotStatus.Length; currentSlot++)
+            characterSlotStatus[currentSlot].SetActive((PlayerPrefs.HasKey("MarathonPermit") ? 1 : 0) == currentSlot);
+
+        if (PlayerPrefs.HasKey("MarathonPermit"))
+        {
+            GameObject slot = GameObject.FindGameObjectWithTag("PartyStatus");
+            slot.transform.GetChild(slot.transform.childCount - 1).GetComponent<Text>().text = "Marathon Mode\n\nStage " +
+                PlayerPrefs.GetInt("MarathonChallenge_MCount", 1) + "/" + 
+                Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length;
+
+            slot.transform.GetChild(1).GetChild(0).GetComponent<RawImage>().texture = 
+                Resources.Load<Texture>("Character_Data/" + PlayerPrefs.GetString("CharacterFront", "NA"));
+        }
+    }
+    #endregion
+
+    #region NOT IN USE
+    void LoadResultCache()
+    {
+        PlayerPrefs.SetInt("Perfect2_count", judgeWindow.get_perfect2);
+        PlayerPrefs.SetInt("Perfect_count", judgeWindow.get_perfect);
+        PlayerPrefs.SetInt("Bad_count", judgeWindow.get_bad);
+        PlayerPrefs.SetInt("Miss_count", judgeWindow.get_miss);
+        PlayerPrefs.SetInt("OverallCombo", judgeWindow.getOverallCombo);
+        PlayerPrefs.SetInt("MaxCombo_count", judgeWindow.getMaxCombo);
+        PlayerPrefs.SetFloat("PerformanceScore", score1.get_score);
+        PlayerPrefs.SetInt("TechScore", (int)score2.get_score);
+    }
     #endregion
 }

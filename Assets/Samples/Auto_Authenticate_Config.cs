@@ -18,9 +18,9 @@ public class Auto_Authenticate_Config : MonoBehaviour
     }
 
     #region MAIN
-    public async Task<string> GetAccountID()
+    public string GetAccountID()
     {
-        if (!isDone) await Setup();
+        //if (!isDone) await Setup();
 
         if (AuthenticationService.Instance.PlayerId != string.Empty)
             return AuthenticationService.Instance.PlayerId;
@@ -52,28 +52,45 @@ public class Auto_Authenticate_Config : MonoBehaviour
 
     async void AuthenticateServerLogin()
     {
-        if (AuthenticationService.Instance.IsSignedIn)
+        await UnityServices.InitializeAsync();
+
+        if (!AuthenticationService.Instance.IsSignedIn)
         {
             try
             {
-                await AuthenticationService.Instance.AddUsernamePasswordAsync
+                await AuthenticationService.Instance.SignInWithUsernamePasswordAsync
                     (
-                        GuestLogin_Script.thisScript.get_localPlayer.GetUserLocalByPlayerId(),
-                        GuestLogin_Script.thisScript.get_localPlayer.GetUserLocalByUniqueId()
+                         PlayerPrefs.GetString("AccountSync_PlayerID"),
+                         PlayerPrefs.GetString("AccountSync_UniqueID")
                     );
 
-                Debug.Log("Created account of : " + GuestLogin_Script.thisScript.get_localPlayer.GetUserLocalByPlayerId());
+                Debug.Log("Sign in account of : " + GuestLogin_Script.thisScript.get_localPlayer.GetUserLocalByPlayerId());
             }
             catch
             {
-                Debug.Log("Existing account of : " + GuestLogin_Script.thisScript.get_localPlayer.GetUserLocalByPlayerId());
-            }
+                try
+                {
+                    await AuthenticationService.Instance.AddUsernamePasswordAsync
+                    (
+                        PlayerPrefs.GetString("AccountSync_PlayerID"),
+                         PlayerPrefs.GetString("AccountSync_UniqueID")
+                    );
 
-            AuthenticationService.Instance.SignOut();
-            await Setup();
+                    Debug.Log("Created account of : " + GuestLogin_Script.thisScript.get_localPlayer.GetUserLocalByPlayerId());
+                }
+                catch { 
+                    Debug.Log("Invalid account of : " + GuestLogin_Script.thisScript.get_localPlayer.GetUserLocalByPlayerId());
+                }
+            }
         }
         else
             Debug.Log("Cloud Services [LOCAL]: Disable");
+    }
+
+    public void LogOff_AccountSync()
+    {
+        if (AuthenticationService.Instance.IsSignedIn)
+           AuthenticationService.Instance.SignOut();
     }
     #endregion
 }

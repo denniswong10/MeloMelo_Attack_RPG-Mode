@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M3
+  m_EditorClassIdentifier: 
+  BPM: 326
+  offset: 8534
+  Music: {fileID: 8300000, guid: a3d4abc8a17bf164a83f87275f2f61cd, type: 3}
+  PreviewTime: 59.3
+  ArtistName: 'Chino (CV: Inori Minase)'
+  Title: FUN!FUN!
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 706a3befd96775143807577db13cc9b7, type: 3}
+  ScoreObject: {fileID: 7486684277915001693, guid: cce7e9bce52187e42b23d445b72f9207,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  creditPoint: --
+  BPM_Skin: 163
+  UseBPMDisplay: 1
+  ScaleLevel: 3
+  seasonNo: 2
+  NewChartSystem: 0
+  addons1: []
+  addons2: []
+  addons3: []
+  addons3b: []
+  UltimateAddons: 0

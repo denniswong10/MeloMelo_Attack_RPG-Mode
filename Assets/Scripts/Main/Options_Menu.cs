@@ -24,6 +24,7 @@ public class Options_Menu : MonoBehaviour
 
         BGM = GameObject.FindGameObjectsWithTag("BGM");
         if (BGM.Length > 1) { for (int i = 1; i < BGM.Length; i++) { Destroy(BGM[i]); } }
+        PlayerPrefs.SetInt("ReviewOption", 1);
     }
     #endregion
 
@@ -49,6 +50,11 @@ public class Options_Menu : MonoBehaviour
     {
         //Application.OpenURL(PlayerPrefs.GetString("GameWeb_URL", string.Empty) + "database/transcripts/site7/database/games/MeloMelo_Listing/eNets.php");
         SceneManager.LoadScene("ProfileView");
+    }
+
+    public void ResetAccountSync()
+    {
+        PlayerPrefs.DeleteKey("AccountSync");
     }
 
     public void Option_SettingsControl(string option)

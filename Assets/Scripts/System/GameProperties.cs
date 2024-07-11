@@ -15,6 +15,8 @@ namespace MeloMelo_PlayerManagement
         private KeyCode[] attackKey = { KeyCode.O, KeyCode.P };
         private int[] mouseInputKey = { 0, 1 };
 
+        private KeyCode[] espacePlay = { KeyCode.Escape };
+
         public KeyCode[] getInput_Left { get { return leftMove; } }
         public KeyCode[] getInput_Right { get { return rightMove; } }
         public KeyCode[] getInput_Jump { get { return jumpKey; } }
@@ -73,6 +75,11 @@ namespace MeloMelo_PlayerManagement
         public bool GetForInputJumpKey()
         {
             return GetInputKeyDownTest(jumpKey);
+        }
+
+        public bool GetForInputExitPlay()
+        {
+            return GetInputKeyTest(espacePlay);
         }
         #endregion
     }

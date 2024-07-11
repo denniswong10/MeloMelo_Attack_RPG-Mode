@@ -37,8 +37,8 @@ public class LoadingTransition_Script : MonoBehaviour
 
         // Filling in of all track information to dash
         GameObject.Find("BG").GetComponent<RawImage>().texture =
-                (PlayerPrefs.GetInt("Marathon_Challenge") == 0 ? PreSelection_Script.thisPre.get_AreaData.BG :
-                Resources.Load<Texture>("Background/BG11"));
+                !PlayerPrefs.HasKey("MarathonPermit") ? PreSelection_Script.thisPre.get_AreaData.BG :
+                Resources.Load<Texture>("Background/BG11");
 
         GameObject.Find("Artist").GetComponent<Text>().text = "[ " + SelectionMenu_Script.thisSelect.get_selection.get_form.ArtistName + " ]";
         GameObject.Find("Title").GetComponent<Text>().text = SelectionMenu_Script.thisSelect.get_selection.get_form.Title;
@@ -87,7 +87,7 @@ public class LoadingTransition_Script : MonoBehaviour
         }
 
         // Load in ready for character status
-        if (PlayerPrefs.GetInt("Marathon_Challenge", 0) == 0 && !PlayerPrefs.HasKey("Mission_Played"))
+        if (!PlayerPrefs.HasKey("MarathonPermit"))
         {
             PlayerPrefs.SetInt("Character_OverallHealth", getstats.get_UnitHealth("Character"));
             PlayerPrefs.SetInt("Character_OverallDamage", getstats.get_UnitDamage("Character"));

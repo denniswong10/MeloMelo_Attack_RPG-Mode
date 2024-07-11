@@ -115,8 +115,6 @@ public class Note_Script : MonoBehaviour
     {
         if (transform.position.z <= GameObject.Find("Judgement Line").transform.position.z + offset)
         {
-            GetComponent<BoxCollider>().enabled = false;
-
             direction_type = Direction.None;
             transform.position = new Vector3(transform.position.x, transform.position.y, GameObject.Find("Judgement Line").transform.position.z + offset);
             Obstacle_NoteDodge(false);
@@ -181,21 +179,14 @@ public class Note_Script : MonoBehaviour
 
     private void Obstacle_NoteDodge(bool audio)
     {
-        try
-        {
-            GameManager.thisManager.UpdateNoteStatus("Perfect_2");
-            GameManager.thisManager.ModifyFastNLateJudge(1, 1);
+        GameManager.thisManager.UpdateNoteStatus("Perfect_2");
+        GameManager.thisManager.ModifyFastNLateJudge(1, 1);
 
-            if (!GameManager.thisManager.DeveloperMode && audio) { AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/EnemyAttack"), new Vector3(0, 0, -10f)); }
+        GameManager.thisManager.UpdatePoint(3);
+        GameManager.thisManager.FinalScoreMultipler(BeatConductor.thisBeat.get_scorePerfect2);
 
-            if (PlayerPrefs.GetInt("MissCP", 0) > 0) GameManager.thisManager.UpdateScore(BeatConductor.thisBeat.get_scorePerfect2 + scoreF.score_combo());
-            else GameManager.thisManager.UpdateScore(BeatConductor.thisBeat.get_scorePerfect2);
-        }
-        catch
-        {
-            TutorialManager.thisManager.UpdateNoteStatus("Perfect_2");
+        if (!GameManager.thisManager.DeveloperMode && audio)
             AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/EnemyAttack"), new Vector3(0, 0, -10f));
-        }
 
         ClearOfCompletedCycle();
     }

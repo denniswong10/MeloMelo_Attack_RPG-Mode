@@ -10,11 +10,15 @@ using Unity.Services.RemoteConfig;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RemoteConfigSettings : MonoBehaviour
 {
     public struct userAttributes {}
     public struct appAttributes {}
+
+    [Header("Extra Context")]
+    [SerializeField] private GameObject AccountID_Text;
 
     #region SETUP
     async Task InitializeRemoteConfigAsync()
@@ -25,19 +29,32 @@ public class RemoteConfigSettings : MonoBehaviour
         // remote config requires authentication for managing environment information
         if (!AuthenticationService.Instance.IsSignedIn)
         {
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            Debug.Log("PlayID Quick Startup: " + AuthenticationService.Instance.PlayerId);
+            await AuthenticationService.Instance.SignInWithUsernamePasswordAsync
+                    (
+                        PlayerPrefs.GetString("AccountSync_PlayerID"),
+                        PlayerPrefs.GetString("AccountSync_UniqueID")
+                    );
+
+            AccountID_Text.GetComponentInChildren<Text>().text = AuthenticationService.Instance.PlayerId;
         }
     }
 
     async Task Start()
     {
+        AccountID_Text.SetActive(true);
+
         // initialize Unity's authentication and core services, however check for internet connection
         // in order to fail gracefully without throwing exception if connection does not exist
-        if (Utilities.CheckForInternetConnection()) await InitializeRemoteConfigAsync();
+        if (PlayerPrefs.HasKey("AccountSync"))
+        {
+            if (Utilities.CheckForInternetConnection()) await InitializeRemoteConfigAsync();
+            else AccountID_Text.GetComponentInChildren<Text>().text = "Not Signed In";
 
-        RemoteConfigService.Instance.FetchCompleted += ApplyRemoteConfig;
-        await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
+            RemoteConfigService.Instance.FetchCompleted += ApplyRemoteConfig;
+            await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
+        }
+        else
+            AccountID_Text.GetComponentInChildren<Text>().text = "Not Signed In";
     }
 
     void ApplyRemoteConfig(ConfigResponse configResponse)

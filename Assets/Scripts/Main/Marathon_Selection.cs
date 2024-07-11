@@ -102,7 +102,7 @@ public class Marathon_Selection : MonoBehaviour
 
         PlayerPrefs.DeleteKey("LastPlay_MarathonChallenge");
         PlayerPrefs.DeleteKey("Marathon_Challenge");
-        PlayerPrefs.DeleteKey("MarathonChallenge_MCount");
+        //PlayerPrefs.DeleteKey("MarathonChallenge_MCount");
         PlayerPrefs.DeleteKey("Marathon_ServerData");
 
         if (InventoryData.Get_UnsaveItem) { StartCoroutine(SaveDatabase_Item()); }
@@ -310,21 +310,21 @@ public class Marathon_Selection : MonoBehaviour
     {
         for (int i = 0; i < CoverContent.Length; i++)
         {
-            CoverContent[i].transform.GetChild(0).GetComponent<Text>().text = "Lv" + database_info.pre_initDifficulty[i];
+            //CoverContent[i].transform.GetChild(0).GetComponent<Text>().text = "Lv" + database_info.pre_initDifficulty[i];
 
             // Clear LoadText
             CoverContent[i].transform.GetChild(1).gameObject.SetActive(false);
 
             // Cleared!
-            CoverContent[i].transform.GetChild(2).gameObject.SetActive
-                (PlayerPrefs.GetInt(database_info.title + "_Content_" + (i + 1) + "_Cleared", 0) == 1 ? true : false);
+            //CoverContent[i].transform.GetChild(2).gameObject.SetActive
+                //(PlayerPrefs.GetInt(database_info.title + "_Content_" + (i + 1) + "_Cleared", 0) == 1 ? true : false);
 
             // Not Clear!
-            CoverContent[i].transform.GetChild(3).gameObject.SetActive
-                (PlayerPrefs.GetInt(database_info.title + "_Content_" + (i + 1) + "_Cleared", 0) == 2 ? true : false);
+           // CoverContent[i].transform.GetChild(3).gameObject.SetActive
+                //(PlayerPrefs.GetInt(database_info.title + "_Content_" + (i + 1) + "_Cleared", 0) == 2 ? true : false);
 
             // Hightlight
-            if (i == 3) { CoverContent[i].GetComponent<Animator>().SetBool("Caution", true); }
+            //if (i == 3) { CoverContent[i].GetComponent<Animator>().SetBool("Caution", true); }
         }
 
         CheckForClearedList();
@@ -334,8 +334,8 @@ public class Marathon_Selection : MonoBehaviour
     // LoadData: Set Objective to challenge
     private void LoadAllDescription()
     {
-        AreaDes.text = database_info.title + "\n" + "[" + getTitle[database_info.Decode_Level() - 1] + " LEVEL]";
-        ObjectiveTitle.text = "Objective \n \n" + database_info.Decode_ObjectiveDes();
+        //AreaDes.text = database_info.title + "\n" + "[" + getTitle[database_info.Decode_Level() - 1] + " LEVEL]";
+        //ObjectiveTitle.text = "Objective \n \n" + database_info.Decode_ObjectiveDes();
     }
 
     // Transition -> Music Seleciton Stage
@@ -351,7 +351,7 @@ public class Marathon_Selection : MonoBehaviour
     {
         // Challenge Start: From 1st Stage
         PlayerPrefs.SetInt("LastPlay_MarathonChallenge", currentScrollList);
-        PlayerPrefs.SetInt("MarathonChallenge_MCount", 1);
+       // PlayerPrefs.SetInt("MarathonChallenge_MCount", 1);
         PlayerPrefs.SetInt("Marathon_Challenge", 1);
         SceneManager.LoadScene("Music Selection Stage");
     }
@@ -364,8 +364,8 @@ public class Marathon_Selection : MonoBehaviour
         // Check for all challenge: Cleared!
         for (int i = 0; i < maxChallengeList; i++)
         {
-            check = Resources.Load<MarathonInfo>("Database_Marathon/" + database_info.Decode_LevelByName() + "/C" + (i + 1));
-            if (check.challengeClear) { count++; }
+           // check = Resources.Load<MarathonInfo>("Database_Marathon/" + database_info.Decode_LevelByName() + "/C" + (i + 1));
+           // if (check.challengeClear) { count++; }
         }
 
         // All challenge clear: Ready to process to the next phase
@@ -379,11 +379,11 @@ public class Marathon_Selection : MonoBehaviour
         // Check for all stage: Cleared!
         for (int i = 0; i < 4; i++)
         {
-            if (PlayerPrefs.GetInt(database_info.title + "_Content_" + (i + 1) + "_Cleared", 0) == 1) { count++; }
+            //if (PlayerPrefs.GetInt(database_info.title + "_Content_" + (i + 1) + "_Cleared", 0) == 1) { count++; }
         }
 
         // Mark as challenge cleared
-        if (count == 4) { database_info.challengeClear = true; }
+        //if (count == 4) { database_info.challengeClear = true; }
     }
 
     public void PromoteNextTitle()

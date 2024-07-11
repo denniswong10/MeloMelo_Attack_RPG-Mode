@@ -84,9 +84,9 @@ public class ProfileView_Menu : MonoBehaviour
         PlayerName.text = "Player Name: " + id;
     }
 
-    private async void GetAccountIDContent()
+    private void GetAccountIDContent()
     {
-        AccountID.text = "Account ID: " + await GetComponent<Auto_Authenticate_Config>().GetAccountID();
+        AccountID.text = "Account ID: " + GetComponent<Auto_Authenticate_Config>().GetAccountID();
     }
     #endregion
 

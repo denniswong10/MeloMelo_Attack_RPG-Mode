@@ -139,12 +139,20 @@ public static class MeloMelo_GameSettings
         }
     }
 
-    public static MeloMelo_ScoreRankSetup GetScoreRankStructure(int score)
+    public static MeloMelo_ScoreRankSetup GetScoreRankStructure(string score)
     {
         foreach (MeloMelo_ScoreRankSetup structure in scoreRankListing.ToArray())
         {
-            if (structure.secondary && score >= structure.score) return structure;
-            if (structure.primary && score < structure.score) return structure;
+            try
+            {
+                if (structure.secondary && int.Parse(score) >= structure.score) return structure;
+                if (structure.primary && int.Parse(score) < structure.score) return structure;
+            }
+            catch
+            {
+                if (structure.secondary && score == structure.rank) return structure;
+                if (structure.primary && score == structure.rank) return structure;
+            }
         }
 
         return null;
@@ -193,18 +201,6 @@ public static class MeloMelo_GameSettings
         return null;
     }
     #endregion
-
-    public static IEnumerator LoadingData(string path)
-    {
-        AsyncOperation loadAsset = Resources.LoadAsync<MusicScore>(path);
-        while (!loadAsset.isDone)
-        {
-            Debug.Log("Received: " + loadAsset.progress);
-            yield return null;
-        }
-
-        Debug.Log("Loaded!");
-    }
 
     #region PLAYER SETUP
     public static void UpdateCharacterProfile()

@@ -69,7 +69,9 @@ public class SelectionMenu_Script : MonoBehaviour
     [Header("Additional Content")]
     public GameObject CheckCounter;
     public GameObject FinalPhaseDisplay;
-    public GameObject DifficultyDisplay;
+    public GameObject PlayerProfileQuickChecker;
+    public GameObject ToggleLocked;
+    public GameObject BackBtn;
 
     [Header("LeaderBoard")]
     public GameObject[] leaderBoard_sign = new GameObject[6];
@@ -95,51 +97,58 @@ public class SelectionMenu_Script : MonoBehaviour
         // Load Content: Intit
         ResMelo = PlayerPrefs.GetString("Resoultion_Melo", string.Empty);
 
-        // Marathon/Casual: Selection
-        if (PlayerPrefs.GetInt("Marathon_Challenge", 0) == 0) { CasualPlay_Setup(); }
-        else { MarathonChallenge_Setup(); }
+        // Casual or Marathon: Selection
+        PlaySetup(!PlayerPrefs.HasKey("MarathonPermit"));
     }
 
     #region SETUP
-    private void CasualPlay_Setup()
+    private void PlaySetup(bool casualMode)
     {
+        // Attracted script: Init setup
+        int loadDifficultyName = 1;
         selection = GetComponent<MusicSelectionPage>();
 
-        // Main: Load all content
+        // Load player rate point or played count
         LoadPlayerEconomy();
-        LoadSelectionContent();
+
+        // Load game background into selection
+        LoadSelectionContent(casualMode ? PreSelection_Script.thisPre.get_AreaData.BG : Resources.Load<Texture>("Background/BG11"));
+
+        // Load help guide for new player
         ShowBeginnerNotice();
 
-        // Init temp content
-        if (CheckCounter.activeInHierarchy) { CheckCounter.SetActive(false); }
+        // Load items for marathon play component
+        CheckCounter.SetActive(PlayerPrefs.HasKey("MarathonPermit"));
+        PlayerProfileQuickChecker.SetActive(!PlayerPrefs.HasKey("MarathonPermit"));
 
-        int loadDifficultyName = 1;
-
-        if (!PlayerPrefs.HasKey("LastSelection"))
+        // Load start difficulty selection upon it
+        if (casualMode)
         {
-            switch (LoginPage_Script.thisPage.portNumber)
+            if (!PlayerPrefs.HasKey("LastSelection"))
             {
-                case (int)MeloMelo_GameSettings.LoginType.TempPass:
-                    PlayerPrefs.SetInt("LastSelection", MeloMelo_GameSettings.GetLocalTrackSelectionLastVisited(PreSelection_Script.thisPre.get_AreaData.AreaName, 1));
-                    loadDifficultyName = MeloMelo_GameSettings.GetLocalTrackSelectionLastVisited(PreSelection_Script.thisPre.get_AreaData.AreaName, 2);
-                    break;
+                switch (LoginPage_Script.thisPage.portNumber)
+                {
+                    case (int)MeloMelo_GameSettings.LoginType.TempPass:
+                        PlayerPrefs.SetInt("LastSelection", MeloMelo_GameSettings.GetLocalTrackSelectionLastVisited(PreSelection_Script.thisPre.get_AreaData.AreaName, 1));
+                        loadDifficultyName = MeloMelo_GameSettings.GetLocalTrackSelectionLastVisited(PreSelection_Script.thisPre.get_AreaData.AreaName, 2);
+                        break;
 
-                default:
-                    PlayerPrefs.SetInt("LastSelection", local.LoadSelectionPickProgress(PreSelection_Script.thisPre.get_AreaData.AreaName, 2));
-                    loadDifficultyName = local.LoadSelectionPickProgress(PreSelection_Script.thisPre.get_AreaData.AreaName, 1);
-                    break;
+                    default:
+                        PlayerPrefs.SetInt("LastSelection", local.LoadSelectionPickProgress(PreSelection_Script.thisPre.get_AreaData.AreaName, 2));
+                        loadDifficultyName = local.LoadSelectionPickProgress(PreSelection_Script.thisPre.get_AreaData.AreaName, 1);
+                        break;
+                }
             }
+            else
+                loadDifficultyName = PlayerPrefs.GetInt("DifficultyLevel_valve", 1);
         }
         else
-            loadDifficultyName = PlayerPrefs.GetInt("DifficultyLevel_valve", 1);
-    
-        // Selection Transition: Execute
-        StartCoroutine(OpeningSelection(true, loadDifficultyName));
-    }
+            loadDifficultyName = (int)Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).DifficultyType[
+                PlayerPrefs.GetInt("MarathonChallenge_MCount") - 1];
+  
 
-    private void MarathonChallenge_Setup()
-    {
-
+        // Continue animate the selection panel for further setup
+        StartCoroutine(OpeningSelection(casualMode, loadDifficultyName));
     }
     #endregion
 
@@ -155,20 +164,22 @@ public class SelectionMenu_Script : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         // Get Enable Selection: Display
-        selection.get_difficulty_valve.GetComponent<Button>().interactable = enableSelection;
-        GameObject.Find("DisableFeature_Difficulty").GetComponent<Animator>().SetBool("Disable", !enableSelection);
+        selection.get_difficulty_valve.GetComponent<Button>().interactable = true;
+        ToggleLocked.GetComponent<Animator>().SetBool("Disable", !enableSelection);
+        BackBtn.SetActive(enableSelection);
 
         // Get Difficulty Select: Display
         PlayerPrefs.SetInt("DifficultyLevel_valve", getDifficulty);
-        if (!enableSelection) { DifficultyChanger_encode(); }
+        //if (!enableSelection) { DifficultyChanger_encode(); }
 
         // BGM: Play through background
         LoadAudio_Assigned();
 
         // Final-Phase: Display
-        if (PlayerPrefs.GetInt("Marathon_Challenge") == 1)
+        if (!enableSelection)
         {
-            if (PlayerPrefs.GetInt("MarathonChallenge_MCount") > 3)
+            if (PlayerPrefs.GetInt("MarathonChallenge_MCount") > 
+                Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length - 1)
             {
                 FinalPhaseDisplay.SetActive(true);
                 FinalPhaseDisplay.GetComponent<Animator>().SetBool("FinalPhase", true);
@@ -192,9 +203,9 @@ public class SelectionMenu_Script : MonoBehaviour
     #endregion
 
     #region COMPONENT 
-    private void LoadSelectionContent()
+    private void LoadSelectionContent(Texture background)
     {
-        GameObject.Find("BG").GetComponent<RawImage>().texture = PreSelection_Script.thisPre.get_AreaData.BG;
+        GameObject.Find("BG").GetComponent<RawImage>().texture = background;
         GameObject.Find("Selection").GetComponent<Animator>().SetTrigger("Opening" + ResMelo);
         DifficultyArea[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].GetComponent<RawImage>().enabled = true;
     }
@@ -219,19 +230,13 @@ public class SelectionMenu_Script : MonoBehaviour
     private void CheckCounterDisplay()
     {
         // Init supporting content
-        int checkPoint_init = 3;
+        int checkPoint_init = Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length;
+        Debug.Log("Current Stage: " + PlayerPrefs.GetInt("MarathonChallenge_MCount"));
 
         // Display checkpoint view
-        if (PlayerPrefs.GetInt("MarathonChallenge_MCount", 0) <= checkPoint_init)
-        {
-            CheckCounter.SetActive(true);
-            CheckCounter.transform.GetChild(0).GetComponent<Text>().text = "Stage \n" +
-                PlayerPrefs.GetInt("MarathonChallenge_MCount") + "/" + checkPoint_init;
-        }
-        else
-        {
-            CheckCounter.SetActive(false);
-        }
+        CheckCounter.SetActive(true);
+        CheckCounter.transform.GetChild(0).GetComponent<Text>().text = "Stage \n" +
+            PlayerPrefs.GetInt("MarathonChallenge_MCount") + "/" + checkPoint_init;
     }
     #endregion
 

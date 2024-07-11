@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M4
+  m_EditorClassIdentifier: 
+  BPM: 232
+  offset: 1391
+  Music: {fileID: 8300000, guid: 887682b6930cf304aa763e9bb27155a9, type: 3}
+  PreviewTime: 18
+  ArtistName: 'Chino (CV: Minase Inori), Maya (CV: Tokui Sora), Megu (CV: Murakawa
+    Rie)'
+  Title: Komorebi Seishunfu ~Gekichuu Uta Ver.~
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: ea42a8f784b9c3e4ea9eaa1114620432, type: 3}
+  ScoreObject: {fileID: 3282623724298629265, guid: fa70eface21a0b34882a230024cac63c,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: ab2db78bba5ede9438d4ca5264b3d4e1, type: 2}
+  - {fileID: 11400000, guid: a5ed5fda86ce4394a934af5a7f18e4bb, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  creditPoint: --
+  BPM_Skin: 116
+  UseBPMDisplay: 1
+  ReleasedDate: 
+  ScaleLevel: 3
+  seasonNo: 2
+  NewChartSystem: 1
+  addons1:
+  - {fileID: 11400000, guid: 5e9f82ba39cc05f4e95d3cd50a63a3ae, type: 2}
+  - {fileID: 11400000, guid: 5a3792477ccb61b4fa850785d92e0db1, type: 2}
+  - {fileID: 11400000, guid: 5b45046f5ef70f74cada1998bc38f132, type: 2}
+  - {fileID: 11400000, guid: 03009a2729692be4491b5ad6d48a50cc, type: 2}
+  - {fileID: 11400000, guid: 8b212303a5c3fa642997e99c1b254846, type: 2}
+  - {fileID: 11400000, guid: 3127c12419c1dff47a8b63dd12a2a9b1, type: 2}
+  addons2: []
+  addons3: []
+  addons3b: []
+  UltimateAddons: 1
+  SetRestriction: 0
+  RestrictRequirement: []

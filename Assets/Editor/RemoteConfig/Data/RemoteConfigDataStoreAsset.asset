@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: 
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"eb0c75af-a09e-4d2a-b57d-8530a103bf50\"\r\n   
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6554a7c1-429c-4807-ab4f-43dd41569d46\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"Latest_Version\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"1.4.0EX_Build_F\"\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"115709d8-eec4-43c5-bdbc-0351347eef74\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"5563ec83-191c-4ec4-a978-577b260d145e\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameApplication_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/ze3isevjk12abw4/MeloMelo_v1.4.0_EX_Build_F.zip/file\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"f1ec791f-8989-4302-a87a-666c549d1ba4\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"62718dd3-3b28-4cb8-a737-fa1e97aa9b90\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameWebpage_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"7c5f751e-f442-4872-b34c-205420cc2c8a\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"8bb53b3c-6706-4392-b9af-485e9ce64e39\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"a1c1184d-cb2f-42fc-bc9c-fd1412302e92\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"4afd03f6-c7b8-4c29-963a-3d7356444f00\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue_v2\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"5090153c-e462-49c4-abd8-054c888d0c53\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"23a4a539-32ae-4eb6-b43b-d77292df7622\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"NoteSpeed_Settings_Configuration\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"data\": [\r\n         
     {\r\n            \"bpm\": 550,\r\n            \"baseSpeed\": 140\r\n         
@@ -43,45 +43,39 @@ MonoBehaviour:
     \"baseSpeed\": 30\r\n          },\r\n          {\r\n            \"bpm\": 160,\r\n           
     \"baseSpeed\": 25\r\n          },\r\n          {\r\n            \"bpm\": 150,\r\n           
     \"baseSpeed\": 23\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"65d53660-3b86-4de6-8056-37b2f1787528\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"a738a28c-a45f-456e-ac35-daba6c0f4648\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"NoteSpeed_Default_Configuration\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
     \"bpm\": 150,\r\n        \"baseSpeed\": 20\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"a303e021-a685-42a5-b2a4-83c533ced258\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"e50b7884-6255-4ddc-ad64-df7a7da8bb7b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"CloudSave_Mode\",\r\n      \"type\":
     \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"908e547a-67e0-419f-a138-3a9b92182eff\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"a7d85990-cd82-4c84-8b33-19a1ae84d27a\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"CloudSave_Support\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"versions\": [\r\n         
     \"1.4.1a\",\r\n          \"1.4.2a\",\r\n          \"1.4.0EX\",\r\n          \"1.4.0EX_Build_A\",\r\n         
     \"1.4.0EX_Build_B\",\r\n          \"1.4.0EX_Build_C\",\r\n          \"1.4.0EX_Build_D\",\r\n         
-    \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\",\r\n          \"1.4.1_Beta_Build\"\r\n       
-    ]\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"f2c2f994-bb1c-4cdd-8c28-dc58b92d69cc\"\r\n    },\r\n    \"rs\": {\r\n     
-    \"key\": \"TrackTag_Support\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
-    null,\r\n      \"value\": {\r\n        \"newReleaseTrack\": [\r\n          \"my
-    sweet heart\",\r\n          \"Koi no Miraizu\",\r\n          \"Full Throttle
-    Heart\",\r\n          \"Boku no Yume, Mecha Kuso Mugen Waki\",\r\n          \"Intangible
-    Palette\"\r\n        ],\r\n        \"areaBonusTrack\": [\r\n          \"Omatsuri
-    Wasshoi!!\",\r\n          \"Oishii Pan no Tsukurikata\",\r\n          \"Mieruyo
-    Mieru\",\r\n          \"Fuwafuwa Balloon ga Tobidashita!\",\r\n          \"Nakayoshi!
-    Maru! Nakayoshi!\"\r\n        ]\r\n      }\r\n    }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"eb0c75af-a09e-4d2a-b57d-8530a103bf50\"\r\n   
+    \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\"\r\n        ]\r\n      }\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"94113c2d-1509-4ffd-8de1-0098864fae97\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"TrackTag_Support\",\r\n      \"type\":
+    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"newReleaseTrack\":
+    [],\r\n        \"areaBonusTrack\": []\r\n      }\r\n    }\r\n  }\r\n]"
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6554a7c1-429c-4807-ab4f-43dd41569d46\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"Latest_Version\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"1.4.0EX_Build_F\"\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"115709d8-eec4-43c5-bdbc-0351347eef74\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"5563ec83-191c-4ec4-a978-577b260d145e\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameApplication_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/ze3isevjk12abw4/MeloMelo_v1.4.0_EX_Build_F.zip/file\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"f1ec791f-8989-4302-a87a-666c549d1ba4\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"62718dd3-3b28-4cb8-a737-fa1e97aa9b90\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameWebpage_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"7c5f751e-f442-4872-b34c-205420cc2c8a\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"8bb53b3c-6706-4392-b9af-485e9ce64e39\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"a1c1184d-cb2f-42fc-bc9c-fd1412302e92\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"4afd03f6-c7b8-4c29-963a-3d7356444f00\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue_v2\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"5090153c-e462-49c4-abd8-054c888d0c53\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"23a4a539-32ae-4eb6-b43b-d77292df7622\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"NoteSpeed_Settings_Configuration\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"data\": [\r\n         
     {\r\n            \"bpm\": 550,\r\n            \"baseSpeed\": 140\r\n         
@@ -97,29 +91,23 @@ MonoBehaviour:
     \"baseSpeed\": 30\r\n          },\r\n          {\r\n            \"bpm\": 160,\r\n           
     \"baseSpeed\": 25\r\n          },\r\n          {\r\n            \"bpm\": 150,\r\n           
     \"baseSpeed\": 23\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"65d53660-3b86-4de6-8056-37b2f1787528\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"a738a28c-a45f-456e-ac35-daba6c0f4648\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"NoteSpeed_Default_Configuration\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
     \"bpm\": 150,\r\n        \"baseSpeed\": 20\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"a303e021-a685-42a5-b2a4-83c533ced258\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"e50b7884-6255-4ddc-ad64-df7a7da8bb7b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"CloudSave_Mode\",\r\n      \"type\":
     \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"908e547a-67e0-419f-a138-3a9b92182eff\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"a7d85990-cd82-4c84-8b33-19a1ae84d27a\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"CloudSave_Support\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"versions\": [\r\n         
     \"1.4.1a\",\r\n          \"1.4.2a\",\r\n          \"1.4.0EX\",\r\n          \"1.4.0EX_Build_A\",\r\n         
     \"1.4.0EX_Build_B\",\r\n          \"1.4.0EX_Build_C\",\r\n          \"1.4.0EX_Build_D\",\r\n         
-    \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\",\r\n          \"1.4.1_Beta_Build\"\r\n       
-    ]\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"f2c2f994-bb1c-4cdd-8c28-dc58b92d69cc\"\r\n    },\r\n    \"rs\": {\r\n     
-    \"key\": \"TrackTag_Support\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
-    null,\r\n      \"value\": {\r\n        \"newReleaseTrack\": [\r\n          \"my
-    sweet heart\",\r\n          \"Koi no Miraizu\",\r\n          \"Full Throttle
-    Heart\",\r\n          \"Boku no Yume, Mecha Kuso Mugen Waki\",\r\n          \"Intangible
-    Palette\"\r\n        ],\r\n        \"areaBonusTrack\": [\r\n          \"Omatsuri
-    Wasshoi!!\",\r\n          \"Oishii Pan no Tsukurikata\",\r\n          \"Mieruyo
-    Mieru\",\r\n          \"Fuwafuwa Balloon ga Tobidashita!\",\r\n          \"Nakayoshi!
-    Maru! Nakayoshi!\"\r\n        ]\r\n      }\r\n    }\r\n  }\r\n]"
+    \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\"\r\n        ]\r\n      }\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"94113c2d-1509-4ffd-8de1-0098864fae97\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"TrackTag_Support\",\r\n      \"type\":
+    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"newReleaseTrack\":
+    [],\r\n        \"areaBonusTrack\": []\r\n      }\r\n    }\r\n  }\r\n]"
   _environments: "[\r\n  {\r\n    \"projectId\": \"f3a9f63d-58ab-4394-9b31-71188bf39fb2\",\r\n   
     \"name\": \"production\",\r\n    \"id\": \"b422a025-f10e-43d8-8a39-f7829099065c\",\r\n   
     \"isDefault\": true,\r\n    \"createdAt\": \"2023-11-18T04:52:33Z\",\r\n    \"updatedAt\":

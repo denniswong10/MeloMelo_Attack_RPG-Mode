@@ -5,26 +5,31 @@ using UnityEngine.UI;
 
 public class MusicSelectionPage : MonoBehaviour
 {
+    [Header("Load: Music Detail")]
     [SerializeField] private MusicScore templateForm;
     private MusicScore MusicForm = null;
     public MusicScore get_form { get { return MusicForm; } }
 
+    [Header("Init Setup: Detail Component")]
     [SerializeField] private GameObject MusicInformation_txt;
     [SerializeField] private RawImage CoverImageDisplay;
     [SerializeField] private Slider ScrollNagivator_ProgressBar;
     [SerializeField] private Text ScrollNagivator_Text;
     [SerializeField] private Button[] Nav_Selector;
 
+    [Header("Play Setup: Detail Component")]
     [SerializeField] private GameObject DifficultyDisplay;
 
     [SerializeField] private GameObject[] UserDetailFeedback;
     private enum UserDetailFeebackOrder { NewChartEntry, ExistingEntry, RestrictedContent, ContentLocked, LevelDetailContent };
 
+    [Header("Init Setup: Result Details")]
     [SerializeField] private Text SkillLevelValue;
     [SerializeField] private Text RemarkIcon;
     [SerializeField] private Text RemarkIcon2;
     [SerializeField] private Text BattleBtn_text;
 
+    [Header("Play Setup: User Toggle")]
     [SerializeField] private GameObject difficulty_valve;
     public GameObject get_difficulty_valve { get { return difficulty_valve; } }
 
@@ -39,24 +44,55 @@ public class MusicSelectionPage : MonoBehaviour
 
     public Slider get_ScrollNagivator_ProgressBar { get { return ScrollNagivator_ProgressBar; } }
 
+    [Header("Extra Setup: Tag Arrangement")]
     [SerializeField] private GameObject NewReleaseTag;
     [SerializeField] private GameObject AreaBonusTag;
 
     public void Setup_Page()
     {
-        ScrollNagivatorSettings();
-        RefreshMusicInformationPanel();
+        ScrollNagivatorSettings
+            (
+                // Total Selection
+                PlayerPrefs.HasKey("MarathonPermit") ?
+                    Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length 
+                            :
+                            PreSelection_Script.thisPre.get_AreaData.totalMusic
+                ,
+
+                // Current Selection
+                PlayerPrefs.HasKey("MarathonPermit") ? PlayerPrefs.GetInt("MarathonChallenge_MCount") : PlayerPrefs.GetInt("LastSelection", 1)
+            ); 
+
+        RefreshMusicInformationPanel
+            (
+                // Area Assigned
+                PlayerPrefs.HasKey("MarathonPermit") ?
+                        PlayerPrefs.GetString("Marathon_Assigned_Area", string.Empty)
+                        :
+                        "Database_Area/" + PreSelection_Script.thisPre.get_AreaData.AreaName
+                ,
+
+                // Is play casual?
+                !PlayerPrefs.HasKey("MarathonPermit")
+            );
+
         GetNavAvaialbleToggle();
+
+        // Get checkpoint instead of nagivator
+        foreach (Button navigator in Nav_Selector)
+            navigator.gameObject.SetActive(!PlayerPrefs.HasKey("MarathonPermit"));
     }
 
     #region SETUP
-    private void ScrollNagivatorSettings()
+    private void ScrollNagivatorSettings(int totalTrack, int currentPick)
     {
+        Debug.Log("Current: " + currentPick);
+
         if (ScrollNagivator_ProgressBar)
         {
             ScrollNagivator_ProgressBar.minValue = 1;
-            ScrollNagivator_ProgressBar.maxValue = PreSelection_Script.thisPre.get_AreaData.totalMusic;
-            ScrollNagivator_ProgressBar.value = PlayerPrefs.GetInt("LastSelection", 1);
+            ScrollNagivator_ProgressBar.maxValue = totalTrack;
+            try { ScrollNagivator_ProgressBar.value = currentPick; } catch { Debug.LogError(ScrollNagivator_ProgressBar.value = currentPick); }
 
             if (ScrollNagivator_Text)
                 ScrollNagivator_Text.text = ScrollNagivator_ProgressBar.value + "/" + ScrollNagivator_ProgressBar.maxValue;
@@ -69,10 +105,15 @@ public class MusicSelectionPage : MonoBehaviour
     #endregion
 
     #region COMPONENT
-    private void RefreshMusicInformationPanel()
+    private void RefreshMusicInformationPanel(string areaLocated, bool casualMode)
     {
+        Debug.Log("Music: " + MusicForm != null);
+        Debug.Log("Directory - " + areaLocated + "/M" + (casualMode ? ReservePickMode((int)ScrollNagivator_ProgressBar.value) :
+            PlayerPrefs.GetInt("MarathonChallenge_MCount")));
+
         // Load music database
-        MusicForm = Resources.Load<MusicScore>("Database_Area/" + PreSelection_Script.thisPre.get_AreaData.AreaName + "/M" + ReservePickMode((int)ScrollNagivator_ProgressBar.value));
+        MusicForm = Resources.Load<MusicScore>(areaLocated + "/M" + (casualMode ? ReservePickMode((int)ScrollNagivator_ProgressBar.value) :
+            PlayerPrefs.GetInt("MarathonChallenge_MCount")));
 
         // Clear existing score sheet
         RemovePreviousScoreSheet();
@@ -122,7 +163,7 @@ public class MusicSelectionPage : MonoBehaviour
     public void ModifyOfMusicListChange()
     {
         ScrollNagivator_Text.text = ScrollNagivator_ProgressBar.value + "/" + ScrollNagivator_ProgressBar.maxValue;
-        RefreshMusicInformationPanel();
+        RefreshMusicInformationPanel("Database_Area/" + PreSelection_Script.thisPre.get_AreaData.AreaName, true);
     }
 
     private void GetNavAvaialbleToggle()
@@ -160,19 +201,22 @@ public class MusicSelectionPage : MonoBehaviour
             LoadUserFeedContent(UserDetailFeebackOrder.ContentLocked);
         }
 
-        Invoke("PrintOutDisplayDifficulty", 0.06f);
+        Invoke("PrintOutDisplayDifficulty", 0.08f);
         SelectionMenu_Script.thisSelect.Invoke("DifficultyChanger_encode", 0.06f);
     }
 
     private void PrintOutDisplayDifficulty()
     {
+        // Find difficulty available for play
         if (MusicForm.ScoreObject != null)
         {
             string[] difficultyState = { "Difficulty_Normal_selectionTxt", "Difficulty_Hard_selectionTxt", "Difficulty_Ultimate_selectionTxt" };
 
             for (int i = 0; i < difficultyState.Length; i++)
             {
-                if (PlayerPrefs.GetString(difficultyState[i], "?") != "0")
+                // Use it for marathon and casual to find any quick difficulty level display
+                if ((!PlayerPrefs.HasKey("MarathonPermit") && PlayerPrefs.GetString(difficultyState[i], "?") != "0") || 
+                    (PlayerPrefs.HasKey("MarathonPermit") && i == PlayerPrefs.GetInt("DifficultyLevel_valve", 1) - 1))
                 {
                     DifficultyDisplay.transform.GetChild(i).gameObject.SetActive(true);
                     DifficultyDisplay.transform.GetChild(i).GetChild(0).GetComponent<Text>().text = PlayerPrefs.GetString(difficultyState[i], "?");
@@ -370,12 +414,12 @@ public class MusicSelectionPage : MonoBehaviour
             switch (PlayerPrefs.GetInt("DifficultyLevel_valve", 1))
             {
                 case 1:
-                    if (onClick) OnClickEvent_DifficultyChanger(DifficultyValueIndex.Hard);
+                    if (onClick && !PlayerPrefs.HasKey("MarathonPermit")) OnClickEvent_DifficultyChanger(DifficultyValueIndex.Hard);
                     else OnCheckEvent_DifficultyChanger(DifficultyValueIndex.Normal);
                     break;
 
                 case 2:
-                    if (onClick)
+                    if (onClick && !PlayerPrefs.HasKey("MarathonPermit"))
                     {
                         if (MusicForm.UltimateAddons) OnClickEvent_DifficultyChanger(DifficultyValueIndex.Ultimate);
                         else OnClickEvent_DifficultyChanger(DifficultyValueIndex.Normal);
@@ -387,7 +431,7 @@ public class MusicSelectionPage : MonoBehaviour
                     break;
 
                 case 3:
-                    if (onClick) OnClickEvent_DifficultyChanger(DifficultyValueIndex.Normal);
+                    if (onClick && !PlayerPrefs.HasKey("MarathonPermit")) OnClickEvent_DifficultyChanger(DifficultyValueIndex.Normal);
                     else
                     {
                         if (MusicForm.UltimateAddons)
@@ -459,7 +503,7 @@ public class MusicSelectionPage : MonoBehaviour
 
             // Update Content (Track Base)
             UpdateContentAchievementStatus_Board(0, 1).text = PlayerPrefs.GetInt(MusicForm.Title + "_score" + difficulty, 0).ToString("0000000");
-            UpdateContentAchievementStatus_Board(0, 2).text = MeloMelo_GameSettings.GetScoreRankStructure(PlayerPrefs.GetInt(MusicForm.Title + "_score" + difficulty, 0)).rank;
+            UpdateContentAchievementStatus_Board(0, 2).text = MeloMelo_GameSettings.GetScoreRankStructure(PlayerPrefs.GetInt(MusicForm.Title + "_score" + difficulty, 0).ToString()).rank;
             Invoke("UpdatePointContentStatus", 0.5f);
 
             //PlayerPrefs.GetInt(MusicForm.Title + "_maxPoint" + difficulty) : "--/--");
@@ -645,8 +689,8 @@ public class MusicSelectionPage : MonoBehaviour
 
     private string GetScoreRequirement(int score)
     {
-        if (score < 900000) return "Cleared the track";
-        else return "Rank " + MeloMelo_GameSettings.GetScoreRankStructure(score).rank;
+        if (score < MeloMelo_GameSettings.GetScoreRankStructure("A").score) return "Cleared the track";
+        else return "Rank " + MeloMelo_GameSettings.GetScoreRankStructure(score.ToString()).rank;
     }
     #endregion   
 }

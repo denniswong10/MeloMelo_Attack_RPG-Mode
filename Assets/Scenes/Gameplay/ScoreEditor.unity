@@ -198,7 +198,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 8.13e-43, y: 1e-45, z: 5.6e-44, w: -88.320984}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -973,7 +973,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myOption: 0
-  Music_Database: {fileID: 11400000, guid: 2708321b1b98221448cb0c55b112eb11, type: 2}
+  Music_Database: {fileID: 11400000, guid: ffc1e00061f878a4281d0a9e3f686011, type: 2}
   BeatIndicator: {fileID: 0}
   spawner: {fileID: 699055986}
   FeedingTime_sign: {fileID: 1835079032}

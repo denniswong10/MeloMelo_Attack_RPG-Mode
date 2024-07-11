@@ -12,7 +12,7 @@ public class StartMenu_Script : MonoBehaviour
     [SerializeField] private Animator GameTitle_Background;
     [SerializeField] private Text startEnable;
     [SerializeField] private GameObject GameLoader_Icon;
-    
+
     [Header("Game Application")]
     [SerializeField] private int seasonOutput;
     [SerializeField] private int versionIndex;
@@ -78,7 +78,7 @@ public class StartMenu_Script : MonoBehaviour
         MeloMelo_GameSettings.GetScoreStructureSetup();
         MeloMelo_GameSettings.GetStatusRemarkStructureSetup();
 
-        if (PlayerPrefs.GetString("GameLatest_Update", string.Empty) != version)
+        if (PlayerPrefs.GetString("GameLatest_Update", string.Empty) != version && PlayerPrefs.HasKey("AccountSync"))
         {
             UpdateAlert.SetActive(true);
             UpdateAlert.transform.GetChild(3).GetComponent<Text>().text = description;

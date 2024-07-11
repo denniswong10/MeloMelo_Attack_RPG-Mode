@@ -86,9 +86,8 @@ public class BattleSetup_Script : MonoBehaviour
         }
 
         GameObject.Find("BG").GetComponent<RawImage>().texture =
-            ((PlayerPrefs.HasKey("Mission_Played")) ? Resources.Load<Texture>("Background/BG1C") :
-            PlayerPrefs.GetInt("Marathon_Challenge") == 0 ? PreSelection_Script.thisPre.get_AreaData.BG :
-            Resources.Load<Texture>("Background/BG11"));
+            !PlayerPrefs.HasKey("MarathonPermit") ? PreSelection_Script.thisPre.get_AreaData.BG :
+                Resources.Load<Texture>("Background/BG11");
 
         LoadGameplaySetup();
     }
@@ -228,7 +227,7 @@ public class BattleSetup_Script : MonoBehaviour
 
             default:
                 NoteSpeed_currentSwitch.interactable = true;
-                return "Custom (FreeStyle)";
+                return "Custom (Details)";
         }
     }
 
@@ -483,7 +482,7 @@ public class BattleSetup_Script : MonoBehaviour
 
     public void SaveComponentForFeedbackDisplay()
     {
-        
+        SaveComponentForScoreDisplay();
     }
     #endregion
 

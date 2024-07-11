@@ -13,8 +13,8 @@ public class Character : MonoBehaviour
     public GameObject PartyStatus;
 
     private CharacterSettings character;
+    public CharacterSettings get_character { get { return character; } }
     public Character_StorageStats stats;
-    private ScoreFixedValue scoreF;
 
     private bool isJumping = false;
     private bool[] isAttacking = { false, false };
@@ -41,7 +41,7 @@ public class Character : MonoBehaviour
         {
             if (character.get_AutoFieldDetect)
             {
-                float delayHit = BeatConductor.thisBeat.get_BPM_Calcuate * 0.1f;
+                float delayHit = BeatConductor.thisBeat.get_BPM_Calcuate * 0.5f;
                 Invoke("SimulateHitTarget", delayHit);
             }
 
@@ -102,7 +102,6 @@ public class Character : MonoBehaviour
     private void LoadSettings()
     {
         stats = new Character_StorageStats("NA", 1);
-        scoreF = new ScoreFixedValue();
         character = new CharacterSettings();
     }
 
@@ -113,7 +112,7 @@ public class Character : MonoBehaviour
 
         // Field Play: Properties
         //PlayerPrefs.SetString("MVOption", "F");
-        if (Application.isEditor) PlayerPrefs.SetInt("NoteSpeed", BeatConductor.thisBeat.speedIndex);
+        //if (Application.isEditor) PlayerPrefs.SetInt("NoteSpeed", BeatConductor.thisBeat.speedIndex);
         character.SetAutoPlayField(BeatConductor.thisBeat.autoPlayField);
     }
 
@@ -293,18 +292,21 @@ public class Character : MonoBehaviour
         {
             case 1: // Perfect 2
                 GameManager.thisManager.UpdateNoteStatus("Perfect_2");
+                GameManager.thisManager.UpdatePoint(3);
                 IncludePerfromanceScore(BeatConductor.thisBeat.get_scorePerfect2);
                 PlaySoundEffect(sound);
                 break;
 
             case 2: // Perfect
                 GameManager.thisManager.UpdateNoteStatus("Perfect");
+                GameManager.thisManager.UpdatePoint(2);
                 IncludePerfromanceScore(BeatConductor.thisBeat.get_scorePerfect);
                 PlaySoundEffect(sound);
                 break;
 
             case 3: // Bad
                 GameManager.thisManager.UpdateNoteStatus("Bad");
+                GameManager.thisManager.UpdatePoint(1);
                 IncludePerfromanceScore(BeatConductor.thisBeat.get_scoreBad);
                 PlaySoundEffect(sound);
                 break;
@@ -463,8 +465,8 @@ public class Character : MonoBehaviour
     #region CHARACTER REWARDS
     private void IncludePerfromanceScore(float _score)
     {
-        GameManager.thisManager.UpdateScore(_score);
-        if (PlayerPrefs.GetInt("MissCP", 0) > 0) scoreF.score_combo();
+        GameManager.thisManager.FinalScoreMultipler(_score);
+        //if (PlayerPrefs.GetInt("MissCP", 0) > 0) scoreF.score_combo();
     }
 
     private void IncludeTechnicalScore(Note_Script target)
