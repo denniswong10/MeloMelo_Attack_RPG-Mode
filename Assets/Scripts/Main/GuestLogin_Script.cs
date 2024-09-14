@@ -109,7 +109,7 @@ public class GuestLogin_Script : MonoBehaviour
     public void UpdateGuestEntryName(string name)
     {
         guestLoginEntry = name;
-        LoginPage_Script.thisPage.portNumber = 1;
+        LoginPage_Script.thisPage.portNumber = 0;
 
         if (localPlayer == null || (localPlayer != null && localPlayer.GetUserLocalByPlayerId() != name))
         {

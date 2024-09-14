@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M4
+  m_EditorClassIdentifier: 
+  BPM: 350
+  offset: 487
+  Music: {fileID: 8300000, guid: 367beee858ce67f4abc6e0abbc5cbfd5, type: 3}
+  PreviewTime: 38.3
+  ArtistName: Hitotsuyanagi Team
+  Title: Edel Lilie
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 504a0a95aff71534b8c5a81a3a69c819, type: 3}
+  ScoreObject: {fileID: 1104663308302838070, guid: 87cf84bc92289f34f8c80103507cd98a,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: 5b805f3dc11e92d4f81f203e8f46768d, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 94459dc1f595ab84b9fa5cf4fbf0f52d, type: 2}
+  creditPoint: --
+  BPM_Skin: 175
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: a90b1713b4bce2d43b99b86204aa835b, type: 2}
+  - {fileID: 11400000, guid: 40ecf4c7b9d135d4493bcb08a350955c, type: 2}
+  - {fileID: 11400000, guid: 5b5e5399511ca0042a4f953416caacb9, type: 2}
+  - {fileID: 11400000, guid: 720690dd1d5c7ab4490016b78a12c554, type: 2}
+  - {fileID: 11400000, guid: 06145b490d3518d47899af538d8df20a, type: 2}
+  - {fileID: 11400000, guid: b935bb6c8ffdc844d9578578e4548eda, type: 2}
+  - {fileID: 11400000, guid: da11b6bd96b0a4048ba86a9ae593a114, type: 2}
+  - {fileID: 11400000, guid: f9314328a104f9e4eada3e88c8ba5483, type: 2}
+  - {fileID: 11400000, guid: 6f4d509087d45a44885eadcab03c2384, type: 2}
+  - {fileID: 11400000, guid: 2c173407c4b5d294692793034745872f, type: 2}
+  - {fileID: 11400000, guid: d11425b14c42c82478b74a4bad19a120, type: 2}
+  - {fileID: 11400000, guid: a5ff97bd4e5bfba4a8e40b82c66e302d, type: 2}
+  - {fileID: 11400000, guid: 825040af1e866784f8747fc101dccb86, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: d885a9d6cf8a1a44c92aba824f2fb78d, type: 2}
+  - {fileID: 11400000, guid: a7673047a3fa2524ebd5d1f3b868ee06, type: 2}
+  UltimateAddons: 0

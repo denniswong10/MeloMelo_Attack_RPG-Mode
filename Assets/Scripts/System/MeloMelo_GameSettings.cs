@@ -63,7 +63,7 @@ public struct NoteSpeed_Settings
 
 public static class MeloMelo_GameSettings
 {
-    public enum LoginType { TempPass, GuestLogin }
+    public enum LoginType { GuestLogin, TempPass }
 
     public const string CloudSaveSetting_MainProgress = "savelog_AchievementData";
     public const string CloudSaveSetting_BattleProgress = "savelog_BattleProgressData";

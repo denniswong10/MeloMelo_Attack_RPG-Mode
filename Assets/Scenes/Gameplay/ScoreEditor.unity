@@ -973,7 +973,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myOption: 0
-  Music_Database: {fileID: 11400000, guid: ffc1e00061f878a4281d0a9e3f686011, type: 2}
+  Music_Database: {fileID: 11400000, guid: 532b96a3e0ef7044c8868999b2cf957e, type: 2}
   BeatIndicator: {fileID: 0}
   spawner: {fileID: 699055986}
   FeedingTime_sign: {fileID: 1835079032}
@@ -1475,9 +1475,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 653ce958ae9496c4796697d9d37966ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  End_Alert: {fileID: 655840253}
-  KO_Message: {fileID: 0}
-  KO_Message2: {fileID: 0}
   DeveloperMode: 1
   SkillAlert: {fileID: 0}
   Alert_sign: {fileID: 0}
@@ -1486,11 +1483,11 @@ MonoBehaviour:
   AutoPlayText: {fileID: 0}
   Alert_Retreat: {fileID: 0}
   HealthBar_E: {fileID: 0}
-  HealthBar: {fileID: 0}
   OverKill_Bar: {fileID: 0}
   JudgeCounter: {fileID: 0}
   JudgeCounterParticle: []
-  JudgeTextLine: []
+  characterSlotStatus: []
+  enemySlotStatus: []
 --- !u!1 &1307153326
 GameObject:
   m_ObjectHideFlags: 0

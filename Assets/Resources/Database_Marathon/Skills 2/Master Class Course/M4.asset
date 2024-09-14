@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M4
+  m_EditorClassIdentifier: 
+  BPM: 340
+  offset: 575
+  Music: {fileID: 8300000, guid: 1adb394309febc64f98f584c4265cc00, type: 3}
+  PreviewTime: 61.1
+  ArtistName: ak+q
+  Title: Axium Crisis
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 008a4bdac091c2842957e160398c7043, type: 3}
+  ScoreObject: {fileID: 7298115845672800322, guid: b729bc2561d8aa54d85f58ae8d61bf4c,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  creditPoint: Arcaea
+  BPM_Skin: 170
+  UseBPMDisplay: 1
+  ReleasedDate: 
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: 56a6ba429fcd76246a8203e93aa1e985, type: 2}
+  - {fileID: 11400000, guid: 5fa04c28e618f304fa15c1f7c9e6d0ea, type: 2}
+  - {fileID: 11400000, guid: ce1ec4e45a9d94240aec889d0d6aa4f1, type: 2}
+  - {fileID: 11400000, guid: aa2a069c871d0af4ba6f3af3095382a6, type: 2}
+  - {fileID: 11400000, guid: e3176615f800b6a4c9d06abc581e1e0a, type: 2}
+  - {fileID: 11400000, guid: 23e8e0d81284bf14788a87b3a0b608bd, type: 2}
+  - {fileID: 11400000, guid: 37f504a9404129d41998d4396d5ed349, type: 2}
+  - {fileID: 11400000, guid: 6530cd8bfe3a3ba4386ea9a8c631878c, type: 2}
+  - {fileID: 11400000, guid: 73c145c0eacd76e4587a7f359a5962a7, type: 2}
+  - {fileID: 11400000, guid: 5af9bb38bf051e4428f265ad57d5fe72, type: 2}
+  - {fileID: 11400000, guid: b05bf9edf49ca6d44a561f8ba3128280, type: 2}
+  - {fileID: 11400000, guid: 2258bc73a94165d4ea621eebae8e1f1a, type: 2}
+  - {fileID: 11400000, guid: 3049e793ea9159240bb312a37879811b, type: 2}
+  - {fileID: 11400000, guid: 137a43f088101ad44b66d19aeadf34e6, type: 2}
+  - {fileID: 11400000, guid: d8a456ccf684fc5458a1affbee631ad9, type: 2}
+  - {fileID: 11400000, guid: 06145b490d3518d47899af538d8df20a, type: 2}
+  - {fileID: 11400000, guid: 0ef11db43818e384ca911e203f9e4b26, type: 2}
+  - {fileID: 11400000, guid: f6d664d127071984f8250033d53a6eb5, type: 2}
+  - {fileID: 11400000, guid: 8d9aa26404127e34c9fa5c6569dc636b, type: 2}
+  - {fileID: 11400000, guid: 55432f5e0ba64244c9376a3b2859f1ee, type: 2}
+  - {fileID: 11400000, guid: facac58e4da094342b354337d58de96e, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: f861d1844d9b8404482f3e18e0b5b8c1, type: 2}
+  - {fileID: 11400000, guid: 1e47fd3d34c7693489e1b383d36d8e63, type: 2}
+  - {fileID: 11400000, guid: 4ca6288cb90d9f44db31866db8d0b6a5, type: 2}
+  - {fileID: 11400000, guid: 230ccc072d897534e960432d8786d4ec, type: 2}
+  - {fileID: 11400000, guid: 4fca5c374b90af84e9e830739bf79de0, type: 2}
+  - {fileID: 11400000, guid: 83f58a5d34cf69a498bc385f20a87331, type: 2}
+  - {fileID: 11400000, guid: 946147150fd362346a6d4653275a153c, type: 2}
+  - {fileID: 11400000, guid: a1b4c054b89466d4d893c9030b76ea82, type: 2}
+  UltimateAddons: 1
+  SetRestriction: 0
+  RestrictRequirement: []

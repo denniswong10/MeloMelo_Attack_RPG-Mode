@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M1
+  m_EditorClassIdentifier: 
+  BPM: 334
+  offset: 24072
+  Music: {fileID: 8300000, guid: 3a9ebcdc3f8c6b745924629dafd2548c, type: 3}
+  PreviewTime: 93.25
+  ArtistName: TGR
+  Title: Romantic Children
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: d4aeca354e44bcc47acb8bc8b10f31b3, type: 3}
+  ScoreObject: {fileID: 8040137975880435803, guid: bc441782957866c40a96f573c5fb44f9,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  - {fileID: 11400000, guid: ce39b14837b11a742aca6e8620f99cfe, type: 2}
+  creditPoint: --
+  BPM_Skin: 167
+  UseBPMDisplay: 1
+  ReleasedDate: 26-9-2023
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: 8f81ed947a7c2d844bcdf90b06d0358a, type: 2}
+  - {fileID: 11400000, guid: 83c72559ba71a524f9f9164a5b0f3c41, type: 2}
+  - {fileID: 11400000, guid: 31a8c81520bd031429ff13f281cf9d45, type: 2}
+  - {fileID: 11400000, guid: e894ea1f82ecaa5409c31975a5f2ba74, type: 2}
+  - {fileID: 11400000, guid: 6f62750fe544b1141af723a62be69531, type: 2}
+  - {fileID: 11400000, guid: 4dc5186d972b7aa4b97b815adaf6a036, type: 2}
+  - {fileID: 11400000, guid: 3475621d9a3f87046b9fc39de58fbc1a, type: 2}
+  - {fileID: 11400000, guid: a4b6af4e204402b438c3ab682f68de70, type: 2}
+  - {fileID: 11400000, guid: 09648ffc1e956a7468a0f3b21b92d06f, type: 2}
+  - {fileID: 11400000, guid: d39cb7e4d6892c44caa49bb6cb38fb63, type: 2}
+  - {fileID: 11400000, guid: 37f504a9404129d41998d4396d5ed349, type: 2}
+  - {fileID: 11400000, guid: 64ac9d7f8e8c5b04393eca09b406cfa0, type: 2}
+  - {fileID: 11400000, guid: f8ca695f2968526488c54cd01e363e54, type: 2}
+  - {fileID: 11400000, guid: 06145b490d3518d47899af538d8df20a, type: 2}
+  - {fileID: 11400000, guid: 39e71055bd0ee2f4f996e8e7e8a76374, type: 2}
+  - {fileID: 11400000, guid: bdedbbdd04913c24c802575858c1b79b, type: 2}
+  - {fileID: 11400000, guid: 6bc20bdddf0be7c428029494cd2ee25d, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: a7673047a3fa2524ebd5d1f3b868ee06, type: 2}
+  - {fileID: 11400000, guid: d885a9d6cf8a1a44c92aba824f2fb78d, type: 2}
+  UltimateAddons: 0
+  SetRestriction: 0
+  RestrictRequirement: []

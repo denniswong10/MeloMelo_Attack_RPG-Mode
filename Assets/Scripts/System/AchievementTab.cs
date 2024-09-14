@@ -19,7 +19,20 @@ public class AchievementTab : ScriptableObject
     public string titleReward_name;
 
     public enum Title_Tier { White, Bronze, Silver, Gold, Rhondonite }
-    public enum Reward_Condition { RatePoint, PlayedCount, RankAchiever, StatusAchiever, SeasonCompletion, PointAchiever, BattleWonAchiever, Custom_Setup }
+    public enum Reward_Condition 
+    {
+        RatePoint, 
+        PlayedCount, 
+        RankAchiever, 
+        StatusAchiever, 
+        SeasonCompletion, 
+        PointAchiever, 
+        BattleWonAchiever, 
+        BattleDifficulty,
+        PlayedEventTrack,
+        Custom_Setup 
+    }
+
     [Header("Tier Sorter")]
     public Title_Tier Tier;
     public Reward_Condition useConditionReward;

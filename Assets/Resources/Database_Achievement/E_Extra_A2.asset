@@ -16,6 +16,6 @@ MonoBehaviour:
   description: Achieve everything SS Rank throughout the joruney map
   titleReward_name: GAMEMASTER!
   Tier: 4
-  useConditionReward: 7
+  useConditionReward: 9
   fill_Array: []
   conditionOperate: AllPlayedForSS

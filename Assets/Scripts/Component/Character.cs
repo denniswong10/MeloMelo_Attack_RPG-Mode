@@ -48,7 +48,7 @@ public class Character : MonoBehaviour
             if (IsAttackInputReceived())
             {
                 if (!other.GetComponent<Note_Script>().TriggerAsHits())
-                {                    
+                {
                     switch (other.GetComponent<Note_Script>().note_index)
                     {
                         // Register as a enemy unit
@@ -93,8 +93,8 @@ public class Character : MonoBehaviour
             }
 
             GameManager.thisManager.AutoPlayDisplay(character.get_AutoFieldDetect);
-            GameObject.Find("Counter").GetComponent<Text>().text = "Total Collide: \n" + (GameManager.thisManager.getJudgeWindow.TotalJudgeCounted() - GameManager.thisManager.getJudgeWindow.get_miss) + 
-                " / " + GameManager.thisManager.getJudgeWindow.getOverallCombo;
+            //GameObject.Find("Counter").GetComponent<Text>().text = "Total Collide: \n" + (GameManager.thisManager.getJudgeWindow.TotalJudgeCounted() - GameManager.thisManager.getJudgeWindow.get_miss) + 
+            //  " / " + GameManager.thisManager.getJudgeWindow.getOverallCombo;
         }
     }
 
@@ -111,8 +111,6 @@ public class Character : MonoBehaviour
         stats.Update_Character_StorageStats(PartyStatus, PlayerPrefs.GetString("CharacterFront", "NA"), PlayerPrefs.GetInt("Character_OverallHealth", 0));
 
         // Field Play: Properties
-        //PlayerPrefs.SetString("MVOption", "F");
-        //if (Application.isEditor) PlayerPrefs.SetInt("NoteSpeed", BeatConductor.thisBeat.speedIndex);
         character.SetAutoPlayField(BeatConductor.thisBeat.autoPlayField);
     }
 
@@ -401,7 +399,7 @@ public class Character : MonoBehaviour
         if (note_define == CharacterSettings.PICKUP_TYPE.JUMP)
             CancelJump();
 
-        else if (note_define == CharacterSettings.PICKUP_TYPE.NONE && note_index == 2)
+        else if (note_define == CharacterSettings.PICKUP_TYPE.NONE && (note_index == 2 || note_index == 3))
             CancelJump();
 
         // Universal: Attack Reset

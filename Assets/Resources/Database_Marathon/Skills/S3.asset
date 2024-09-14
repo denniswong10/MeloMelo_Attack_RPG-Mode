@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b296974f7525ba64b81d387debbb4465, type: 3}
   m_Name: S3
   m_EditorClassIdentifier: 
-  title: Rookie 3
+  title: Advance Trial
   Difficultylevel:
-  - 6
-  - 6
-  - 7
-  - 8
-  DifficultyType: 01000000010000000200000002000000
+  - 10
+  - 11
+  - 12
+  - 13
+  DifficultyType: 02000000020000000200000002000000
   clearingType: 0
-  clearingValue: X
+  clearingValue: S

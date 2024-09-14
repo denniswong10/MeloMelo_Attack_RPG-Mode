@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M2
+  m_EditorClassIdentifier: 
+  BPM: 350
+  offset: 26950
+  Music: {fileID: 8300000, guid: 13c764cbfe5633740b308b7e79cf85c7, type: 3}
+  PreviewTime: 81.7
+  ArtistName: CINDERELLA GIRLS!!
+  Title: Onegai! Cinderella
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 89135b317ea1a0e44a7480c0bb6ca67c, type: 3}
+  ScoreObject: {fileID: 7575301574306343749, guid: 6324d0662c09e694abd1d7b107b3676f,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: c511e9031ace2b04ca0545a04a4f6f4a, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 46a97ac561aeec0418c3113544fbfe40, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  creditPoint: --
+  BPM_Skin: 175
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: 2258bc73a94165d4ea621eebae8e1f1a, type: 2}
+  - {fileID: 11400000, guid: 3049e793ea9159240bb312a37879811b, type: 2}
+  - {fileID: 11400000, guid: 6f4d509087d45a44885eadcab03c2384, type: 2}
+  - {fileID: 11400000, guid: 95a0561e90b15e3428b90e06d9749986, type: 2}
+  - {fileID: 11400000, guid: 3072ff97c4817b04bacd5564873d57a8, type: 2}
+  - {fileID: 11400000, guid: ae6d6461797232147a16b9337a4cab41, type: 2}
+  - {fileID: 11400000, guid: c6888f16ce692a7489fb264e585b9e22, type: 2}
+  - {fileID: 11400000, guid: 3cc1590e63443a94d93a1d68d458bd2d, type: 2}
+  - {fileID: 11400000, guid: 87fea1e148859084b8323d0d34b25f0c, type: 2}
+  - {fileID: 11400000, guid: 6fe63b2025877ba48a69778c98a512a4, type: 2}
+  - {fileID: 11400000, guid: 4344ac09512c76b4ea06ca1b21aa7c39, type: 2}
+  - {fileID: 11400000, guid: 23e8e0d81284bf14788a87b3a0b608bd, type: 2}
+  - {fileID: 11400000, guid: 39e71055bd0ee2f4f996e8e7e8a76374, type: 2}
+  - {fileID: 11400000, guid: bdedbbdd04913c24c802575858c1b79b, type: 2}
+  - {fileID: 11400000, guid: 11619e7f21dc7294685127d17b811a3a, type: 2}
+  - {fileID: 11400000, guid: e3c1b4939b4d7ba4a95eee045a797cbe, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: dbd8d0ede0225a644ab9593223b013a6, type: 2}
+  - {fileID: 11400000, guid: 016975fdd2524d245acc68736564658d, type: 2}
+  - {fileID: 11400000, guid: 232c4f73f114ed0409a146b312748447, type: 2}
+  UltimateAddons: 0

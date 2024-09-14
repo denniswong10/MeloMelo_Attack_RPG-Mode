@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M4
+  m_EditorClassIdentifier: 
+  BPM: 480
+  offset: 473
+  Music: {fileID: 8300000, guid: 2dfa3bee68b797c4d8de6a3aba0eefdd, type: 3}
+  PreviewTime: 57.6
+  ArtistName: Tomatsu Haruka, Hikasa Yoko, Amamiya Sora
+  Title: Eyecatch! Too much!
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 28849f8c55be4de439129a7be5d5385e, type: 3}
+  ScoreObject: {fileID: 4517287180009464430, guid: a044e283410e3d241b313ccfcb3d51d6,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: 9ea35f337ecceec4f806e6fba616554d, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: ab2db78bba5ede9438d4ca5264b3d4e1, type: 2}
+  - {fileID: 11400000, guid: a5ed5fda86ce4394a934af5a7f18e4bb, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  creditPoint: --
+  BPM_Skin: 240
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: 48184fc6054d26449acb8d1a5a48c255, type: 2}
+  - {fileID: 11400000, guid: ff989f8657806044fbff38332417953f, type: 2}
+  - {fileID: 11400000, guid: 23e8e0d81284bf14788a87b3a0b608bd, type: 2}
+  - {fileID: 11400000, guid: c6888f16ce692a7489fb264e585b9e22, type: 2}
+  - {fileID: 11400000, guid: 477de57684214aa4d9c88c45d814d2a2, type: 2}
+  - {fileID: 11400000, guid: f7087bcc1a6c08d4dae1cac33be48209, type: 2}
+  - {fileID: 11400000, guid: ba78706cee008fe4489ab6569a307094, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: 745ac98a7634279408a63a3e8bb5ceb8, type: 2}
+  - {fileID: 11400000, guid: dbd8d0ede0225a644ab9593223b013a6, type: 2}
+  UltimateAddons: 0

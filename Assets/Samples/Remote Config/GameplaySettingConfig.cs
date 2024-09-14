@@ -74,10 +74,10 @@ public class GameplaySettingConfig : MonoBehaviour
                     "StreamingAssets/PlaySettings"
                 );
 
-            selectedSpeed = GetNoteSpeedInArrayForm(bpmState, setting.GetLocalJsonFile("MeloMelo_NoteSpeed_Configuration.json"));
+            selectedSpeed = GetNoteSpeedInArrayForm(bpmState, setting.GetLocalJsonFile("MeloMelo_NoteSpeed_Configuration.json", false));
 
             if (selectedSpeed == 0)
-                selectedSpeed = GetNoteSpeedInSingleForm(bpmState, setting.GetLocalJsonFile("MeloMelo_NoteSpeed_Default_Configuration.json"));
+                selectedSpeed = GetNoteSpeedInSingleForm(bpmState, setting.GetLocalJsonFile("MeloMelo_NoteSpeed_Default_Configuration.json", false));
 
             Debug.Log("Use config through local: NoteSpeed[" + index + ", " + selectedSpeed + "]");
             return selectedSpeed + (index * 5);

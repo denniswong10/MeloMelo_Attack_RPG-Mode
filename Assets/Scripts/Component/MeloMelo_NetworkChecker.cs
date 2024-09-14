@@ -28,7 +28,7 @@ public class MeloMelo_NetworkChecker : MonoBehaviour
                 return 0;
 
             default:
-                if (PlayerPrefs.GetString("GameWeb_URL", string.Empty) != string.Empty) StartCoroutine(GetServerNetworkLive());
+                if (PlayerPrefs.GetString("GameWeb_URL", string.Empty) != string.Empty) GetServerCheckingData();
                 else ChangeOfNetworkDisplay((int)ServerStatus.OFF + 1);
                 return 1;
         }
@@ -48,15 +48,15 @@ public class MeloMelo_NetworkChecker : MonoBehaviour
     #endregion
 
     #region COMPONENT (NETWORK)
-    private IEnumerator GetServerNetworkLive()
+    private void GetServerCheckingData()
     {
-        WWWForm net = new WWWForm();
-        net.AddField("Title", Application.productName);
+        MeloMelo_Network.CloudServices_ControlPanel services = new MeloMelo_Network.CloudServices_ControlPanel(PlayerPrefs.GetString("GameWeb_URL", string.Empty));
+        StartCoroutine(services.CheckNetwork_GlobalStatus(gameObject, Application.productName));
+    }
 
-        UnityWebRequest getNet = UnityWebRequest.Post(StartMenu_Script.thisMenu.get_serverURL + "/database/transcripts/site5/UnityLogin_InternetChecker.php", net);
-        yield return getNet.SendWebRequest();
-        
-        switch (getNet.downloadHandler.text)
+    public void GetServerNetworkLive(string received_status)
+    {
+        switch (received_status)
         {
             case "off":
                 ChangeOfNetworkDisplay((int)ServerStatus.OFF + 1);
@@ -70,9 +70,6 @@ public class MeloMelo_NetworkChecker : MonoBehaviour
                 ChangeOfNetworkDisplay((int)ServerStatus.ERROR + 1);
                 break;
         }
-
-        Debug.Log("Server Output: " + getNet.downloadHandler.text);
-        getNet.Dispose();
     }
     #endregion
 }

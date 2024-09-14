@@ -27,7 +27,7 @@ public class RemoteConfigSettings : MonoBehaviour
         await UnityServices.InitializeAsync();
 
         // remote config requires authentication for managing environment information
-        if (!AuthenticationService.Instance.IsSignedIn)
+        if (PlayerPrefs.HasKey("AccountSync") && !AuthenticationService.Instance.IsSignedIn)
         {
             await AuthenticationService.Instance.SignInWithUsernamePasswordAsync
                     (
@@ -45,11 +45,13 @@ public class RemoteConfigSettings : MonoBehaviour
 
         // initialize Unity's authentication and core services, however check for internet connection
         // in order to fail gracefully without throwing exception if connection does not exist
+
+        if (Utilities.CheckForInternetConnection()) await InitializeRemoteConfigAsync();
+        else AccountID_Text.GetComponentInChildren<Text>().text = "Not Connected";
+
         if (PlayerPrefs.HasKey("AccountSync"))
         {
-            if (Utilities.CheckForInternetConnection()) await InitializeRemoteConfigAsync();
-            else AccountID_Text.GetComponentInChildren<Text>().text = "Not Signed In";
-
+            PlayerPrefs.DeleteKey("GameWeb_URL");
             RemoteConfigService.Instance.FetchCompleted += ApplyRemoteConfig;
             await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
         }
@@ -84,14 +86,16 @@ public class RemoteConfigSettings : MonoBehaviour
     {
         PlayerPrefs.SetString("GameLatest_Update", RemoteConfigService.Instance.appConfig.GetString("Latest_Version"));
         PlayerPrefs.SetString("GameUpdate_URL", RemoteConfigService.Instance.appConfig.GetString("GameApplication_URL"));
-        PlayerPrefs.SetString("GameWeb_URL", RemoteConfigService.Instance.appConfig.GetString("GameWebpage_URL"));
+        //PlayerPrefs.SetString("GameWeb_URL", RemoteConfigService.Instance.appConfig.GetString("GameWebpage_URL"));
+        PlayerPrefs.SetString("MeloMelo_NewsReport_Daily", RemoteConfigService.Instance.appConfig.GetJson("MeloMelo_GameUpdates"));
     }
 
     private void ResetGameApplicationValue()
     {
         PlayerPrefs.DeleteKey("GameLatest_Update");
         PlayerPrefs.DeleteKey("GameUpdate_URL");
-        PlayerPrefs.DeleteKey("GameWeb_URL");
+        //PlayerPrefs.DeleteKey("GameWeb_URL");
+        PlayerPrefs.DeleteKey("MeloMelo_NewsReport_Daily");
     }
     #endregion
 }

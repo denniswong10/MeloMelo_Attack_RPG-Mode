@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M2
+  m_EditorClassIdentifier: 
+  BPM: 390
+  offset: 617
+  Music: {fileID: 8300000, guid: c6f09e3e36729ac4ea0430b5e16e11e5, type: 3}
+  PreviewTime: 44.7
+  ArtistName: Tamura Yukari
+  Title: Pleasure treasure
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 957fbf6f6635e8545bbc2152ce3f5e49, type: 3}
+  ScoreObject: {fileID: 8985536472849984808, guid: c756a1d3df1a7dd48be0c90b010d3329,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 94459dc1f595ab84b9fa5cf4fbf0f52d, type: 2}
+  creditPoint: --
+  BPM_Skin: 195
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: d536f605e10b98748931c47f8b108db5, type: 2}
+  - {fileID: 11400000, guid: 06145b490d3518d47899af538d8df20a, type: 2}
+  - {fileID: 11400000, guid: 39e71055bd0ee2f4f996e8e7e8a76374, type: 2}
+  - {fileID: 11400000, guid: bdedbbdd04913c24c802575858c1b79b, type: 2}
+  - {fileID: 11400000, guid: 29f4754fb9dc5f14a9ca4267ce1804f9, type: 2}
+  - {fileID: 11400000, guid: 44983c77d6a624149bc718f2b8858f5a, type: 2}
+  - {fileID: 11400000, guid: 825040af1e866784f8747fc101dccb86, type: 2}
+  - {fileID: 11400000, guid: 73c145c0eacd76e4587a7f359a5962a7, type: 2}
+  - {fileID: 11400000, guid: 5af9bb38bf051e4428f265ad57d5fe72, type: 2}
+  - {fileID: 11400000, guid: efcbfc2019f839645b684a059f35ab76, type: 2}
+  - {fileID: 11400000, guid: ba78706cee008fe4489ab6569a307094, type: 2}
+  addons3b: []
+  UltimateAddons: 0

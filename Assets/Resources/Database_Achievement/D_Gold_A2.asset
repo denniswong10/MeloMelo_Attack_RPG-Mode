@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0380c5715401b3a498e9f350022347ad, type: 3}
   m_Name: D_Gold_A2
   m_EditorClassIdentifier: 
-  title: Complete Season 1 Game
-  description: Play all tracks for the first season
-  titleReward_name: LEGACY RISE
+  title: Escape from WitchWood
+  description: Clear all tracks in witchwood
+  titleReward_name: WITCHWOOD EVENT
   Tier: 3
-  useConditionReward: 4
+  useConditionReward: 8
   fill_Array:
   - fill_Type: 0
-    value: 1
+    value: 2
   conditionOperate: 

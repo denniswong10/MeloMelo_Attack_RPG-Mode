@@ -13,15 +13,16 @@ public class Auto_Authenticate_Config : MonoBehaviour
 
     void Start()
     {
-        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_GameSettings.LoginType.GuestLogin) 
+        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_GameSettings.LoginType.GuestLogin)
+        {
+            if (AuthenticationService.Instance.IsSignedIn) AuthenticationService.Instance.SignOut();
             AuthenticateServerLogin();
+        }
     }
 
     #region MAIN
     public string GetAccountID()
     {
-        //if (!isDone) await Setup();
-
         if (AuthenticationService.Instance.PlayerId != string.Empty)
             return AuthenticationService.Instance.PlayerId;
         else
@@ -30,28 +31,9 @@ public class Auto_Authenticate_Config : MonoBehaviour
     #endregion
 
     #region SETUP
-    async Task Setup()
-    {
-        await UnityServices.InitializeAsync();
-
-        if (!AuthenticationService.Instance.IsSignedIn)
-        {
-            try
-            {
-                await AuthenticationService.Instance.SignInWithUsernamePasswordAsync
-                    (
-                        GuestLogin_Script.thisScript.get_localPlayer.GetUserLocalByPlayerId(),
-                        GuestLogin_Script.thisScript.get_localPlayer.GetUserLocalByUniqueId()
-                    );
-            }
-            catch { }
-        }
-
-        isDone = true;
-    }
-
     async void AuthenticateServerLogin()
     {
+        isDone = false;
         await UnityServices.InitializeAsync();
 
         if (!AuthenticationService.Instance.IsSignedIn)
@@ -85,11 +67,13 @@ public class Auto_Authenticate_Config : MonoBehaviour
         }
         else
             Debug.Log("Cloud Services [LOCAL]: Disable");
+
+        isDone = true;
     }
 
     public void LogOff_AccountSync()
     {
-        if (AuthenticationService.Instance.IsSignedIn)
+        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_GameSettings.LoginType.GuestLogin && AuthenticationService.Instance.IsSignedIn)
            AuthenticationService.Instance.SignOut();
     }
     #endregion

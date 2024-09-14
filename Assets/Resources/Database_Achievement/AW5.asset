@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0380c5715401b3a498e9f350022347ad, type: 3}
   m_Name: AW5
   m_EditorClassIdentifier: 
-  title: Our Journey have begin
-  description: Visiting an area to get started
-  titleReward_name: ADVENTURE
+  title: Going for Marahton?
+  description: Explore the Marathon Play
+  titleReward_name: CHALLENGER!
   Tier: 0
-  useConditionReward: 7
+  useConditionReward: 9
   fill_Array: []
-  conditionOperate: JourneyStartline
+  conditionOperate: MarathonMode

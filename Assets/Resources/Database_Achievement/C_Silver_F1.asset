@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0380c5715401b3a498e9f350022347ad, type: 3}
   m_Name: C_Silver_F1
   m_EditorClassIdentifier: 
-  title: Keep on going
-  description: Achieve rate point to 16000
-  titleReward_name: SILVER MEDAL
+  title: Master playing the playfield
+  description: Achieve max points for 50 times
+  titleReward_name: POINT RACKER
   Tier: 2
-  useConditionReward: 0
+  useConditionReward: 5
   fill_Array:
   - fill_Type: 0
-    value: 16000
+    value: 100
+  - fill_Type: 1
+    value: 50
   conditionOperate: 

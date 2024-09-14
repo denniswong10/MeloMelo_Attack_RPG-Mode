@@ -16,6 +16,6 @@ MonoBehaviour:
   description: Making a data transfer
   titleReward_name: REBORN
   Tier: 0
-  useConditionReward: 7
+  useConditionReward: 9
   fill_Array: []
   conditionOperate: MakeTransfer

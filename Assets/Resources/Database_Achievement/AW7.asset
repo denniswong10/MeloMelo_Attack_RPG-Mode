@@ -12,12 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0380c5715401b3a498e9f350022347ad, type: 3}
   m_Name: AW7
   m_EditorClassIdentifier: 
-  title: Let's go depper into it
-  description: Achieve rate point to 10000
-  titleReward_name: WISE PLAYER!
+  title: Prepare yourself for battle
+  description: Set an options before battle
+  titleReward_name: WAR GAMING
   Tier: 0
-  useConditionReward: 0
-  fill_Array:
-  - fill_Type: 0
-    value: 10000
-  conditionOperate: 
+  useConditionReward: 9
+  fill_Array: []
+  conditionOperate: BattleSetupReview

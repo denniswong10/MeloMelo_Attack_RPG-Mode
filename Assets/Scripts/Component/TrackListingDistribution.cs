@@ -238,7 +238,8 @@ public class TrackListingDistribution : MonoBehaviour
     private string LoadJsonFile(int index)
     {
         string directory = (Application.isEditor ? "Assets/" : "MeloMelo_Data/");
-        string path = directory + "StreamingAssets/LocalData/MeloMelo_LocalSave_ChartList/" + LoginPage_Script.thisPage.GetUserPortOutput() + "_" + ChartNameArray[index - 1] + ".json";
+        string path = directory + "StreamingAssets/LocalData/MeloMelo_LocalSave_ChartList/" +
+            GetDestinationFile(LoginPage_Script.thisPage.portNumber == (int)MeloMelo_GameSettings.LoginType.TempPass, index);
 
         if (File.Exists(path))
         {
@@ -255,13 +256,24 @@ public class TrackListingDistribution : MonoBehaviour
 
     private void SaveJsonFile(int index, string data)
     {
-        string directory = (Application.isEditor ? "Assets/" : "MeloMelo_Data/");
-        string path = directory + "StreamingAssets/LocalData/MeloMelo_LocalSave_ChartList/" + LoginPage_Script.thisPage.GetUserPortOutput() + "_" + ChartNameArray[index - 1] + ".json";
+        if (LoginPage_Script.thisPage.portNumber == (int)MeloMelo_GameSettings.LoginType.GuestLogin)
+        {
+            string directory = (Application.isEditor ? "Assets/" : "MeloMelo_Data/");
+            string path = directory + "StreamingAssets/LocalData/MeloMelo_LocalSave_ChartList/" + LoginPage_Script.thisPage.GetUserPortOutput() + "_" + ChartNameArray[index - 1] + ".json";
 
-        StreamWriter writer = new StreamWriter(path);
-        writer.WriteLine(data);
+            StreamWriter writer = new StreamWriter(path);
+            writer.WriteLine(data);
 
-        writer.Close();
+            writer.Close();
+        }
+    }
+    #endregion
+
+    #region NETWORK
+    private string GetDestinationFile(bool isNetworkOpen, int chart_ID)
+    {
+        if (isNetworkOpen) return "TempPass_ChartData_" + chart_ID + ".json";
+        else return LoginPage_Script.thisPage.GetUserPortOutput() + "_" + ChartNameArray[chart_ID - 1] + ".json";
     }
     #endregion
 }

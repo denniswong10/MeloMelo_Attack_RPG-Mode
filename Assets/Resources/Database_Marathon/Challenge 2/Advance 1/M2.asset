@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M2
+  m_EditorClassIdentifier: 
+  BPM: 360
+  offset: 587
+  Music: {fileID: 8300000, guid: 1bd6c9b2073658745b9c543153a2c84b, type: 3}
+  PreviewTime: 54.1
+  ArtistName: DIALOGUE+
+  Title: Deneb to Spica
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 64ca4b22f83f9dd4d98868b3ab4f829d, type: 3}
+  ScoreObject: {fileID: 8067793693506333460, guid: d913c64428843b94b9afe59fb355901c,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: 97f1324a95135184da9fca617ab3a64d, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: ab2db78bba5ede9438d4ca5264b3d4e1, type: 2}
+  - {fileID: 11400000, guid: a5ed5fda86ce4394a934af5a7f18e4bb, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  creditPoint: --
+  BPM_Skin: 180
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: d22d1d76f269d7c408b57bab4de7b0cd, type: 2}
+  - {fileID: 11400000, guid: 1bdea645ae15bc8478db3ef4d35a45d9, type: 2}
+  - {fileID: 11400000, guid: b04b8e52485a7da4d9b32dac89f363cc, type: 2}
+  - {fileID: 11400000, guid: c6888f16ce692a7489fb264e585b9e22, type: 2}
+  - {fileID: 11400000, guid: 8ffd832bcf764ff48b365a7c62d8e245, type: 2}
+  - {fileID: 11400000, guid: 5b43c6b748a875840828d3f17efe568b, type: 2}
+  - {fileID: 11400000, guid: ba78706cee008fe4489ab6569a307094, type: 2}
+  - {fileID: 11400000, guid: 6bc20bdddf0be7c428029494cd2ee25d, type: 2}
+  - {fileID: 11400000, guid: f3e322316dd4ab3419fac12a79642c7f, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: dbd8d0ede0225a644ab9593223b013a6, type: 2}
+  - {fileID: 11400000, guid: 890fcce67aed79e4d9dc0e63fe3c6189, type: 2}
+  UltimateAddons: 0

@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M2
+  m_EditorClassIdentifier: 
+  BPM: 374
+  offset: 946
+  Music: {fileID: 8300000, guid: 092b35481c45e9f409e1be7be18c7156, type: 3}
+  PreviewTime: 54.6
+  ArtistName: DIALOGUE+
+  Title: Hajimete no Kakumei!
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: f73bb832ae5d58e49b9f7732a4e6a55b, type: 3}
+  ScoreObject: {fileID: 6392525399890133641, guid: d9bd238743483d64d9c26a523da243c4,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: 800a086d4b94b2b439fef798f8795cb3, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 46a97ac561aeec0418c3113544fbfe40, type: 2}
+  - {fileID: 11400000, guid: a5ed5fda86ce4394a934af5a7f18e4bb, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  creditPoint: --
+  BPM_Skin: 187
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: 0fd5c160e05f8c5499fad2bc531f2868, type: 2}
+  - {fileID: 11400000, guid: 170f8f54f3926074aafbe6d1b56bab3b, type: 2}
+  - {fileID: 11400000, guid: 48184fc6054d26449acb8d1a5a48c255, type: 2}
+  - {fileID: 11400000, guid: 5b43c6b748a875840828d3f17efe568b, type: 2}
+  - {fileID: 11400000, guid: 813a1b331438615439a8f0b1969e2712, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: b62387a9d46df2e4fb85b9bc35dd556f, type: 2}
+  UltimateAddons: 0

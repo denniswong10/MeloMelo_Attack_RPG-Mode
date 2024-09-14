@@ -21,7 +21,7 @@ public class CloudSaveModeConfig : MonoBehaviour
 
     async void Start()
     {
-        if (AuthenticationService.Instance.IsSignedIn)
+        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_GameSettings.LoginType.GuestLogin && AuthenticationService.Instance.IsSignedIn)
         {
             await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
             foreach (GameObject feature in CloudFeatures) feature.SetActive(GetSupportCloudService());

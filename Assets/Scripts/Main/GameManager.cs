@@ -27,25 +27,24 @@ public class GameManager : MonoBehaviour, IGameManager
     // BattleGround PlayField Size: Get
     public BattleGroundFieldComponent get_playField { get { return playField; } }
 
+    // Performance Score: GameProperties
     private GameSystem_Score score1;
     public GameSystem_Score get_score1 { get { return score1; } }
 
+    // Point System: GameProperties
     private GameSystem_Score point;
     public GameSystem_Score get_point { get { return point; } }
 
     // Technical Score: GameProperties
     private GameSystem_Score score2;
+    public GameSystem_Score get_score2 { get { return score2; } }
 
     // Display Object: GameProperties
     private Text Score;
     private Text Score2;
-    public Text End_Alert;
-    public GameObject KO_Message;
-    public GameObject KO_Message2;
 
     private bool WinAlert = false;
     public bool get_WinAlert { get { return WinAlert; } }
-    //private bool StartMusic = false;
 
     public bool DeveloperMode = false;
 
@@ -68,9 +67,9 @@ public class GameManager : MonoBehaviour, IGameManager
     private string ResMelo = string.Empty;
     [SerializeField] private GameObject JudgeCounter;
     [SerializeField] private GameObject[] JudgeCounterParticle;
-    [SerializeField] private GameObject[] JudgeTextLine;
 
     [SerializeField] private GameObject[] characterSlotStatus;
+    [SerializeField] private GameObject[] enemySlotStatus;
 
     // Load Gameplay UI and function
     void Start()
@@ -89,7 +88,7 @@ public class GameManager : MonoBehaviour, IGameManager
         playField = new BattleGroundFieldComponent();
 
         // Extra Setup
-        UnitStatusSlot();
+        Invoke("UnitStatusSlot", 0.05f);
 
         ResMelo = PlayerPrefs.GetString("Resoultion_Melo", string.Empty);
         try { GameObject.Find("SideUI_MusicInfo").GetComponent<Animator>().SetBool("Open" + ResMelo, true); } catch { }
@@ -369,7 +368,9 @@ public class GameManager : MonoBehaviour, IGameManager
                     AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/Missless"), new Vector3(0, 1.8f, -10.8f));
                 }
 
-                for (int i = 0; i < LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats.Length; i++) { LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats[i].StatLoader(); }
+                if (LoadingTransition_Script.thisLoader != null)
+                    for (int i = 0; i < LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats.Length; i++) 
+                        LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats[i].StatLoader();
             }
 
             // Battle Progress: < 80
@@ -378,7 +379,10 @@ public class GameManager : MonoBehaviour, IGameManager
                 if (progressMeter.ProgressRemarkChecker(progressMeter.GetProgressPlayedStatus()))
                 {
                     PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 4);
-                    for (int i = 0; i < LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats.Length; i++) { LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats[i].StatLoader(); }
+
+                    if (LoadingTransition_Script.thisLoader != null)
+                        for (int i = 0; i < LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats.Length; i++)
+                            LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats[i].StatLoader();
                 }
 
                 MeloMelo_GameSettings.GetRecentStatusRemark = 4;
@@ -396,7 +400,8 @@ public class GameManager : MonoBehaviour, IGameManager
             // Battle Lost: Default remark to defeated status
             if (!DeveloperMode)
             {
-                if (KO_Message.activeInHierarchy) { PlayerPrefs.SetString(BeatConductor.thisBeat.Music_Database.Title + "_SuccessBattle_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + PlayerPrefs.GetInt("BattleDifficulty_Mode", 1), "T"); WinAlert = true; }
+                GameObject KO = GameObject.FindGameObjectWithTag("EnemyStatus");
+                if (KO.transform.GetChild(KO.transform.childCount - 1).gameObject.activeInHierarchy) { PlayerPrefs.SetString(BeatConductor.thisBeat.Music_Database.Title + "_SuccessBattle_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + PlayerPrefs.GetInt("BattleDifficulty_Mode", 1), "T"); WinAlert = true; }
                 else { WinAlert = false; }
             }
         }
@@ -406,19 +411,7 @@ public class GameManager : MonoBehaviour, IGameManager
     IEnumerator ProgressResult()
     {
         yield return new WaitForSeconds(5);
-
         UnityEngine.SceneManagement.SceneManager.LoadScene("Music Selection Stage");
-
-        //// Skip stage ahead
-        //if (PlayerPrefs.HasKey("MarathonPermit"))
-        //{
-        //    int count = PlayerPrefs.GetInt("MarathonChallenge_MCount", 1);
-        //    PlayerPrefs.SetInt("MarathonChallenge_MCount", count + 1);
-        //}
-
-        //// Scene Transition
-        //bool findChallengeEnd = PlayerPrefs.HasKey("MarathonChallenge_MCount") && PlayerPrefs.GetInt("MarathonChallenge_MCount", 1) > 4 ? true : false;
-        //UnityEngine.SceneManagement.SceneManager.LoadScene((findChallengeEnd ? "MarathonSelection" : (PlayerPrefs.HasKey("Mission_Played") ? "BlackBoard" : "Music Selection Stage")));
     }
     #endregion
 
@@ -430,7 +423,7 @@ public class GameManager : MonoBehaviour, IGameManager
         SkillFeatures();
     }
 
-    void TransitionToResult() { UnityEngine.SceneManagement.SceneManager.LoadScene("Result"); }
+    void TransitionToResult() { if (!RetreatSuccess) UnityEngine.SceneManagement.SceneManager.LoadScene("Result"); }
     #endregion
 
     #region SETUP (Score Updater)
@@ -453,6 +446,12 @@ public class GameManager : MonoBehaviour, IGameManager
             // ScoreSystem: Display
             MeloMelo_ScoreSystem.thisSystem.UpdateScoreDisplay();
             MeloMelo_ScoreSystem.thisSystem.UpdatePointDisplay();
+        }
+
+        if (PlayerPrefs.HasKey("MarathonPermit"))
+        {
+            GetComponent<MeloMelo_UnitSlot_Editor>().UpdateQuestCondition();
+            UnitStatusSlot();
         }
     }
 
@@ -477,13 +476,16 @@ public class GameManager : MonoBehaviour, IGameManager
     #region SETUP (Play Condition)
     private void PreSet_BattleSetup()
     {
-        if (StartMenu_Script.thisMenu == null)
+        if (!DeveloperMode)
         {
-            PlayerPrefs.SetInt("DifficultyLevel_valve", 1);
+            PlayerPrefs.SetString("MVOption", "F");
+            PlayerPrefs.SetInt("NoteSpeed", 4);
+            PlayerPrefs.SetInt("DifficultyLevel_valve", 2);
             PlayerPrefs.SetInt("Feedback_Display_Type_B", 0);
             PlayerPrefs.SetInt("Feedback_Display_Type", 0);
             PlayerPrefs.SetInt("JudgeMeter_Setup", 1);
             PlayerPrefs.SetInt("ScoreDisplay2", 5);
+            PlayerPrefs.DeleteKey("MarathonPermit");
         }
     }
 
@@ -535,7 +537,7 @@ public class GameManager : MonoBehaviour, IGameManager
 
     private void EndOfBattle()
     {
-        if (!Bonus_sign.activeInHierarchy)
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "ScoreEditor" && !Bonus_sign.activeInHierarchy)
         {
             Alert_sign.gameObject.SetActive(true);
             Alert_sign.transform.GetChild(0).GetComponent<Text>().text = progressMeter.GetProgressPassNFailStatus();
@@ -551,13 +553,14 @@ public class GameManager : MonoBehaviour, IGameManager
     public void RetreatTrigger()
     {
         RetreatSuccess = true;
+        PlayerPrefs.SetInt("RetreatRoute", 1);
         GameObject.Find("RetreatBG").GetComponent<Animator>().SetTrigger("Retreat");
         StartCoroutine(ProgressResult());
     }
 
     private void CheckingRetreatStatus()
     {
-        if (GameObject.Find("Character").GetComponent<Character>().get_character.getInput.GetForInputExitPlay() 
+        if (GameObject.Find("Character") && GameObject.Find("Character").GetComponent<Character>().get_character.getInput.GetForInputExitPlay() 
             && !RetreatSuccess && BeatConductor.thisBeat.get_startNote)
         {
             if (Time.time >= NextRetreatTime)
@@ -645,7 +648,7 @@ public class GameManager : MonoBehaviour, IGameManager
             {
                 if (slotStatus.GetComponent<Animator>() != null)
                 {
-                    if (amount < 0 && !KO_Message2.activeInHierarchy)
+                    if (amount < 0 && !slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.activeInHierarchy)
                         slotStatus.GetComponent<Animator>().SetTrigger("Damage" + ResMelo);
 
                     else
@@ -659,7 +662,7 @@ public class GameManager : MonoBehaviour, IGameManager
             {
                 characterHealth.GetComponent<Text>().text = "HP: " + ((characterStatus.get_maxHealth == 1) ? "0/0" : characterStatus.get_health.ToString());
                 if (characterStatus.get_health <= 0 && GameObject.Find("Character").GetComponent<Character>().stats.get_name != "NA" && !RetreatSuccess)
-                    { KO_Message2.SetActive(true); Game_over(); }
+                    { slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.SetActive(true); Game_over(); }
                 else
                     if (slotStatus.transform.GetChild(1).GetChild(0).GetComponent<Slider>() != null)
                         slotStatus.transform.GetChild(1).GetChild(0).GetComponent<Slider>().value = characterStatus.get_health;
@@ -670,27 +673,38 @@ public class GameManager : MonoBehaviour, IGameManager
     // Update Auto: Enemy Health
     public void UpdateEnemy_Health(int amount, bool setHP)
     {
-        if (setHP)
-        {
-            enemyStatus.SetMaxHealth(amount);
-            enemyStatus.ModifyHealth(enemyStatus.get_maxHealth);
-            HealthBar_E.GetComponent<Slider>().maxValue = enemyStatus.get_maxHealth;
-        }
-        else
-        {
-            if (amount < 0 && !KO_Message.activeInHierarchy) { GameObject.FindGameObjectWithTag("EnemyStatus").GetComponent<Animator>().SetTrigger("Damage" + ResMelo); }
-            enemyStatus.ModifyHealth(amount);
-        }
+        GameObject slotStatus = GameObject.FindGameObjectWithTag("EnemyStatus");
+        GameObject enemyHealth = GameObject.FindGameObjectWithTag("Enemy_Health");
 
-        if (enemyStatus.get_health <= 0)
+        if (slotStatus != null)
         {
-            KO_Message.SetActive(true);
-            OverkillBonus_Display(-enemyStatus.get_knockOutValue, enemyStatus.get_maxHealth);
-        }
-        else
-        {
-            GameObject.FindGameObjectWithTag("Enemy_Health").GetComponent<Text>().text = "HP: " + enemyStatus.get_health;
-            HealthBar_E.GetComponent<Slider>().value = enemyStatus.get_health;
+            if (setHP)
+            {
+                enemyStatus.SetMaxHealth(amount);
+                enemyStatus.ModifyHealth(enemyStatus.get_maxHealth);
+                HealthBar_E.GetComponent<Slider>().maxValue = enemyStatus.get_maxHealth;
+            }
+            else
+            {
+                if (amount < 0 && !slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.activeInHierarchy) 
+                { slotStatus.GetComponent<Animator>().SetTrigger("Damage" + ResMelo); }
+                enemyStatus.ModifyHealth(amount);
+            }
+
+            if (enemyHealth != null)
+            {
+                enemyHealth.GetComponent<Text>().text = "HP: " + enemyStatus.get_health;
+                if (enemyStatus.get_health <= 0)
+                {
+                    slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.SetActive(true);
+                    OverkillBonus_Display(-enemyStatus.get_knockOutValue, enemyStatus.get_maxHealth);
+                }
+                else
+                {
+                    if (HealthBar_E.activeInHierarchy)
+                        HealthBar_E.GetComponent<Slider>().value = enemyStatus.get_health;
+                }
+            }
         }
     }
 
@@ -881,20 +895,29 @@ public class GameManager : MonoBehaviour, IGameManager
 
     private void UnitStatusSlot()
     {
+        string[] slot_key = { "PartyStatus", "EnemyStatus" };
+
+        // Setup character
         for (int currentSlot = 0; currentSlot < characterSlotStatus.Length; currentSlot++)
             characterSlotStatus[currentSlot].SetActive((PlayerPrefs.HasKey("MarathonPermit") ? 1 : 0) == currentSlot);
 
+        // Setup enemy
+        for (int currentSlot = 0; currentSlot <  enemySlotStatus.Length; currentSlot++)
+            enemySlotStatus[currentSlot].SetActive((PlayerPrefs.HasKey("MarathonPermit") ? 1 : 0) == currentSlot);
+
+        // Action slot status
         if (PlayerPrefs.HasKey("MarathonPermit"))
         {
-            GameObject slot = GameObject.FindGameObjectWithTag("PartyStatus");
-            slot.transform.GetChild(slot.transform.childCount - 1).GetComponent<Text>().text = "Marathon Mode\n\nStage " +
-                PlayerPrefs.GetInt("MarathonChallenge_MCount", 1) + "/" + 
-                Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length;
-
-            slot.transform.GetChild(1).GetChild(0).GetComponent<RawImage>().texture = 
-                Resources.Load<Texture>("Character_Data/" + PlayerPrefs.GetString("CharacterFront", "NA"));
+            for (int index = 0; index < slot_key.Length; index++)
+            {
+                GameObject slot = GameObject.FindGameObjectWithTag(slot_key[index]);
+                slot.transform.GetChild(slot.transform.childCount - 1).GetComponent<Text>().text = 
+                    GetComponent<MeloMelo_UnitSlot_Editor>().GetMarathonQuestSlot(index);
+                slot.transform.GetChild(1).GetChild(0).GetComponent<RawImage>().texture = 
+                    GetComponent<MeloMelo_UnitSlot_Editor>().GetMarathonProfileIcon(index);
+            }
         }
-    }
+    }   
     #endregion
 
     #region NOT IN USE

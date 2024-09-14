@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M3
+  m_EditorClassIdentifier: 
+  BPM: 420
+  offset: 134
+  Music: {fileID: 8300000, guid: e0ac211aa94fb324f97a68b02e0e8cf9, type: 3}
+  PreviewTime: 51.1
+  ArtistName: HTT
+  Title: U & I
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 794727fc74be8ec45880f6ba2b00d83b, type: 3}
+  ScoreObject: {fileID: 466086970024378037, guid: 0ec5aa9bc216e0e459b0ac451e6ace3a,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 94459dc1f595ab84b9fa5cf4fbf0f52d, type: 2}
+  creditPoint: --
+  BPM_Skin: 210
+  UseBPMDisplay: 1
+  ScaleLevel: 3
+  seasonNo: 2
+  NewChartSystem: 0
+  addons1: []
+  addons2: []
+  addons3: []
+  addons3b: []
+  UltimateAddons: 0

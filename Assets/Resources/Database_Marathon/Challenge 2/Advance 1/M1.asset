@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M1
+  m_EditorClassIdentifier: 
+  BPM: 264
+  offset: 1024
+  Music: {fileID: 8300000, guid: 303a53a7977cd6e4bb5235f9ea9ab048, type: 3}
+  PreviewTime: 44.4
+  ArtistName: A Channel Cast
+  Title: Humming Girl
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 525c9753b56d9d249a3831a0ddae0f93, type: 3}
+  ScoreObject: {fileID: 2362936997829848995, guid: a10e9c41ef7f2ff4c962014a95d6266f,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: 6ebc125d48de15f4ca4117b5d61785b0, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 46a97ac561aeec0418c3113544fbfe40, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  creditPoint: --
+  BPM_Skin: 132
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: 591cd355fdcaf754a91313bcf530adcd, type: 2}
+  - {fileID: 11400000, guid: 06145b490d3518d47899af538d8df20a, type: 2}
+  - {fileID: 11400000, guid: 461171ec8184eb7458f3a404245f879b, type: 2}
+  - {fileID: 11400000, guid: 39e71055bd0ee2f4f996e8e7e8a76374, type: 2}
+  - {fileID: 11400000, guid: bdedbbdd04913c24c802575858c1b79b, type: 2}
+  - {fileID: 11400000, guid: 8ffd832bcf764ff48b365a7c62d8e245, type: 2}
+  - {fileID: 11400000, guid: f3e322316dd4ab3419fac12a79642c7f, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: d885a9d6cf8a1a44c92aba824f2fb78d, type: 2}
+  - {fileID: 11400000, guid: a7673047a3fa2524ebd5d1f3b868ee06, type: 2}
+  UltimateAddons: 0

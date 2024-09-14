@@ -10,7 +10,7 @@ public class GameplaySetupConfig : MonoBehaviour
 
     async void Start()
     {
-        if (AuthenticationService.Instance.IsSignedIn)
+        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_GameSettings.LoginType.GuestLogin && AuthenticationService.Instance.IsSignedIn)
         {
             await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
 

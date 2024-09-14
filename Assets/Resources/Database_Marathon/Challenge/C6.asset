@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Intermidate 3
   Difficultylevel:
-  - 7
+  - 6
   - 7
   - 8
   - 9
   DifficultyType: 01000000010000000200000002000000
-  clearingType: 1
-  clearingValue: 250
+  clearingType: 2
+  clearingValue: 3/20

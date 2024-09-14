@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0380c5715401b3a498e9f350022347ad, type: 3}
   m_Name: D_Gold_B2
   m_EditorClassIdentifier: 
-  title: You are the champion
-  description: Achieve rate point to 18500
-  titleReward_name: RHODONITE PLAYER!
+  title: Complete Season 1 Game
+  description: Play all tracks for the first season
+  titleReward_name: LEGACY RISE
   Tier: 3
-  useConditionReward: 0
+  useConditionReward: 4
   fill_Array:
   - fill_Type: 0
-    value: 18500
+    value: 1
   conditionOperate: 

@@ -12,12 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0380c5715401b3a498e9f350022347ad, type: 3}
   m_Name: AW6
   m_EditorClassIdentifier: 
-  title: Let's get started with simple play
-  description: Achieve rate point to 1000
-  titleReward_name: DEBUT TIME
+  title: Let's call it a day
+  description: Perform retreat from a battle
+  titleReward_name: ESPACE BATTLE
   Tier: 0
-  useConditionReward: 0
-  fill_Array:
-  - fill_Type: 0
-    value: 1000
-  conditionOperate: 
+  useConditionReward: 9
+  fill_Array: []
+  conditionOperate: RetreatCalled

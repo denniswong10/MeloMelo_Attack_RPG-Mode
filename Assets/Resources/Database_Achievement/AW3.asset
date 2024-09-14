@@ -16,6 +16,6 @@ MonoBehaviour:
   description: Review the option menu
   titleReward_name: SETTER
   Tier: 0
-  useConditionReward: 7
+  useConditionReward: 9
   fill_Array: []
   conditionOperate: Configuration

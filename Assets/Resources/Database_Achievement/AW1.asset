@@ -16,6 +16,6 @@ MonoBehaviour:
   description: Starting to play the game
   titleReward_name: NEW PLAYER!
   Tier: 0
-  useConditionReward: 7
+  useConditionReward: 9
   fill_Array: []
   conditionOperate: StartingOut

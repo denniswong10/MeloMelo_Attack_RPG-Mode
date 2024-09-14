@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b296974f7525ba64b81d387debbb4465, type: 3}
   m_Name: S2
   m_EditorClassIdentifier: 
-  title: Rookie 2
+  title: Intermidate Trial
   Difficultylevel:
-  - 4
-  - 4
-  - 5
   - 6
-  DifficultyType: 01000000010000000100000001000000
-  clearingType: 2
-  clearingValue: 4/10
+  - 7
+  - 8
+  - 9
+  DifficultyType: 02000000020000000200000002000000
+  clearingType: 1
+  clearingValue: 20

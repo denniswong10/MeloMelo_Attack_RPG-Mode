@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0380c5715401b3a498e9f350022347ad, type: 3}
   m_Name: D_Gold_A1
   m_EditorClassIdentifier: 
-  title: Complete Trial Game
-  description: Play all tracks in the prologue season
-  titleReward_name: TRAILER
+  title: Toward the Northern
+  description: Clear all tracks in Journey to North
+  titleReward_name: NORTHERN EVENT
   Tier: 3
-  useConditionReward: 4
+  useConditionReward: 8
   fill_Array:
   - fill_Type: 0
-    value: 0
+    value: 1
   conditionOperate: 

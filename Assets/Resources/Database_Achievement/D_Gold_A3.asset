@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0380c5715401b3a498e9f350022347ad, type: 3}
   m_Name: D_Gold_A3
   m_EditorClassIdentifier: 
-  title: Complete Season 2 Game
-  description: Play all tracks for the second season
-  titleReward_name: LEGACY BURN
+  title: Snowy Storm Ahead
+  description: Clear all tracks in Winter Haunted House
+  titleReward_name: SNOWY STORM EVENT
   Tier: 3
-  useConditionReward: 4
+  useConditionReward: 8
   fill_Array:
   - fill_Type: 0
-    value: 2
+    value: 3
   conditionOperate: 

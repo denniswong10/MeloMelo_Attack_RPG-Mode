@@ -4,13 +4,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 
-[System.Serializable]
-public class MeloMelo_NoteSpeed_Settings
-{
-    public float bpm;
-    public float baseSpeed;
-}
-
 public class ServerGateway_Script : MonoBehaviour
 {
     public static ServerGateway_Script thisServer;
@@ -35,9 +28,13 @@ public class ServerGateway_Script : MonoBehaviour
     private int serverGateSwitch = 0;
     public int get_loginType { get { return serverGateSwitch; } }
 
+    [SerializeField] private Text ServerCounter;
+    private int totalserverCount;
+
     void Start()
     {
         thisServer = this;
+        totalserverCount = 0;
 
         statusReady = false;
         BGM_Loader();
@@ -45,13 +42,20 @@ public class ServerGateway_Script : MonoBehaviour
 
         StartCoroutine(CheckingForNetwork());
         GetServerGatewayDescription();
+        GetServerExtensionSocket();
+
         CurrentV.text = InstalledVerisionDisplay();
+        ServerCounter.text = "Total Server: " + totalserverCount;
     }
 
     // Transition --> From StartMenu_Transition
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) { Invoke("Reboot_Application", 0.5f); }
+        if (Input.GetKeyDown(KeyCode.Escape)) 
+        {
+            GameObject.Find("ReturnBtn").GetComponent<Button>().interactable = false;
+            Invoke("Reboot_Application", 0.5f); 
+        }
     }
 
     #region SETUP
@@ -66,14 +70,9 @@ public class ServerGateway_Script : MonoBehaviour
         return "Installed Version: " + StartMenu_Script.thisMenu.get_version;
     }
 
-    public void UpdateLoginType(int index)
-    {
-        serverGateSwitch = index;
-    }
-
     private string CheckServerStatus(string status, int index)
     {
-        if (serverTemplate[index].offlineMode)
+        if (index < serverTemplate.Length && serverTemplate[index].offlineMode)
             return serverStatus[0];
         else
             return status;
@@ -83,27 +82,59 @@ public class ServerGateway_Script : MonoBehaviour
     {
         serverTemplate = Resources.LoadAll<ServerGateWayDetail>("Database_Server");
     }
+    #endregion
 
+    #region COMPONENT (Server Creation)
     private void GetServerGatewayDescription()
     {
         for (int gateway = 0; gateway < serverTemplate.Length; gateway++)
         {
             RawImage template = Instantiate(SeverListTemplate);
-
             template.transform.GetChild(0).GetComponent<Text>().text = serverTemplate[gateway].serverTitle;
             template.transform.SetParent(GatewayList.transform);
-
-            template.GetComponent<ServerTemplate_Script>().SetDestinationPoint(serverTemplate[gateway].destinationTitle);
-            template.GetComponent<ServerTemplate_Script>().SetPort(gateway);
-            StartCoroutine(GetServerConntectedToCloud(template, gateway));
+            ServerCreatorHub(template, gateway, 1);
         }
+
+        // Count server instance
+        totalserverCount += serverTemplate.Length;
+    }
+
+    private void GetServerExtensionSocket()
+    {
+        string fileDirectory = (Application.isEditor ? "Assets/" : "MeloMelo_Data/") + "StreamingAssets/SERVER.ini";
+
+        if (System.IO.File.Exists(fileDirectory))
+        {
+            System.IO.StreamReader socket = new System.IO.StreamReader(fileDirectory);
+            string[] socket_dat = socket.ReadToEnd().Split("*");
+
+            for (int data = 0; data < socket_dat.Length / 3; data++)
+            {
+                RawImage template = Instantiate(SeverListTemplate);
+                template.transform.GetChild(0).GetComponent<Text>().text = socket_dat[data * 3];
+                template.transform.SetParent(GatewayList.transform);
+                ServerCreatorHub(template, data + 1, int.Parse(socket_dat[data * 3 + 2]), socket_dat[data * 3 + 1]);
+            }
+
+            // Count server instance
+            totalserverCount += socket_dat.Length / 3;
+        }
+    }
+
+    private void ServerCreatorHub(RawImage template, int port, int connectionType, string url = "")
+    {
+        // Update server settings
+        template.GetComponent<ServerTemplate_Script>().SetDestinationPoint(port == 0 ? "LoginPage3" : port != 0 && connectionType == 1 ? "LoginPage2" : "LoginPage1");
+        template.GetComponent<ServerTemplate_Script>().SetServerType(port == 0 ? 0 : port != 0 && connectionType == 1 ? 1 : 2);
+        template.GetComponent<ServerTemplate_Script>().SetServerIP(url);
+        template.GetComponent<ServerTemplate_Script>().SetPort(port);
+
+        if (url != string.Empty) GetServerConntectedToCloud(template, port, connectionType);
+        else GetServerConntectedToCloud(template, port, string.Empty);
     }
     #endregion
 
-    #region MAIN
-    #endregion
-
-    #region COMPONENT
+    #region COMPONENT (Data Transition) 
     private IEnumerator CheckingForNetwork()
     {
         int length = network_promptMessage.Length;
@@ -126,25 +157,24 @@ public class ServerGateway_Script : MonoBehaviour
         Invoke("HideIcon", 1);
     }
 
-    void HideIcon()
+    private void HideIcon()
     {
         icon.SetActive(false);
     }
     #endregion
 
     #region NETWORK
-
-    private IEnumerator GetServerConntectedToCloud(RawImage reference, int index)
+    private void GetServerConntectedToCloud(RawImage reference, int index, int connectionType)
     {
-        yield return new WaitForSeconds(1);
+        MeloMelo_Network.CloudServices_ControlPanel services = 
+            new MeloMelo_Network.CloudServices_ControlPanel(reference.GetComponent<ServerTemplate_Script>().get_serverURL);
 
-        WWWForm get = new WWWForm();
-        get.AddField("Title", Application.productName);
+        StartCoroutine(services.CheckNetwork_ServerStatus(Application.productName, reference, index));
+    }
 
-        UnityWebRequest server = UnityWebRequest.Post(StartMenu_Script.thisMenu.get_serverURL + "/database/transcripts/site5/UnityLogin_InternetChecker.php", get);
-        yield return server.SendWebRequest();
-
-        switch (server.downloadHandler.text)
+    public void GetServerConntectedToCloud(RawImage reference, int index, string received_status)
+    {
+        switch (received_status)
         {
             case "OK!":
                 reference.transform.GetChild(1).GetComponent<Text>().text = "Status: " + CheckServerStatus(serverStatus[0], index);
@@ -160,15 +190,24 @@ public class ServerGateway_Script : MonoBehaviour
         }
 
         statusReady = true;
-        server.Dispose();
     }
     #endregion
 
     #region MISC
-    private void Reboot_Application()
+    public void Reboot_Application()
     {
         SceneManager.LoadScene("LoadScene");
         if (GameObject.Find("BGM").activeInHierarchy) Destroy(GameObject.Find("BGM"));
+    }
+
+    public void UpdateLoginType(int index)
+    {
+        serverGateSwitch = index;
+    }
+
+    public void ExitApplication()
+    {
+        Application.Quit();
     }
     #endregion
 }

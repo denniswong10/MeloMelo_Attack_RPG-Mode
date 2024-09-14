@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M2
+  m_EditorClassIdentifier: 
+  BPM: 367
+  offset: 1322
+  Music: {fileID: 8300000, guid: c42795e020073574b88e79b2e162ac2f, type: 3}
+  PreviewTime: 22.8
+  ArtistName: xi
+  Title: ANiMA
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: c8bb04a6745d24545b6eaad6a90622a4, type: 3}
+  ScoreObject: {fileID: 5355514618393916712, guid: 288a3ff6da4ad7c46a4d17f53803f867,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 94459dc1f595ab84b9fa5cf4fbf0f52d, type: 2}
+  creditPoint: Deemo
+  BPM_Skin: 183.5
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: e33e3ac7002e3d340bbd4ab2edeb8768, type: 2}
+  - {fileID: 11400000, guid: 1ea0cb72ca6a2214aa24d6e88f5907f6, type: 2}
+  - {fileID: 11400000, guid: ab7e687f1f9c1754e9cbed8a6396ea6a, type: 2}
+  - {fileID: 11400000, guid: e30773b6dd82bad44b14e6baf7ff4a23, type: 2}
+  - {fileID: 11400000, guid: 8ffd832bcf764ff48b365a7c62d8e245, type: 2}
+  - {fileID: 11400000, guid: 37f504a9404129d41998d4396d5ed349, type: 2}
+  - {fileID: 11400000, guid: 6530cd8bfe3a3ba4386ea9a8c631878c, type: 2}
+  - {fileID: 11400000, guid: d39cb7e4d6892c44caa49bb6cb38fb63, type: 2}
+  - {fileID: 11400000, guid: 64ac9d7f8e8c5b04393eca09b406cfa0, type: 2}
+  - {fileID: 11400000, guid: 39e71055bd0ee2f4f996e8e7e8a76374, type: 2}
+  - {fileID: 11400000, guid: bdedbbdd04913c24c802575858c1b79b, type: 2}
+  - {fileID: 11400000, guid: 6f62750fe544b1141af723a62be69531, type: 2}
+  - {fileID: 11400000, guid: 4dc5186d972b7aa4b97b815adaf6a036, type: 2}
+  - {fileID: 11400000, guid: 3475621d9a3f87046b9fc39de58fbc1a, type: 2}
+  - {fileID: 11400000, guid: 06145b490d3518d47899af538d8df20a, type: 2}
+  - {fileID: 11400000, guid: 821f780302448fc4e89e7670d7aa8899, type: 2}
+  - {fileID: 11400000, guid: 0ef11db43818e384ca911e203f9e4b26, type: 2}
+  - {fileID: 11400000, guid: 40a7e005fd9b45e4f880b3868f398dab, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: 314f31d06e461b84f970b1ba1134ee49, type: 2}
+  - {fileID: 11400000, guid: 375a5f2401599a74181d95bb1bba9ad7, type: 2}
+  - {fileID: 11400000, guid: c3fdddfd447eaff4e9687baa4fb23003, type: 2}
+  - {fileID: 11400000, guid: e14e0984299d65b41a9e08489d18359c, type: 2}
+  - {fileID: 11400000, guid: 124eda93d8e4bcb479f5f6321bbec33a, type: 2}
+  - {fileID: 11400000, guid: a7b1843b56a264642a1ce8c5fd68d150, type: 2}
+  - {fileID: 11400000, guid: c125490e68f018242b64c82fba6dac7f, type: 2}
+  - {fileID: 11400000, guid: 6cdedab019519ae408b6fa2e54301ffc, type: 2}
+  - {fileID: 11400000, guid: 61a697addda71bc4183c1cba34a5d28b, type: 2}
+  - {fileID: 11400000, guid: 66601c3cc257d8c4ebb6f97f21a4c7e5, type: 2}
+  - {fileID: 11400000, guid: fb5a2d6518a23b744986a34b1e3065a6, type: 2}
+  - {fileID: 11400000, guid: b8eef93900fa9994c9ec3ba3259a8cb5, type: 2}
+  - {fileID: 11400000, guid: 0311a91ef9a27ce42b630967a9e237b7, type: 2}
+  - {fileID: 11400000, guid: ffe98cfc7c499f747bc7d046b0604226, type: 2}
+  - {fileID: 11400000, guid: 22eaadce49c93ef4583b18f54b1a01bc, type: 2}
+  - {fileID: 11400000, guid: 8423d69f311475040a52099eded295f6, type: 2}
+  - {fileID: 11400000, guid: a76f46c9ddd88f14fb5cc56a75cc23e5, type: 2}
+  UltimateAddons: 1

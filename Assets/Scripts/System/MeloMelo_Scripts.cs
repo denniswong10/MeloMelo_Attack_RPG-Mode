@@ -1227,6 +1227,12 @@ namespace MeloMelo_Local
         public bool battleGuide;
         public bool isOptionVisited;
         public bool isTransferDone;
+        public bool isRetreatUsed;
+        public bool isMarathonVisited;
+        public bool isCollectionVisited;
+
+        public string currentVersion;
+        public string chartVersion;
 
         public PlayerSettingsDatabase GetSettingsData(string format)
         {
@@ -1540,6 +1546,83 @@ namespace MeloMelo_Local
         #endregion
     }
 
+    public class LocalData_MarathonDatabase : LocalData
+    {
+        public LocalData_MarathonDatabase(string user, string path)
+        {
+            this.user = user;
+            localPath = path;
+            directory = (Application.isEditor ? "Assets/" : "MeloMelo_Data/");
+
+            Debug.Log("Path: " + directory + localPath);
+            Debug.Log("Registered_User (Load_Database): " + user);
+        }
+
+        #region MAIN
+        public bool SaveProgress(string title, bool isDone, int count, int score)
+        {
+            MarathonChallengeProgress save = new MarathonChallengeProgress();
+            save.title = title;
+            save.clearedChallenge = isDone;
+            save.playedCount = count;
+            save.totalScore = score;
+
+            if (File.Exists(directory + combinePath)) ReplaceExistingProgress(save);
+            else AddNewProgress(save);
+
+            return true;
+        }
+
+        public bool LoadProgress()
+        {
+            List<MarathonChallengeProgress> loader = new List<MarathonChallengeProgress>();
+
+            if (File.Exists(directory + combinePath))
+            {
+                foreach (string load in GetFormatToList()) if (load != string.Empty) 
+                    loader.Add(JsonUtility.FromJson<MarathonChallengeProgress>(load));
+
+                foreach (MarathonChallengeProgress progress in loader)
+                {
+                    PlayerPrefs.SetInt("MarathonProgress_Title_" + progress.title, 1);
+                    PlayerPrefs.SetInt("MarathonProgress_PlayedCount_" + progress.title, progress.playedCount);
+                    PlayerPrefs.SetString("MarathonProgress_Cleared_" + progress.title, progress.clearedChallenge ? "T" : "F");
+                    PlayerPrefs.SetInt("MarathonProgress_Score_" + progress.title, progress.totalScore);
+                }
+            }
+
+            return true;
+        }
+        #endregion
+
+        #region COMPONENT
+        private void AddNewProgress(MarathonChallengeProgress newProgress)
+        {
+            string jsonString = JsonUtility.ToJson(newProgress) + "/";
+            if (File.Exists(directory + combinePath)) jsonString += GetProgressFile();
+            WriteToFile(jsonString);
+        }
+
+        private void ReplaceExistingProgress(MarathonChallengeProgress newProgress)
+        {
+            List<MarathonChallengeProgress> loader = new List<MarathonChallengeProgress>();
+            foreach (string load in GetFormatToList()) if (load != string.Empty)
+                    loader.Add(JsonUtility.FromJson<MarathonChallengeProgress>(load));
+
+            for (int removeIndex = 0; removeIndex < loader.ToArray().Length; removeIndex++)
+            {
+                if (loader[removeIndex].title == newProgress.title) 
+                    loader.Remove(loader[removeIndex]);
+            }
+
+            loader.Add(newProgress);
+            string newSaveProgress = string.Empty;
+            foreach (MarathonChallengeProgress save in loader) newSaveProgress += JsonUtility.ToJson(save) + "/";
+            WriteToFile(newSaveProgress);
+        }
+        #endregion
+    }
+
     public class LocalLoad_DataManagement : LocalData
     {
         public LocalLoad_DataManagement(string user, string path)
@@ -1566,17 +1649,23 @@ namespace MeloMelo_Local
 
                 foreach (ScoreDatabase data in dataArray)
                 {
-                    if (user == data.user && data.score >= PlayerPrefs.GetInt(data.title + "_score" + data.difficulty, 0))
+                    if (user == data.user)
                     {
-                        PlayerPrefs.SetInt(data.title + "_score" + data.difficulty, (int)data.score);
-                        PlayerPrefs.SetInt(data.title + "_BattleRemark_" + data.difficulty, data.remark);
-                        if (PlayerPrefs.GetInt(data.title + "_score" + data.difficulty, 0) >= 1000000) 
-                        { PlayerPrefs.SetString(data.title + "_score" + data.difficulty + "_SS", "T"); }
+                        // Score is taken to the highest
+                        if (data.score >= PlayerPrefs.GetInt(data.title + "_score" + data.difficulty, 0))
+                            PlayerPrefs.SetInt(data.title + "_score" + data.difficulty, (int)data.score);
 
+                        // Battle Status update to the latest
+                        if (data.remark <= PlayerPrefs.GetInt(data.title + "_BattleRemark_" + data.difficulty, 6))
+                            PlayerPrefs.SetInt(data.title + "_BattleRemark_" + data.difficulty, data.remark);
+
+                        // ???
+                        if (PlayerPrefs.GetInt(data.title + "_score" + data.difficulty, 0) >= 1000000)
+                            PlayerPrefs.SetString(data.title + "_score" + data.difficulty + "_SS", "T");
+
+                        // Reduce score to 0 when defeated
                         if (PlayerPrefs.GetInt(data.title + "_BattleRemark_" + data.difficulty) == 5)
-                        {
                             PlayerPrefs.SetInt(data.title + "_score" + data.difficulty, 0);
-                        }
                     }
                 }
             }
@@ -1619,8 +1708,14 @@ namespace MeloMelo_Local
                 PlayerPrefs.SetString("HowToPlay_Notice", data.HTP ? "T" : "F");
                 PlayerPrefs.SetString("Control_notice", data.Control_N ? "T" : "F");
                 PlayerPrefs.SetString("BattleSetup_Guide", data.battleGuide ? "T" : "F");
+                PlayerPrefs.SetString("MeloMelo_Current_PlayVersion", data.currentVersion);
+                PlayerPrefs.SetString("MeloMelo_Current_ChartVersion", data.chartVersion);
+
                 if (data.isOptionVisited) PlayerPrefs.SetInt("ReviewOption", 1);
                 if (data.isTransferDone) PlayerPrefs.SetInt("ReviewTransfer", 1);
+                if (data.isMarathonVisited) PlayerPrefs.SetInt("MarathonPass_Eternal", 1);
+                if (data.isCollectionVisited) PlayerPrefs.SetInt("CollectionAlbum_Visited", 1);
+                if (data.isRetreatUsed) PlayerPrefs.SetInt("RetreatRoute", 1);
             }
 
             return true;
@@ -1748,9 +1843,11 @@ namespace MeloMelo_Local
         }
 
         #region RAW
-        public string GetLocalJsonFile(string fileName)
+        public string GetLocalJsonFile(string fileName, bool getUserId)
         {
-            SelectFileForAction(fileName);
+            if (getUserId) SelectFileForActionWithUserTag(fileName);
+            else SelectFileForAction(fileName);
+
             return GetProgressFile();
         }
 
@@ -1818,8 +1915,14 @@ namespace MeloMelo_Local
             data.HTP = false;
             data.Control_N = false;
             data.battleGuide = false;
+            data.currentVersion = PlayerPrefs.GetString("MeloMelo_Current_PlayVersion", string.Empty);
+            data.chartVersion = PlayerPrefs.GetString("MeloMelo_Current_ChartVersion", string.Empty);
+
             data.isOptionVisited = PlayerPrefs.HasKey("ReviewOption");
             data.isTransferDone = PlayerPrefs.HasKey("ReviewTransfer");
+            data.isMarathonVisited = PlayerPrefs.HasKey("MarathonPass_Eternal");
+            data.isRetreatUsed = PlayerPrefs.HasKey("RetreatRoute");
+            data.isCollectionVisited = PlayerPrefs.HasKey("CollectionAlbum_Visited");
 
             JsonFormat += JsonUtility.ToJson(data);
             WriteToFile(JsonFormat);
@@ -1990,6 +2093,7 @@ namespace MeloMelo_Network
     {
         protected string portId = string.Empty;
         protected string urlWeb = string.Empty;
+        protected readonly string url_directory = "/database/transcripts/site5/melomelo_backend/";
     }
 
     public class ServerData : ServerIP_Settings
@@ -2035,7 +2139,7 @@ namespace MeloMelo_Network
             urlWeb = url;
         }
 
-        #region MAIN
+        #region MAIN (Data Handler)
         public void SaveProgressTrack(string title, int difficulty, int score, int combo)
         {
             WWWForm progress = new WWWForm();
@@ -2045,8 +2149,8 @@ namespace MeloMelo_Network
             progress.AddField("Score", score);
             progress.AddField("Combo", combo);
 
-            const string serverAPI = "/database/transcripts/site5/MeloMelo_SaveProgress_2024.php";
-            ResultMenu_Script.thisRes.StartCoroutine(GetServerToSave(serverAPI, progress));
+            const string serverAPI = "MeloMelo_SaveProgress_2024.php";
+            GetAlternativeServer(serverAPI, progress);
         }
 
         public void SaveProgressTrackByPoint(string title, int difficulty, int point)
@@ -2057,8 +2161,8 @@ namespace MeloMelo_Network
             progress.AddField("Difficulty", difficulty);
             progress.AddField("Point", point);
 
-            const string serverAPI = "/database/transcripts/site5/MeloMelo_SaveProgress_2_2024.php";
-            ResultMenu_Script.thisRes.StartCoroutine(GetServerToSave(serverAPI, progress));
+            const string serverAPI = "MeloMelo_SaveProgress_2_2024.php";
+            GetAlternativeServer(serverAPI, progress);
         }
 
         public void SaveProgressTrackByRemark(string title, int difficulty, int remark)
@@ -2069,8 +2173,8 @@ namespace MeloMelo_Network
             progress.AddField("Difficulty", difficulty);
             progress.AddField("Remark", remark);
 
-            const string serverAPI = "/database/transcripts/site5/MeloMelo_SaveProgress_3_2024.php";
-            ResultMenu_Script.thisRes.StartCoroutine(GetServerToSave(serverAPI, progress));
+            const string serverAPI = "MeloMelo_SaveProgress_3_2024.php";
+            GetAlternativeServer(serverAPI, progress);
         }
 
         public void SaveProgressProfile(int totalRatePoint, int playedCount)
@@ -2080,8 +2184,8 @@ namespace MeloMelo_Network
             profile.AddField("RatePoint", totalRatePoint);
             profile.AddField("Count", playedCount);
 
-            const string serverAPI = "/database/transcripts/site5/MeloMelo_ProfileCapture_2024.php";
-            ResultMenu_Script.thisRes.StartCoroutine(GetServerToSave(serverAPI, profile));
+            const string serverAPI = "MeloMelo_ProfileCapture_2024.php";
+            GetAlternativeServer(serverAPI, profile);
         }
 
         public void SaveSettingConfiguration(string mv, int noteSpeed, int autoRetreat, int primaryDisplay, int secondaryDisplay, int judgeType)
@@ -2094,9 +2198,11 @@ namespace MeloMelo_Network
             config.AddField("Display1", primaryDisplay);
             config.AddField("Display2", secondaryDisplay);
             config.AddField("JudgeType", judgeType);
+            config.AddField("FeedbackA", PlayerPrefs.GetInt("Feedback_Display_Type_B", 0));
+            config.AddField("FeedbackB", PlayerPrefs.GetInt("Feedback_Display_Type", 0));
 
-            const string serverAPI = "/database/transcripts/site5/MeloMelo_SettingConfigOnSave_2024.php";
-            ResultMenu_Script.thisRes.StartCoroutine(GetServerToSave(serverAPI, config));
+            const string serverAPI = "MeloMelo_SettingConfigOnSave_2024.php";
+            GetAlternativeServer(serverAPI, config);
         }
 
         public void SaveBattleProgress(int areaDifficulty, int trackDifficulty, string title, string battleSuccess, int previousScore, int score)
@@ -2110,8 +2216,8 @@ namespace MeloMelo_Network
             progress.AddField("PreviousScore", previousScore);
             progress.AddField("Score", score);
 
-            const string serverAPI = "/database/transcripts/site5/MeloMelo_BattleProgressOnSave_2024.php";
-            ResultMenu_Script.thisRes.StartCoroutine(GetServerToSave(serverAPI, progress));
+            const string serverAPI = "MeloMelo_BattleProgressOnSave_2024.php";
+            GetAlternativeServer(serverAPI, progress);
         }
 
         public void SaveMusicSelectionLastVisited(string areaSelect, int trackSelect, int difficulty)
@@ -2122,8 +2228,8 @@ namespace MeloMelo_Network
             info.AddField("TrackSelect", trackSelect);
             info.AddField("TrackDiff", difficulty);
 
-            const string serverAPI = "/database/transcripts/site5/MeloMelo_Save_MusicSelectionLastVisited_2024.php";
-            ResultMenu_Script.thisRes.StartCoroutine(GetServerToSave(serverAPI, info));
+            const string serverAPI = "MeloMelo_Save_MusicSelectionLastVisited_2024.php";
+            GetAlternativeServer(serverAPI, info);
         }
 
         public void SavePlayerData(string howToPlay, string setup, string control, float bgm, float se)
@@ -2136,21 +2242,68 @@ namespace MeloMelo_Network
             info.AddField("BGM", bgm.ToString());
             info.AddField("SE", se.ToString());
 
-            const string serverAPI = "/database/transcripts/site5/MeloMelo_Save_PlayerSettings_2024.php";
-            ResultMenu_Script.thisRes.StartCoroutine(GetServerToSave(serverAPI, info));
+            const string serverAPI = "MeloMelo_Save_PlayerSettings_2024.php";
+            GetAlternativeServer(serverAPI, info);
+        }
+
+        public void SaveBattleFormation(string slot1, string slot2, string slot3, string mainSlot)
+        {
+            WWWForm info = new WWWForm();
+            info.AddField("User", portId);
+            info.AddField("Slot_1", slot1);
+            info.AddField("Slot_2", slot2);
+            info.AddField("Slot_3", slot3);
+            info.AddField("MainSlot", mainSlot);
+
+            const string serverAPI = "MeloMelo_Save_BattleFormation_2024.php";
+            GetAlternativeServer(serverAPI, info);
+        }
+
+        public void SaveCharacterStatusData(string name, int level, int experience)
+        {
+            WWWForm stats = new WWWForm();
+            stats.AddField("User", portId);
+            stats.AddField("CharacterName", name);
+            stats.AddField("Level", level);
+            stats.AddField("Exp", experience);
+
+            const string serverAPI = "MeloMelo_Save_CharacterStatusData_2024.php";
+            GetAlternativeServer(serverAPI, stats);
+        }
+
+        public void SaveChartDistributionData(string title, string coverImage, int difficulty, string level, int score, int point, int chartType)
+        {
+            WWWForm info = new WWWForm();
+            info.AddField("User", portId);
+            info.AddField("Title", title);
+            info.AddField("CoverImage", coverImage);
+            info.AddField("Difficulty", difficulty);
+            info.AddField("Level", level);
+            info.AddField("Score", score);
+            info.AddField("Point", point);
+            info.AddField("Type", chartType);
+
+            const string serverAPI = "MeloMelo_Save_TrackDistributionList_2024.php";
+            GetAlternativeServer(serverAPI, info);
         }
         #endregion
 
-        #region COMPONENT
-        private IEnumerator GetServerToSave(string key, WWWForm input)
+        #region MAIN (Data Sender / Data Requesting)
+        public IEnumerator GetServerToSave(string key, WWWForm input)
         {
             counter++;
             UnityWebRequest save = UnityWebRequest.Post(urlWeb + key, input);
             yield return save.SendWebRequest();
 
             processReport.Add(save.downloadHandler.text == "OK!");
-            Debug.Log(portId + ": CloudSave - " + key + " [" + save.downloadHandler.text == "OK!" + "]");
+            Debug.Log(portId + ": CloudSave - " + key + " [" + save.downloadHandler.text + "]");
             save.Dispose();
+        }
+
+        private void GetAlternativeServer(string url, WWWForm info)
+        {
+            Debug.Log("Redirect to result menu...");
+            ResultMenu_Script.thisRes.ConnectionEstablish(info, url_directory + url);
         }
         #endregion
     }
@@ -2164,9 +2317,19 @@ namespace MeloMelo_Network
         private enum CloudLoad_TrackField { UserID, Title, Difficulty, TotalField };
         private enum CloudLoad_TrackField_TypeOfResult { Individual = 1, Main };
         private enum CloudLoad_ProfileField { UserID, RatePoint, PlayedCount, TotalField };
-        private enum CloudLoad_SettingConfiguration { UserID, MV, NoteSpeed, AutoRetreat, PrimaryDisplay, SecondaryDisplay, JudgeType, TotalField };
+        private enum CloudLoad_SettingConfiguration 
+        { 
+            UserID, MV, NoteSpeed, AutoRetreat, 
+            PrimaryDisplay, SecondaryDisplay, 
+            JudgeType, Feedback_TypeA, Feedback_TypeB,
+            TotalField 
+        };
+
         private enum CloudLoad_LastSelectionVisited { AreaSelection, TrackSelection, TrackDifficuly, TotalField };
         private enum CloudLoad_PlayerSettingData { HowToPlay, Setup, Control, BGM, SE, TotalField };
+        private enum CloudLoad_BattleFormationData { Slot1, Slot2, Slot3, MainSlot, TotalField };
+
+        private enum CloudLoad_TrackList { Title, CoverImage, Difficulty_ID, Difficulty, Score, Point, ChartType, TotalField };
 
         public CloudLoad_DataManagement(string user, string url)
         {
@@ -2174,18 +2337,17 @@ namespace MeloMelo_Network
             counter = 0;
 
             portId = user;
-            urlWeb = url;
+            urlWeb = url + url_directory;
         }
 
+        #region MAIN (Data Handler)
         public IEnumerator LoadProgressTrack(int options)
         {
             WWWForm progress = new WWWForm();
             progress.AddField("User", portId);
             counter++;
 
-            UnityWebRequest load = UnityWebRequest.Post(urlWeb + 
-                "/database/transcripts/site5/MeloMelo_LoadProgress_" + options + "_2024.php", progress);
-
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + "MeloMelo_LoadProgress_" + options + "_2024.php", progress);
             yield return load.SendWebRequest();
 
             switch (options)
@@ -2224,7 +2386,6 @@ namespace MeloMelo_Network
 
                 case 2:
                     string[] trackDataByPoint = load.downloadHandler.text.Split("\n");
-                    Debug.Log(load.downloadHandler.text);
 
                     if (load.downloadHandler.text != "Empty")
                     {
@@ -2291,7 +2452,7 @@ namespace MeloMelo_Network
             }
 
             cloudLogging.Add(load.downloadHandler.text != "Empty");
-            Debug.Log("Server: Load Track Successful! [" + load.downloadHandler.text != "Empty" + "]");
+            Debug.Log("Server: Load Track Successful! (Save " + options + ") [" + load.downloadHandler.text + "]");
             load.Dispose();
         }
 
@@ -2301,7 +2462,7 @@ namespace MeloMelo_Network
             profile.AddField("User", portId);
             counter++;
 
-            UnityWebRequest load = UnityWebRequest.Post(urlWeb + "/database/transcripts/site5/MeloMelo_ProfileLoader_2024.php", profile);
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + "MeloMelo_ProfileLoader_2024.php", profile);
             yield return load.SendWebRequest();
 
             if (load.downloadHandler.text != string.Empty)
@@ -2328,7 +2489,7 @@ namespace MeloMelo_Network
             }
 
             cloudLogging.Add(load.downloadHandler.text != string.Empty);
-            Debug.Log("Server: Load Profile Successful! [" + load.downloadHandler.text != "Empty" + "]");
+            Debug.Log("Server: Load Profile Successful! [" + load.downloadHandler.text + "]");
             load.Dispose();
         }
 
@@ -2338,7 +2499,7 @@ namespace MeloMelo_Network
             config.AddField("User", portId);
             counter++;
 
-            UnityWebRequest load = UnityWebRequest.Post(urlWeb + "/database/transcripts/site5/MeloMelo_SettingConfigOnLoad_2024.php", config);
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + "MeloMelo_SettingConfigOnLoad_2024.php", config);
             yield return load.SendWebRequest();
 
             if (load.downloadHandler.text != string.Empty)
@@ -2352,7 +2513,7 @@ namespace MeloMelo_Network
                     PlayerPrefs.SetString("MVOption", configurationData[id + (int)CloudLoad_SettingConfiguration.MV]);
 
                     // Load NoteSpeed Setting data
-                    PlayerPrefs.SetString("NoteSpeed", configurationData[id + (int)CloudLoad_SettingConfiguration.NoteSpeed]);
+                    PlayerPrefs.SetInt("NoteSpeed", int.Parse(configurationData[id + (int)CloudLoad_SettingConfiguration.NoteSpeed]));
 
                     // Load AutoRetreat Setting data
                     PlayerPrefs.SetInt("AutoRetreat", int.Parse(configurationData[id + (int)CloudLoad_SettingConfiguration.AutoRetreat]));
@@ -2364,12 +2525,18 @@ namespace MeloMelo_Network
                     PlayerPrefs.SetInt("ScoreDisplay2", int.Parse(configurationData[id + (int)CloudLoad_SettingConfiguration.SecondaryDisplay]));
 
                     // Load Judge Type data
-                    PlayerPrefs.GetInt("JudgeMeter_Setup", int.Parse(configurationData[id + (int)CloudLoad_SettingConfiguration.JudgeType]));
+                    PlayerPrefs.SetInt("JudgeMeter_Setup", int.Parse(configurationData[id + (int)CloudLoad_SettingConfiguration.JudgeType]));
+
+                    // Load Feedback 1
+                    PlayerPrefs.SetInt("Feedback_Display_Type_B", int.Parse(configurationData[id + (int)CloudLoad_SettingConfiguration.Feedback_TypeA]));
+
+                    // Load Feedback 2
+                    PlayerPrefs.SetInt("Feedback_Display_Type", int.Parse(configurationData[id + (int)CloudLoad_SettingConfiguration.Feedback_TypeB]));
                 }
             }
 
             cloudLogging.Add(load.downloadHandler.text != string.Empty);
-            Debug.Log("Server: Load Profile Successful! [" + load.downloadHandler.text != "Empty" + "]");
+            Debug.Log("Server: Load Gameplay Settings Successful! [" + load.downloadHandler.text + "]");
             load.Dispose();
         }
 
@@ -2379,7 +2546,7 @@ namespace MeloMelo_Network
             config.AddField("User", portId);
             counter++;
 
-            UnityWebRequest load = UnityWebRequest.Post(urlWeb + "/database/transcripts/site5/MeloMelo_Load_PlayerSettings_2024.php", config);
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + "MeloMelo_Load_PlayerSettings_2024.php", config);
             yield return load.SendWebRequest();
 
             if (load.downloadHandler.text != string.Empty)
@@ -2407,7 +2574,7 @@ namespace MeloMelo_Network
             }
 
             cloudLogging.Add(load.downloadHandler.text != string.Empty);
-            Debug.Log("Server: Load Player Data Successful! [" + load.downloadHandler.text != "Empty" + "]");
+            Debug.Log("Server: Load Player Data Successful! [" + load.downloadHandler.text + "]");
             load.Dispose();
         }
 
@@ -2417,7 +2584,7 @@ namespace MeloMelo_Network
             info.AddField("User", portId);
             counter++;
 
-            const string serverAPI = "/database/transcripts/site5/MeloMelo_Load_MusicSelectionLastVisited_2024.php";
+            const string serverAPI = "MeloMelo_Load_MusicSelectionLastVisited_2024.php";
             UnityWebRequest load = UnityWebRequest.Post(urlWeb + serverAPI, info);
             yield return load.SendWebRequest();
 
@@ -2439,9 +2606,125 @@ namespace MeloMelo_Network
             }
 
             cloudLogging.Add(load.downloadHandler.text != "Empty");
-            Debug.Log("CloudLoad - " + serverAPI + "[" + load.downloadHandler.text != "Empty" + "]");
+            Debug.Log("CloudLoad - " + serverAPI + " [" + load.downloadHandler.text + "]");
             load.Dispose();
         }
+
+        public IEnumerator LoadBattleFormationData()
+        {
+            WWWForm info = new WWWForm();
+            info.AddField("User", portId);
+            counter++;
+
+            const string serverAPI = "MeloMelo_Load_BattleFormation_2024.php";
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + serverAPI, info);
+            yield return load.SendWebRequest();
+            
+            if (load.downloadHandler.text != "Empty")
+            {
+                string[] characterData = load.downloadHandler.text.Split("\t");
+
+                for (int i = 0; i < (int)CloudLoad_BattleFormationData.TotalField - 1; i++) 
+                { PlayerPrefs.SetString("Slot" + (i + 1) + "_charName", characterData[i]); }
+
+                PlayerPrefs.SetString("CharacterFront", characterData[(int)CloudLoad_BattleFormationData.MainSlot]);
+            }
+
+            cloudLogging.Add(load.downloadHandler.text != "Empty");
+            Debug.Log("Server: Load Formation Data Successful! [" + load.downloadHandler.text + "]");
+            load.Dispose();
+        }
+
+        public IEnumerator LoadCharacterStatusData()
+        {
+            WWWForm info = new WWWForm();
+            info.AddField("User", portId);
+            counter++;
+
+            const string serverAPI = "MeloMelo_Load_CharacterStatusData_2024.php";
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + serverAPI, info);
+            yield return load.SendWebRequest();
+
+            if (load.downloadHandler.text != "Empty")
+            {
+                string[] characterStatus = load.downloadHandler.text.Split("\t");
+
+                for (int status = 0; status < characterStatus.Length / 3; status++)
+                {
+                    PlayerPrefs.SetInt(characterStatus[status * 3] + "_LEVEL", int.Parse(characterStatus[status * 3 + 1]));
+                    PlayerPrefs.SetInt(characterStatus[status * 3] + "_EXP", int.Parse(characterStatus[status * 3 + 2]));
+                }
+            }
+
+            cloudLogging.Add(load.downloadHandler.text != "Empty");
+            Debug.Log("Server: Load Character Status Successful! [" + load.downloadHandler.text + "]");
+            load.Dispose();
+        }
+
+        public IEnumerator LoadTrackDistributionChart()
+        {
+            WWWForm info = new WWWForm();
+            info.AddField("User", portId);
+            counter++;
+
+            const string serverAPI = "MeloMelo_Load_TrackDistributionList_2024.php";
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + serverAPI, info);
+            yield return load.SendWebRequest();
+
+            if (load.downloadHandler.text != "Empty")
+            {
+                string[] allChartData = load.downloadHandler.text.Split("\t");
+
+                for (int chart = 0; chart < 3; chart++)
+                {
+                    string channel_Build = Application.isEditor ? "Assets/" : "MeloMelo_Data/";
+                    string fileDirectory = channel_Build + "StreamingAssets/LocalData/MeloMelo_LocalSave_ChartList/TempPass_ChartData_" + (chart + 1) + ".json";
+
+                    // Write server database into local written files
+                    StreamWriter writeToLocal = new StreamWriter(fileDirectory);
+
+                    for (int data = 0; data < allChartData.Length / (int)CloudLoad_TrackList.TotalField; data++)
+                    {
+                        if (chart + 1 == int.Parse(allChartData[data * (int)CloudLoad_TrackList.TotalField + (int)CloudLoad_TrackList.ChartType]))
+                        {
+                            string chartLocal = JsonUtility.ToJson(GetDistributionInfo
+                                (
+                                    allChartData[data * (int)CloudLoad_TrackList.TotalField + (int)CloudLoad_TrackList.Title],
+                                    allChartData[data * (int)CloudLoad_TrackList.TotalField + (int)CloudLoad_TrackList.CoverImage],
+                                    allChartData[data * (int)CloudLoad_TrackList.TotalField + (int)CloudLoad_TrackList.Difficulty_ID],
+                                    allChartData[data * (int)CloudLoad_TrackList.TotalField + (int)CloudLoad_TrackList.Difficulty],
+                                    int.Parse(allChartData[data * (int)CloudLoad_TrackList.TotalField + (int)CloudLoad_TrackList.Score]),
+                                    int.Parse(allChartData[data * (int)CloudLoad_TrackList.TotalField + (int)CloudLoad_TrackList.Point])
+                                )) + "/t";
+
+                            writeToLocal.WriteLine(chartLocal);
+                        }
+                    }
+
+                    writeToLocal.Close();
+                }
+            }
+
+            cloudLogging.Add(load.downloadHandler.text != "Empty");
+            Debug.Log("Server: Load Chart Distribution Successful! [" + load.downloadHandler.text + "]");
+            load.Dispose();
+        }
+        #endregion
+
+        #region COMPINENT (Chart Data Handler)
+        private TrackEventEntry GetDistributionInfo(string title, string coverImage, string difficulty, string level, int score, int point)
+        {
+            TrackEventEntry template = new TrackEventEntry();
+            template.title = title;
+            template.cover = coverImage;
+            template.difficulty = difficulty == "NORMAL" ? 1 : difficulty == "HARD" ? 2 : 3;
+            template.level = level;
+            template.score = score;
+            template.point = point;
+
+            return template;
+        }
+        #endregion
     }
 
     public class Extra_DataManagement : ServerIP_Settings
@@ -2486,7 +2769,7 @@ namespace MeloMelo_Network
         {
             LogOnSucess = false;
             portId = user; 
-            urlWeb = url;
+            urlWeb = url + url_directory;
         }
 
         public IEnumerator GetAuthenticationFromServer(string key)
@@ -2495,7 +2778,7 @@ namespace MeloMelo_Network
             login.AddField("User", portId);
             login.AddField("Pass", key);
 
-            UnityWebRequest authenticate = UnityWebRequest.Post(urlWeb + "/database/transcripts/site5/MeloMelo_TempPassB.php", login);
+            UnityWebRequest authenticate = UnityWebRequest.Post(urlWeb + "MeloMelo_TempPassB.php", login);
             yield return authenticate.SendWebRequest();
 
             LogOnSucess = authenticate.downloadHandler.text.Split("\n")[0] == "Transfer Successful!";
@@ -2510,7 +2793,7 @@ namespace MeloMelo_Network
             login.AddField("Pass", key);
             login.AddField("Player", playerName);
 
-            UnityWebRequest authenticate = UnityWebRequest.Post(urlWeb + "/database/transcripts/site5/MeloMelo_TempPass.php", login);
+            UnityWebRequest authenticate = UnityWebRequest.Post(urlWeb + "MeloMelo_TempPass.php", login);
             yield return authenticate.SendWebRequest();
 
             LogOnSucess = true;
@@ -2519,22 +2802,23 @@ namespace MeloMelo_Network
         }
     }
 
-    public class CloudUsage_TempServices
+    public class CloudUsage_TempServices : ServerIP_Settings
     {
         public readonly string playerId_noEntry = "00XX00XX2024";
 
         private string playerId;
         public string get_playerId { get { return playerId; } }
 
-        public CloudUsage_TempServices()
+        public CloudUsage_TempServices(string sourceHTTP)
         {
             playerId = "---";
+            urlWeb = sourceHTTP + url_directory;
         }
 
-        public IEnumerator GeneratingPlayerId(string sourceHTTP)
+        public IEnumerator GeneratingPlayerId()
         {
             WWWForm getData = new WWWForm();
-            UnityWebRequest playerId_viaServer = UnityWebRequest.Post(sourceHTTP + "/database/transcripts/site5/MeloMelo_TempPlayerIdGenerator.php", getData);
+            UnityWebRequest playerId_viaServer = UnityWebRequest.Post(urlWeb + "MeloMelo_TempPlayerIdGenerator.php", getData);
             yield return playerId_viaServer.SendWebRequest();
 
             playerId = (playerId_viaServer.downloadHandler.text != playerId_noEntry ? playerId_viaServer.downloadHandler.text : playerId_noEntry);
@@ -2543,17 +2827,85 @@ namespace MeloMelo_Network
             LoginTemp_Script.thisTemp.LoginPass_ProcessConfirmation();
         }
 
-        public IEnumerator AccountBinding(string sourceHTTP)
+        public IEnumerator AccountBinding(bool returnEntry)
         {
             WWWForm getData = new WWWForm();
             getData.AddField("PlayerId", playerId);
+            getData.AddField("Status", returnEntry ? 2 : 1);
 
-            UnityWebRequest accountBind = UnityWebRequest.Post(sourceHTTP + "/database/transcripts/site5/MeloMelo_AccountBindingForTemp.php", getData);
+            UnityWebRequest accountBind = UnityWebRequest.Post(urlWeb + "MeloMelo_AccountBindingForTemp.php", getData);
             yield return accountBind.SendWebRequest();
             accountBind.Dispose();
         }
     }
 
+    public class CloudServices_ControlPanel : ServerIP_Settings
+    {
+        public CloudServices_ControlPanel(string url)
+        {
+            urlWeb = url + url_directory;
+        }
+
+        #region MAIN
+        public IEnumerator CheckNetwork_GlobalStatus(GameObject icon_reference, string networkName)
+        {
+            WWWForm net = new WWWForm();
+            net.AddField("Title", networkName);
+
+            UnityWebRequest getNet = UnityWebRequest.Post(urlWeb + "UnityLogin_InternetChecker.php", net);
+            yield return getNet.SendWebRequest();
+
+            if (getNet.downloadHandler.text != string.Empty) RedirectNetworkControl(icon_reference, getNet.downloadHandler.text);
+            Debug.Log("Server Output: " + getNet.downloadHandler.text);
+            getNet.Dispose();
+        }
+
+        public IEnumerator CheckNetwork_ServerStatus(string networkName, RawImage reference, int index)
+        {
+            WWWForm net = new WWWForm();
+            net.AddField("Title", networkName);
+
+            UnityWebRequest getNet = UnityWebRequest.Post(urlWeb + "UnityLogin_InternetChecker.php", net);
+            yield return getNet.SendWebRequest();
+
+            RedirectServerPage(reference, index, getNet.downloadHandler.text);
+            Debug.Log("Server Panel [" + reference.transform.GetChild(0).GetComponent<Text>().text + " (" + index + ")]: " + getNet.downloadHandler.text);
+            getNet.Dispose();
+        }
+
+        public IEnumerator CheckNetwork_IDInspection(string user)
+        {
+            WWWForm inspectID = new WWWForm();
+            inspectID.AddField("ID", user);
+
+            UnityWebRequest liveInspecting = UnityWebRequest.Post(urlWeb + "MeloMelo_LiveID_Inspector.php", inspectID);
+            yield return liveInspecting.SendWebRequest();
+
+            if (liveInspecting.downloadHandler.text != string.Empty) RedirectLoginPage(liveInspecting.downloadHandler.text);
+            Debug.Log("ID Verification Check: " + liveInspecting.downloadHandler.text);
+            liveInspecting.Dispose();
+        }
+        #endregion
+
+        #region COMPONENT 
+        private void RedirectNetworkControl(GameObject icon, string status)
+        {
+            icon.GetComponent<MeloMelo_NetworkChecker>().GetServerNetworkLive(status);
+        }
+
+        private void RedirectServerPage(RawImage reference, int index, string status)
+        {
+            ServerGateway_Script.thisServer.GetServerConntectedToCloud(reference, index, status);
+        }
+
+        private void RedirectLoginPage(string received_data)
+        {
+            LoginTemp_Script.thisTemp.GetServer_CheckedID(received_data);
+        }
+        #endregion
+    }
+
+    // Not In Use: Old Data Management
     public class Data_Management
     {
         private string urlWeb = string.Empty;
@@ -3154,7 +3506,7 @@ namespace MeloMelo_Network
             yield return ranking.SendWebRequest();
 
             string[] info = ranking.downloadHandler.text.Split('\t');
-            Menu.thisMenu.GlobalRankingBoard(info);
+            //Menu.thisMenu.GlobalRankingBoard(info);
 
             // Load and clean
             ranking.Dispose();

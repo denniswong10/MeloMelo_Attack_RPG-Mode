@@ -63,12 +63,20 @@ public class LoginPage_Script : MonoBehaviour
         string user = PlayerPrefs.GetString("AccountSync_PlayerID");
         string pass = PlayerPrefs.GetString("AccountSync_UniqueID");
 
+        // Save
+        string reportUpdate = PlayerPrefs.GetString("MeloMelo_NewsReport_Daily", string.Empty);
+        string latestUpdate = PlayerPrefs.GetString("GameLatest_Update", string.Empty);
+
         PlayerPrefs.DeleteAll();
 
         if (playerid != string.Empty) PlayerPrefs.SetString("TempPass_PlayerId", playerid);
         PlayerPrefs.SetInt("AccountSync", 1);
         PlayerPrefs.SetString("AccountSync_PlayerID", user);
         PlayerPrefs.SetString("AccountSync_UniqueID", pass);
+
+        // Transfer
+        PlayerPrefs.SetString("MeloMelo_NewsReport_Daily", reportUpdate);
+        PlayerPrefs.SetString("GameLatest_Update", latestUpdate);
 
         LoadAllProgress(button);
     }
@@ -167,7 +175,7 @@ public class LoginPage_Script : MonoBehaviour
     {
         switch (portNumber)
         {
-            case 1:
+            case 0:
                 return GuestLogin_Script.thisScript.get_entry;
 
             default:

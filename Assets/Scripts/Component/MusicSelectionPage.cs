@@ -86,8 +86,6 @@ public class MusicSelectionPage : MonoBehaviour
     #region SETUP
     private void ScrollNagivatorSettings(int totalTrack, int currentPick)
     {
-        Debug.Log("Current: " + currentPick);
-
         if (ScrollNagivator_ProgressBar)
         {
             ScrollNagivator_ProgressBar.minValue = 1;
@@ -107,10 +105,6 @@ public class MusicSelectionPage : MonoBehaviour
     #region COMPONENT
     private void RefreshMusicInformationPanel(string areaLocated, bool casualMode)
     {
-        Debug.Log("Music: " + MusicForm != null);
-        Debug.Log("Directory - " + areaLocated + "/M" + (casualMode ? ReservePickMode((int)ScrollNagivator_ProgressBar.value) :
-            PlayerPrefs.GetInt("MarathonChallenge_MCount")));
-
         // Load music database
         MusicForm = Resources.Load<MusicScore>(areaLocated + "/M" + (casualMode ? ReservePickMode((int)ScrollNagivator_ProgressBar.value) :
             PlayerPrefs.GetInt("MarathonChallenge_MCount")));

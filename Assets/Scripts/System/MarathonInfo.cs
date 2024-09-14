@@ -21,13 +21,32 @@ public class MarathonInfo : ScriptableObject
         switch (clearingType)
         {
             case ClearedMethod.ScoreAchiever:
-                return "Cleared all tracks with a rank " + MeloMelo_GameSettings.GetScoreRankStructure(clearingValue).rank + " or higher";
+                return "Cleared this challenge with a rank of " + MeloMelo_GameSettings.GetScoreRankStructure(clearingValue).rank + " or higher";
 
             case ClearedMethod.Life:
                 return "Survive this challenge with " + clearingValue + " life";
 
             default:
-                return "No condition have been placed";
+                string[] valueSplit = clearingValue.Split('/');
+                return "Cleared this challenge with " + valueSplit[1] + " or less " + GetJudgementFliter(int.Parse(valueSplit[0]));
+        }
+    }
+
+    public string GetJudgementFliter(int index)
+    {
+        switch (index)
+        {
+            case 1:
+                return "Critical";
+
+            case 2:
+                return "Perfect";
+
+            case 3:
+                return "Bad";
+
+            default:
+                return "Miss";
         }
     }
     #endregion

@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M4
+  m_EditorClassIdentifier: 
+  BPM: 396
+  offset: 2458
+  Music: {fileID: 8300000, guid: 1544e831a1182824e9b6a992544374ea, type: 3}
+  PreviewTime: 97
+  ArtistName: Morimori Atsushi
+  Title: Funkotsu Saishin Casino
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 12e5cae333afa20459740b4cc84a578b, type: 3}
+  ScoreObject: {fileID: 4510970292161318310, guid: 7a8e413923db2a14295292cd183ab309,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 94459dc1f595ab84b9fa5cf4fbf0f52d, type: 2}
+  creditPoint: Muse Dash
+  BPM_Skin: 198
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: 40b29c06998736e4b9be72ef19209407, type: 2}
+  - {fileID: 11400000, guid: 29f4754fb9dc5f14a9ca4267ce1804f9, type: 2}
+  - {fileID: 11400000, guid: 44983c77d6a624149bc718f2b8858f5a, type: 2}
+  - {fileID: 11400000, guid: ab3d79178f788df48a03281fac535189, type: 2}
+  - {fileID: 11400000, guid: d22d1d76f269d7c408b57bab4de7b0cd, type: 2}
+  - {fileID: 11400000, guid: 477de57684214aa4d9c88c45d814d2a2, type: 2}
+  - {fileID: 11400000, guid: 39e71055bd0ee2f4f996e8e7e8a76374, type: 2}
+  - {fileID: 11400000, guid: bdedbbdd04913c24c802575858c1b79b, type: 2}
+  - {fileID: 11400000, guid: 8ffd832bcf764ff48b365a7c62d8e245, type: 2}
+  - {fileID: 11400000, guid: 20b9b84666859ad49a2ceccc4e0f73fc, type: 2}
+  - {fileID: 11400000, guid: f4b0bfce988b441449b38a418d0a4e5d, type: 2}
+  - {fileID: 11400000, guid: 4dc5186d972b7aa4b97b815adaf6a036, type: 2}
+  - {fileID: 11400000, guid: 0c4d792f3fe4ccb47a4ab3f472e306ec, type: 2}
+  - {fileID: 11400000, guid: 9253f56cb7e1d1445aa38cdfbaec6de3, type: 2}
+  - {fileID: 11400000, guid: 0ef11db43818e384ca911e203f9e4b26, type: 2}
+  - {fileID: 11400000, guid: 40a7e005fd9b45e4f880b3868f398dab, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: 704ca8b84c6a349429e8446dd769a925, type: 2}
+  - {fileID: 11400000, guid: c8b4ef69436c444468c4866a1ddcbc63, type: 2}
+  - {fileID: 11400000, guid: fb5a2d6518a23b744986a34b1e3065a6, type: 2}
+  - {fileID: 11400000, guid: b8eef93900fa9994c9ec3ba3259a8cb5, type: 2}
+  - {fileID: 11400000, guid: 9e62d14d8be904a40a1da83e85a95afe, type: 2}
+  - {fileID: 11400000, guid: fa668f6ffa676284597473763bfc4fe2, type: 2}
+  UltimateAddons: 1

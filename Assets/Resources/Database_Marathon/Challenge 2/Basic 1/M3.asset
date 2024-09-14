@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M3
+  m_EditorClassIdentifier: 
+  BPM: 280
+  offset: 2018
+  Music: {fileID: 8300000, guid: 1c05aaa43ed8b0c428a6dcd9e17682e7, type: 3}
+  PreviewTime: 56.5
+  ArtistName: YuzuMomo (Hazuki Yuzuko, Asahina Momoko)
+  Title: Harmonize
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: cbd9c5ffd1c835d42964d405390041da, type: 3}
+  ScoreObject: {fileID: 4662656931717085643, guid: c65fbe0bcd8c42c41b3a264fa4197a3d,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  creditPoint: "\u30AC\u30FC\u30EB\u30D5\u30EC\u30F3\u30C9\uFF08\u266A\uFF09"
+  BPM_Skin: 140
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: fc651281077230344b4faf9c66115bc5, type: 2}
+  - {fileID: 11400000, guid: 5a86a47f4b1caad43918f407efc63edb, type: 2}
+  - {fileID: 11400000, guid: 711febbfa1fc98e4ba5284e97ffd9044, type: 2}
+  - {fileID: 11400000, guid: fd7cee997293a1b4d90a22f6b4f08e97, type: 2}
+  - {fileID: 11400000, guid: be411fabce8f09b4ba2a95fc28155995, type: 2}
+  - {fileID: 11400000, guid: 45a1421e10dc07d4eb886d119242b033, type: 2}
+  - {fileID: 11400000, guid: 7ac277a6da134ea4bb86f4441445963d, type: 2}
+  - {fileID: 11400000, guid: 2e61c093f98d5f44aa88a2e5939a632f, type: 2}
+  - {fileID: 11400000, guid: 5e23a0631338fbc4fbc2cd227f0a3b38, type: 2}
+  - {fileID: 11400000, guid: d39cb7e4d6892c44caa49bb6cb38fb63, type: 2}
+  - {fileID: 11400000, guid: 37f504a9404129d41998d4396d5ed349, type: 2}
+  - {fileID: 11400000, guid: 64ac9d7f8e8c5b04393eca09b406cfa0, type: 2}
+  - {fileID: 11400000, guid: 3cc1590e63443a94d93a1d68d458bd2d, type: 2}
+  - {fileID: 11400000, guid: 87fea1e148859084b8323d0d34b25f0c, type: 2}
+  - {fileID: 11400000, guid: 582706cd37184e74993e6b6a904dcec2, type: 2}
+  - {fileID: 11400000, guid: 320325e20dfe368429c8ca1bbe870a85, type: 2}
+  - {fileID: 11400000, guid: 06145b490d3518d47899af538d8df20a, type: 2}
+  - {fileID: 11400000, guid: 6bc20bdddf0be7c428029494cd2ee25d, type: 2}
+  - {fileID: 11400000, guid: 498d17fe0f1e21a479ccedfd2d446f8f, type: 2}
+  - {fileID: 11400000, guid: ba78706cee008fe4489ab6569a307094, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: 85fc176d8f41c74488fab66cff9b1945, type: 2}
+  - {fileID: 11400000, guid: 57f905172a2df9c45afed8d6fa01f738, type: 2}
+  - {fileID: 11400000, guid: 7422233288445cf4a955d9f1a086fbcc, type: 2}
+  - {fileID: 11400000, guid: 89fcc6027b7048e4198f9b6d17fddbcf, type: 2}
+  - {fileID: 11400000, guid: d885a9d6cf8a1a44c92aba824f2fb78d, type: 2}
+  - {fileID: 11400000, guid: a7673047a3fa2524ebd5d1f3b868ee06, type: 2}
+  UltimateAddons: 1

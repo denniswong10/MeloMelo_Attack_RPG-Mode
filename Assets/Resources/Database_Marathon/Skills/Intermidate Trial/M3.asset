@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M3
+  m_EditorClassIdentifier: 
+  BPM: 130
+  offset: 2086
+  Music: {fileID: 8300000, guid: fc481ac517cff3c469a3f327f5bb599c, type: 3}
+  PreviewTime: 55.9
+  ArtistName: Yuria
+  Title: You
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: ac34c33f22a86d442af610a47acf64d3, type: 3}
+  ScoreObject: {fileID: 1089439811038877124, guid: a42e4e7d7d71f6844a541a7643c5d2bd,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 94459dc1f595ab84b9fa5cf4fbf0f52d, type: 2}
+  creditPoint: --
+  BPM_Skin: 0
+  UseBPMDisplay: 0
+  ScaleLevel: 1
+  seasonNo: 1
+  NewChartSystem: 0
+  addons1: []
+  addons2: []
+  addons3: []
+  addons3b: []
+  UltimateAddons: 0

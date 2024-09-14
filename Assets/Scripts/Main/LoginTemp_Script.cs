@@ -32,7 +32,9 @@ public class LoginTemp_Script : MonoBehaviour
 
         playerid = PlayerPrefs.GetString("TempPass_PlayerId", string.Empty);
         UpdateContentLoginButton(playerid != string.Empty);
-        Invoke("LoadTempDetail", 0.5f);
+
+        // Get server data services (Player ID)
+        GetServer_CheckID();
     }
 
     #region SETUP
@@ -49,16 +51,17 @@ public class LoginTemp_Script : MonoBehaviour
     }
     #endregion
 
-    #region MAIN
+    #region MAIN (Network Handler)
     public void LoginPass()
     {
         LoginBtn.interactable = false;
+        LoginPage_Script.thisPage.portNumber = 1;
 
         // Use cloud services through the available network
-        cloudService = new CloudUsage_TempServices();
+        cloudService = new CloudUsage_TempServices(PlayerPrefs.GetString("GameWeb_URL"));
 
         // Generating playerId from the cloud database
-        StartCoroutine(cloudService.GeneratingPlayerId(PlayerPrefs.GetString("GameWeb_URL")));
+        StartCoroutine(cloudService.GeneratingPlayerId());
     }
 
     public void LoginPass_ProcessConfirmation()
@@ -88,12 +91,14 @@ public class LoginTemp_Script : MonoBehaviour
                 break;
         }
     }
+    #endregion
 
+    #region MAIN (Menu Handler)
     public void ProcessForCreating()
     {
         AlertBox[0].SetActive(false);
 
-        StartCoroutine(cloudService.AccountBinding(PlayerPrefs.GetString("GameWeb_URL")));
+        StartCoroutine(cloudService.AccountBinding(false));
         CreatePlayerNameEntry(playerid);
     }
 
@@ -131,12 +136,44 @@ public class LoginTemp_Script : MonoBehaviour
     }
     #endregion
 
-    #region NETWORK
+    #region COMPONENT (NETWORK HANDLER)
+    private IEnumerator LoadCloudData()
+    {
+        CloudLoad_DataManagement cloudData = new CloudLoad_DataManagement(
+            LoginPage_Script.thisPage.GetUserPortOutput(), PlayerPrefs.GetString("GameWeb_URL"));
+
+        for (int save = 0; save < 3; save++)
+            StartCoroutine(cloudData.LoadProgressTrack(save + 1));
+
+        StartCoroutine(cloudData.LoadSettingCofiguration());
+        StartCoroutine(cloudData.LoadProgressProfile());
+        StartCoroutine(cloudData.LoadPlayerSettings());
+        StartCoroutine(cloudData.LoadSelectionLastVisited());
+        StartCoroutine(cloudData.LoadBattleFormationData());
+        StartCoroutine(cloudData.LoadCharacterStatusData());
+        StartCoroutine(cloudData.LoadTrackDistributionChart());
+
+        yield return new WaitUntil(() => cloudData.cloudLogging.ToArray().Length == cloudData.get_counter);
+        acquireEntryPass();
+    }
+    #endregion
+
+    #region NETWORK (Redirect Component)
     public void SaveEntryPass(string message)
     {
         GetComponent<LoginPage_Script>().Icon.transform.GetChild(1).GetComponent<Text>().text = "[Game Network]\n" + message;
-        GetComponent<LoginPage_Script>().UpdateUserProfileName(playerid);
-        Invoke("GetMenuPlayThrough", 2);
+
+        if (message == "Completed!")
+        {
+            GetComponent<LoginPage_Script>().UpdateUserProfileName(entryField.transform.GetChild(1).GetComponent<InputField>().text);
+            Invoke("GetMenuPlayThrough", 2);
+        }
+        else
+        {
+            StartCoroutine(cloudService.AccountBinding(true));
+            PlayerPrefs.DeleteKey("TempPass_PlayerId");
+            Invoke("AwaitForReload", 2);
+        }
     }
 
     public void LoadEntryPass(string message, string serverUser)
@@ -147,6 +184,7 @@ public class LoginTemp_Script : MonoBehaviour
 
         if (login.get_success)
         {
+            Debug.Log("[TempPass] Login as: " + LoginPage_Script.thisPage.get_user);
             PlayerPrefs.DeleteAll();
             PlayerPrefs.SetString("TempPass_PlayerId", playerid);
             PlayerPrefs.SetString("GameWeb_URL", url);
@@ -156,23 +194,6 @@ public class LoginTemp_Script : MonoBehaviour
         }
         else
             Invoke("AwaitForReload", 2);
-    }
-
-    private IEnumerator LoadCloudData()
-    {
-        CloudLoad_DataManagement cloudData = new CloudLoad_DataManagement(
-            LoginPage_Script.thisPage.GetUserPortOutput(), PlayerPrefs.GetString("GameWeb_URL"));
-
-        for (int save = 0; save < 3; save++) 
-            StartCoroutine(cloudData.LoadProgressTrack(save + 1));
-
-        StartCoroutine(cloudData.LoadSettingCofiguration());
-        StartCoroutine(cloudData.LoadProgressProfile());
-        StartCoroutine(cloudData.LoadPlayerSettings());
-        StartCoroutine(cloudData.LoadSelectionLastVisited());
-
-        yield return new WaitUntil(() => cloudData.cloudLogging.ToArray().Length == cloudData.get_counter);
-        acquireEntryPass();
     }
     #endregion
 
@@ -185,6 +206,25 @@ public class LoginTemp_Script : MonoBehaviour
     private void AwaitForReload()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("LoginPage2");
+    }
+    #endregion
+
+    #region MISC (Auto Detection ID)
+    private void GetServer_CheckID()
+    {
+        CloudServices_ControlPanel services = new CloudServices_ControlPanel(PlayerPrefs.GetString("GameWeb_URL"));
+        StartCoroutine(services.CheckNetwork_IDInspection(PlayerPrefs.GetString("TempPass_PlayerId", string.Empty)));
+    }
+
+    public void GetServer_CheckedID(string id)
+    {
+        if (id != PlayerPrefs.GetString("TempPass_PlayerId", string.Empty))
+        {
+            PlayerPrefs.DeleteKey("TempPass_PlayerId");
+            UpdateContentLoginButton(false);
+        }
+
+        Invoke("LoadTempDetail", 0.5f);
     }
     #endregion
 }

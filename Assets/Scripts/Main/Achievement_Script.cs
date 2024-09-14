@@ -13,9 +13,10 @@ public class Achievement_Script : MonoBehaviour
     private int currentTierIndex = -1;
 
     private List<BundleSeasonChecker> buildchecks;
+    private List<BundleSeasonChecker> buildchecks2;
     private BundleSeasonChecker restrictCheck = null;
     public GameObject LoadingScreen;
-    private bool[] isFinishedCount = new bool[2];
+    private bool[] isFinishedCount = new bool[3];
 
     public Slider progressBar;
     public Text progressText;
@@ -24,11 +25,13 @@ public class Achievement_Script : MonoBehaviour
     void Start()
     {
         buildchecks = new List<BundleSeasonChecker>();
+        buildchecks2 = new List<BundleSeasonChecker>();
         for (int check = 0; check < isFinishedCount.Length; check++) isFinishedCount[check] = false;
 
         CreateAchievementAssets();
         StartCoroutine(CreateSeasonCompletetionBuild());
         StartCoroutine(CreateRestrictedCompletionBuild());
+        StartCoroutine(CreateEventCompletionBuild());
 
         Invoke("UpdateAllAchievement", 0.5f);
     }
@@ -66,7 +69,7 @@ public class Achievement_Script : MonoBehaviour
             }
         }
 
-        if (isComplete) UpdateProgressBar();
+        UpdateProgressBar(isComplete);
     }
 
     private AchievementTab[] CollectAchievementInfo()
@@ -81,7 +84,7 @@ public class Achievement_Script : MonoBehaviour
         for (int season = 0; season < StartMenu_Script.thisMenu.get_seasonNum + 1; season++)
         {
             BundleSeasonChecker checker = new BundleSeasonChecker();
-            checker.RegisterArea(season);
+            checker.RegisterArea(season, true);
             checker.GetTotalTracks();
             StartCoroutine(checker.StartSearchComplete(false));
 
@@ -100,7 +103,7 @@ public class Achievement_Script : MonoBehaviour
 
         for (int season = 0; season < StartMenu_Script.thisMenu.get_seasonNum + 1; season++)
         {
-            restrictCheck.RegisterArea(season);
+            restrictCheck.RegisterArea(season, true);
             restrictCheck.GetTotalTracks();
             StartCoroutine(restrictCheck.StartSearchComplete(true));
 
@@ -109,6 +112,26 @@ public class Achievement_Script : MonoBehaviour
         }
 
         isFinishedCount[1] = true;
+        Invoke("UpdateTrackCounter", 0.5f);
+    }
+
+    private IEnumerator CreateEventCompletionBuild()
+    {
+        yield return new WaitUntil(() => isFinishedCount[1]);
+
+        for (int season = 0; season < StartMenu_Script.thisMenu.get_seasonNum + 1; season++)
+        {
+            BundleSeasonChecker checker = new BundleSeasonChecker();
+            checker.RegisterArea(season, false);
+            checker.GetTotalTracks();
+            StartCoroutine(checker.StartSearchComplete(false));
+
+            // ???
+            yield return new WaitUntil(() => checker.get_isCompleted);
+            buildchecks2.Add(checker);
+        }
+
+        isFinishedCount[2] = true;
         Invoke("UpdateTrackCounter", 0.5f);
     }
     #endregion
@@ -123,32 +146,39 @@ public class Achievement_Script : MonoBehaviour
     {
         foreach (AchievementTab condition in CollectAchievementInfo())
         {
+            // Highest tier not detect
             if (!IsTierRestricted(condition.Tier))
             {
                 switch (condition.useConditionReward)
                 {
+                    // Single Input: Rate Point
                     case AchievementTab.Reward_Condition.RatePoint:
                         if (condition.GetConditionData(ConditionState.Condition_Filler.MainScore) != null)
                             AchievementMarker(condition.name, PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + 
                                 "totalRatePoint", 0) >= int.Parse(condition.GetConditionData(ConditionState.Condition_Filler.MainScore).value));
                         break;
 
+                    // Single Input: Played Count
                     case AchievementTab.Reward_Condition.PlayedCount:
                         if (condition.GetConditionData(ConditionState.Condition_Filler.MainScore) != null)
                             AchievementMarker(condition.name, PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + 
                                 "PlayedCount_Data", 0) >= int.Parse(condition.GetConditionData(ConditionState.Condition_Filler.MainScore).value));
                         break;
 
+                    // Single Input: Data
                     case AchievementTab.Reward_Condition.SeasonCompletion:
+                    case AchievementTab.Reward_Condition.PlayedEventTrack:
                         if (condition.GetConditionData(ConditionState.Condition_Filler.MainScore) != null)
-                            StartCoroutine(SearchOrCountSeasonCompletion(condition.name, 
+                            StartCoroutine(BasicCountingAchieverCompletion(condition.useConditionReward, condition.name, 
                                 int.Parse(condition.GetConditionData(ConditionState.Condition_Filler.MainScore).value)));
                         break;
 
+                    // Multiple Input: Data
                     case AchievementTab.Reward_Condition.RankAchiever:
                     case AchievementTab.Reward_Condition.StatusAchiever:
                     case AchievementTab.Reward_Condition.PointAchiever:
                     case AchievementTab.Reward_Condition.BattleWonAchiever:
+                    case AchievementTab.Reward_Condition.BattleDifficulty:
                         if (condition.GetConditionData(ConditionState.Condition_Filler.MainScore) != null &&
                             condition.GetConditionData(ConditionState.Condition_Filler.NumberOfTimes) != null)
                             StartCoroutine(MassCountingAchieverCompletion(condition.useConditionReward, condition.name,
@@ -156,6 +186,7 @@ public class Achievement_Script : MonoBehaviour
                                 condition.GetConditionData(ConditionState.Condition_Filler.MainScore).value));
                             break;
 
+                    // Custom Setup
                     default:
                         if (condition.conditionOperate != string.Empty) Invoke(condition.conditionOperate, 0.1f);
                         break;
@@ -213,15 +244,25 @@ public class Achievement_Script : MonoBehaviour
     #endregion
 
     #region COMPONENT (Extension Track Search)
-    private IEnumerator SearchOrCountSeasonCompletion(string target, int season)
+    private IEnumerator BasicCountingAchieverCompletion(AchievementTab.Reward_Condition condition, string target, int season)
     {
-        yield return new WaitUntil(() => isFinishedCount[0]);
-        AchievementMarker(target, buildchecks[season].GetTotalCompletion(false));
+        yield return new WaitUntil(() => isFinishedCount[0] && isFinishedCount[2]);
+
+        switch (condition)
+        {
+            case AchievementTab.Reward_Condition.SeasonCompletion:
+                AchievementMarker(target, buildchecks[season].GetTotalCompletion(false) && buildchecks2[season].GetTotalCompletion(false));
+                break;
+
+            case AchievementTab.Reward_Condition.PlayedEventTrack:
+                AchievementMarker(target, buildchecks2[season].GetTotalCompletion(false));
+                break;
+        }
     }
 
     private IEnumerator MassCountingAchieverCompletion(AchievementTab.Reward_Condition condition, string target, int playedAmount, string result)
     {
-        yield return new WaitUntil(() => isFinishedCount[0]);
+        yield return new WaitUntil(() => isFinishedCount[0] && isFinishedCount[2]);
         int count = 0;
 
         foreach (BundleSeasonChecker check in buildchecks)
@@ -243,6 +284,10 @@ public class Achievement_Script : MonoBehaviour
                 case AchievementTab.Reward_Condition.BattleWonAchiever:
                     count += check.GetNumberOfSuccessAchiever(result);
                     break;
+
+                case AchievementTab.Reward_Condition.BattleDifficulty:
+                    count += check.GetNumberOfPlayedBattleStage(result);
+                    break;
             }
         }
 
@@ -251,10 +296,10 @@ public class Achievement_Script : MonoBehaviour
     #endregion
 
     #region COMPONENT
-    private void UpdateProgressBar()
+    private void UpdateProgressBar(bool isAchived)
     {
         progressBar.maxValue = GetTotalActiveAchievement();
-        progressBar.value++;
+        progressBar.value += isAchived ? 1 : 0;
         progressText.text = progressBar.value + "/" + progressBar.maxValue + " [ " + (int)(100 / progressBar.maxValue * progressBar.value) + "% ]";
     }
      
@@ -262,10 +307,17 @@ public class Achievement_Script : MonoBehaviour
     {
         int totalCount = 0;
 
-        for (int achievement = 0; achievement < achievement_List.transform.childCount; achievement++)
+        foreach (AchievementTab tab in CollectAchievementInfo())
         {
-            if (achievement_List.transform.GetChild(achievement).GetChild(3).gameObject.activeInHierarchy)
-                totalCount++;
+            for (int achievement = 0; achievement < achievement_List.transform.childCount; achievement++)
+            {
+                if (achievement_List.transform.GetChild(achievement).name == tab.name &&
+                    !achievement_List.transform.GetChild(achievement).GetChild(4).gameObject.activeInHierarchy)
+                {
+                    totalCount++;
+                    break;
+                }
+            }
         }
 
         return totalCount;
@@ -282,6 +334,12 @@ public class Achievement_Script : MonoBehaviour
             totalCountActive += checker.GetLoadedTrackCount(true);
         }
 
+        foreach (BundleSeasonChecker checker in buildchecks2)
+        {
+            totalCountLoaded += checker.GetLoadedTrackCount(true) + checker.GetLoadedTrackCount(false);
+            totalCountActive += checker.GetLoadedTrackCount(true);
+        }
+
         TrackCounter.text = totalCountLoaded + " Track Loaded / " + totalCountActive + " Track Active";
     }
 
@@ -290,6 +348,9 @@ public class Achievement_Script : MonoBehaviour
         int currentLoadCount = 0;
 
         foreach (BundleSeasonChecker checks in buildchecks)
+            currentLoadCount += checks.get_loadedTracks;
+
+        foreach (BundleSeasonChecker checks in buildchecks2)
             currentLoadCount += checks.get_loadedTracks;
 
         TrackCounter.text = currentLoadCount + " loaded tracks...";
@@ -314,6 +375,24 @@ public class Achievement_Script : MonoBehaviour
         // Custom Setup: Get confirmation about option is visited
         AchievementMarker("AW3", PlayerPrefs.HasKey("ReviewOption"));
     }
+
+    private void CollectionAlbum()
+    {
+        // Custom Setup: Get collection menu review
+        AchievementMarker("AW4", PlayerPrefs.HasKey("CollectionAlbum_Visited"));
+    }
+
+    private void MarathonMode()
+    {
+        // Custom Setup: Get marathon is visited
+        AchievementMarker("AW5", PlayerPrefs.HasKey("MarathonPass_Eternal"));
+    }
+
+    private void LevelEditor()
+    {
+        // Custom Setup: Get level from the list of track available
+        AchievementMarker("E_Extra_A3", false);
+    }
     #endregion
 
     #region MISC (Middle Of Play)
@@ -326,7 +405,7 @@ public class Achievement_Script : MonoBehaviour
                 "savelog_GameplaySettings"
             );
 
-        AchievementMarker("AW4", battleSetupCheck.GetSetupByExistingUser(LoginPage_Script.thisPage.GetUserPortOutput()));
+        AchievementMarker("AW7", battleSetupCheck.GetSetupByExistingUser(LoginPage_Script.thisPage.GetUserPortOutput()));
     }
 
     private void PlayRestrictedTrack()
@@ -372,7 +451,13 @@ public class Achievement_Script : MonoBehaviour
             "savelog_SelectionBase"
             );
 
-        AchievementMarker("AW5", areaVisited.GetSetupByExistingUser(LoginPage_Script.thisPage.GetUserPortOutput()));
+        AchievementMarker("AW8", areaVisited.GetSetupByExistingUser(LoginPage_Script.thisPage.GetUserPortOutput()));
+    }
+
+    private void RetreatCalled()
+    {
+        // Custom Setup: Find retreat is been called from player
+        AchievementMarker("AW6", PlayerPrefs.HasKey("RetreatRoute"));
     }
     #endregion
 }
@@ -429,10 +514,11 @@ public class BundleSeasonChecker
 
     #region SETUP
     // Start register area from resource
-    public void RegisterArea(int season)
+    public void RegisterArea(int season, bool mainArea)
     {
         foreach (AreaInfo info in Resources.LoadAll<AreaInfo>("Database_Area/Season" + season))
-            AreaList.Add(info);
+            if (!mainArea && info.thisType == AreaInfo.AreaType.Event || mainArea && info.thisType != AreaInfo.AreaType.Event)
+                AreaList.Add(info);
     }
 
     // Start counting up all tracks on the registered area
@@ -481,8 +567,11 @@ public class BundleSeasonChecker
             case AchievementTab.Reward_Condition.PlayedCount:
                 return PlayerPrefs.HasKey(track + "_score" + difficulty) && PlayerPrefs.GetInt(track + "_score" + difficulty) > 0;
 
+            case AchievementTab.Reward_Condition.BattleDifficulty: // ???
             case AchievementTab.Reward_Condition.BattleWonAchiever:
-                return PlayerPrefs.HasKey(track + "_SuccessBattle_" + difficulty + 1) && PlayerPrefs.GetString(track + "_SuccessBattle_" + difficulty + 1) == result;
+                string actual = PlayerPrefs.GetString(track + "_SuccessBattle_" + difficulty, "-");
+                Debug.Log(track + "_SuccessBattle_" + difficulty + ": " + actual);
+                return PlayerPrefs.HasKey(track + "_SuccessBattle_" + difficulty) && PlayerPrefs.GetString(track + "_SuccessBattle_" + difficulty) == result;
         
             case AchievementTab.Reward_Condition.PointAchiever:
                 if (PlayerPrefs.HasKey(track + "_point" + difficulty) && PlayerPrefs.HasKey(track + "_maxPoint" + difficulty))
@@ -506,17 +595,37 @@ public class BundleSeasonChecker
 
         foreach (MusicScore track in TrackList)
         {
-            // Count any difficulty type which are played
-            if (playedTrack)
-                if (IsTrackAchieveCondition(condition, track.Title, 1, result) || IsTrackAchieveCondition(condition, track.Title, 2, result) ||
-                    (track.UltimateAddons && IsTrackAchieveCondition(condition, track.Title, 3, result)))
-                    currentAchievedCount++;
+            switch (condition)
+            {
+                case AchievementTab.Reward_Condition.BattleWonAchiever:
+                    // Count any track with any battle difficulty within any track difficulty
+                    for (int battleMode = 0; battleMode < 3; battleMode++)
+                        if (GetBattleDifficultyConverter(condition, track.Title, result, battleMode))
+                            currentAchievedCount++;
+                    break;
 
-            // Otherwise all difficulty track must be played
-            else 
-                if (IsTrackAchieveCondition(condition, track.Title, 1, result) && IsTrackAchieveCondition(condition, track.Title, 2, result) &&
-                    (!track.UltimateAddons || (track.UltimateAddons && IsTrackAchieveCondition(condition, track.Title, 3, result))))
-                    currentAchievedCount++;
+                case AchievementTab.Reward_Condition.BattleDifficulty:
+                    // Count any track difficulty played within any battle difficulty
+                    if (GetBattleDifficultyConverter(condition, track.Title, "T", int.Parse(result))
+                       || GetBattleDifficultyConverter(condition, track.Title, "F", int.Parse(result))
+                       )
+                            currentAchievedCount++;
+                    break;
+
+                default:
+                    // Count any difficulty type which are played
+                    if (playedTrack)
+                        if (IsTrackAchieveCondition(condition, track.Title, 1, result) || IsTrackAchieveCondition(condition, track.Title, 2, result) ||
+                            (track.UltimateAddons && IsTrackAchieveCondition(condition, track.Title, 3, result)))
+                            currentAchievedCount++;
+
+                        // Otherwise all difficulty track must be played
+                        else
+                        if (IsTrackAchieveCondition(condition, track.Title, 1, result) && IsTrackAchieveCondition(condition, track.Title, 2, result) &&
+                            (!track.UltimateAddons || (track.UltimateAddons && IsTrackAchieveCondition(condition, track.Title, 3, result))))
+                            currentAchievedCount++;
+                    break;
+            }
         }
 
         // Result all achieved tracks
@@ -537,6 +646,18 @@ public class BundleSeasonChecker
 
         // Result tracks count
         return currentActiveCount;
+    }
+
+    private bool GetBattleDifficultyConverter(AchievementTab.Reward_Condition condition, string track, string result, int battleMode)
+    {
+        for (int difficulty = 0; difficulty < 3; difficulty++)
+        {
+            string battleIndex = (difficulty + 1) + (battleMode + 1).ToString();
+            if (IsTrackAchieveCondition(condition, track, int.Parse(battleIndex), result))
+                return true;
+        }
+
+        return false;
     }
     #endregion
 
@@ -581,6 +702,12 @@ public class BundleSeasonChecker
     public int GetNumberOfSuccessAchiever(string result)
     {
         return GetNumberOfAchievedTrack(AchievementTab.Reward_Condition.BattleWonAchiever, true, result);
+    }
+
+    // Get total number of successful battle in diffiuclty
+    public int GetNumberOfPlayedBattleStage(string result)
+    {
+        return GetNumberOfAchievedTrack(AchievementTab.Reward_Condition.BattleDifficulty, true, result);
     }
     #endregion
 }

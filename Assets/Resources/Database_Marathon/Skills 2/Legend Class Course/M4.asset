@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M4
+  m_EditorClassIdentifier: 
+  BPM: 410
+  offset: 314
+  Music: {fileID: 8300000, guid: cf528941b70d3bd40bfdf44dbdb7f57e, type: 3}
+  PreviewTime: 74.9
+  ArtistName: REDALiCE vs. USAO
+  Title: SAIKYO STRONGER
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 842b5796dcb57fb40bb1b4356abbb314, type: 3}
+  ScoreObject: {fileID: 518706633176130690, guid: c1ac66059eda1ff4781b55e6c1eb4402,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  - {fileID: 11400000, guid: ce39b14837b11a742aca6e8620f99cfe, type: 2}
+  creditPoint: Arcaea
+  BPM_Skin: 205
+  UseBPMDisplay: 1
+  ReleasedDate: 
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: ecca6221826eecf4594ad76a2f71474e, type: 2}
+  - {fileID: 11400000, guid: 49c37a7d522e94543b8d81e7773c2c11, type: 2}
+  - {fileID: 11400000, guid: 7d5b2ed17747c8a4282b159cc034524c, type: 2}
+  - {fileID: 11400000, guid: 170f8f54f3926074aafbe6d1b56bab3b, type: 2}
+  - {fileID: 11400000, guid: 5b43c6b748a875840828d3f17efe568b, type: 2}
+  - {fileID: 11400000, guid: 39e71055bd0ee2f4f996e8e7e8a76374, type: 2}
+  - {fileID: 11400000, guid: bdedbbdd04913c24c802575858c1b79b, type: 2}
+  - {fileID: 11400000, guid: ae6d6461797232147a16b9337a4cab41, type: 2}
+  - {fileID: 11400000, guid: f941fee9cab05b24d9fc1c12cf9f4264, type: 2}
+  - {fileID: 11400000, guid: 0ad08b5e7941cab4485b540be2259f39, type: 2}
+  - {fileID: 11400000, guid: 29ce9920a97504547aa6903c4259812f, type: 2}
+  - {fileID: 11400000, guid: ec4f3a451b9797841bbe757a402d60e0, type: 2}
+  - {fileID: 11400000, guid: fbc84edd9edcbe54aac0e0909f73ff22, type: 2}
+  - {fileID: 11400000, guid: 39f2ab058fb3e5f458db87600a4992de, type: 2}
+  - {fileID: 11400000, guid: 585eed4bbaf98f24f9d73614bd02e9a6, type: 2}
+  - {fileID: 11400000, guid: 5286eacda6850f34db18a988d4af8f5e, type: 2}
+  - {fileID: 11400000, guid: d88d290576a4a2041ab79b28ceb73cdd, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: 74b43488c5467ad42ab26e3262913231, type: 2}
+  - {fileID: 11400000, guid: 2ea955551f328a94d9bd95e3e91be45a, type: 2}
+  UltimateAddons: 1
+  SetRestriction: 0
+  RestrictRequirement: []

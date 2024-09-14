@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SelectionPage_Script : MonoBehaviour
 {
@@ -23,6 +24,12 @@ public class SelectionPage_Script : MonoBehaviour
     {
         currentSelection = 2;
         OpeningSelection(Selection[currentSelection], string.Empty);
+    }
+
+    private void UpdateMainSectionMenu()
+    {
+        Selection[0].transform.GetChild(5).GetComponent<Button>().interactable = Application.isEditor;
+        Selection[0].transform.GetChild(6).GetComponent<Button>().interactable = Application.isEditor;
     }
     #endregion
 
@@ -79,6 +86,7 @@ public class SelectionPage_Script : MonoBehaviour
     {
         target.GetComponent<Animator>().SetTrigger("Opening");
         if (LoadAfterTransition != string.Empty) Invoke(LoadAfterTransition, 1);
+        if (currentSelection == 0) UpdateMainSectionMenu();
     }
 
     private void ClosingSelection(GameObject target, string LoadAfterTransition)

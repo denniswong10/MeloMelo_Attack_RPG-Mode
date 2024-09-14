@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: 
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6554a7c1-429c-4807-ab4f-43dd41569d46\"\r\n   
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"bae40b50-936e-4f40-8063-ba3933266316\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"Latest_Version\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"1.4.0EX_Build_F\"\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"5563ec83-191c-4ec4-a978-577b260d145e\"\r\n   
+    \"string\",\r\n      \"value\": \"1.4.2_Build_A\"\r\n    }\r\n  },\r\n  {\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"0886ee9a-41da-42fd-9955-f7ef50af7882\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameApplication_URL\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/ze3isevjk12abw4/MeloMelo_v1.4.0_EX_Build_F.zip/file\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"62718dd3-3b28-4cb8-a737-fa1e97aa9b90\"\r\n   
+    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/xs5zkl9eved17qe/MeloMelo+v1.4.2+Build+A.zip/file\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a44b3dcf-4059-47bd-bc65-40aaea8ab303\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameWebpage_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"8bb53b3c-6706-4392-b9af-485e9ce64e39\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"d3b4c4b1-0cae-48b2-9ff5-9fd16105fb6b\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"4afd03f6-c7b8-4c29-963a-3d7356444f00\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"8e27431c-ab1f-4ecd-b7d2-3c26617105d0\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue_v2\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"23a4a539-32ae-4eb6-b43b-d77292df7622\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"312ab5ad-c7da-4ded-bf1d-472bbdcbc4d5\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"NoteSpeed_Settings_Configuration\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"data\": [\r\n         
     {\r\n            \"bpm\": 550,\r\n            \"baseSpeed\": 140\r\n         
@@ -43,39 +43,66 @@ MonoBehaviour:
     \"baseSpeed\": 30\r\n          },\r\n          {\r\n            \"bpm\": 160,\r\n           
     \"baseSpeed\": 25\r\n          },\r\n          {\r\n            \"bpm\": 150,\r\n           
     \"baseSpeed\": 23\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"a738a28c-a45f-456e-ac35-daba6c0f4648\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"ae1e4884-530b-46ae-a351-5eebacd6d4d1\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"NoteSpeed_Default_Configuration\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
     \"bpm\": 150,\r\n        \"baseSpeed\": 20\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"e50b7884-6255-4ddc-ad64-df7a7da8bb7b\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"d464d0d7-183f-49d8-af6f-14a546cd23fd\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"CloudSave_Mode\",\r\n      \"type\":
     \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"a7d85990-cd82-4c84-8b33-19a1ae84d27a\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"7e9bef1e-d51f-4187-8eb0-dc929c1b007b\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"CloudSave_Support\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"versions\": [\r\n         
     \"1.4.1a\",\r\n          \"1.4.2a\",\r\n          \"1.4.0EX\",\r\n          \"1.4.0EX_Build_A\",\r\n         
     \"1.4.0EX_Build_B\",\r\n          \"1.4.0EX_Build_C\",\r\n          \"1.4.0EX_Build_D\",\r\n         
-    \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\"\r\n        ]\r\n      }\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"94113c2d-1509-4ffd-8de1-0098864fae97\"\r\n   
+    \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\",\r\n          \"1.4.1_Build_A\",\r\n         
+    \"1.4.1_Build_B\",\r\n          \"1.4.2_Build_A\"\r\n        ]\r\n      }\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"4ae92117-a09f-420b-b2fc-3346c52a92d8\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"TrackTag_Support\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"newReleaseTrack\":
-    [],\r\n        \"areaBonusTrack\": []\r\n      }\r\n    }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6554a7c1-429c-4807-ab4f-43dd41569d46\"\r\n   
+    [\r\n          \"Himegoto*Crisisters\",\r\n          \"Eureka Baby\",\r\n         
+    \"TSU\u30FBBA\u30FBSA\",\r\n          \"Angel Blossom\",\r\n          \"Kokokara
+    Saki wa Uta ni Naranai\"\r\n        ],\r\n        \"areaBonusTrack\": []\r\n     
+    }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"e9a160e2-e5de-419b-be55-67a38e1f72ab\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\":
+    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"data_array\":
+    [\r\n          {\r\n            \"title\": \"Released of 1.4.2 Build A\",\r\n           
+    \"releasedDate\": \"(9 September 2024)\",\r\n            \"description\": \"Added
+    content, Minor fixed on gameplay, Remove all unused features\"\r\n          },\r\n         
+    {\r\n            \"title\": \"Upcoming of 1.4.2 Build A\",\r\n            \"releasedDate\":
+    \"(26 August 2024)\",\r\n            \"description\": \"Stay tuned for details
+    through the site page\"\r\n          },\r\n          {\r\n            \"title\":
+    \"Released of 1.4.1 Build B\",\r\n            \"releasedDate\": \"(12 August
+    2024)\",\r\n            \"description\": \"Added content, Major fixed of marathon
+    mode, Added marathon content\"\r\n          },\r\n          {\r\n           
+    \"title\": \"Upcoming of 1.4.1 Build B\",\r\n            \"releasedDate\": \"(7
+    August 2024)\",\r\n            \"description\": \"Stay tuned for details through
+    the site page\"\r\n          },\r\n          {\r\n            \"title\": \"Released
+    of 1.4.1 Build A\",\r\n            \"releasedDate\": \"(22 July 2024)\",\r\n           
+    \"description\": \"Added content, Added achievement, Reopening of marathon play\"\r\n         
+    },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.1 Build A\",\r\n           
+    \"releasedDate\": \"(14 July 2024)\",\r\n            \"description\": \"Stay
+    tuned for details through the site page\"\r\n          },\r\n          {\r\n           
+    \"title\": \"Released of 1.4.0 Beta Build\",\r\n            \"releasedDate\":
+    \"(17 June 2024)\",\r\n            \"description\": \"Added content, Added fast/late
+    features, Program Rearrangement\"\r\n          }\r\n        ]\r\n      }\r\n   
+    }\r\n  }\r\n]"
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"bae40b50-936e-4f40-8063-ba3933266316\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"Latest_Version\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"1.4.0EX_Build_F\"\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"5563ec83-191c-4ec4-a978-577b260d145e\"\r\n   
+    \"string\",\r\n      \"value\": \"1.4.2_Build_A\"\r\n    }\r\n  },\r\n  {\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"0886ee9a-41da-42fd-9955-f7ef50af7882\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameApplication_URL\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/ze3isevjk12abw4/MeloMelo_v1.4.0_EX_Build_F.zip/file\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"62718dd3-3b28-4cb8-a737-fa1e97aa9b90\"\r\n   
+    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/xs5zkl9eved17qe/MeloMelo+v1.4.2+Build+A.zip/file\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a44b3dcf-4059-47bd-bc65-40aaea8ab303\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameWebpage_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"8bb53b3c-6706-4392-b9af-485e9ce64e39\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"d3b4c4b1-0cae-48b2-9ff5-9fd16105fb6b\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"4afd03f6-c7b8-4c29-963a-3d7356444f00\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"8e27431c-ab1f-4ecd-b7d2-3c26617105d0\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue_v2\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"23a4a539-32ae-4eb6-b43b-d77292df7622\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"312ab5ad-c7da-4ded-bf1d-472bbdcbc4d5\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"NoteSpeed_Settings_Configuration\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"data\": [\r\n         
     {\r\n            \"bpm\": 550,\r\n            \"baseSpeed\": 140\r\n         
@@ -91,23 +118,50 @@ MonoBehaviour:
     \"baseSpeed\": 30\r\n          },\r\n          {\r\n            \"bpm\": 160,\r\n           
     \"baseSpeed\": 25\r\n          },\r\n          {\r\n            \"bpm\": 150,\r\n           
     \"baseSpeed\": 23\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"a738a28c-a45f-456e-ac35-daba6c0f4648\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"ae1e4884-530b-46ae-a351-5eebacd6d4d1\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"NoteSpeed_Default_Configuration\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
     \"bpm\": 150,\r\n        \"baseSpeed\": 20\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"e50b7884-6255-4ddc-ad64-df7a7da8bb7b\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"d464d0d7-183f-49d8-af6f-14a546cd23fd\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"CloudSave_Mode\",\r\n      \"type\":
     \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"a7d85990-cd82-4c84-8b33-19a1ae84d27a\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"7e9bef1e-d51f-4187-8eb0-dc929c1b007b\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"CloudSave_Support\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"versions\": [\r\n         
     \"1.4.1a\",\r\n          \"1.4.2a\",\r\n          \"1.4.0EX\",\r\n          \"1.4.0EX_Build_A\",\r\n         
     \"1.4.0EX_Build_B\",\r\n          \"1.4.0EX_Build_C\",\r\n          \"1.4.0EX_Build_D\",\r\n         
-    \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\"\r\n        ]\r\n      }\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"94113c2d-1509-4ffd-8de1-0098864fae97\"\r\n   
+    \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\",\r\n          \"1.4.1_Build_A\",\r\n         
+    \"1.4.1_Build_B\",\r\n          \"1.4.2_Build_A\"\r\n        ]\r\n      }\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"4ae92117-a09f-420b-b2fc-3346c52a92d8\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"TrackTag_Support\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"newReleaseTrack\":
-    [],\r\n        \"areaBonusTrack\": []\r\n      }\r\n    }\r\n  }\r\n]"
+    [\r\n          \"Himegoto*Crisisters\",\r\n          \"Eureka Baby\",\r\n         
+    \"TSU\u30FBBA\u30FBSA\",\r\n          \"Angel Blossom\",\r\n          \"Kokokara
+    Saki wa Uta ni Naranai\"\r\n        ],\r\n        \"areaBonusTrack\": []\r\n     
+    }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"e9a160e2-e5de-419b-be55-67a38e1f72ab\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\":
+    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"data_array\":
+    [\r\n          {\r\n            \"title\": \"Released of 1.4.2 Build A\",\r\n           
+    \"releasedDate\": \"(9 September 2024)\",\r\n            \"description\": \"Added
+    content, Minor fixed on gameplay, Remove all unused features\"\r\n          },\r\n         
+    {\r\n            \"title\": \"Upcoming of 1.4.2 Build A\",\r\n            \"releasedDate\":
+    \"(26 August 2024)\",\r\n            \"description\": \"Stay tuned for details
+    through the site page\"\r\n          },\r\n          {\r\n            \"title\":
+    \"Released of 1.4.1 Build B\",\r\n            \"releasedDate\": \"(12 August
+    2024)\",\r\n            \"description\": \"Added content, Major fixed of marathon
+    mode, Added marathon content\"\r\n          },\r\n          {\r\n           
+    \"title\": \"Upcoming of 1.4.1 Build B\",\r\n            \"releasedDate\": \"(7
+    August 2024)\",\r\n            \"description\": \"Stay tuned for details through
+    the site page\"\r\n          },\r\n          {\r\n            \"title\": \"Released
+    of 1.4.1 Build A\",\r\n            \"releasedDate\": \"(22 July 2024)\",\r\n           
+    \"description\": \"Added content, Added achievement, Reopening of marathon play\"\r\n         
+    },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.1 Build A\",\r\n           
+    \"releasedDate\": \"(14 July 2024)\",\r\n            \"description\": \"Stay
+    tuned for details through the site page\"\r\n          },\r\n          {\r\n           
+    \"title\": \"Released of 1.4.0 Beta Build\",\r\n            \"releasedDate\":
+    \"(17 June 2024)\",\r\n            \"description\": \"Added content, Added fast/late
+    features, Program Rearrangement\"\r\n          }\r\n        ]\r\n      }\r\n   
+    }\r\n  }\r\n]"
   _environments: "[\r\n  {\r\n    \"projectId\": \"f3a9f63d-58ab-4394-9b31-71188bf39fb2\",\r\n   
     \"name\": \"production\",\r\n    \"id\": \"b422a025-f10e-43d8-8a39-f7829099065c\",\r\n   
     \"isDefault\": true,\r\n    \"createdAt\": \"2023-11-18T04:52:33Z\",\r\n    \"updatedAt\":

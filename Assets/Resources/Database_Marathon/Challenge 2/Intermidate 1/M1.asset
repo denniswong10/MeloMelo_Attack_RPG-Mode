@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M1
+  m_EditorClassIdentifier: 
+  BPM: 266
+  offset: 2991
+  Music: {fileID: 8300000, guid: d52ac0d203c3fa740b531376bb7cb909, type: 3}
+  PreviewTime: 60
+  ArtistName: Tomodachi Tsukuritai
+  Title: Zannenkei Rinjinbu
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 1e5c8451d25d3a247852e42d72485f97, type: 3}
+  ScoreObject: {fileID: 7202161308368289478, guid: 38d864e075d6f5a48b47ca896198a9bb,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 46a97ac561aeec0418c3113544fbfe40, type: 2}
+  - {fileID: 11400000, guid: a5ed5fda86ce4394a934af5a7f18e4bb, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  creditPoint: --
+  BPM_Skin: 133
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: ab3d79178f788df48a03281fac535189, type: 2}
+  - {fileID: 11400000, guid: d22d1d76f269d7c408b57bab4de7b0cd, type: 2}
+  - {fileID: 11400000, guid: 477de57684214aa4d9c88c45d814d2a2, type: 2}
+  - {fileID: 11400000, guid: f804a3a83d4f43e4781b18acc0dc89cd, type: 2}
+  - {fileID: 11400000, guid: 69a3b98c888cd7f4a9cc5b7d3cc1ab4b, type: 2}
+  addons3b: []
+  UltimateAddons: 0

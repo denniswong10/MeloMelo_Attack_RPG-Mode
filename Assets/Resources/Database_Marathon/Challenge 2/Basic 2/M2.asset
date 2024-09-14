@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M2
+  m_EditorClassIdentifier: 
+  BPM: 480
+  offset: 1945
+  Music: {fileID: 8300000, guid: c5c32385dd39d984683ff7b9509a83e9, type: 3}
+  PreviewTime: 56.5
+  ArtistName: Meru (Mari Kagami, Emi Sagara, Rinno Suzukawa)
+  Title: "Enthusiasm\u2606Diary"
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 6214b3659ea97584db80400d2055d46a, type: 3}
+  ScoreObject: {fileID: 5674231639177643936, guid: e05dc3bfb74924f4fa0727312981aea9,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 94459dc1f595ab84b9fa5cf4fbf0f52d, type: 2}
+  creditPoint: "\u30AC\u30FC\u30EB\u30D5\u30EC\u30F3\u30C9\uFF08\u266A\uFF09"
+  BPM_Skin: 240
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: 7fc5fbc4d2475494ab986503489db488, type: 2}
+  - {fileID: 11400000, guid: 80f70b14ea8a2494b85bb34d5dd0a791, type: 2}
+  - {fileID: 11400000, guid: 23e8e0d81284bf14788a87b3a0b608bd, type: 2}
+  - {fileID: 11400000, guid: 75304938b9c73d443875411f67515a08, type: 2}
+  - {fileID: 11400000, guid: 588084ef482a27b43b54fb99093b386c, type: 2}
+  - {fileID: 11400000, guid: 825040af1e866784f8747fc101dccb86, type: 2}
+  - {fileID: 11400000, guid: fbc84edd9edcbe54aac0e0909f73ff22, type: 2}
+  - {fileID: 11400000, guid: 37f504a9404129d41998d4396d5ed349, type: 2}
+  - {fileID: 11400000, guid: 64ac9d7f8e8c5b04393eca09b406cfa0, type: 2}
+  - {fileID: 11400000, guid: 0c4d792f3fe4ccb47a4ab3f472e306ec, type: 2}
+  - {fileID: 11400000, guid: 9253f56cb7e1d1445aa38cdfbaec6de3, type: 2}
+  - {fileID: 11400000, guid: 4dc5186d972b7aa4b97b815adaf6a036, type: 2}
+  - {fileID: 11400000, guid: 9db4d7aa70ec84a4bac394e691669147, type: 2}
+  - {fileID: 11400000, guid: bfe45524ac2153143aa29d8633d4f721, type: 2}
+  - {fileID: 11400000, guid: 0ad08b5e7941cab4485b540be2259f39, type: 2}
+  - {fileID: 11400000, guid: 87069fbaa43eb534ea256764efbb4249, type: 2}
+  - {fileID: 11400000, guid: 42c94aef5cf718b4ba2cdcbd0f313ae9, type: 2}
+  - {fileID: 11400000, guid: 9194725c1408fba4b89cc47a5788d5a3, type: 2}
+  - {fileID: 11400000, guid: cf9dd88f75a071743b424ad1ec775672, type: 2}
+  - {fileID: 11400000, guid: c6888f16ce692a7489fb264e585b9e22, type: 2}
+  - {fileID: 11400000, guid: b7ec341a805f57847b43c4b2faa6ab73, type: 2}
+  - {fileID: 11400000, guid: e30773b6dd82bad44b14e6baf7ff4a23, type: 2}
+  - {fileID: 11400000, guid: 8ffd832bcf764ff48b365a7c62d8e245, type: 2}
+  - {fileID: 11400000, guid: 6bc20bdddf0be7c428029494cd2ee25d, type: 2}
+  - {fileID: 11400000, guid: 170f8f54f3926074aafbe6d1b56bab3b, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: 950e965db51e51b44ae9b2b1299a32eb, type: 2}
+  - {fileID: 11400000, guid: 3798260de5960ec439f5b64e9c5b3185, type: 2}
+  - {fileID: 11400000, guid: ae61366a79d1fde49b4a1bfbb18d1276, type: 2}
+  - {fileID: 11400000, guid: ace7a7b1e4a41ea4d81fef52ea58ba8e, type: 2}
+  - {fileID: 11400000, guid: 6694f9a08a6953d4d8492bca87b60d5a, type: 2}
+  - {fileID: 11400000, guid: 67cd5e349a08425428c3a4375ac584ce, type: 2}
+  - {fileID: 11400000, guid: 7785e3860f9dfa34a900bd1be91ce651, type: 2}
+  - {fileID: 11400000, guid: dbd8d0ede0225a644ab9593223b013a6, type: 2}
+  UltimateAddons: 1

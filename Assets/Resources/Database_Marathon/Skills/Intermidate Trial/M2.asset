@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M2
+  m_EditorClassIdentifier: 
+  BPM: 135
+  offset: 477
+  Music: {fileID: 8300000, guid: d26742c3142aa614e8e5e4f114a28cb7, type: 3}
+  PreviewTime: 63.7
+  ArtistName: Pet na Kanojotachi
+  Title: Kimi ga Yume wo Tsuretekita
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: a9da2f208fd5ac64b8033331cbcd4cb7, type: 3}
+  ScoreObject: {fileID: 948256177618491779, guid: 900114f7d6a08154eabc44795e7a0c9d,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 46a97ac561aeec0418c3113544fbfe40, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  creditPoint: --
+  BPM_Skin: 0
+  UseBPMDisplay: 0
+  ScaleLevel: 1
+  seasonNo: 1
+  NewChartSystem: 0
+  addons1: []
+  addons2: []
+  addons3: []
+  addons3b: []
+  UltimateAddons: 0

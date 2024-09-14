@@ -105,7 +105,7 @@ public class SelectionMenu_Script : MonoBehaviour
     private void PlaySetup(bool casualMode)
     {
         // Attracted script: Init setup
-        int loadDifficultyName = 1;
+        int loadDifficultyName;
         selection = GetComponent<MusicSelectionPage>();
 
         // Load player rate point or played count

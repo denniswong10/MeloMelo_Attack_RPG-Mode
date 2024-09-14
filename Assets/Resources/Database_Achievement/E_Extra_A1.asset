@@ -17,6 +17,6 @@ MonoBehaviour:
     all
   titleReward_name: LIMITED EDITION
   Tier: 4
-  useConditionReward: 7
+  useConditionReward: 9
   fill_Array: []
   conditionOperate: PlayRestrictedTrack

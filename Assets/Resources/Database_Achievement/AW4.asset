@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0380c5715401b3a498e9f350022347ad, type: 3}
   m_Name: AW4
   m_EditorClassIdentifier: 
-  title: Prepare yourself for battle
-  description: Set an options before battle
-  titleReward_name: WAR GAMING
+  title: The point where content are gathered
+  description: Explore the collection
+  titleReward_name: CONTENT SEEKER
   Tier: 0
-  useConditionReward: 7
+  useConditionReward: 9
   fill_Array: []
-  conditionOperate: BattleSetupReview
+  conditionOperate: CollectionAlbum

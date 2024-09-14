@@ -19,5 +19,5 @@ MonoBehaviour:
   - 7
   - 8
   DifficultyType: 01000000010000000200000002000000
-  clearingType: 1
-  clearingValue: 150
+  clearingType: 0
+  clearingValue: B

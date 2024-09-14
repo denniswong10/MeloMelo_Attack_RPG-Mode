@@ -58,6 +58,7 @@ public class CollectionNew_Script : MonoBehaviour
         // Check Program Start: Intit
         ResMelo = PlayerPrefs.GetString("Resoultion_Melo", string.Empty);
         MainSelection.GetComponent<Animator>().SetTrigger("Opening" + ResMelo);
+        PlayerPrefs.SetInt("CollectionAlbum_Visited", 1);
 
         // System Component: Intit
         BGM_Loader();

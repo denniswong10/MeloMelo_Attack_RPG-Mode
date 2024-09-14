@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M4
+  m_EditorClassIdentifier: 
+  BPM: 386
+  offset: 556
+  Music: {fileID: 8300000, guid: aa142e8a9b6ccb34292a0c5c8140e1b0, type: 3}
+  PreviewTime: 51.4
+  ArtistName: 'Megu (CV: Murakawa Rie), Syaro (CV: Uchida Maaya)'
+  Title: Ashioto Tarte Tatin
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 4165f474c9d9bb84b9b9b581b46289c1, type: 3}
+  ScoreObject: {fileID: 8782723283467140005, guid: 09d819dd8ff8c9649a35af2fa65aac32,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 46a97ac561aeec0418c3113544fbfe40, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 94459dc1f595ab84b9fa5cf4fbf0f52d, type: 2}
+  creditPoint: --
+  BPM_Skin: 193
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: ddac27a1c28737d4c89983336c7967bf, type: 2}
+  - {fileID: 11400000, guid: 1ad681bfb3228414d88df231fd865110, type: 2}
+  - {fileID: 11400000, guid: 3a085ea059ee8e64cbf1d65967700e57, type: 2}
+  - {fileID: 11400000, guid: 6cd0d35ba03d0c74a89808fa77527f33, type: 2}
+  - {fileID: 11400000, guid: e4242dbed7a915e419c1a353650e72a7, type: 2}
+  - {fileID: 11400000, guid: 393fec96c639ae84089515b8020e6dd6, type: 2}
+  - {fileID: 11400000, guid: d39cb7e4d6892c44caa49bb6cb38fb63, type: 2}
+  - {fileID: 11400000, guid: 37f504a9404129d41998d4396d5ed349, type: 2}
+  - {fileID: 11400000, guid: 64ac9d7f8e8c5b04393eca09b406cfa0, type: 2}
+  - {fileID: 11400000, guid: 06145b490d3518d47899af538d8df20a, type: 2}
+  - {fileID: 11400000, guid: a53b07e7bdeaef749aca15e450b999f0, type: 2}
+  - {fileID: 11400000, guid: 591cd355fdcaf754a91313bcf530adcd, type: 2}
+  - {fileID: 11400000, guid: 461171ec8184eb7458f3a404245f879b, type: 2}
+  - {fileID: 11400000, guid: 5aacd5d6dab521c4184d63027dbe9a47, type: 2}
+  - {fileID: 11400000, guid: 39e71055bd0ee2f4f996e8e7e8a76374, type: 2}
+  - {fileID: 11400000, guid: bdedbbdd04913c24c802575858c1b79b, type: 2}
+  - {fileID: 11400000, guid: 0019612b7d8faec48a12516c5531ba0d, type: 2}
+  - {fileID: 11400000, guid: 2258bc73a94165d4ea621eebae8e1f1a, type: 2}
+  - {fileID: 11400000, guid: 3049e793ea9159240bb312a37879811b, type: 2}
+  - {fileID: 11400000, guid: e30773b6dd82bad44b14e6baf7ff4a23, type: 2}
+  - {fileID: 11400000, guid: c244e815e1b7d404a87631627a877f04, type: 2}
+  - {fileID: 11400000, guid: 0b1acb74143a7f044a92cd55a927ee14, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: d885a9d6cf8a1a44c92aba824f2fb78d, type: 2}
+  - {fileID: 11400000, guid: a7673047a3fa2524ebd5d1f3b868ee06, type: 2}
+  - {fileID: 11400000, guid: 1b6aba7ef8d0aa94f819d72eb3c7e9ae, type: 2}
+  - {fileID: 11400000, guid: 65378286baf76ef478b013756fcef945, type: 2}
+  - {fileID: 11400000, guid: bdf16cc2ec0aa1a4c95e4ecd0e2d589b, type: 2}
+  - {fileID: 11400000, guid: 2288e0a7474411d45b30a6f4af135634, type: 2}
+  UltimateAddons: 0

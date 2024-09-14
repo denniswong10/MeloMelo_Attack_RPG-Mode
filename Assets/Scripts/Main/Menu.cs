@@ -5,20 +5,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using MeloMelo_RatingMeter;
 
-public class PlayerScore
-{
-    public string entryName;
-    public int ratePoint;
-    public int playCount;
-
-    public PlayerScore(string e, int r, int p)
-    {
-        entryName = e;
-        ratePoint = r;
-        playCount = p;
-    }
-}
-
 public class Menu : MonoBehaviour
 {
     public static Menu thisMenu;
@@ -27,13 +13,10 @@ public class Menu : MonoBehaviour
     private RatePointIndicator Profile = new RatePointIndicator();
     public Text[] menuContentTxt;
 
-    [Header("Ranking Board Component")]
-    public GameObject RankBoard;
-    public RawImage Display_OfflineMode;
-    public GameObject Display_LoadingMode;
-
-    private int connectingAttempt = 0;
-    public Text RankingTitle;
+    [Header("NewsUpdate Component")]
+    public RawImage Display_ReportError;
+    public GameObject NewsBoard;
+    public Text NewsBlockElement;
 
     private string userInput;
 
@@ -42,68 +25,49 @@ public class Menu : MonoBehaviour
         thisMenu = this;
         userInput = LoginPage_Script.thisPage.GetUserPortOutput();
 
+        BGM_Setup();
         CallUpOptionTask();
     }
 
-    #region MAIN 
-    private void CallUpOptionTask()
+    #region SETUP 
+    private void BGM_Setup()
     {
-        Profile.ProfileUpdate(userInput, true, "Played Count: ", "Rate Point: ");
-        VersionUpdate();
-        CheckingForServerRank();
-
         BGM = GameObject.FindGameObjectsWithTag("BGM");
         if (BGM.Length > 1) { for (int i = 1; i < BGM.Length; i++) { Destroy(BGM[i]); } }
+    }
 
+    private void CallUpOptionTask()
+    {
+        // Top Section: Profile, Version
+        Profile.ProfileUpdate(userInput, true, "Played Count: ", "Rate Point: ");
+        VersionUpdate();
+
+        // Right Section: News Report
+        UpdateNewsReport();
+
+        // Middle Section: Credit Counter Display
         GameObject.Find("CreidtCounter").transform.GetChild(0).GetComponent<Text>().text = 
             "Credit: " + PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_Credit", 0);
     }
+    #endregion
 
+    #region MAIN
     public void Menu_InteractANDTransition(string scene)
     {
-        // Main - Start (Ref_PreSelection<1><2>), Options (Options)
-
+        // Started nagivator through menu
         if (scene != "Quit") SceneManager.LoadScene(scene);
         else Application.Quit();
     }
     #endregion
 
     #region COMPONENT
-    bool CheckingNetworkReachable()
+    private bool CheckingNetworkReachable()
     {
         if (PlayerPrefs.GetInt("serverEnable", 0) == 1) return true;
         else return false;
     }
 
-    void CheckingForServerRank()
-    {
-        // Show Display
-        Display_LoadingMode.SetActive(true);
-        RankingTitle.text = "GLOBAL RANKING";
-
-        // Load Display of ranking
-        if (CheckingNetworkReachable())
-        {
-            MeloMelo_Network.Data_Management input = new MeloMelo_Network.Data_Management(PlayerPrefs.GetString("GameWeb_URL"));
-            StartCoroutine(input.MemberRankingBoard());
-            Display_LoadingMode.SetActive(false);
-        }
-        else if (connectingAttempt <= 3)
-        {
-            Display_LoadingMode.transform.GetChild(0).GetComponent<Text>().text += ".";
-            Invoke("CheckingForServerRank", 2);
-            connectingAttempt++;
-        }
-        else if (connectingAttempt > 3)
-        {
-            // Show Display
-            Display_LoadingMode.SetActive(false); 
-            RankingTitle.text = "LOCAL RANKING";
-            LocalRankingBoard();
-        }
-    }
-
-    void VersionUpdate()
+    private void VersionUpdate()
     {
         string latestBuild = PlayerPrefs.GetString("GameLatest_Update", string.Empty);
 
@@ -113,67 +77,67 @@ public class Menu : MonoBehaviour
     }
     #endregion
 
-    #region MISC (GLOBAL RANKING)
-    public void GlobalRankingBoard(string[] data)
+    #region SETUP (NEWS UPDATE)
+    [System.Serializable]
+    struct NewsReportFormat
     {
-        List<PlayerScore> playerScore = new List<PlayerScore>();
+        public string title;
+        public string releasedDate;
+        public string description;
 
-        for (int i = 0; i < (data.Length / 3); i++)
+        public NewsReportFormat GetReport(string format)
         {
-            if (i < RankBoard.transform.childCount)
-                playerScore.Add(new PlayerScore(data[i * 3], int.Parse(data[i * 3 + 1]), int.Parse(data[i * 3 + 2])));
-            else 
-                break;
+            Debug.Log(format);
+            return JsonUtility.FromJson<NewsReportFormat>(format);
         }
-
-        // Display the board
-        GetBoardDisplay(playerScore);
     }
-    #endregion
 
-    #region MISC (LOCAL RANKING)
-    private void LocalRankingBoard()
+    [System.Serializable]
+    struct NewsReportList
     {
-        List<PlayerScore> playerScore = new List<PlayerScore>();
+        public NewsReportFormat[] data_array;
 
-        foreach (string entry in GuestLogin_Script.thisScript.get_entrytitle)
-            playerScore.Add(new PlayerScore(GetNoEntryName(entry), PlayerPrefs.GetInt(entry + "totalRatePoint", 0), PlayerPrefs.GetInt(entry + "PlayedCount_Data", 0)));
-
-        // Display the board
-        GetBoardDisplay(playerScore);
-    }
-    #endregion
-
-    #region MISC (RANKING BOARD)
-    private void GetBoardDisplay(List<PlayerScore> list)
-    {
-        // Sort the list
-        list.Sort((a, b) => a.ratePoint.CompareTo(b.ratePoint));
-        list.Reverse();
-
-        // Display board
-        for (int i = 0; i < list.ToArray().Length; i++)
+        public NewsReportList GetReportArray(string format)
         {
-            if (i < RankBoard.transform.childCount)
+            Debug.Log(format);
+            return JsonUtility.FromJson<NewsReportList>(format);
+        }
+    }
+    #endregion
+
+    #region COMPONENT (NEWS UPDATE)
+    private void UpdateNewsReport()
+    {
+        if (Application.internetReachability != NetworkReachability.NotReachable)
+        {
+            if (PlayerPrefs.HasKey("AccountSync") && PlayerPrefs.HasKey("MeloMelo_NewsReport_Daily"))
             {
-                RankBoard.transform.GetChild(i).GetChild(1).GetComponent<Text>().text = GetNoEntryName(list[i].entryName);
-                RankBoard.transform.GetChild(i).GetChild(2).GetComponent<Text>().text = FindEntryAuthorised(list[i].entryName, "totalRatePoint") != string.Empty ? "Rate Point: " + list[i].ratePoint : string.Empty;
-                RankBoard.transform.GetChild(i).GetChild(3).GetComponent<Text>().text = FindEntryAuthorised(list[i].entryName, "PlayedCount_Data") != string.Empty ? "Last Played: " + list[i].playCount : "- No Record -";
+                string reportFormat = PlayerPrefs.GetString("MeloMelo_NewsReport_Daily");
+                NewsReportList reportListing = new NewsReportList().GetReportArray(reportFormat);
+
+                foreach (NewsReportFormat newsBlocking in reportListing.data_array)
+                    CreateNewsLetter(newsBlocking.title, newsBlocking.description, newsBlocking.releasedDate);
+
+                if (reportListing.data_array.Length == 0) UpdateErrorReport("THERE IS NO NEWS UPDATE");
             }
-            else break;
+            else
+                UpdateErrorReport("SIGN IN TO GUEST LOGIN");
         }
+        else
+            UpdateErrorReport("OFFLINE MODE");
     }
 
-    private string GetNoEntryName(string entry)
+    private void UpdateErrorReport(string message)
     {
-        if (entry != string.Empty) return entry;
-        return "New Entry";
+        Display_ReportError.gameObject.SetActive(true);
+        Display_ReportError.transform.GetComponentInChildren<Text>().text = message;
     }
 
-    private string FindEntryAuthorised(string entry, string input)
+    private void CreateNewsLetter(string title, string description, string timeStamp)
     {
-        if (entry != string.Empty) return PlayerPrefs.GetInt(entry + input, 0).ToString();
-        return string.Empty;
+        Text newsBlock = Instantiate(NewsBlockElement);
+        newsBlock.text = title + "\n" + timeStamp + "\n------------------------------\n" + description + "\n\n";
+        newsBlock.transform.SetParent(NewsBoard.transform.GetChild(1).GetChild(0).transform);
     }
     #endregion
 }

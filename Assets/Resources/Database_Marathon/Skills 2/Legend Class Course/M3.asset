@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M3
+  m_EditorClassIdentifier: 
+  BPM: 360
+  offset: 1332
+  Music: {fileID: 8300000, guid: 244c5fc54c12fd04096d5a35c4406d51, type: 3}
+  PreviewTime: 46.7
+  ArtistName: Kanon Wakeshima
+  Title: killy killy JOKER
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: c3030be93d31e104cba37c7ba7b4212d, type: 3}
+  ScoreObject: {fileID: 2032128965258198108, guid: d30adb0386f9acd488a8f206c47b8375,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: 5397bedbfa8b0274e923a8b52aa715f0, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 46a97ac561aeec0418c3113544fbfe40, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  creditPoint: --
+  BPM_Skin: 180
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: 23e8e0d81284bf14788a87b3a0b608bd, type: 2}
+  - {fileID: 11400000, guid: 40b29c06998736e4b9be72ef19209407, type: 2}
+  - {fileID: 11400000, guid: 20b9b84666859ad49a2ceccc4e0f73fc, type: 2}
+  - {fileID: 11400000, guid: f9314328a104f9e4eada3e88c8ba5483, type: 2}
+  - {fileID: 11400000, guid: 6f4d509087d45a44885eadcab03c2384, type: 2}
+  - {fileID: 11400000, guid: 2c173407c4b5d294692793034745872f, type: 2}
+  - {fileID: 11400000, guid: c7951de45e3ba3a47859438e23ecd3d1, type: 2}
+  - {fileID: 11400000, guid: 06145b490d3518d47899af538d8df20a, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: 4ec08c64948bf054c8348524c304c26a, type: 2}
+  - {fileID: 11400000, guid: 03dc99b902a1af34fbfef370f062d1f8, type: 2}
+  - {fileID: 11400000, guid: bf48e3b3bbecfd54bb870dc53becc320, type: 2}
+  - {fileID: 11400000, guid: 950e965db51e51b44ae9b2b1299a32eb, type: 2}
+  - {fileID: 11400000, guid: 3798260de5960ec439f5b64e9c5b3185, type: 2}
+  - {fileID: 11400000, guid: 5fb10033fa17b9e4a9ef372db9a241ad, type: 2}
+  - {fileID: 11400000, guid: fe308dc0162ceea4c9f53f0d7d46eef5, type: 2}
+  - {fileID: 11400000, guid: 37d5b458b716fb0479a127be08b6a3ba, type: 2}
+  - {fileID: 11400000, guid: fe0d180d15d73254cb5f9424e0b9defa, type: 2}
+  UltimateAddons: 0

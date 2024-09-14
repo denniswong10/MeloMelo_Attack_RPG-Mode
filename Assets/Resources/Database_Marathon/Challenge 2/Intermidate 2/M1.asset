@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M1
+  m_EditorClassIdentifier: 
+  BPM: 246
+  offset: 2157
+  Music: {fileID: 8300000, guid: d5fd742b9005cee43a0642a571af306e, type: 3}
+  PreviewTime: 49.5
+  ArtistName: Akasaki Chinatsu, Tomatsu Haruka, Toyosaki Aki
+  Title: Seishun no Reverb
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: 525bf74e859356f40a1f6f651dd51413, type: 3}
+  ScoreObject: {fileID: 6892674893720096873, guid: bb0df53f8b846fe4e8f03e1b7d44b7e3,
+    type: 3}
+  videoImport: {fileID: 32900000, guid: 2bc9f17444a4a4048822d34cac7c5d96, type: 3}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 46a97ac561aeec0418c3113544fbfe40, type: 2}
+  - {fileID: 11400000, guid: a5ed5fda86ce4394a934af5a7f18e4bb, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  creditPoint: --
+  BPM_Skin: 123
+  UseBPMDisplay: 1
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: a43b98909738b6d4bbf4a2d6e52703ab, type: 2}
+  - {fileID: 11400000, guid: 2581ade817a990d4c877f48580dd1c38, type: 2}
+  - {fileID: 11400000, guid: 74c8cc9fd6866f049948ea197abdb229, type: 2}
+  - {fileID: 11400000, guid: b4fd57d9a32c49a4fb3f55ca04308307, type: 2}
+  - {fileID: 11400000, guid: 9b0917bc94c877e4d9796a3f21b2c679, type: 2}
+  - {fileID: 11400000, guid: 428f8d138d09a3a46b6ccbb9219eb094, type: 2}
+  - {fileID: 11400000, guid: c0e272e9b49b5e848a7dd8de74d4ee2d, type: 2}
+  - {fileID: 11400000, guid: 06145b490d3518d47899af538d8df20a, type: 2}
+  - {fileID: 11400000, guid: d7d7feed3ce581546a2b884cdcdf6781, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: d885a9d6cf8a1a44c92aba824f2fb78d, type: 2}
+  - {fileID: 11400000, guid: a7673047a3fa2524ebd5d1f3b868ee06, type: 2}
+  UltimateAddons: 0
