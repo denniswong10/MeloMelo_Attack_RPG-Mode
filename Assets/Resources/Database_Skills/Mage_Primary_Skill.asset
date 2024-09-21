@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e8b0e0e05ea2e4dbb347c649c3fe92, type: 3}
+  m_Name: Mage_Primary_Skill
+  m_EditorClassIdentifier: 
+  skillName: Treasure Hunt
+  skillIcon: {fileID: 2800000, guid: b8e50d3476d59ca4fa937dfb9683f666, type: 3}
+  description: 'Searching for treasure and make me want to have more. Dealing extra
+    damage to enemy upon picking up 50 Items for (MAG x 50% + (Grade x 25%)). '
+  onStartOfEffect: []
+  duringPlayOfEffect:
+  - effectName: OnItemCountForDamage
+    stats: 2
+    baseDamageStats: 50
+    extraStatsPercentage: 25
+    valueOfTrigger: 50
+  onEndOfEffect: []
+  target_caterogy: 4
+  isUnlockReady: 1

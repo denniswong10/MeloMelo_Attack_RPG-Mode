@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74be61cf4819b8c479cb123ee54be224, type: 3}
   m_Name: Mage_Restrict
   m_EditorClassIdentifier: 
-  description: 
+  description: Always be in my heart
   trackCleared:
   - trackName: In My Heart
     difficulty: 1

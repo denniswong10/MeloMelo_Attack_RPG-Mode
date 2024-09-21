@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: 
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"bae40b50-936e-4f40-8063-ba3933266316\"\r\n   
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6c59977d-15ff-4878-9c86-da783112972f\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"Latest_Version\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"1.4.2_Build_A\"\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"0886ee9a-41da-42fd-9955-f7ef50af7882\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"ab24f480-e4e2-4595-ada8-0759dd08d9dd\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameApplication_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/xs5zkl9eved17qe/MeloMelo+v1.4.2+Build+A.zip/file\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a44b3dcf-4059-47bd-bc65-40aaea8ab303\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"eb66caba-093d-4808-9be3-bb6d717b89da\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameWebpage_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"d3b4c4b1-0cae-48b2-9ff5-9fd16105fb6b\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"06b3cbb5-65a9-40f3-aedb-717a97808cfa\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"8e27431c-ab1f-4ecd-b7d2-3c26617105d0\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"faa9246f-c53c-4577-bce8-82207f88c0a4\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue_v2\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"312ab5ad-c7da-4ded-bf1d-472bbdcbc4d5\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"dd7c1619-2d5d-40b4-8ae6-ac216391f277\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"NoteSpeed_Settings_Configuration\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"data\": [\r\n         
     {\r\n            \"bpm\": 550,\r\n            \"baseSpeed\": 140\r\n         
@@ -43,27 +43,27 @@ MonoBehaviour:
     \"baseSpeed\": 30\r\n          },\r\n          {\r\n            \"bpm\": 160,\r\n           
     \"baseSpeed\": 25\r\n          },\r\n          {\r\n            \"bpm\": 150,\r\n           
     \"baseSpeed\": 23\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"ae1e4884-530b-46ae-a351-5eebacd6d4d1\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"968d21ec-f3e2-4afb-9a58-d3b4d398a755\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"NoteSpeed_Default_Configuration\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
     \"bpm\": 150,\r\n        \"baseSpeed\": 20\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"d464d0d7-183f-49d8-af6f-14a546cd23fd\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"c9d1fc4d-1281-49ca-8463-794e55418673\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"CloudSave_Mode\",\r\n      \"type\":
     \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"7e9bef1e-d51f-4187-8eb0-dc929c1b007b\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"f7388a2a-7804-4df3-b765-34885cfe55a8\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"CloudSave_Support\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"versions\": [\r\n         
     \"1.4.1a\",\r\n          \"1.4.2a\",\r\n          \"1.4.0EX\",\r\n          \"1.4.0EX_Build_A\",\r\n         
     \"1.4.0EX_Build_B\",\r\n          \"1.4.0EX_Build_C\",\r\n          \"1.4.0EX_Build_D\",\r\n         
     \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\",\r\n          \"1.4.1_Build_A\",\r\n         
     \"1.4.1_Build_B\",\r\n          \"1.4.2_Build_A\"\r\n        ]\r\n      }\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"4ae92117-a09f-420b-b2fc-3346c52a92d8\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"b193b00a-c86b-4702-8883-1b66883b0ada\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"TrackTag_Support\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"newReleaseTrack\":
     [\r\n          \"Himegoto*Crisisters\",\r\n          \"Eureka Baby\",\r\n         
     \"TSU\u30FBBA\u30FBSA\",\r\n          \"Angel Blossom\",\r\n          \"Kokokara
     Saki wa Uta ni Naranai\"\r\n        ],\r\n        \"areaBonusTrack\": []\r\n     
-    }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"e9a160e2-e5de-419b-be55-67a38e1f72ab\"\r\n   
+    }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ebdb4cdf-6e56-497c-bb4a-0796119cbcea\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"data_array\":
     [\r\n          {\r\n            \"title\": \"Released of 1.4.2 Build A\",\r\n           
@@ -87,22 +87,22 @@ MonoBehaviour:
     \"(17 June 2024)\",\r\n            \"description\": \"Added content, Added fast/late
     features, Program Rearrangement\"\r\n          }\r\n        ]\r\n      }\r\n   
     }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"bae40b50-936e-4f40-8063-ba3933266316\"\r\n   
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6c59977d-15ff-4878-9c86-da783112972f\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"Latest_Version\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"1.4.2_Build_A\"\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"0886ee9a-41da-42fd-9955-f7ef50af7882\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"ab24f480-e4e2-4595-ada8-0759dd08d9dd\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameApplication_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/xs5zkl9eved17qe/MeloMelo+v1.4.2+Build+A.zip/file\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a44b3dcf-4059-47bd-bc65-40aaea8ab303\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"eb66caba-093d-4808-9be3-bb6d717b89da\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameWebpage_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"d3b4c4b1-0cae-48b2-9ff5-9fd16105fb6b\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"06b3cbb5-65a9-40f3-aedb-717a97808cfa\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"8e27431c-ab1f-4ecd-b7d2-3c26617105d0\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"faa9246f-c53c-4577-bce8-82207f88c0a4\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue_v2\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"312ab5ad-c7da-4ded-bf1d-472bbdcbc4d5\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"dd7c1619-2d5d-40b4-8ae6-ac216391f277\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"NoteSpeed_Settings_Configuration\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"data\": [\r\n         
     {\r\n            \"bpm\": 550,\r\n            \"baseSpeed\": 140\r\n         
@@ -118,27 +118,27 @@ MonoBehaviour:
     \"baseSpeed\": 30\r\n          },\r\n          {\r\n            \"bpm\": 160,\r\n           
     \"baseSpeed\": 25\r\n          },\r\n          {\r\n            \"bpm\": 150,\r\n           
     \"baseSpeed\": 23\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"ae1e4884-530b-46ae-a351-5eebacd6d4d1\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"968d21ec-f3e2-4afb-9a58-d3b4d398a755\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"NoteSpeed_Default_Configuration\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
     \"bpm\": 150,\r\n        \"baseSpeed\": 20\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"d464d0d7-183f-49d8-af6f-14a546cd23fd\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"c9d1fc4d-1281-49ca-8463-794e55418673\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"CloudSave_Mode\",\r\n      \"type\":
     \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"7e9bef1e-d51f-4187-8eb0-dc929c1b007b\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"f7388a2a-7804-4df3-b765-34885cfe55a8\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"CloudSave_Support\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"versions\": [\r\n         
     \"1.4.1a\",\r\n          \"1.4.2a\",\r\n          \"1.4.0EX\",\r\n          \"1.4.0EX_Build_A\",\r\n         
     \"1.4.0EX_Build_B\",\r\n          \"1.4.0EX_Build_C\",\r\n          \"1.4.0EX_Build_D\",\r\n         
     \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\",\r\n          \"1.4.1_Build_A\",\r\n         
     \"1.4.1_Build_B\",\r\n          \"1.4.2_Build_A\"\r\n        ]\r\n      }\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"4ae92117-a09f-420b-b2fc-3346c52a92d8\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"b193b00a-c86b-4702-8883-1b66883b0ada\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"TrackTag_Support\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"newReleaseTrack\":
     [\r\n          \"Himegoto*Crisisters\",\r\n          \"Eureka Baby\",\r\n         
     \"TSU\u30FBBA\u30FBSA\",\r\n          \"Angel Blossom\",\r\n          \"Kokokara
     Saki wa Uta ni Naranai\"\r\n        ],\r\n        \"areaBonusTrack\": []\r\n     
-    }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"e9a160e2-e5de-419b-be55-67a38e1f72ab\"\r\n   
+    }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ebdb4cdf-6e56-497c-bb4a-0796119cbcea\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"data_array\":
     [\r\n          {\r\n            \"title\": \"Released of 1.4.2 Build A\",\r\n           

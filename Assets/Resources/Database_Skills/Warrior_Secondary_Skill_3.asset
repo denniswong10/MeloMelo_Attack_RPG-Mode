@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e8b0e0e05ea2e4dbb347c649c3fe92, type: 3}
+  m_Name: Warrior_Secondary_Skill_3
+  m_EditorClassIdentifier: 
+  skillName: Sword Of Light
+  skillIcon: {fileID: 2800000, guid: 999faaa89abf32c4b9f45ea5d25fc727, type: 3}
+  description: 'Create a light slash through all incoming enemy. Dealing any successful
+    hits enemy for (STR * 15% + (Grade x 35%)). Dealing a range of incoming enemy
+    for (MAG x 5% + (Grade x 25%)). At the end of track, dealing enemy health by
+    the total number of successful hits by (STR x 5% + (Grade x 10%) + MAG x 5% +
+    (Grade x 10%)). '
+  skill_type: 3
+  skillEffectKey: OnLightOfSword
+  mainStats: 2
+  target_caterogy: 2
+  baseDamageStats: 0
+  extraStatsPercentage: 0
+  valueOfTrigger: 15/35/5/25/5/10/5/10
+  isUnlockReady: 0

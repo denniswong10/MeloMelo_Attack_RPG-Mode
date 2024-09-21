@@ -19,7 +19,7 @@ public class LoginPage_Script : MonoBehaviour
     private GameObject[] BGM;
 
     private Coroutine rebootApplication;
-    public int portNumber = 0;
+    [HideInInspector] public int portNumber = 0;
 
     // Program: Login Scene
     void Start()
@@ -55,108 +55,9 @@ public class LoginPage_Script : MonoBehaviour
     #endregion
 
     #region MAIN
-    public void GuestLogin(Button button)
-    {
-        button.interactable = false;
-
-        string playerid = PlayerPrefs.HasKey("TempPass_PlayerId") ? PlayerPrefs.GetString("TempPass_PlayerId") : string.Empty;
-        string user = PlayerPrefs.GetString("AccountSync_PlayerID");
-        string pass = PlayerPrefs.GetString("AccountSync_UniqueID");
-
-        // Save
-        string reportUpdate = PlayerPrefs.GetString("MeloMelo_NewsReport_Daily", string.Empty);
-        string latestUpdate = PlayerPrefs.GetString("GameLatest_Update", string.Empty);
-
-        PlayerPrefs.DeleteAll();
-
-        if (playerid != string.Empty) PlayerPrefs.SetString("TempPass_PlayerId", playerid);
-        PlayerPrefs.SetInt("AccountSync", 1);
-        PlayerPrefs.SetString("AccountSync_PlayerID", user);
-        PlayerPrefs.SetString("AccountSync_UniqueID", pass);
-
-        // Transfer
-        PlayerPrefs.SetString("MeloMelo_NewsReport_Daily", reportUpdate);
-        PlayerPrefs.SetString("GameLatest_Update", latestUpdate);
-
-        LoadAllProgress(button);
-    }
-
-    private void LoadAllProgress(Button button)
-    {
-        LocalLoad_DataManagement data = new LocalLoad_DataManagement(GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
-        string[] paths =
-        {
-            MeloMelo_GameSettings.GetLocalFileMainProgress,
-            MeloMelo_GameSettings.GetLocalFilePointData,
-            MeloMelo_GameSettings.GetLocalFileBattleProgress,
-            MeloMelo_GameSettings.GetLocalFileAccountSettings,
-            MeloMelo_GameSettings.GetLocalFileGameplaySettings,
-            MeloMelo_GameSettings.GetLocalFileCharacterSettings,
-            MeloMelo_GameSettings.GetLocalFileProfileData,
-            MeloMelo_GameSettings.GetLocalFileCharacterStats
-        };
-
-        Icon.SetActive(true);
-        Icon.transform.GetChild(1).GetComponent<Text>().text = "[Game Local]\nChecking Data...";
-
-        for (int path = 0; path < paths.Length; path++)
-        {
-            data.SelectFileForActionWithUserTag(paths[path]);
-            Icon.transform.GetChild(1).GetComponent<Text>().text = "[Game Local]\nData Transfer " + (path + 1) + "/"+ paths.Length + "...";
-
-            switch (path)
-            {
-                case 1:
-                    data.LoadPointProgress();
-                    break;
-
-                case 2:
-                    data.LoadBattleProgress();
-                    break;
-
-                case 3:
-                    data.LoadAccountSettings();
-                    break;
-
-                case 4:
-                    data.LoadGameplaySettings();
-                    break;
-
-                case 5:
-                    data.LoadCharacterSettings();
-                    break;
-
-                case 6:
-                    data.LoadProfileState();
-                    break;
-
-                case 7:
-                    data.LoadCharacterStatsProgress();
-                    break;
-
-                default:
-                    data.LoadProgress();
-                    break;
-            }
-        }
-
-        // Finialize setup config
-        button.interactable = true;
-        MeloMelo_GameSettings.UpdateCharacterProfile();
-        SceneManager.LoadScene("Menu");
-    }
-
     public void LinkSite() { Application.OpenURL(PlayerPrefs.GetString("GameWeb_URL", string.Empty) + "/database/transcripts/site7"); }
 
-    public void PreRegister_Direct()
-    {
-        Application.OpenURL(PlayerPrefs.GetString("GameWeb_URL", string.Empty) + "/form_content.php");
-    }
-
-    public void BackButton()
-    {
-        SceneManager.LoadScene("ServerGateway");
-    }
+    public void BackButton() { SceneManager.LoadScene("ServerGateway"); }
     #endregion
 
     #region COMPONENT

@@ -420,7 +420,10 @@ public class GameManager : MonoBehaviour, IGameManager
     public void GameStarting()
     {
         // Display skill features
-        SkillFeatures();
+        if (PlayerPrefs.GetString("Character_Active_Skill", "T") == "T")
+            StartCoroutine(SkillFeatures());
+        else
+            OnStandyForPlay();
     }
 
     void TransitionToResult() { if (!RetreatSuccess) UnityEngine.SceneManagement.SceneManager.LoadScene("Result"); }
@@ -489,12 +492,57 @@ public class GameManager : MonoBehaviour, IGameManager
         }
     }
 
-    private void SkillFeatures()
+    private IEnumerator SkillFeatures()
+    {
+        string[] allSkillOnActive = { "_Primary_Skill", "_Secondary_Skill_1" };
+        bool[] skillIsOnPrimary = { true, false };
+
+        // Get skill ready for simulation run
+        MeloMelo_RPGEditor.StatsDistribution characterStats = new MeloMelo_RPGEditor.StatsDistribution();
+        characterStats.load_Stats(); 
+
+        // Load all skills are available in the moment
+        for (int skillLoader = 0; skillLoader < allSkillOnActive.Length; skillLoader++)
+        {
+            SkillContainer loadedSkill = Resources.Load<SkillContainer>("Database_Skills/" + PlayerPrefs.GetString("CharacterFront", "None") +
+                allSkillOnActive[skillLoader]);
+
+            if (loadedSkill)
+            {
+                // Display information about skill effect
+                UpdateSkillInformation(loadedSkill);
+                yield return new WaitForSeconds(3);
+
+                foreach (ClassBase currentPick in characterStats.slot_Stats)
+                {
+                    // Get character is leading the party member
+                    if (PlayerPrefs.GetString("CharacterFront", "None") == currentPick.name)
+                    {
+                        // Get character skill ready for use
+                        GetComponent<SkillManager>().ExtractSkill(loadedSkill, currentPick);
+                        GetComponent<SkillManager>().RegisterForSkillUsage(loadedSkill, skillIsOnPrimary[skillLoader]);
+                        break;
+                    }
+                }
+
+                // Preview mode and wait for the skill is done reading
+                yield return new WaitForSeconds(2);
+            }
+            else
+                Debug.Log((skillLoader + 1) + ": Skill not found...");
+        }
+
+        // Go to the next step
+        GetComponent<SkillManager>().OnStartEffect_Update();
+        OnStandyForPlay();
+    }
+
+    private void OnStandyForPlay()
     {
         if (SkillAlert.activeInHierarchy) { SkillAlert.SetActive(false); }
-
         Alert_sign.gameObject.SetActive(true);
         Alert_sign.GetComponent<Animator>().SetTrigger("Play");
+
         Invoke("StartOfPlay", 5);
     }
 
@@ -544,8 +592,9 @@ public class GameManager : MonoBehaviour, IGameManager
         }
 
         // Update miss count
+        GetComponent<SkillManager>().OnEndEffect_Update();
         PlayerPrefs.SetInt("Miss_count", judgeWindow.get_miss);
-        Invoke("TransitionToResult", 3);
+        Invoke("TransitionToResult", 5);
     }
     #endregion
 
@@ -655,12 +704,16 @@ public class GameManager : MonoBehaviour, IGameManager
                         slotStatus.GetComponent<Animator>().SetTrigger("Heal" + ResMelo);
                 }
 
-                characterStatus.ModifyHealth(amount);
+                if (amount < 0) PlayerPrefs.DeleteKey("MISC_Character_DamageResist");
+                characterStatus.ModifyHealth(amount + (PlayerPrefs.HasKey("MISC_Character_DamageResist") && amount < 0 ? 
+                    PlayerPrefs.GetInt("MISC_Character_DamageResist", 0) : 0));
             }
 
             if (characterHealth != null)
             {
-                characterHealth.GetComponent<Text>().text = "HP: " + ((characterStatus.get_maxHealth == 1) ? "0/0" : characterStatus.get_health.ToString());
+                characterHealth.GetComponent<Text>().text = ((characterStatus.get_maxHealth == 1) ? "0/0" : 
+                    characterStatus.get_health + "/" + characterStatus.get_maxHealth);
+
                 if (characterStatus.get_health <= 0 && GameObject.Find("Character").GetComponent<Character>().stats.get_name != "NA" && !RetreatSuccess)
                     { slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.SetActive(true); Game_over(); }
                 else
@@ -693,7 +746,7 @@ public class GameManager : MonoBehaviour, IGameManager
 
             if (enemyHealth != null)
             {
-                enemyHealth.GetComponent<Text>().text = "HP: " + enemyStatus.get_health;
+                enemyHealth.GetComponent<Text>().text = enemyStatus.get_health + "/" + enemyStatus.get_maxHealth;
                 if (enemyStatus.get_health <= 0)
                 {
                     slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.SetActive(true);
@@ -918,6 +971,20 @@ public class GameManager : MonoBehaviour, IGameManager
             }
         }
     }   
+
+    private void UpdateSkillInformation(SkillContainer info)
+    {
+        if (!SkillAlert.activeInHierarchy)
+        {
+            SkillAlert.SetActive(true);
+            SkillAlert.GetComponent<Animator>().SetTrigger("Open");
+        }
+
+        SkillAlert.transform.GetChild(0).GetComponent<Text>().text = "Skill Effect - " + info.skillName + " (Lv. " + 
+            PlayerPrefs.GetInt(info.skillName + "_Grade_Code", 0) + ")";
+
+        SkillAlert.transform.GetChild(1).GetComponent<Text>().text = info.description;
+    }
     #endregion
 
     #region NOT IN USE

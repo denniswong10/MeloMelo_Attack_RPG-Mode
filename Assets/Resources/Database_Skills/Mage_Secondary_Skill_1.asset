@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e8b0e0e05ea2e4dbb347c649c3fe92, type: 3}
+  m_Name: Mage_Secondary_Skill_1
+  m_EditorClassIdentifier: 
+  skillName: Search Detector
+  skillIcon: {fileID: 2800000, guid: 11cf11e217a3892489595d573f2d34ac, type: 3}
+  description: Search up any in-coming traps which will damage your character. Resist
+    all in-coming traps which can cause damage to your character by (VIT x 15% +
+    (Grade x 15%)) in additional of (MAG x 10% + (Grade x 20%)). At the end of track,
+    player gain bonus tech score by the number of traps have been detected by (Grade
+    x 55%)).
+  skill_type: 3
+  skillEffectKey: OnSearchWithTraps
+  mainStats: 2
+  target_caterogy: 4
+  baseDamageStats: 0
+  extraStatsPercentage: 0
+  valueOfTrigger: 15/15/10/20/55
+  isUnlockReady: 0

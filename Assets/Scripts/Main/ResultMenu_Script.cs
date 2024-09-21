@@ -559,6 +559,9 @@ public class ResultMenu_Script : MonoBehaviour
                     data.SaveCharacterStatsProgress(character.name, character.level, character.experience);
                 }
             }
+
+            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileSkillDatabase);
+            data.SaveAllSkillsType();
         }
 
         yield return new WaitForSeconds(1.5f);

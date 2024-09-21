@@ -66,6 +66,8 @@ public class BattleSetup_Script : MonoBehaviour
     [SerializeField] private Text FeedbackDisplay2_type;
     [SerializeField] private GameObject[] FeedbackDisplay_Panel;
 
+    [SerializeField] private GameObject SkillSlot_Panel;
+
     // Load All Database
     void Start()
     {
@@ -119,6 +121,8 @@ public class BattleSetup_Script : MonoBehaviour
         IntiScoreDisplay();
         IntiBottomDisplay();
         IntiFeedbackDisplay();
+
+        AssignSkillSlot();
     }
     #endregion
 
@@ -353,7 +357,26 @@ public class BattleSetup_Script : MonoBehaviour
     // Skill Selection
     public void AssignSkillSlot()
     {
+        SkillContainer autoSelectedSkill = Resources.Load<SkillContainer>("Database_Skills/" + PlayerPrefs.GetString("CharacterFront", "None") + "_Primary_Skill");
+        bool isSkillActive = PlayerPrefs.GetString("Character_Active_Skill", "T") == "T" ? true : false;
+        SkillSlot_Panel.transform.GetChild(2).GetComponent<Button>().interactable = autoSelectedSkill ? true : false;
 
+        if (autoSelectedSkill)
+        {
+            SkillSlot_Panel.GetComponent<RawImage>().texture = autoSelectedSkill.skillIcon;
+            SkillSlot_Panel.transform.GetChild(0).GetComponent<Text>().text = autoSelectedSkill.skillName;
+            SkillSlot_Panel.transform.GetChild(1).GetComponent<Text>().text = autoSelectedSkill.description;
+            SkillSlot_Panel.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = isSkillActive ? "ACTIVE" : "OFF";
+        }
+        else
+            SkillSlot_Panel.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = "OFF";
+    }
+
+    public void ToggleSkillSlot()
+    {
+        string toggleResult = PlayerPrefs.GetString("Character_Active_Skill", "T");
+        PlayerPrefs.SetString("Character_Active_Skill", toggleResult == "T" ? "F" : "T");
+        AssignSkillSlot();
     }
 
     public void SaveComponentCharacterSettings()

@@ -12,5 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74be61cf4819b8c479cb123ee54be224, type: 3}
   m_Name: Warrior2_Restrict
   m_EditorClassIdentifier: 
-  description: 
-  trackCleared: []
+  description: A station really does exist
+  trackCleared:
+  - trackName: ' '
+    difficulty: 1
+    score: 1000000
+  - trackName: ' '
+    difficulty: 2
+    score: 1000000

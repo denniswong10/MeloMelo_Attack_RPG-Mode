@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e8b0e0e05ea2e4dbb347c649c3fe92, type: 3}
+  m_Name: Warrior_Primary_Skill
+  m_EditorClassIdentifier: 
+  skillName: Enchant Sword Blade
+  skillIcon: {fileID: 2800000, guid: 5f256795dc4da154d820c9a9262e8048, type: 3}
+  description: 'Perform a light blade hits to enemy health by (STR x 90% + (Grade
+    x 10%)). Upon activation to this skill, player have to achieve every 100 Combo. '
+  onStartOfEffect: []
+  duringPlayOfEffect:
+  - effectName: OnComboDamage
+    stats: 0
+    baseDamageStats: 90
+    extraStatsPercentage: 10
+    valueOfTrigger: 100
+  onEndOfEffect: []
+  target_caterogy: 4
+  isUnlockReady: 1

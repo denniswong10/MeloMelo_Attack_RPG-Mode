@@ -733,9 +733,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 182713128}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: PreRegister_Direct
+      - m_Target: {fileID: 182713133}
+        m_TargetAssemblyTypeName: LoginAccount_Script, Scripts
+        m_MethodName: RegisterAccount
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -793,6 +793,7 @@ GameObject:
   - component: {fileID: 182713130}
   - component: {fileID: 182713129}
   - component: {fileID: 182713128}
+  - component: {fileID: 182713133}
   m_Layer: 5
   m_Name: GameInterface
   m_TagString: Untagged
@@ -812,7 +813,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 511b3b38a4c6beb4b8c819307640fcce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentGameVersion: {fileID: 0}
+  CurrentGameVersion: {fileID: 247171889}
   Icon: {fileID: 93175664}
   portNumber: 0
 --- !u!114 &182713129
@@ -905,6 +906,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &182713133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182713127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 056e4bf274e1e994cb62ff8ee7421663, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  userName: {fileID: 1432408303}
+  passWord: {fileID: 2128297874}
+  LoginBtn: {fileID: 1420355627}
+  ServerID_Tag: {fileID: 1510889912}
 --- !u!1 &225324493
 GameObject:
   m_ObjectHideFlags: 0
@@ -2743,7 +2760,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 182713128}
         m_TargetAssemblyTypeName: LoginPage_Script, Scripts
         m_MethodName: BackButton
         m_Mode: 1
@@ -3285,9 +3302,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 182713128}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: LoginFunction
+      - m_Target: {fileID: 182713133}
+        m_TargetAssemblyTypeName: LoginAccount_Script, Scripts
+        m_MethodName: LoginAccount
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3437,9 +3454,9 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 182713128}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: CheckForInputFilled
+      - m_Target: {fileID: 182713133}
+        m_TargetAssemblyTypeName: LoginAccount_Script, Scripts
+        m_MethodName: UpdateInformationFiller
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3614,12 +3631,8 @@ MonoBehaviour:
     to keep track the progress every time you play.
 
     All user will required to
-    register to use this page
-
-    login if there is any, Contact the adminstrator
-    for
-
-    assistance and grant access to the server.
+    register an account to use this page. Contact the adminstrator hosting this server
+    for assistance if needed.
 
 '
 --- !u!222 &1528337710
@@ -4883,9 +4896,9 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 182713128}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: CheckForInputFilled
+      - m_Target: {fileID: 182713133}
+        m_TargetAssemblyTypeName: LoginAccount_Script, Scripts
+        m_MethodName: UpdateInformationFiller
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

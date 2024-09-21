@@ -365,8 +365,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 261059381}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 261059386}
+        m_TargetAssemblyTypeName: GuestLogin_Script, Scripts
         m_MethodName: GuestLogin
         m_Mode: 2
         m_Arguments:
@@ -602,8 +602,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 261059381}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 261059386}
+        m_TargetAssemblyTypeName: GuestLogin_Script, Scripts
         m_MethodName: GuestLogin
         m_Mode: 2
         m_Arguments:

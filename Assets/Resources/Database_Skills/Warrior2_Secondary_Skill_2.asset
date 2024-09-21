@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e8b0e0e05ea2e4dbb347c649c3fe92, type: 3}
+  m_Name: Warrior2_Secondary_Skill_2
+  m_EditorClassIdentifier: 
+  skillName: Anti-Bomb Reflector
+  skillIcon: {fileID: 2800000, guid: 58803f8d3d53c5547ac1523b864681ec, type: 3}
+  description: 'Protect against any traps which cause us trouble. Resist damage to
+    all characters fighting alongside with you. Shielding over (VIT x 20% + (Grade
+    + 30%)) against traps. Chance to damage back enemy health by (STR x 10% + (Grade
+    x 20%)). At the end of track, all characters get a chance to deal final damage
+    to enemy health by (STR x 10%), (VIT x 8%), (MAG x 5%).
+
+'
+  skill_type: 3
+  skillEffectKey: OnBombReflect
+  mainStats: 0
+  target_caterogy: 3
+  baseDamageStats: 0
+  extraStatsPercentage: 0
+  valueOfTrigger: 20/30/10/20/10/8/5
+  isUnlockReady: 0

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e8b0e0e05ea2e4dbb347c649c3fe92, type: 3}
+  m_Name: Mage_Secondary_Skill_2
+  m_EditorClassIdentifier: 
+  skillName: Magic Tomb Spell
+  skillIcon: {fileID: 2800000, guid: 19a271ce67ad00748a4e98a77b4f08a5, type: 3}
+  description: Chant a spell which allow all your character to gain (A x (MAG x 5%)
+    + (Grade x 20%) of the base damage. A is equal to the number of in-coming enemy.
+    At the start of track, character gain bonus MAG stats from (STR x 8%) and (VIT
+    x 8%) until the end of track.
+  skill_type: 3
+  skillEffectKey: OnTombChantSpell
+  mainStats: 2
+  target_caterogy: 3
+  baseDamageStats: 0
+  extraStatsPercentage: 0
+  valueOfTrigger: 5/20/8/8
+  isUnlockReady: 0

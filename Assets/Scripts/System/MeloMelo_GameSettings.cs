@@ -81,6 +81,7 @@ public static class MeloMelo_GameSettings
     public const string GetLocalFileGameplaySettings = "savelog_GameplaySettings.txt";
     public const string GetLocalFileCharacterSettings = "savelog_CharacterSettings.txt";
     public const string GetLocalFileCharacterStats = "savelog_CharacterProgressStats.txt";
+    public const string GetLocalFileSkillDatabase = "savelog_AllSkillsDatabase.txt";
     public const string GetLocalFilePointData = "savelog_PointsData.txt";
     public const string GetLocalFileProfileData = "savelog_Profile_Setup.txt";
     public const string GetLocalFileCharacterData = "savelog_Character_Info.txt";

@@ -35,9 +35,8 @@ public class CharacterToggle : MonoBehaviour
 
     void AssignCharacter()
     {
-        CharName_Ref = PlayerPrefs.GetString("Slot" + mainSet + "_charName", "Warrior");
-        //CharName_Ref = PlayerPrefs.GetString("CharacterFront", "None");
-        if (Application.isEditor) CharName_Ref = "Mage";
+        //CharName_Ref = PlayerPrefs.GetString("Slot" + mainSet + "_charName", "Warrior");
+        CharName_Ref = PlayerPrefs.GetString("CharacterFront", "None");
 
         if (CharName_Ref == "None") { NotAssign_Ref.SetActive(true); }
 

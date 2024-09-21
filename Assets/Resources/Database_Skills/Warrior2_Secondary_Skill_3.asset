@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e8b0e0e05ea2e4dbb347c649c3fe92, type: 3}
+  m_Name: Warrior2_Secondary_Skill_3
+  m_EditorClassIdentifier: 
+  skillName: 'UnBreakable Barrier '
+  skillIcon: {fileID: 2800000, guid: 6086a9004c67fe44aa31c60f3e9e9149, type: 3}
+  description: "Greatly against enemy attack which cause all characters to be fallen.
+    For every 10 successful hits, shield over (VIT x 10% + (Grade + 20%)) to one
+    random character against damage over enemy. Character receving this effect will
+    get additional bonus (STR x 8%) or (MAG x 5%) to their base damage. At the start
+    of track, all characters will receive shield over (VIT x 40% + (Grade x 10%)).\r"
+  skill_type: 3
+  skillEffectKey: OnShieldOverload
+  mainStats: 1
+  target_caterogy: 3
+  baseDamageStats: 0
+  extraStatsPercentage: 0
+  valueOfTrigger: 10/20/8/5/40/10
+  isUnlockReady: 0

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e8b0e0e05ea2e4dbb347c649c3fe92, type: 3}
+  m_Name: Marksman_Primary_Skill
+  m_EditorClassIdentifier: 
+  skillName: Piercing Shots
+  skillIcon: {fileID: 2800000, guid: 965e5177bfa5bb241b2706d73c2173b6, type: 3}
+  description: 'Every shot take you close to success. For every successful hit towards
+    target, gain additional bonus damage of (STR x 2%), (MAG x 1%) until the end
+    of track. Every successful hit gain a stack, for every 10 stacks, dealing enemy
+    health for (STR x 25% + (Grade x 15%)). Stack will be reset upon activation or
+    losing hit to target. Maximum bonus damage able to gain up to (Grade x 50%).
+
+'
+  onStartOfEffect: []
+  duringPlayOfEffect: []
+  onEndOfEffect: []
+  target_caterogy: 0
+  isUnlockReady: 0

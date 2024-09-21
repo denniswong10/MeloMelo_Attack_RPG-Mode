@@ -298,10 +298,10 @@ namespace MeloMelo_ExtraComponent
             return GameObject.Find("ScrollBar_List").transform.GetChild(0).GetComponent<Text>();
         }
 
-        private Text SetStatusInformation(int index)
-        {
-            return CollectionNew_Script.thisCollect.CharacterInfo.transform.GetChild(2).GetChild(index).GetComponent<Text>();
-        }
+        //private Text SetStatusInformation(int index)
+        //{
+        //    return CollectionNew_Script.thisCollect.CharacterInfo.transform.GetChild(2).GetChild(index).GetComponent<Text>();
+        //}
         #endregion
     }
 
@@ -1353,6 +1353,20 @@ namespace MeloMelo_Local
         }
     }
 
+    [System.Serializable]
+    struct SkillUnitDatabase
+    {
+        public string skillName;
+        public int grade;
+        public int status;
+
+        public SkillUnitDatabase GetSkillDatabase(string format)
+        {
+            Debug.Log(format);
+            return JsonUtility.FromJson<SkillUnitDatabase>(format);
+        }
+    }
+
     public class LocalData
     {
         protected string user = string.Empty;
@@ -1842,6 +1856,28 @@ namespace MeloMelo_Local
             return true;
         }
 
+        public bool LoadAllSkillsType()
+        {
+            if (File.Exists(directory + combinePath))
+            {
+                List<SkillUnitDatabase> dataArray = new List<SkillUnitDatabase>();
+
+                foreach (string s in GetFormatToList())
+                {
+                    if (s != string.Empty)
+                        dataArray.Add(new SkillUnitDatabase().GetSkillDatabase(s));
+                }
+
+                foreach (SkillUnitDatabase data in dataArray)
+                {
+                    PlayerPrefs.SetInt(data.skillName + "_Unlock_Code", data.status);
+                    PlayerPrefs.SetInt(data.skillName + "_Grade_Code", data.grade);
+                }
+            }
+
+            return true;
+        }
+
         #region RAW
         public string GetLocalJsonFile(string fileName, bool getUserId)
         {
@@ -2052,6 +2088,27 @@ namespace MeloMelo_Local
 
             string jsonFormat = string.Empty;
             foreach (BattleUnitDatabase list in listing) { jsonFormat += JsonUtility.ToJson(list) + "/"; }
+            WriteToFile(jsonFormat);
+        }
+
+        public void SaveAllSkillsType()
+        {
+            List<SkillUnitDatabase> listing = new List<SkillUnitDatabase>();
+
+            foreach (SkillContainer data in Resources.LoadAll<SkillContainer>("Database_Skills"))
+            {
+                if (PlayerPrefs.GetInt(data.skillName + "_Unlock_Code", 0) == 1 || data.isUnlockReady)
+                {
+                    SkillUnitDatabase onSave = new SkillUnitDatabase();
+                    onSave.skillName = data.skillName;
+                    onSave.grade = PlayerPrefs.GetInt(data.skillName + "_Grade_Code", 0);
+                    onSave.status = PlayerPrefs.GetInt(data.skillName + "_Unlock_Code", 0);
+                    listing.Add(onSave);
+                }
+            }
+
+            string jsonFormat = string.Empty;
+            foreach (SkillUnitDatabase list in listing) { jsonFormat += JsonUtility.ToJson(list) + "/"; }
             WriteToFile(jsonFormat);
         }
     }
