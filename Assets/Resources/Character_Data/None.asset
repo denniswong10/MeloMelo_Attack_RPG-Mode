@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1f16c8e1e452a9418745bdde6e11abe, type: 3}
   m_Name: None
   m_EditorClassIdentifier: 
-  CHP: 0
-  CDMG: 0
-  Strength: 0
-  MAG: 0
+  health: 0
+  strength: 0
+  magic: 0
   vitality: 0
-  EXP: 0
-  EXPLimit: 0
-  charactersLevel: 3
+  experience: 0
+  expLimit: 0
+  level: 0
   characterName: None
   icon: {fileID: 0}
+  elementType: 2

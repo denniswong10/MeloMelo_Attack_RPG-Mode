@@ -21,8 +21,42 @@ MonoBehaviour:
     losing hit to target. Maximum bonus damage able to gain up to (Grade x 50%).
 
 '
-  onStartOfEffect: []
-  duringPlayOfEffect: []
-  onEndOfEffect: []
   target_caterogy: 0
-  isUnlockReady: 0
+  customEffectData:
+  - effectName: OnSucessHitBonusDamage
+    effectActivationPhase: 1
+    effectOnCondition:
+    - effectCondition: OnTargetCount
+      valueOfTrigger: 1
+    effectOnAction:
+    - effectActionName: AttractBonusBaseDamage
+      effectMainStats: 0
+      baseValue: 2
+      extraPercentage: 0
+    - effectActionName: AttractBonusBaseDamage
+      effectMainStats: 2
+      baseValue: 1
+      extraPercentage: 0
+  - effectName: OnStackSuccessDamage
+    effectActivationPhase: 1
+    effectOnCondition:
+    - effectCondition: OnCountStackTarget
+      valueOfTrigger: 10,1^2^3
+    effectOnAction:
+    - effectActionName: OnDamageEnemyHealth
+      effectMainStats: 0
+      baseValue: 25
+      extraPercentage: 15
+  - effectName: OnDebuffBonusDamage
+    effectActivationPhase: 0
+    effectOnCondition:
+    - effectCondition: OnDebuffBonusDamage
+      valueOfTrigger: 
+    effectOnAction: []
+  - effectName: OnResetStackCount
+    effectActivationPhase: 0
+    effectOnCondition:
+    - effectCondition: OnResetTargetCounted
+      valueOfTrigger: 
+    effectOnAction: []
+  isUnlockReady: 1

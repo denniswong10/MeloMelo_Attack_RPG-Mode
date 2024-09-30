@@ -19,11 +19,8 @@ MonoBehaviour:
     (Grade x 15%)) in additional of (MAG x 10% + (Grade x 20%)). At the end of track,
     player gain bonus tech score by the number of traps have been detected by (Grade
     x 55%)).
-  skill_type: 3
-  skillEffectKey: OnSearchWithTraps
-  mainStats: 2
+  onStartOfEffect: []
+  duringPlayOfEffect: []
+  onEndOfEffect: []
   target_caterogy: 4
-  baseDamageStats: 0
-  extraStatsPercentage: 0
-  valueOfTrigger: 15/15/10/20/55
   isUnlockReady: 0

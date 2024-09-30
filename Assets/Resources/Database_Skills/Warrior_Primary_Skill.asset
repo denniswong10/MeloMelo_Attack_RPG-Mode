@@ -25,4 +25,15 @@ MonoBehaviour:
     valueOfTrigger: 100
   onEndOfEffect: []
   target_caterogy: 4
+  customEffectData:
+  - effectName: OnComboDamage
+    effectActivationPhase: 1
+    effectOnCondition:
+    - effectCondition: OnComboCount
+      valueOfTrigger: 100
+    effectOnAction:
+    - effectActionName: OnDamageEnemyHealth
+      effectMainStats: 0
+      baseValue: 90
+      extraPercentage: 10
   isUnlockReady: 1

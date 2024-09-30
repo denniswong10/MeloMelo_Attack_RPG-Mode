@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e8b0e0e05ea2e4dbb347c649c3fe92, type: 3}
+  m_Name: Marksman_Secondary_Skill_3
+  m_EditorClassIdentifier: 
+  skillName: Sprinkle Dust
+  skillIcon: {fileID: 2800000, guid: 2eecb529271894546a44ca52f31b46ff, type: 3}
+  description: "Create a dust of spark rain after firing towards the sky, Dealing
+    all in-coming enemy for (STR x 20% + (Grade x 50%)) and heal ally for (MAG x
+    10% + (Grade x 70%)). For every 100 successful hit through target, shield ally
+    with (VIT x 25% + (Grade x 50%)). At the end of track, brust out all remaining
+    shield from ally and deal them to enemy health.\r"
+  onStartOfEffect: []
+  duringPlayOfEffect: []
+  onEndOfEffect: []
+  target_caterogy: 2
+  isUnlockReady: 0

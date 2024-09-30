@@ -744,7 +744,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 158249952}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1297083697}
+        m_TargetAssemblyTypeName: CharacterSelection_Script, Scripts
+        m_MethodName: UpdateCheckForSecondarySkill
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &220493812
 GameObject:
   m_ObjectHideFlags: 0
@@ -1156,7 +1168,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 533801577}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1297083697}
+        m_TargetAssemblyTypeName: CharacterSelection_Script, Scripts
+        m_MethodName: UpdateCheckForSecondarySkill
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &548535357
 GameObject:
   m_ObjectHideFlags: 0
@@ -3376,7 +3400,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1796245060}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1297083697}
+        m_TargetAssemblyTypeName: CharacterSelection_Script, Scripts
+        m_MethodName: UpdateCheckForSecondarySkill
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 3
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1964884289
 GameObject:
   m_ObjectHideFlags: 0

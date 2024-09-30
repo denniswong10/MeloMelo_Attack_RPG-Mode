@@ -260,6 +260,8 @@ public class Note_Script : MonoBehaviour
 
                     if (GameObject.Find("Character").GetComponent<Character>().stats.get_name != "NA")
                         GameManager.thisManager.UpdateCharacter_Health(-(PlayerPrefs.GetInt("Enemy_OverallDamage", 0) * 2), false);
+
+                    GameManager.thisManager.SpawnDamageIndicator(transform.position, 1, -PlayerPrefs.GetInt("Enemy_OverallDamage", 0) * 2);
                 }
             }
         }

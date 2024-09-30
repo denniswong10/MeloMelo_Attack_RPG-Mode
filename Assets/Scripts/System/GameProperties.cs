@@ -948,9 +948,11 @@ namespace MeloMelo_GameProperties
     {
         private int totalEnemy = 0;
         private int totalTraps = 0;
+        private int totalItems = 0;
 
         public int getTotalEnemy { get { return totalEnemy; } }
         public int getTotalTraps { get { return totalTraps; } }
+        public int getTotalItems { get { return totalItems; } }
 
         public void AddEnemyCount()
         {
@@ -960,6 +962,11 @@ namespace MeloMelo_GameProperties
         public void AddTrapsCount()
         {
             totalTraps++;
+        }
+
+        public void AddItemCount()
+        {
+            totalItems++;
         }
     }
 

@@ -6357,6 +6357,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allEffectIndicator: {fileID: 1713312043}
   skillHolder: {fileID: 1430622846}
+  skillIconNone:
+  - {fileID: 2800000, guid: 0842d6d6bcd50d04ebf8d6df2b4f9df4, type: 3}
+  - {fileID: 2800000, guid: b7bc4d08eb8e36f4e825bf23bd2e40b9, type: 3}
 --- !u!1 &753820729
 GameObject:
   m_ObjectHideFlags: 0
@@ -10714,7 +10717,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myOption: 0
-  Music_Database: {fileID: 11400000, guid: 0a00ffe5205f26d4180557ec4ac8ee27, type: 2}
+  Music_Database: {fileID: 11400000, guid: dacc72707b42f964fb8d6072c4753b99, type: 2}
   BeatIndicator: {fileID: 0}
   spawner: {fileID: 848201086}
   FeedingTime_sign: {fileID: 0}
@@ -12092,7 +12095,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1430622847
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12439,7 +12442,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: b7bc4d08eb8e36f4e825bf23bd2e40b9, type: 3}
+  m_Texture: {fileID: 2800000, guid: 0842d6d6bcd50d04ebf8d6df2b4f9df4, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -13089,7 +13092,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: b7bc4d08eb8e36f4e825bf23bd2e40b9, type: 3}
+  m_Texture: {fileID: 2800000, guid: 0842d6d6bcd50d04ebf8d6df2b4f9df4, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0

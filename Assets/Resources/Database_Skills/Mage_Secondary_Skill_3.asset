@@ -17,11 +17,8 @@ MonoBehaviour:
   description: Summon a bot fight alongside as you. It gain a max-health (Grade x
     150%) with a base damage of (STR x 8%), (MAG x 5%) and (VIT x 3%). At the start
     of track, as bot is summoned, deal enemy health by (MAG x 15% + (Grade x 35%)).
-  skill_type: 3
-  skillEffectKey: OnSummonBot
-  mainStats: 2
+  onStartOfEffect: []
+  duringPlayOfEffect: []
+  onEndOfEffect: []
   target_caterogy: 2
-  baseDamageStats: 0
-  extraStatsPercentage: 0
-  valueOfTrigger: 150/8/5/3/15/35
   isUnlockReady: 0

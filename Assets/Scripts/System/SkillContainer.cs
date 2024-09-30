@@ -4,14 +4,32 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [System.Serializable]
-public class SkillEffectType
+public class EffectConditionData
+{
+    public string effectCondition;
+    public string valueOfTrigger;
+}
+
+[System.Serializable]
+public class EffectActionData
+{
+    public string effectActionName;
+    public enum EffectActionStats { STR, VIT, MAG };
+    public EffectActionStats effectMainStats;
+
+    public int baseValue;
+    public int extraPercentage;
+}
+
+[System.Serializable]
+public class EffectDataSettings
 {
     public string effectName;
-    public enum MainTypeStats { STR, VIT, MAG };
-    public MainTypeStats stats;
-    public int baseDamageStats;
-    public int extraStatsPercentage;
-    public string valueOfTrigger;
+    public enum ActivePhase { OnStart, DuringPlay, OnEnd };
+    public ActivePhase effectActivationPhase;
+
+    public EffectConditionData[] effectOnCondition;
+    public EffectActionData[] effectOnAction;
 }
 
 [CreateAssetMenu(fileName = "SkillContainer", menuName = "Skill_Detail")]
@@ -23,13 +41,10 @@ public class SkillContainer : ScriptableObject
     [TextAreaAttribute]
     public string description;
 
-    [Header("Skill Action Style")]
-    public SkillEffectType[] onStartOfEffect;
-    public SkillEffectType[] duringPlayOfEffect;
-    public SkillEffectType[] onEndOfEffect;
-
     public enum TargetType { Single, Multiple, AoE, Ally, Self }
+    [Header("Skill: Customize and Caterogy")]
     public TargetType target_caterogy;
+    public EffectDataSettings[] customEffectData;
 
     [Header("Skill Option")]
     public bool isUnlockReady;

@@ -19,11 +19,8 @@ MonoBehaviour:
     for (MAG x 5% + (Grade x 25%)). At the end of track, dealing enemy health by
     the total number of successful hits by (STR x 5% + (Grade x 10%) + MAG x 5% +
     (Grade x 10%)). '
-  skill_type: 3
-  skillEffectKey: OnLightOfSword
-  mainStats: 2
+  onStartOfEffect: []
+  duringPlayOfEffect: []
+  onEndOfEffect: []
   target_caterogy: 2
-  baseDamageStats: 0
-  extraStatsPercentage: 0
-  valueOfTrigger: 15/35/5/25/5/10/5/10
   isUnlockReady: 0

@@ -34,6 +34,7 @@ public class CollectionNew_Script : MonoBehaviour
     public GameObject LoadingScreen_TrackContent;
 
     [SerializeField] private CharacterAlbum_Base collection_characterAlbum;
+    [SerializeField] private CharacterFormation_Base collection_formation;
 
     void Update()
     {
@@ -98,6 +99,10 @@ public class CollectionNew_Script : MonoBehaviour
                 if (album == null) album = new MusicAlbum();
                 LoadMusicContent();
                 break;
+
+            default:
+                collection_formation.UpdateFormationList();
+                break;
         }
     }
 
@@ -111,6 +116,25 @@ public class CollectionNew_Script : MonoBehaviour
     #endregion
 
     #region FORMATION
+    public void Formation_EditMode()
+    {
+        collection_formation.EditFormation();
+    }
+
+    public void Formation_SetButton()
+    {
+        collection_formation.SetMainFormation();
+    }
+
+    public void Formation_ClearAll()
+    {
+        collection_formation.ClearAllFormation();
+    }
+
+    public void Formation_Toggle_UpdateContent(Dropdown content)
+    {
+
+    }
     #endregion
 
     #region MUSIC ALBUM
@@ -246,6 +270,16 @@ public class CollectionNew_Script : MonoBehaviour
     {
         collection_characterAlbum.PickMasteryTab(slot_index);
     }
+
+    public void RebornPanel_ConfirmationTab_Confirm()
+    {
+        collection_characterAlbum.ConfirmMastery();
+    }
+
+    public void RebornPanel_ConfirmationTab_Cancel()
+    {
+        collection_characterAlbum.CancelMastery();
+    }
     #endregion
 
     [System.Serializable]
@@ -253,8 +287,12 @@ public class CollectionNew_Script : MonoBehaviour
     {
         [SerializeField] private GameObject selectionPanel;
         [SerializeField] private Texture NoneOfAbove;
+        [SerializeField] private Texture[] ElementListing;
+
         private List<SkillContainer> skill_listing_container;
         [SerializeField] private GameObject[] MasteryTabs;
+        [SerializeField] private GameObject MasteryInfoTab;
+        [SerializeField] private GameObject CharacterTab_MessageTab;
 
         private List<ClassBase> Character_Database;
         private List<StatsManage_Database> characterStatus;
@@ -297,13 +335,16 @@ public class CollectionNew_Script : MonoBehaviour
 
         public void ToggleContentTab(int index)
         {
+            // Restart content information and continue for below
             for (int i = 0; i < 3; i++)
             {
                 selectionPanel.transform.GetChild(2).GetChild(5 + i).gameObject.SetActive(false);
                 selectionPanel.transform.GetChild(8 + i).GetComponent<RawImage>().color = Color.white;
             }
 
+            // Get content information 
             selectionPanel.transform.GetChild(2).GetChild(5 + index).gameObject.SetActive(true);
+            // Get button tab selected
             selectionPanel.transform.GetChild(8 + index).GetComponent<RawImage>().color = Color.green;
         }
         #endregion
@@ -317,14 +358,39 @@ public class CollectionNew_Script : MonoBehaviour
 
             selectionPanel.transform.GetChild(2).GetChild(6).GetChild(6).GetChild(1).GetComponent<Text>().text =
                 skill_listing_container[skill_index] ? skill_listing_container[skill_index].description : string.Empty;
+
+            CharacterTab_MessageTab.SetActive(isShown);
+            if (MeloMelo_SkillData_Settings.CheckSkillStatus(skill_listing_container[skill_index].skillName) ||
+                skill_listing_container[skill_index].isUnlockReady)
+                CharacterTab_MessageTab.transform.GetChild(0).GetComponent<Text>().text = "Grade: " +
+                    MeloMelo_SkillData_Settings.CheckSkillGrade(skill_listing_container[skill_index].skillName) + "  |  Skill can be upgraded";
+            else
+                CharacterTab_MessageTab.transform.GetChild(0).GetComponent<Text>().text = "You have not yet learn this skill";
         }
         #endregion
 
         #region MAIN (REBORN TAB)
         public void PickMasteryTab(int index)
         {
+            // Display confirmation before processing to mastery
+            GetMasteryContentConfirmationTab(index);
+        }
+
+        public void ConfirmMastery()
+        {
+            MasteryInfoTab.SetActive(false);
+            string[] breakData = MasteryInfoTab.transform.GetChild(5).name.Split("_");
+            ProcessToAddonsMastery(GetMasteryInfo(int.Parse(breakData[1])));
+
+            int currentPoint = MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name);
+            MeloMelo_ExtraStats_Settings.SetMasteryPoint(Character_Database[characterToggleIndex - 1].name, currentPoint - 1);
             PlayerPrefs.DeleteKey("MasteryShuffleTab");
             UpdateRebornTab();
+        }
+
+        public void CancelMastery()
+        {
+            MasteryInfoTab.SetActive(false);
         }
         #endregion
 
@@ -365,12 +431,16 @@ public class CollectionNew_Script : MonoBehaviour
         {
             // Assign data information of level, experience through class base
             int currentLevel, currentExperience;
+            string className = Character_Database[characterToggleIndex - 1].name;
             currentLevel = Character_Database[characterToggleIndex - 1].level;
             currentExperience = Character_Database[characterToggleIndex - 1].experience;
 
             // Show that character icon is present in the class base
             selectionPanel.transform.GetChild(2).GetChild(1).GetComponent<Image>().enabled =
                 Character_Database[characterToggleIndex - 1].icon != null;
+
+            selectionPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<RawImage>().texture =
+                ElementListing[(int)Character_Database[characterToggleIndex - 1].elementType];
 
             // Able to present character icon through current selection
             selectionPanel.transform.GetChild(2).GetChild(1).GetComponent<Image>().sprite =
@@ -381,16 +451,20 @@ public class CollectionNew_Script : MonoBehaviour
             SetStatusInformation(1).text = "Class: " + characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetClassName;
 
             SetStatusInformation(2).text = "STRENGTH (STR): " + characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetStrength
-                + (PlayerPrefs.GetInt("Permant_STR", 0) == 0 ? string.Empty : " (+" + PlayerPrefs.GetInt("Permant_STR", 0) + ")");
+                + (MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(className) == 0 ? string.Empty : " (" +
+                GetValuePlusMinus(MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(className)) + ")");
 
             SetStatusInformation(3).text = "VITALITY (VIT): " + characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetVitality
-                + (PlayerPrefs.GetInt("Permant_VIT", 0) == 0 ? string.Empty : " (+" + PlayerPrefs.GetInt("Permant_VIT", 0) + ")");
+                + (MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(className) == 0 ? string.Empty : " (" +
+                GetValuePlusMinus(MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(className)) + ")");
 
             SetStatusInformation(4).text = "MAGIC (MAG): " + characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetMagic
-                + (PlayerPrefs.GetInt("Permant_MAG", 0) == 0 ? string.Empty : " (+" + PlayerPrefs.GetInt("Permant_MAG", 0) + ")");
+                + (MeloMelo_ExtraStats_Settings.GetExtraMagicStats(className) == 0 ? string.Empty : " (" +
+                GetValuePlusMinus(MeloMelo_ExtraStats_Settings.GetExtraMagicStats(className)) + ")");
 
             SetStatusInformation(5).text = "BASE HEALTH: " + characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetHealth
-                + (PlayerPrefs.GetInt("Permant_HP", 0) == 0 ? " (+0)" : " (+" + PlayerPrefs.GetInt("Permant_HP", 0) + ")");
+                + (MeloMelo_ExtraStats_Settings.GetExtraBaseHealth(className) == 0 ? " (+0)" : " (" +
+                GetValuePlusMinus(MeloMelo_ExtraStats_Settings.GetExtraBaseHealth(className)) + ")");
 
             selectionPanel.transform.GetChild(2).GetChild(2).GetComponent<Text>().text = "LEVEL: " +
                 characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetLevel;
@@ -398,53 +472,35 @@ public class CollectionNew_Script : MonoBehaviour
             selectionPanel.transform.GetChild(2).GetChild(3).GetComponent<Text>().text = "EXP: " +
                 currentExperience + "/" + characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetExperience;
 
-            selectionPanel.transform.GetChild(2).GetChild(4).GetComponent<Text>().text = "REBIRTH: " + PlayerPrefs.GetInt("Rebirth_Points", 0);
+            selectionPanel.transform.GetChild(2).GetChild(4).GetComponent<Text>().text = "REBIRTH: " + MeloMelo_ExtraStats_Settings.GetRebirthPoint(className);
             UpdateSkillTab();
         }
 
         private void UpdateSkillTab()
         {
-            string[] skill_key = { "_Primary_Skill", "_Secondary_Skill_1", "_Secondary_Skill_2", "_Secondary_Skill_3" };
-            skill_listing_container.Clear();
+            // Load content skills data
+            LoadIndividualSkillsData();
 
-            foreach (string skill_type in skill_key)
-            {
-                SkillContainer singleSkill = Resources.Load<SkillContainer>("Database_Skills/" + Character_Database[characterToggleIndex - 1].name +
-                    skill_type);
+            // Load for display of skills data
+            LoadDisplaySkillData();
 
-                skill_listing_container.Add(singleSkill);
-            }
-
-            for (int id = 0; id < skill_listing_container.ToArray().Length; id++)
-            {
-                if (skill_listing_container[id]) SetSkillsInformation(id).texture = skill_listing_container[id].skillIcon;
-                else SetSkillsInformation(id).texture = NoneOfAbove;
-            }
-
-            //UpdateRebornTab();
+            // Continue to load reborn tab
+            UpdateRebornTab();
         }
 
         private void UpdateRebornTab()
         {
-            if (!PlayerPrefs.HasKey("MasteryShuffleTab"))
-            {
-                for (int count = 0; count < MasteryTabs.Length; count++)
-                {
-                    int randomizeNumber = Random.Range(count + 0, count + 2);
-                    PlayerPrefs.SetInt("Mastery" + (count + 1), randomizeNumber);
-                    PlayerPrefs.SetInt("MasteryShuffleTab", 1);
-                }
-            }
+            // Find all available cards which is attached with the character class name
+            int masteryLimit = 0;
+            while (Resources.Load<MasteryContainer>("Database_Reborn_Cards/" + Character_Database[characterToggleIndex - 1].name + "_Common_" +
+                (1 + masteryLimit)) != null)
+                masteryLimit++;
 
-            for (int index = 0; index < MasteryTabs.Length; index++)
-            {
-                string masteryRarity = Character_Database[characterToggleIndex - 1].level == 99 ? "Ultimate" : "Common";
-                MasteryTabs[index].transform.GetChild(0).GetComponent<Text>().text = Resources.Load<MasteryContainer>("Database_Reborn_Cards/" +
-                   Character_Database[characterToggleIndex - 1].name + "_" + masteryRarity + "_" + PlayerPrefs.GetInt("Mastery" + (index + 1), 1)).title;
+            // Shuffle the card and assign them in 3 tabs
+            RandomizeMasteryCard(masteryLimit);
 
-                MasteryTabs[index].transform.GetChild(1).GetComponent<Text>().text = Resources.Load<MasteryContainer>("Database_Reborn_Cards/" +
-                   Character_Database[characterToggleIndex - 1].name + "_" + masteryRarity + "_" + PlayerPrefs.GetInt("Mastery" + (index + 1), 1)).awardsTitle;
-            }
+            // Update content card with the assigned number
+            UpdateRebornCardContent();
         }
         #endregion
 
@@ -476,6 +532,291 @@ public class CollectionNew_Script : MonoBehaviour
         private RawImage SetSkillsInformation(int index)
         {
             return selectionPanel.transform.GetChild(2).GetChild(6).GetChild(2 + index).GetComponent<RawImage>();
+        }
+
+        private string GetValuePlusMinus(int value)
+        {
+            if (value != 0 && value > 0) return "+" + value;
+            else return value.ToString();
+        }
+        #endregion
+
+        #region COMPONENT (Skill Infomration Data)
+        private void LoadIndividualSkillsData()
+        {
+            string[] skill_key = { "_Primary_Skill", "_Secondary_Skill_1", "_Secondary_Skill_2", "_Secondary_Skill_3" };
+            skill_listing_container.Clear();
+
+            foreach (string skill_type in skill_key)
+            {
+                SkillContainer singleSkill = Resources.Load<SkillContainer>("Database_Skills/" + Character_Database[characterToggleIndex - 1].name +
+                    skill_type);
+
+                skill_listing_container.Add(singleSkill);
+            }
+        }
+
+        private void LoadDisplaySkillData()
+        {
+            for (int id = 0; id < skill_listing_container.ToArray().Length; id++)
+            {
+                if (skill_listing_container[id]) SetSkillsInformation(id).texture = skill_listing_container[id].skillIcon;
+                else SetSkillsInformation(id).texture = NoneOfAbove;
+            }
+        }
+        #endregion
+
+        #region COMPONENT (Reborn Shuffle Data)
+        private void RandomizeMasteryCard(int maxLimit)
+        {
+            if (!PlayerPrefs.HasKey("MasteryShuffleTab"))
+            {
+                if (maxLimit > 0)
+                {
+                    for (int count = 0; count < MasteryTabs.Length; count++)
+                    {
+                        int randomizeNumber = Character_Database[characterToggleIndex - 1].level >= 99 ? (count + 1) : Random.Range(1, maxLimit);
+                        PlayerPrefs.SetInt("Mastery" + (count + 1), randomizeNumber);
+                        PlayerPrefs.SetInt("MasteryShuffleTab", 1);
+                    }
+                }
+            }
+        }
+        
+        private void UpdateRebornCardContent()
+        {
+            for (int index = 0; index < MasteryTabs.Length; index++)
+            {
+                // Update content
+                MasteryTabs[index].transform.GetChild(0).GetComponent<Text>().text = GetMasteryInfo(index) != null ? GetMasteryInfo(index).title : "???";
+                MasteryTabs[index].transform.GetChild(1).GetComponent<Text>().text = GetMasteryInfo(index) != null ? GetMasteryInfo(index).awardsTitle : "???";
+            }
+        }
+
+        private MasteryContainer GetMasteryInfo(int slot_index)
+        {
+            string masteryRarity = Character_Database[characterToggleIndex - 1].level >= 99 ? "Ultimate" : "Common";
+            MasteryContainer masteryContent = Resources.Load<MasteryContainer>("Database_Reborn_Cards/" +
+               Character_Database[characterToggleIndex - 1].name + "_" + masteryRarity + "_" + PlayerPrefs.GetInt("Mastery" + (slot_index + 1), 1));
+
+            return masteryContent;
+        }
+        #endregion
+
+        #region COMPONENT (Reborn Information Data)
+        private void GetMasteryContentConfirmationTab(int index)
+        {
+            if (!MasteryInfoTab.activeInHierarchy)
+            {
+                MasteryInfoTab.SetActive(true);
+                MasteryInfoTab.transform.GetChild(1).GetComponent<Text>().text = GetMasteryInfo(index - 1).title;
+                MasteryInfoTab.transform.GetChild(2).GetComponent<Text>().text = GetMasteryInfo(index - 1).description;
+                MasteryInfoTab.transform.GetChild(3).GetComponent<Text>().text = "Required Point: " +
+                    MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) + " >> " +
+                    (MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) - 1);
+
+                // Check condition on confirm mastery
+                MasteryInfoTab.transform.GetChild(5).name = "Confirm_" + (index - 1) + "_Btn";
+                MasteryInfoTab.transform.GetChild(5).GetComponent<Button>().interactable = 
+                    MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) > 0;
+            }
+        }
+
+        private void ProcessToAddonsMastery(MasteryContainer addons)
+        {
+            // Get class from container
+            string[] addons_data = addons.name.Split("_");
+            string messagePrinter = string.Empty;
+            foreach (AwardsSettings awards in addons.awards_settings)
+            {
+                switch (awards.awards_caterogy)
+                {
+                    case AwardsSettings.TypeOfAwards.STR:
+                        MeloMelo_ExtraStats_Settings.IncreaseStrengthStats(addons_data[0], int.Parse(awards.awards_value));
+                        messagePrinter += (int.Parse(awards.awards_value) > 0 ? "STRENGTH increased by " : "STRENGTH decreased by ") + int.Parse(awards.awards_value);
+                        break;
+
+                    case AwardsSettings.TypeOfAwards.VIT:
+                        MeloMelo_ExtraStats_Settings.IncreaseVitalityStats(addons_data[0], int.Parse(awards.awards_value));
+                        messagePrinter += (int.Parse(awards.awards_value) > 0 ? "VITALITY increased by " : "VITALITY decreased by ") + int.Parse(awards.awards_value);
+                        break;
+
+                    case AwardsSettings.TypeOfAwards.MAG:
+                        MeloMelo_ExtraStats_Settings.IncreaseMagicStats(addons_data[0], int.Parse(awards.awards_value));
+                        messagePrinter += (int.Parse(awards.awards_value) > 0 ? "MAGIC increased by " : "MAGIC increased by ") + int.Parse(awards.awards_value);
+                        break;
+
+                    case AwardsSettings.TypeOfAwards.SKILL:
+                        if (!MeloMelo_SkillData_Settings.CheckSkillStatus(awards.awards_value)) MeloMelo_SkillData_Settings.UnlockSkill(awards.awards_value);
+                        else MeloMelo_SkillData_Settings.UpgradeSkill(awards.awards_value);
+                        messagePrinter += (!MeloMelo_SkillData_Settings.CheckSkillStatus(awards.awards_value) ? "Skill Learned: " : "Skill Upgraded: ") + awards.awards_value;
+                            break;
+                }
+
+                messagePrinter += ",";
+            }
+
+            // Prompt user about the info
+            thisCollect.StartCoroutine(GetPromptMessage(messagePrinter));
+        }
+
+        private IEnumerator GetPromptMessage(string long_message)
+        {
+            string[] message_container = long_message.Split(",");
+            foreach (string message in message_container)
+            {
+                if (message != string.Empty)
+                {
+                    yield return new WaitForSeconds(1);
+                    if (!CharacterTab_MessageTab.activeInHierarchy) CharacterTab_MessageTab.SetActive(true);
+                    CharacterTab_MessageTab.transform.GetChild(0).GetComponent<Text>().text = message;
+                    yield return new WaitForSeconds(2);
+                    CharacterTab_MessageTab.SetActive(false);
+                }
+            }
+        }
+        #endregion
+    }
+
+    [System.Serializable]
+    public class CharacterFormation_Base
+    {
+        [SerializeField] private GameObject selectionPanel;
+        private bool formationEditingMode = false;
+
+        #region MAIN
+        public void EditFormation()
+        {
+            formationEditingMode = true;
+            UpdateFormationList();
+
+            // Prompt: Message to player
+            thisCollect.StartCoroutine(PromptMessage("Team Editing Mode!"));
+        }
+
+        public void SetMainFormation()
+        {
+            if (formationEditingMode)
+            {
+                formationEditingMode = false;
+                thisCollect.StartCoroutine(PromptMessage("Team Editing Done!"));
+            }
+            else
+                thisCollect.StartCoroutine(PromptMessage(IsFormationHasSet() ? "Team Formation Assigned!" : "Assigned Failed!"));
+
+            // Update content and interactive
+            UpdateFormationList();
+        }
+
+        public void ClearAllFormation()
+        {
+            // Clear all character from slot and then update content
+            selectionPanel.transform.GetChild(11).GetComponent<Button>().interactable = false;
+            for (int slot = 0; slot < 3; slot++) ClearCharacterSlot(slot);
+            LoadFormationContent();
+
+            // Prompt: Message to player
+            thisCollect.StartCoroutine(PromptMessage("All character have been dismissed."));
+        }
+
+        public void UpdateFormationList()
+        {
+            // Update slot: Content information
+            LoadFormationContent();
+
+            // Edit, Set, Clear: Interactive with button
+            selectionPanel.transform.GetChild(9).GetComponent<Button>().interactable = !formationEditingMode;
+            selectionPanel.transform.GetChild(10).GetComponent<Button>().interactable = !IsFormationHasSet() || formationEditingMode;
+            selectionPanel.transform.GetChild(11).GetComponent<Button>().interactable = IsFormationHasSet();
+
+            // All Slot: Ready for editing
+            for (int slot = 0; slot < 3; slot++) 
+                selectionPanel.transform.GetChild(3 + slot).GetChild(3).gameObject.SetActive(formationEditingMode);
+        }
+        #endregion
+
+        #region COMPONENT
+        private void LoadFormationContent()
+        {
+            // Toggle character slot
+            int characterToggleIndex = 0;
+
+            // Get formation all status information
+            LoadFormationInformation();
+
+            // Load all characters contain class data
+            StatsDistribution formation = new StatsDistribution();
+            formation.load_Stats();
+
+            foreach (ClassBase character in formation.slot_Stats)
+            {
+                // Show character icon if assigned
+                selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(0).gameObject.SetActive(character.icon == null);
+                selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(1).GetComponent<Image>().enabled = character.icon != null;
+                selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(1).GetComponent<Image>().sprite = character.icon;
+                selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(2).gameObject.SetActive(character.icon != null);
+                selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(2).GetChild(0).GetComponent<Text>().text = GetCharacterMain(character.name);
+                
+                // Go to next character slot
+                characterToggleIndex++;
+            }
+        }
+
+        private void LoadFormationInformation()
+        {
+            StatsDistribution formation = new StatsDistribution();
+            formation.load_Stats();
+
+            selectionPanel.transform.GetChild(6).GetChild(0).GetComponent<Text>().text = "UNIT POWER:\n" + formation.get_UnitPower();
+            selectionPanel.transform.GetChild(7).GetChild(0).GetComponent<Text>().text = "UNIT RANK:\n" + get_Rank(formation.get_UnitPower());
+            selectionPanel.transform.GetChild(8).GetChild(0).GetComponent<Text>().text = "TOTAL HEALTH:\n" + formation.get_UnitHealth("Character");
+        }
+
+        private void ClearCharacterSlot(int slot_index)
+        {
+            UnitFormation_Management formationManage = new UnitFormation_Management();
+            formationManage.ClearUnit(slot_index);
+        }
+
+        private void SetCharacterSlotStatus(string character)
+        {
+            UnitFormation_Management formationManage = new UnitFormation_Management();
+            formationManage.SetMainForce(character);
+            LoadFormationContent();
+        }
+        #endregion
+
+        #region MISC
+        public string GetCharacterMain(string character)
+        {
+            return character == PlayerPrefs.GetString("CharacterFront", string.Empty) ? "MAIN" : "PARTY";
+        }
+
+        public char get_Rank(int unitPower)
+        {
+            if (unitPower >= 10000) return 'S';
+            else if (unitPower >= 8000) return 'A';
+            else if (unitPower >= 5000) return 'B';
+            else if (unitPower >= 2500) return 'C';
+            else if (unitPower >= 1000) return 'D';
+            else if (unitPower > 0) { return 'E'; }
+            else { return 'F'; }
+        }
+
+        public bool IsFormationHasSet()
+        {
+            StatsDistribution formationManage = new StatsDistribution();
+            formationManage.load_Stats();
+            foreach (ClassBase character in formationManage.slot_Stats) if (character.icon != null) return true;
+            return false;
+        }
+
+        public IEnumerator PromptMessage(string message)
+        {
+            selectionPanel.transform.GetChild(14).gameObject.SetActive(true);
+            selectionPanel.transform.GetChild(14).GetChild(0).GetComponent<Text>().text = message;
+            yield return new WaitForSeconds(2);
+            selectionPanel.transform.GetChild(14).gameObject.SetActive(false);
         }
         #endregion
     }

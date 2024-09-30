@@ -16,7 +16,11 @@ public class MushroomMon_Ani_Test : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name == "Note5(Clone)") { GameManager.thisManager.UpdateEnemy_Health(-(PlayerPrefs.GetInt("Character_OverallDamage", 0) * 2), false); }
+        if (other.gameObject.name == "Note5(Clone)") 
+        { 
+            GameManager.thisManager.UpdateEnemy_Health(-(PlayerPrefs.GetInt("Character_OverallDamage", 0) * 2), false);
+            GameManager.thisManager.SpawnDamageIndicator(transform.position, 2, -(PlayerPrefs.GetInt("Character_OverallDamage", 0) * 2));
+        }
     }
 
     void Start () {

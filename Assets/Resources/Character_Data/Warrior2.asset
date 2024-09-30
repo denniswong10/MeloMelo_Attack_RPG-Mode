@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1f16c8e1e452a9418745bdde6e11abe, type: 3}
   m_Name: Warrior2
   m_EditorClassIdentifier: 
-  health: 0
-  strength: 0
+  health: 105
+  strength: 2
   magic: 0
-  vitality: 1
-  experience: 0
+  vitality: 0
+  experience: 24
   expLimit: 0
   level: 1
   characterName: Avelyn

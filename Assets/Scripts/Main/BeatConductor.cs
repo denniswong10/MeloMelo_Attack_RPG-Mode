@@ -178,7 +178,7 @@ public class BeatConductor : MonoBehaviour
     // Music PlayThrough: Starting Point
     public void StartMusicButton()
     {
-        if (!GameManager.thisManager.DeveloperMode) { GameObject.Find("MidAlert").gameObject.SetActive(false); }
+        if (!GameManager.thisManager.DeveloperMode) { GameObject.Find("MidAlert").GetComponent<Animator>().SetTrigger("Close"); GameObject.Find("MidAlert").gameObject.SetActive(false); }
 
         if (GameManager.thisManager.DeveloperMode) { myPrint.SongTitle(Music_Database.name); }
         NextTickTime = (decimal)Time.time + ((decimal)Music_Database.offset / 1000);

@@ -4,11 +4,21 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+[System.Serializable]
+public class BundleOptionSettings
+{
+    public GameObject optionButton;
+    public GameObject[] optionFieldTab;
+}
+
 public class Options_Menu : MonoBehaviour
 {
     private GameObject[] BGM;
     public Dropdown Res;
     public GameObject Icon;
+
+    [SerializeField] private BundleOptionSettings[] optionSettings;
+    private int currentOptionCaterogy = 0;
 
     #region SETUP
     void CallUpOptionTask()
@@ -32,11 +42,31 @@ public class Options_Menu : MonoBehaviour
     void Start()
     {
         CallUpOptionTask();
+        SelectOptionCaterogy(currentOptionCaterogy);
     }
 
     // Button Interaction - Options
 
     #region MAIN
+    public void SelectOptionCaterogy(int index)
+    {
+        currentOptionCaterogy = index;
+
+        for (int currentSelect = 0; currentSelect < optionSettings.Length; currentSelect++)
+        {
+            if (currentSelect == currentOptionCaterogy)
+            {
+                optionSettings[currentSelect].optionButton.GetComponent<RawImage>().color = Color.green;
+                foreach (GameObject optionTab in optionSettings[currentSelect].optionFieldTab) optionTab.SetActive(true);
+            }
+            else
+            {
+                optionSettings[currentSelect].optionButton.GetComponent<RawImage>().color = Color.white;
+                foreach (GameObject optionTab in optionSettings[currentSelect].optionFieldTab) optionTab.SetActive(false);
+            }
+        }
+    }
+
     public void Option_InteractANDTransition(string scene)
     {
         // Option - Back (Menu), Credit (Credits)

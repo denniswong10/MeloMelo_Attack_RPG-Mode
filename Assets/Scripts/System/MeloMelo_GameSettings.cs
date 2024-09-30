@@ -228,3 +228,95 @@ public static class MeloMelo_GameSettings
     }
     #endregion
 }
+
+public static class MeloMelo_CharacterInfo_Settings
+{
+    public static void UnlockCharacter(string className) { PlayerPrefs.SetInt(className + "_Unlock_Code", 1); }
+    public static void LockedCharacter(string className) { PlayerPrefs.SetInt(className + "_Unlock_Code", 0); }
+    public static bool GetCharacterStatus(string className) { return PlayerPrefs.GetInt(className + "_Unlock_Code", 0) == 1; }
+
+    public static void SetUsageOfSecondarySkill(string className, int slot_id) { PlayerPrefs.SetInt(className + "_SecondarySkill_Id", slot_id); ; }
+    public static int GetUsageOfSecondarySkill(string className) { return PlayerPrefs.GetInt(className + "_SecondarySkill_Id", 0); }
+
+    public static void SetCharacterChosenSelection(bool condition) { PlayerPrefs.SetInt("Character_ChosenSelection", condition ? 1 : 0); }
+    public static bool GetCharacterChosenSelection() { return PlayerPrefs.GetInt("Character_ChosenSelection", 0) == 1; }
+}
+
+public static class MeloMelo_ExtraStats_Settings
+{
+    public static void IncreaseStrengthStats(string className, int value) { PlayerPrefs.SetInt(className + "_Permant_STR", PlayerPrefs.GetInt(className + "_Permant_STR", 0) + value); }
+    public static void IncreaseVitalityStats(string className, int value) { PlayerPrefs.SetInt(className + "_Permant_VIT", PlayerPrefs.GetInt(className + "_Permant_VIT", 0) + value); }
+    public static void IncreaseMagicStats(string className, int value) { PlayerPrefs.SetInt(className + "_Permant_MAG", PlayerPrefs.GetInt(className + "_Permant_MAG", 0) + value); }
+    public static void IncreaseBaseHealth(string className, int value) { PlayerPrefs.SetInt(className + "_Permant_HP", PlayerPrefs.GetInt(className + "_Permant_HP", 0) + value); }
+    
+    public static int  GetExtraStrengthStats(string className) { return PlayerPrefs.GetInt(className + "_Permant_STR", 0); }
+    public static int GetExtraVitaltyStats(string className) { return PlayerPrefs.GetInt(className + "_Permant_VIT", 0); }
+    public static int GetExtraMagicStats(string className) { return PlayerPrefs.GetInt(className + "_Permant_MAG", 0); }
+    public static int GetExtraBaseHealth(string className) { return PlayerPrefs.GetInt(className + "_Permant_HP", 0); }
+
+    public static void SetMasteryPoint(string className, int value) { PlayerPrefs.SetInt(className + "_Mastery_Points", value); }
+    public static void SetRebirthPoint(string className, int value) { PlayerPrefs.SetInt(className + "_Rebirth_Points", value); }
+    public static int GetRebirthPoint(string className) { return PlayerPrefs.GetInt(className + "_Rebirth_Points", 0); }
+    public static int GetMasteryPoint(string className) { return PlayerPrefs.GetInt(className + "_Mastery_Points", 0); }
+
+    public static void GiveOutDamageResistance(int value) { PlayerPrefs.SetInt("MISC_Character_DamageResist", value); }
+    public static int ResistAgainstDamageResistance(int orginalDamage)
+    {
+        int newDamage = orginalDamage + PlayerPrefs.GetInt("MISC_Character_DamageResist", 0);
+        PlayerPrefs.SetInt("MISC_Character_DamageResist", 0);
+        return newDamage;
+    }
+    public static void GiveOutBonusBaseDamage(int value) { PlayerPrefs.SetInt("MISC_Character_ExtraBaseDamage", value); }
+    public static int GetBonusDamage() { return PlayerPrefs.GetInt("MISC_Character_ExtraBaseDamage", 0); }
+}
+
+public static class MeloMelo_SkillData_Settings
+{
+    public static void UnlockSkill(string skillName) { PlayerPrefs.SetInt(skillName + "_Unlock_Code", 1); }
+    public static void LockedSkill(string skillName) { PlayerPrefs.SetInt(skillName + "_Unlock_Code", 0); }
+    public static bool CheckSkillStatus(string skillName) { return PlayerPrefs.GetInt(skillName + "_Unlock_Code", 0) == 1; }
+
+    public static void LearnSkill(string skillName) { PlayerPrefs.SetInt(skillName + "_Grade_Code", 1); }
+    public static void UpgradeSkill(string skillName) { PlayerPrefs.SetInt(skillName + "_Grade_Code", PlayerPrefs.GetInt(skillName + "_Grade_Code", 0) + 1); }
+    public static int CheckSkillGrade(string skillName) { return PlayerPrefs.GetInt(skillName + "_Grade_Code", 0); }
+}
+
+public static class MeloMelo_UnitData_Settings
+{
+    public static void SetSuccessHitOfAllEnemyTarget(int value, int typeOfTarget = -1)
+    {
+        switch (typeOfTarget)
+        {
+            case 1:
+            case 6:
+                PlayerPrefs.SetInt("MISC_Character_EnemySuccessfulHit", value);
+                break;
+
+            case 5:
+                PlayerPrefs.SetInt("MISC_Character_EnemyAttackSuccessHit", value);
+                break;
+
+            default:
+                PlayerPrefs.SetInt("MISC_Character_AllSuccessfulHit", value);
+                break;
+        }
+    }
+    public static void SetSuccessPickItem(int value) { PlayerPrefs.SetInt("MISC_Character_TotalOPickCount", value); }
+
+    public static int GetSuccessHitOfAllEnemyTarget(int typeOfTarget = -1)
+    {
+        switch (typeOfTarget)
+        {
+            case 1:
+            case 6:
+                return PlayerPrefs.GetInt("MISC_Character_EnemySuccessfulHit", 0);
+
+            case 5:
+                return PlayerPrefs.GetInt("MISC_Character_EnemyAttackSuccessHit", 0);
+
+            default:
+                return PlayerPrefs.GetInt("MISC_Character_AllSuccessfulHit", 0);
+        }
+    }
+    public static int GetSuccessPickItem() { return PlayerPrefs.GetInt("MISC_Character_TotalOPickCount", 0); }
+}

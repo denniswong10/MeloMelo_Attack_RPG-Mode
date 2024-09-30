@@ -1331,6 +1331,12 @@ namespace MeloMelo_Local
         public string id;
         public int level;
         public int experience;
+        public int totalMasteryAdded;
+        public int totalRebirthPoint;
+
+        public int baseStrengthStats;
+        public int baseVitalityStats;
+        public int baseMagicStats;
 
         public BattleUnitDatabase GetCharacterStatus(string format)
         {
@@ -1850,6 +1856,14 @@ namespace MeloMelo_Local
                 {
                     PlayerPrefs.SetInt(data.id + "_LEVEL", data.level);
                     PlayerPrefs.SetInt(data.id + "_EXP", data.experience);
+
+                    int unUsedMasteryPoint = data.level * 2 - data.totalMasteryAdded;
+                    MeloMelo_ExtraStats_Settings.SetMasteryPoint(data.id, unUsedMasteryPoint);
+                    MeloMelo_ExtraStats_Settings.SetRebirthPoint(data.id, data.totalRebirthPoint);
+
+                    MeloMelo_ExtraStats_Settings.IncreaseStrengthStats(data.id, data.baseStrengthStats);
+                    MeloMelo_ExtraStats_Settings.IncreaseVitalityStats(data.id, data.baseVitalityStats);
+                    MeloMelo_ExtraStats_Settings.IncreaseMagicStats(data.id, data.baseMagicStats);
                 }
             }
 
@@ -1870,8 +1884,19 @@ namespace MeloMelo_Local
 
                 foreach (SkillUnitDatabase data in dataArray)
                 {
-                    PlayerPrefs.SetInt(data.skillName + "_Unlock_Code", data.status);
-                    PlayerPrefs.SetInt(data.skillName + "_Grade_Code", data.grade);
+                    if (data.status == 1)
+                    {
+                        MeloMelo_SkillData_Settings.UnlockSkill(data.skillName);
+                        for (int numberOfTimes = 0; numberOfTimes < data.grade; numberOfTimes++)
+                        {
+                            if (MeloMelo_SkillData_Settings.CheckSkillGrade(data.skillName) != 0)
+                                MeloMelo_SkillData_Settings.UpgradeSkill(data.skillName);
+                            else
+                                MeloMelo_SkillData_Settings.LearnSkill(data.skillName);
+                        }
+                    }
+                    else 
+                        MeloMelo_SkillData_Settings.LockedSkill(data.skillName);
                 }
             }
 
@@ -2072,6 +2097,12 @@ namespace MeloMelo_Local
             character.id = name;
             character.level = level;
             character.experience = experience;
+            character.totalMasteryAdded = level * 2 - MeloMelo_ExtraStats_Settings.GetMasteryPoint(name);
+            character.totalRebirthPoint = MeloMelo_ExtraStats_Settings.GetRebirthPoint(name);
+
+            character.baseStrengthStats = MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(name);
+            character.baseVitalityStats = MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(name);
+            character.baseMagicStats = MeloMelo_ExtraStats_Settings.GetExtraMagicStats(name);
 
             if (File.Exists(directory + combinePath))
             {
@@ -2097,12 +2128,12 @@ namespace MeloMelo_Local
 
             foreach (SkillContainer data in Resources.LoadAll<SkillContainer>("Database_Skills"))
             {
-                if (PlayerPrefs.GetInt(data.skillName + "_Unlock_Code", 0) == 1 || data.isUnlockReady)
+                if (MeloMelo_SkillData_Settings.CheckSkillStatus(data.skillName) || data.isUnlockReady)
                 {
                     SkillUnitDatabase onSave = new SkillUnitDatabase();
                     onSave.skillName = data.skillName;
-                    onSave.grade = PlayerPrefs.GetInt(data.skillName + "_Grade_Code", 0);
-                    onSave.status = PlayerPrefs.GetInt(data.skillName + "_Unlock_Code", 0);
+                    onSave.grade = MeloMelo_SkillData_Settings.CheckSkillGrade(data.skillName);
+                    onSave.status = MeloMelo_SkillData_Settings.CheckSkillStatus(data.skillName) ? 1 : 0;
                     listing.Add(onSave);
                 }
             }
@@ -3810,7 +3841,8 @@ namespace MeloMelo_RPGEditor
 
                     case "Character":
                         slot_Stats[i].UpdateStatsCache(false);
-                        DMG += baseDamage * slot_Stats[i].strength;
+                        DMG += baseDamage * (slot_Stats[i].strength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[i].name)) +
+                            baseDamage;
                         break;
                 }
             }
@@ -3831,8 +3863,11 @@ namespace MeloMelo_RPGEditor
                         break;
 
                     case "Character":
-                        slot_Stats[i].UpdateStatsCache(false);
-                        HP += slot_Stats[i].health + (baseHealth * slot_Stats[i].vitality);
+                        if (slot_Stats[i].icon != null)
+                        {
+                            slot_Stats[i].UpdateStatsCache(false);
+                            HP += slot_Stats[i].health + (baseHealth * (slot_Stats[i].vitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[i].name)));
+                        }
                         break;
 
                     default:
@@ -3843,33 +3878,50 @@ namespace MeloMelo_RPGEditor
         }
 
         // Unit Power: Get All Types
-        public int get_UnitPower(string index)
+        public int get_UnitPower(string classType = "Character")
         {
             int power = 0;
-            for (int i = 0; i < 3; i++)
+            for (int id = 0; id < slot_Stats.Length; id++)
             {
-                switch (index)
+                if (classType == slot_Stats[id].name)
+                {
+                    slot_Stats[id].UpdateStatsCache(false);
+                    power += baseDamage * (slot_Stats[id].strength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[id].name));
+                    power += baseMagic * (slot_Stats[id].magic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(slot_Stats[id].name));
+                    power += (int)(baseDefense * (slot_Stats[id].vitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[id].name)));
+                    power += baseHealth * slot_Stats[id].health;
+                    return power;
+                }
+            }
+
+            for (int unit = 0; unit < 3; unit++)
+            {
+                switch (classType)
                 {
                     case "Enemy":
-                        power += SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i].str * 10;
-                        power += SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i].mag * 15;
-                        power += SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i].vit * 5;
-                        power += SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i].DMG * 100;
+                        power += SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[unit].str * 10;
+                        power += SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[unit].mag * 15;
+                        power += SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[unit].vit * 5;
+                        power += SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[unit].DMG * 100;
                         break;
 
                     case "Character":
-                        slot_Stats[i].UpdateStatsCache(false);
-                        power += baseDamage * slot_Stats[i].strength;
-                        power += baseMagic * slot_Stats[i].magic;
-                        power += (int)(baseDefense * slot_Stats[i].vitality);
-                        power += baseHealth * slot_Stats[i].health;
-                        PlayerPrefs.SetInt("Character_OverallPower", power);
+                        if (slot_Stats[unit].icon != null)
+                        {
+                            slot_Stats[unit].UpdateStatsCache(false);
+                            power += baseDamage * (slot_Stats[unit].strength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[unit].name));
+                            power += baseMagic * (slot_Stats[unit].magic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(slot_Stats[unit].name));
+                            power += (int)(baseDefense * (slot_Stats[unit].vitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[unit].name)));
+                            power += baseHealth * slot_Stats[unit].health;
+                            PlayerPrefs.SetInt("Character_OverallPower", power);
+                        }
                         break;
 
                     default:
                         break;
                 }
             }
+                    
             return power;
         }
 
@@ -3902,15 +3954,13 @@ namespace MeloMelo_RPGEditor
 
     public class UnitFormation_Management
     {
-        public void ClearUnit()
+        public void ClearUnit(int unit_id = -1)
         {
             PlayerPrefs.DeleteKey("CharacterFront");
             PlayerPrefs.DeleteKey("CharacterOverallHealth");
 
-            for (int i = 0; i < 3; i++)
-            {
-                PlayerPrefs.DeleteKey("Slot" + (i + 1) + "_charName");
-            }
+            if (unit_id != -1) PlayerPrefs.DeleteKey("Slot" + (unit_id + 1) + "_charName");
+            else for (int i = 0; i < 3; i++) PlayerPrefs.DeleteKey("Slot" + (i + 1) + "_charName");
         }
 
         public void SetMainForce(string charName)

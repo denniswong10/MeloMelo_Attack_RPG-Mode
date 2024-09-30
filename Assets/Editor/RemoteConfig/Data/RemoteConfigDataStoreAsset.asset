@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: 
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6c59977d-15ff-4878-9c86-da783112972f\"\r\n   
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"44c61faa-5ff6-4684-84bb-66c290b8b397\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"Latest_Version\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"1.4.2_Build_A\"\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"ab24f480-e4e2-4595-ada8-0759dd08d9dd\"\r\n   
+    \"string\",\r\n      \"value\": \"1.4.2_Build_B\"\r\n    }\r\n  },\r\n  {\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"3a6fbeed-54f5-423b-b351-cdbfb40964a0\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameApplication_URL\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/xs5zkl9eved17qe/MeloMelo+v1.4.2+Build+A.zip/file\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"eb66caba-093d-4808-9be3-bb6d717b89da\"\r\n   
+    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/yhh2wkkiw4v6884/MeloMelo+v1.4.2+Build+B.zip/file\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"f85463fd-2817-4efe-b168-96cbab5a18a2\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameWebpage_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"06b3cbb5-65a9-40f3-aedb-717a97808cfa\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"2c91fe5d-bb0c-4bb1-a5a0-e71622c40d45\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"faa9246f-c53c-4577-bce8-82207f88c0a4\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"de30870a-9179-401d-9f7c-91ba0a135a0e\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue_v2\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"dd7c1619-2d5d-40b4-8ae6-ac216391f277\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"d4b30b23-4e54-4919-bf17-bdb221681e93\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"NoteSpeed_Settings_Configuration\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"data\": [\r\n         
     {\r\n            \"bpm\": 550,\r\n            \"baseSpeed\": 140\r\n         
@@ -43,66 +43,73 @@ MonoBehaviour:
     \"baseSpeed\": 30\r\n          },\r\n          {\r\n            \"bpm\": 160,\r\n           
     \"baseSpeed\": 25\r\n          },\r\n          {\r\n            \"bpm\": 150,\r\n           
     \"baseSpeed\": 23\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"968d21ec-f3e2-4afb-9a58-d3b4d398a755\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"465d815c-1ad4-4325-9aec-0ef8aaa003b8\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"NoteSpeed_Default_Configuration\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
     \"bpm\": 150,\r\n        \"baseSpeed\": 20\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"c9d1fc4d-1281-49ca-8463-794e55418673\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"1e0ec651-6896-4b33-acbc-d05ce3dafe4b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"CloudSave_Mode\",\r\n      \"type\":
     \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"f7388a2a-7804-4df3-b765-34885cfe55a8\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"02269dd2-dfcf-4878-9477-7681edc79bba\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"CloudSave_Support\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"versions\": [\r\n         
     \"1.4.1a\",\r\n          \"1.4.2a\",\r\n          \"1.4.0EX\",\r\n          \"1.4.0EX_Build_A\",\r\n         
     \"1.4.0EX_Build_B\",\r\n          \"1.4.0EX_Build_C\",\r\n          \"1.4.0EX_Build_D\",\r\n         
     \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\",\r\n          \"1.4.1_Build_A\",\r\n         
-    \"1.4.1_Build_B\",\r\n          \"1.4.2_Build_A\"\r\n        ]\r\n      }\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"b193b00a-c86b-4702-8883-1b66883b0ada\"\r\n   
-    },\r\n    \"rs\": {\r\n      \"key\": \"TrackTag_Support\",\r\n      \"type\":
-    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"newReleaseTrack\":
-    [\r\n          \"Himegoto*Crisisters\",\r\n          \"Eureka Baby\",\r\n         
-    \"TSU\u30FBBA\u30FBSA\",\r\n          \"Angel Blossom\",\r\n          \"Kokokara
-    Saki wa Uta ni Naranai\"\r\n        ],\r\n        \"areaBonusTrack\": []\r\n     
-    }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ebdb4cdf-6e56-497c-bb4a-0796119cbcea\"\r\n   
-    },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\":
-    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"data_array\":
-    [\r\n          {\r\n            \"title\": \"Released of 1.4.2 Build A\",\r\n           
-    \"releasedDate\": \"(9 September 2024)\",\r\n            \"description\": \"Added
-    content, Minor fixed on gameplay, Remove all unused features\"\r\n          },\r\n         
-    {\r\n            \"title\": \"Upcoming of 1.4.2 Build A\",\r\n            \"releasedDate\":
-    \"(26 August 2024)\",\r\n            \"description\": \"Stay tuned for details
-    through the site page\"\r\n          },\r\n          {\r\n            \"title\":
-    \"Released of 1.4.1 Build B\",\r\n            \"releasedDate\": \"(12 August
-    2024)\",\r\n            \"description\": \"Added content, Major fixed of marathon
-    mode, Added marathon content\"\r\n          },\r\n          {\r\n           
-    \"title\": \"Upcoming of 1.4.1 Build B\",\r\n            \"releasedDate\": \"(7
-    August 2024)\",\r\n            \"description\": \"Stay tuned for details through
-    the site page\"\r\n          },\r\n          {\r\n            \"title\": \"Released
-    of 1.4.1 Build A\",\r\n            \"releasedDate\": \"(22 July 2024)\",\r\n           
-    \"description\": \"Added content, Added achievement, Reopening of marathon play\"\r\n         
-    },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.1 Build A\",\r\n           
-    \"releasedDate\": \"(14 July 2024)\",\r\n            \"description\": \"Stay
+    \"1.4.1_Build_B\",\r\n          \"1.4.2_Build_A\",\r\n          \"1.4.2_Build_B\"\r\n       
+    ]\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"61d70cf5-ddd0-42c3-a3ee-c8a6b9a1bebf\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"key\": \"TrackTag_Support\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
+    null,\r\n      \"value\": {\r\n        \"newReleaseTrack\": [\r\n          \"Coloring\",\r\n         
+    \"Monochrome*HAPPY DAY\",\r\n          \"Starry Wish\",\r\n          \"Choumusubi
+    Amulet\",\r\n          \"Lostorage\"\r\n        ],\r\n        \"areaBonusTrack\":
+    []\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"aa8c6f88-4ded-4ba0-9f33-35b2ea6e5bb3\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
+    null,\r\n      \"value\": {\r\n        \"data_array\": [\r\n          {\r\n           
+    \"title\": \"Released of 1.4.2 Build B\",\r\n            \"releasedDate\": \"(23
+    September 2024)\",\r\n            \"description\": \"Added content, Added skills
+    features, Added new character, Fixed minor gameplay bug,\\nFixed major new features
+    bug\"\r\n          },\r\n          {\r\n            \"title\": \"Upcoming of
+    1.4.2 Build B\",\r\n            \"releasedDate\": \"(22 September 2024)\",\r\n           
+    \"description\": \"Annouce of the new features and content which will available\\nfor
+    this version\"\r\n          },\r\n          {\r\n            \"title\": \"Released
+    of 1.4.2 Build A\",\r\n            \"releasedDate\": \"(9 September 2024)\",\r\n           
+    \"description\": \"Added content, Minor fixed on gameplay, Remove all unused
+    features\"\r\n          },\r\n          {\r\n            \"title\": \"Upcoming
+    of 1.4.2 Build A\",\r\n            \"releasedDate\": \"(26 August 2024)\",\r\n           
+    \"description\": \"Stay tuned for details through the site page\"\r\n         
+    },\r\n          {\r\n            \"title\": \"Released of 1.4.1 Build B\",\r\n           
+    \"releasedDate\": \"(12 August 2024)\",\r\n            \"description\": \"Added
+    content, Major fixed of marathon mode, Added marathon content\"\r\n         
+    },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.1 Build B\",\r\n           
+    \"releasedDate\": \"(7 August 2024)\",\r\n            \"description\": \"Stay
     tuned for details through the site page\"\r\n          },\r\n          {\r\n           
-    \"title\": \"Released of 1.4.0 Beta Build\",\r\n            \"releasedDate\":
-    \"(17 June 2024)\",\r\n            \"description\": \"Added content, Added fast/late
-    features, Program Rearrangement\"\r\n          }\r\n        ]\r\n      }\r\n   
-    }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6c59977d-15ff-4878-9c86-da783112972f\"\r\n   
+    \"title\": \"Released of 1.4.1 Build A\",\r\n            \"releasedDate\": \"(22
+    July 2024)\",\r\n            \"description\": \"Added content, Added achievement,
+    Reopening of marathon play\"\r\n          },\r\n          {\r\n            \"title\":
+    \"Upcoming of 1.4.1 Build A\",\r\n            \"releasedDate\": \"(14 July 2024)\",\r\n           
+    \"description\": \"Stay tuned for details through the site page\"\r\n         
+    },\r\n          {\r\n            \"title\": \"Released of 1.4.0 Beta Build\",\r\n           
+    \"releasedDate\": \"(17 June 2024)\",\r\n            \"description\": \"Added
+    content, Added fast/late features, Program Rearrangement\"\r\n          }\r\n       
+    ]\r\n      }\r\n    }\r\n  }\r\n]"
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"44c61faa-5ff6-4684-84bb-66c290b8b397\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"Latest_Version\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"1.4.2_Build_A\"\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"ab24f480-e4e2-4595-ada8-0759dd08d9dd\"\r\n   
+    \"string\",\r\n      \"value\": \"1.4.2_Build_B\"\r\n    }\r\n  },\r\n  {\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"3a6fbeed-54f5-423b-b351-cdbfb40964a0\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameApplication_URL\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/xs5zkl9eved17qe/MeloMelo+v1.4.2+Build+A.zip/file\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"eb66caba-093d-4808-9be3-bb6d717b89da\"\r\n   
+    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/yhh2wkkiw4v6884/MeloMelo+v1.4.2+Build+B.zip/file\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"f85463fd-2817-4efe-b168-96cbab5a18a2\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameWebpage_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"06b3cbb5-65a9-40f3-aedb-717a97808cfa\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"2c91fe5d-bb0c-4bb1-a5a0-e71622c40d45\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"faa9246f-c53c-4577-bce8-82207f88c0a4\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"de30870a-9179-401d-9f7c-91ba0a135a0e\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue_v2\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"dd7c1619-2d5d-40b4-8ae6-ac216391f277\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"d4b30b23-4e54-4919-bf17-bdb221681e93\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"NoteSpeed_Settings_Configuration\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"data\": [\r\n         
     {\r\n            \"bpm\": 550,\r\n            \"baseSpeed\": 140\r\n         
@@ -118,50 +125,57 @@ MonoBehaviour:
     \"baseSpeed\": 30\r\n          },\r\n          {\r\n            \"bpm\": 160,\r\n           
     \"baseSpeed\": 25\r\n          },\r\n          {\r\n            \"bpm\": 150,\r\n           
     \"baseSpeed\": 23\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"968d21ec-f3e2-4afb-9a58-d3b4d398a755\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"465d815c-1ad4-4325-9aec-0ef8aaa003b8\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"NoteSpeed_Default_Configuration\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
     \"bpm\": 150,\r\n        \"baseSpeed\": 20\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"c9d1fc4d-1281-49ca-8463-794e55418673\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"1e0ec651-6896-4b33-acbc-d05ce3dafe4b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"CloudSave_Mode\",\r\n      \"type\":
     \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"f7388a2a-7804-4df3-b765-34885cfe55a8\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"02269dd2-dfcf-4878-9477-7681edc79bba\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"CloudSave_Support\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"versions\": [\r\n         
     \"1.4.1a\",\r\n          \"1.4.2a\",\r\n          \"1.4.0EX\",\r\n          \"1.4.0EX_Build_A\",\r\n         
     \"1.4.0EX_Build_B\",\r\n          \"1.4.0EX_Build_C\",\r\n          \"1.4.0EX_Build_D\",\r\n         
     \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\",\r\n          \"1.4.1_Build_A\",\r\n         
-    \"1.4.1_Build_B\",\r\n          \"1.4.2_Build_A\"\r\n        ]\r\n      }\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"b193b00a-c86b-4702-8883-1b66883b0ada\"\r\n   
-    },\r\n    \"rs\": {\r\n      \"key\": \"TrackTag_Support\",\r\n      \"type\":
-    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"newReleaseTrack\":
-    [\r\n          \"Himegoto*Crisisters\",\r\n          \"Eureka Baby\",\r\n         
-    \"TSU\u30FBBA\u30FBSA\",\r\n          \"Angel Blossom\",\r\n          \"Kokokara
-    Saki wa Uta ni Naranai\"\r\n        ],\r\n        \"areaBonusTrack\": []\r\n     
-    }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ebdb4cdf-6e56-497c-bb4a-0796119cbcea\"\r\n   
-    },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\":
-    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"data_array\":
-    [\r\n          {\r\n            \"title\": \"Released of 1.4.2 Build A\",\r\n           
-    \"releasedDate\": \"(9 September 2024)\",\r\n            \"description\": \"Added
-    content, Minor fixed on gameplay, Remove all unused features\"\r\n          },\r\n         
-    {\r\n            \"title\": \"Upcoming of 1.4.2 Build A\",\r\n            \"releasedDate\":
-    \"(26 August 2024)\",\r\n            \"description\": \"Stay tuned for details
-    through the site page\"\r\n          },\r\n          {\r\n            \"title\":
-    \"Released of 1.4.1 Build B\",\r\n            \"releasedDate\": \"(12 August
-    2024)\",\r\n            \"description\": \"Added content, Major fixed of marathon
-    mode, Added marathon content\"\r\n          },\r\n          {\r\n           
-    \"title\": \"Upcoming of 1.4.1 Build B\",\r\n            \"releasedDate\": \"(7
-    August 2024)\",\r\n            \"description\": \"Stay tuned for details through
-    the site page\"\r\n          },\r\n          {\r\n            \"title\": \"Released
-    of 1.4.1 Build A\",\r\n            \"releasedDate\": \"(22 July 2024)\",\r\n           
-    \"description\": \"Added content, Added achievement, Reopening of marathon play\"\r\n         
-    },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.1 Build A\",\r\n           
-    \"releasedDate\": \"(14 July 2024)\",\r\n            \"description\": \"Stay
+    \"1.4.1_Build_B\",\r\n          \"1.4.2_Build_A\",\r\n          \"1.4.2_Build_B\"\r\n       
+    ]\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"61d70cf5-ddd0-42c3-a3ee-c8a6b9a1bebf\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"key\": \"TrackTag_Support\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
+    null,\r\n      \"value\": {\r\n        \"newReleaseTrack\": [\r\n          \"Coloring\",\r\n         
+    \"Monochrome*HAPPY DAY\",\r\n          \"Starry Wish\",\r\n          \"Choumusubi
+    Amulet\",\r\n          \"Lostorage\"\r\n        ],\r\n        \"areaBonusTrack\":
+    []\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"aa8c6f88-4ded-4ba0-9f33-35b2ea6e5bb3\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
+    null,\r\n      \"value\": {\r\n        \"data_array\": [\r\n          {\r\n           
+    \"title\": \"Released of 1.4.2 Build B\",\r\n            \"releasedDate\": \"(23
+    September 2024)\",\r\n            \"description\": \"Added content, Added skills
+    features, Added new character, Fixed minor gameplay bug,\\nFixed major new features
+    bug\"\r\n          },\r\n          {\r\n            \"title\": \"Upcoming of
+    1.4.2 Build B\",\r\n            \"releasedDate\": \"(22 September 2024)\",\r\n           
+    \"description\": \"Annouce of the new features and content which will available\\nfor
+    this version\"\r\n          },\r\n          {\r\n            \"title\": \"Released
+    of 1.4.2 Build A\",\r\n            \"releasedDate\": \"(9 September 2024)\",\r\n           
+    \"description\": \"Added content, Minor fixed on gameplay, Remove all unused
+    features\"\r\n          },\r\n          {\r\n            \"title\": \"Upcoming
+    of 1.4.2 Build A\",\r\n            \"releasedDate\": \"(26 August 2024)\",\r\n           
+    \"description\": \"Stay tuned for details through the site page\"\r\n         
+    },\r\n          {\r\n            \"title\": \"Released of 1.4.1 Build B\",\r\n           
+    \"releasedDate\": \"(12 August 2024)\",\r\n            \"description\": \"Added
+    content, Major fixed of marathon mode, Added marathon content\"\r\n         
+    },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.1 Build B\",\r\n           
+    \"releasedDate\": \"(7 August 2024)\",\r\n            \"description\": \"Stay
     tuned for details through the site page\"\r\n          },\r\n          {\r\n           
-    \"title\": \"Released of 1.4.0 Beta Build\",\r\n            \"releasedDate\":
-    \"(17 June 2024)\",\r\n            \"description\": \"Added content, Added fast/late
-    features, Program Rearrangement\"\r\n          }\r\n        ]\r\n      }\r\n   
-    }\r\n  }\r\n]"
+    \"title\": \"Released of 1.4.1 Build A\",\r\n            \"releasedDate\": \"(22
+    July 2024)\",\r\n            \"description\": \"Added content, Added achievement,
+    Reopening of marathon play\"\r\n          },\r\n          {\r\n            \"title\":
+    \"Upcoming of 1.4.1 Build A\",\r\n            \"releasedDate\": \"(14 July 2024)\",\r\n           
+    \"description\": \"Stay tuned for details through the site page\"\r\n         
+    },\r\n          {\r\n            \"title\": \"Released of 1.4.0 Beta Build\",\r\n           
+    \"releasedDate\": \"(17 June 2024)\",\r\n            \"description\": \"Added
+    content, Added fast/late features, Program Rearrangement\"\r\n          }\r\n       
+    ]\r\n      }\r\n    }\r\n  }\r\n]"
   _environments: "[\r\n  {\r\n    \"projectId\": \"f3a9f63d-58ab-4394-9b31-71188bf39fb2\",\r\n   
     \"name\": \"production\",\r\n    \"id\": \"b422a025-f10e-43d8-8a39-f7829099065c\",\r\n   
     \"isDefault\": true,\r\n    \"createdAt\": \"2023-11-18T04:52:33Z\",\r\n    \"updatedAt\":

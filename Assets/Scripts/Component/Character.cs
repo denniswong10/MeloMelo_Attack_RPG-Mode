@@ -362,7 +362,10 @@ public class Character : MonoBehaviour
             JudgeNote_MainField(target, "Trap");
 
             if (stats.get_name != "NA" && isJudgeAsTraps.get_judge == 4)
+            {
                 GameManager.thisManager.UpdateCharacter_Health(-PlayerPrefs.GetInt("Enemy_OverallDamage", 0), false);
+                GameManager.thisManager.SpawnDamageIndicator(transform.position, 1, -PlayerPrefs.GetInt("Enemy_OverallDamage", 0));
+            }
 
             if (target.note_index == (int)CharacterSettings.TRAPS_TYPE.AIR) CancelJump();
         }
@@ -430,6 +433,14 @@ public class Character : MonoBehaviour
         // Judge timing based on attacking status
         JudgeBaseTimingDistribution(note_define, character.GetAttackStatusById());
         JudgeNote_MainField(note_define, sound);
+
+        // Count all targets
+        int targetCount = MeloMelo_UnitData_Settings.GetSuccessHitOfAllEnemyTarget(note_define.note_index);
+        MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(targetCount + 1, note_define.note_index);
+
+        // Count any targets
+        int anyTargetCount = MeloMelo_UnitData_Settings.GetSuccessHitOfAllEnemyTarget();
+        MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(anyTargetCount + 1);
     }
 
     private void TimingSequenceForItem(Note_Script note_define, string sound)
@@ -437,6 +448,10 @@ public class Character : MonoBehaviour
         // Judge timing based on non-attacking status
         JudgeBaseTimingDistribution(note_define, character.GetPickUpStatusById());
         JudgeNote_MainField(note_define, sound);
+
+        // Count items
+        int currentCount = MeloMelo_UnitData_Settings.GetSuccessPickItem();
+        MeloMelo_UnitData_Settings.SetSuccessPickItem(currentCount + 1);
     }
 
     private void TimingSequenceForSpecialItem(Note_Script note_define)
@@ -481,7 +496,13 @@ public class Character : MonoBehaviour
         if (condition)
         {
             GameManager.thisManager.UpdateBattle_Progress((float)100 / GameManager.thisManager.getGameplayComponent.getTotalEnemy * multiple);
-            GameManager.thisManager.UpdateEnemy_Health(-PlayerPrefs.GetInt("Character_OverallDamage", 0), false);
+            GameManager.thisManager.UpdateEnemy_Health(-PlayerPrefs.GetInt("Character_OverallDamage", 0) - MeloMelo_ExtraStats_Settings.GetBonusDamage(), false);
+            GameManager.thisManager.SpawnDamageIndicator(transform.position, 2,
+                -PlayerPrefs.GetInt("Character_OverallDamage", 0) - MeloMelo_ExtraStats_Settings.GetBonusDamage());
+
+            // Prompt basic attack information
+            GameManager.thisManager.gameObject.GetComponent<SkillManager>().PromptCharacterBaseDamage("Basic Attack",
+                -PlayerPrefs.GetInt("Character_OverallDamage", 0), -MeloMelo_ExtraStats_Settings.GetBonusDamage());
             stats.WEXP_input();
         }
     }
@@ -498,6 +519,7 @@ public class Character : MonoBehaviour
                 healing_value += character.magic * stats.baseMagic;
 
             GameManager.thisManager.UpdateCharacter_Health(10 + healing_value, false);
+            GameManager.thisManager.SpawnDamageIndicator(transform.position, 1, 10 + healing_value);
         }
     }
     #endregion

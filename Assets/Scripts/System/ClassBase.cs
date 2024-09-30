@@ -15,6 +15,8 @@ public class ClassBase : ScriptableObject
     public int level;
     public string characterName;
     public Sprite icon;
+    public enum ElementStats { Light, Dark, Earth };
+    public ElementStats elementType;
 
     #region MAIN
     public void CheckLeveling(int max) 
@@ -24,6 +26,8 @@ public class ClassBase : ScriptableObject
         if (experience >= max)
         {
             PlayerPrefs.SetInt(name + "_LEVEL", level + 1);
+            int addonsToNewMastery = MeloMelo_ExtraStats_Settings.GetMasteryPoint(name) + 2;
+            MeloMelo_ExtraStats_Settings.SetMasteryPoint(name, addonsToNewMastery);
 
             int experienceInStock = experience - max;
             if (experienceInStock > 0) PlayerPrefs.SetInt(name + "_EXP", experienceInStock);

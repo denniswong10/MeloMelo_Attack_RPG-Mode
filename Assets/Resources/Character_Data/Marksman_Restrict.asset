@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74be61cf4819b8c479cb123ee54be224, type: 3}
   m_Name: Marksman_Restrict
   m_EditorClassIdentifier: 
-  description: ???
+  description: Race to the finish via. Nanahira
   trackCleared:
-  - trackName: ' '
+  - trackName: Cross The Finish Line feat. Nanahira
     difficulty: 1
-    score: 1000000
+    score: 950000
+  - trackName: Cross The Finish Line feat. Nanahira
+    difficulty: 2
+    score: 950000

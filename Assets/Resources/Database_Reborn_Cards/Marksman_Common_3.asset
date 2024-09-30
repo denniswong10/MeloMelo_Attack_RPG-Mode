@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16e1df3b0105dfa4098295b423642d5e, type: 3}
+  m_Name: Marksman_Common_3
+  m_EditorClassIdentifier: 
+  title: Mask out the hardest time to aim
+  description: 
+  awardsTitle: 'STR: +5, VIT -3, MAG: +5'
+  awards_settings:
+  - awards_caterogy: 0
+    awards_value: 5
+  - awards_caterogy: 1
+    awards_value: -3
+  - awards_caterogy: 2
+    awards_value: 5

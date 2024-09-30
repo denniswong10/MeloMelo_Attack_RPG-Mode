@@ -726,7 +726,6 @@ public class ResultMenu_Script : MonoBehaviour
         // Prompt message to user
         saveOnStatus += "\nChecking Progress...";
         SaveIcon.transform.GetChild(1).GetComponent<Text>().text = saveOnStatus;
-        SaveIcon.GetComponent<Animator>().SetTrigger("Open");
     }
 
     private void ContentSavedCompleted(string title, bool isComplete)

@@ -76,6 +76,7 @@ public class GameManager : MonoBehaviour, IGameManager
     {
         thisManager = this;
         //PreSet_BattleSetup();
+        //PlayerPrefs.SetInt("NoteSpeed", 6);
 
         if (JudgeCounter) IntiJudgeCounterContent();
 
@@ -420,10 +421,8 @@ public class GameManager : MonoBehaviour, IGameManager
     public void GameStarting()
     {
         // Display skill features
-        if (PlayerPrefs.GetString("Character_Active_Skill", "T") == "T")
-            StartCoroutine(SkillFeatures());
-        else
-            OnStandyForPlay();
+        if (GetComponent<SkillManager>().IsSkillOnActive()) StartCoroutine(SkillFeatures());
+        else OnStandyForPlay();
     }
 
     void TransitionToResult() { if (!RetreatSuccess) UnityEngine.SceneManagement.SceneManager.LoadScene("Result"); }
@@ -494,7 +493,7 @@ public class GameManager : MonoBehaviour, IGameManager
 
     private IEnumerator SkillFeatures()
     {
-        string[] allSkillOnActive = { "_Primary_Skill", "_Secondary_Skill_1" };
+        string[] allSkillOnActive = CheckForSkillAvailable();
         bool[] skillIsOnPrimary = { true, false };
 
         // Get skill ready for simulation run
@@ -511,7 +510,7 @@ public class GameManager : MonoBehaviour, IGameManager
             {
                 // Display information about skill effect
                 UpdateSkillInformation(loadedSkill);
-                yield return new WaitForSeconds(3);
+                yield return new WaitForSeconds(2);
 
                 foreach (ClassBase currentPick in characterStats.slot_Stats)
                 {
@@ -526,20 +525,24 @@ public class GameManager : MonoBehaviour, IGameManager
                 }
 
                 // Preview mode and wait for the skill is done reading
-                yield return new WaitForSeconds(2);
+                yield return new WaitForSeconds(1);
             }
-            else
-                Debug.Log((skillLoader + 1) + ": Skill not found...");
         }
 
         // Go to the next step
-        GetComponent<SkillManager>().OnStartEffect_Update();
+        ActivationOfEffect(1);
+        yield return new WaitForSeconds(3);
         OnStandyForPlay();
     }
 
     private void OnStandyForPlay()
     {
-        if (SkillAlert.activeInHierarchy) { SkillAlert.SetActive(false); }
+        if (SkillAlert.activeInHierarchy) 
+        {
+            SkillAlert.GetComponent<Animator>().SetTrigger("Close");
+            SkillAlert.SetActive(false); 
+        }
+
         Alert_sign.gameObject.SetActive(true);
         Alert_sign.GetComponent<Animator>().SetTrigger("Play");
 
@@ -555,7 +558,7 @@ public class GameManager : MonoBehaviour, IGameManager
     private void EndOfPlay()
     {
         if (!GameObject.Find("PlayArea").GetComponent<AudioSource>().isPlaying && BeatConductor.thisBeat.get_startNote)
-            Invoke("EndOfBattle", 4);
+            StartCoroutine(EndOfBattle());
     }
     #endregion
 
@@ -583,16 +586,14 @@ public class GameManager : MonoBehaviour, IGameManager
         PlayerPrefs.SetInt("Miss_count", remaining);
     }
 
-    private void EndOfBattle()
+    private IEnumerator EndOfBattle()
     {
-        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "ScoreEditor" && !Bonus_sign.activeInHierarchy)
-        {
-            Alert_sign.gameObject.SetActive(true);
-            Alert_sign.transform.GetChild(0).GetComponent<Text>().text = progressMeter.GetProgressPassNFailStatus();
-        }
+        yield return new WaitForSeconds(4);
+        UpdateEndResult();
+        yield return new WaitForSeconds(3);
 
         // Update miss count
-        GetComponent<SkillManager>().OnEndEffect_Update();
+        if (GetComponent<SkillManager>().IsSkillOnActive()) ActivationOfEffect(2);
         PlayerPrefs.SetInt("Miss_count", judgeWindow.get_miss);
         Invoke("TransitionToResult", 5);
     }
@@ -704,9 +705,14 @@ public class GameManager : MonoBehaviour, IGameManager
                         slotStatus.GetComponent<Animator>().SetTrigger("Heal" + ResMelo);
                 }
 
-                if (amount < 0) PlayerPrefs.DeleteKey("MISC_Character_DamageResist");
-                characterStatus.ModifyHealth(amount + (PlayerPrefs.HasKey("MISC_Character_DamageResist") && amount < 0 ? 
-                    PlayerPrefs.GetInt("MISC_Character_DamageResist", 0) : 0));
+                if (amount < 0)
+                {
+                    int damageAfterResist = MeloMelo_ExtraStats_Settings.ResistAgainstDamageResistance(amount);
+                    characterStatus.ModifyHealth(damageAfterResist > 0 ? 0 : damageAfterResist);
+                    GetComponent<SkillManager>().PromptResultOfDamageResistance(amount, damageAfterResist > 0 ? 0 : damageAfterResist, "Character");
+                }
+                else
+                    characterStatus.ModifyHealth(amount);
             }
 
             if (characterHealth != null)
@@ -758,6 +764,19 @@ public class GameManager : MonoBehaviour, IGameManager
                         HealthBar_E.GetComponent<Slider>().value = enemyStatus.get_health;
                 }
             }
+        }
+    }
+
+    public void SpawnDamageIndicator(Vector3 target, int typeOfTarget, int damage)
+    {
+        if ((typeOfTarget == 1 && characterStatus.get_health > 0 && characterStatus.get_health < characterStatus.get_maxHealth)
+            || (typeOfTarget == 2 && enemyStatus.get_health > 0 && enemyStatus.get_health < enemyStatus.get_maxHealth))
+        {
+            GameObject damageIndicator = Instantiate(Resources.Load<GameObject>("Prefabs/Floating Damage/DamageIndicator"));
+            damageIndicator.GetComponent<TextMesh>().color = damage < 0 ? new Color32(125, 36, 5, 255) : new Color32(50, 137, 50, 255);
+            damageIndicator.GetComponent<TextMesh>().text = (damage > 0 ? "+" : string.Empty) + damage.ToString();
+            damageIndicator.transform.position = typeOfTarget == 1 ? new Vector3(target.x, 0, -3.5f) : new Vector3(target.x, 2.5f, 0);
+            Destroy(damageIndicator, 0.5f);
         }
     }
 
@@ -970,8 +989,20 @@ public class GameManager : MonoBehaviour, IGameManager
                     GetComponent<MeloMelo_UnitSlot_Editor>().GetMarathonProfileIcon(index);
             }
         }
-    }   
+    }
 
+    private void UpdateEndResult()
+    {
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "ScoreEditor" && !Bonus_sign.activeInHierarchy)
+        {
+            Alert_sign.SetActive(true);
+            Alert_sign.transform.GetComponent<Animator>().SetTrigger("Play");
+            Alert_sign.transform.GetChild(0).GetComponent<Text>().text = progressMeter.GetProgressPassNFailStatus();
+        }
+    }
+    #endregion
+
+    #region EXTRA (Skill Information) 
     private void UpdateSkillInformation(SkillContainer info)
     {
         if (!SkillAlert.activeInHierarchy)
@@ -981,9 +1012,43 @@ public class GameManager : MonoBehaviour, IGameManager
         }
 
         SkillAlert.transform.GetChild(0).GetComponent<Text>().text = "Skill Effect - " + info.skillName + " (Lv. " + 
-            PlayerPrefs.GetInt(info.skillName + "_Grade_Code", 0) + ")";
+            MeloMelo_SkillData_Settings.CheckSkillGrade(info.skillName) + ")";
 
         SkillAlert.transform.GetChild(1).GetComponent<Text>().text = info.description;
+    }
+
+    private void ActivationOfEffect(int active_id)
+    {
+        if (Alert_sign.activeInHierarchy) Alert_sign.SetActive(false);
+        if (Bonus_sign.activeInHierarchy) Bonus_sign.SetActive(false);
+
+        if (!SkillAlert.activeInHierarchy)
+        {
+            SkillAlert.SetActive(true);
+            SkillAlert.GetComponent<Animator>().SetTrigger("Open");
+        }
+
+        SkillAlert.transform.GetChild(0).GetComponent<Text>().text = active_id == 1 ? "Start of Track" : "End Of Track";
+        SkillAlert.transform.GetChild(1).GetComponent<Text>().text = "Your character will perform skill effect " +
+            (active_id == 1 ? "before the track begin" : "before the game ends");
+
+        if (active_id == 1) GetComponent<SkillManager>().OnEffectUpdate(0, true);
+        else GetComponent<SkillManager>().OnEffectUpdate(2, true);
+    }
+
+    private string[] CheckForSkillAvailable()
+    {
+        List<string> allSkillId = new List<string>();
+        allSkillId.Add("_Primary_Skill");
+        allSkillId.Add("_Secondary_Skill_" + MeloMelo_CharacterInfo_Settings.GetUsageOfSecondarySkill(PlayerPrefs.GetString("CharacterFront", "None")));
+
+        for (int index = 0; index < allSkillId.ToArray().Length; index++)
+        {
+            // Lock everything for skill which not set
+            GetComponent<SkillManager>().UnlockSkillSlot(index + 1, true);
+        }
+
+        return allSkillId.ToArray();
     }
     #endregion
 

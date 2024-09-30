@@ -25,18 +25,19 @@ public class MeloMelo_UnitSlot_Editor : MonoBehaviour
         Invoke("StandingBy", 0.5f);
     }
 
-    void SearchMainCharacter()
+    private int GetAllyLevel()
     {
-        for (int i = 1; i < 4; i++)
-            if (PlayerPrefs.GetString("Slot" + i + "_mainSet", "F") == "T")
-                mainSet = i;
+        int totalLevel = 0;
+        MeloMelo_RPGEditor.StatsDistribution allyStats = new MeloMelo_RPGEditor.StatsDistribution();
+        allyStats.load_Stats();
+
+        foreach (ClassBase character in allyStats.slot_Stats) if (character) totalLevel += character.level;
+        return totalLevel;
     }
 
     private void StandingBy()
     {
-        SearchMainCharacter();
-
-        CharacterLevel.text = "LV. " + PlayerPrefs.GetInt(PlayerPrefs.GetString("Slot" + mainSet + "_charName", "Warrior") + "_LEVEL", 1);
+        CharacterLevel.text = "LV. " + GetAllyLevel();
         EnemyLevel.text = "LV. " + BeatConductor.thisBeat.Music_Database.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].level;
     }
 

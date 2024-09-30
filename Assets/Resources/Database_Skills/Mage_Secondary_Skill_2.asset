@@ -18,11 +18,8 @@ MonoBehaviour:
     + (Grade x 20%) of the base damage. A is equal to the number of in-coming enemy.
     At the start of track, character gain bonus MAG stats from (STR x 8%) and (VIT
     x 8%) until the end of track.
-  skill_type: 3
-  skillEffectKey: OnTombChantSpell
-  mainStats: 2
+  onStartOfEffect: []
+  duringPlayOfEffect: []
+  onEndOfEffect: []
   target_caterogy: 3
-  baseDamageStats: 0
-  extraStatsPercentage: 0
-  valueOfTrigger: 5/20/8/8
   isUnlockReady: 0
