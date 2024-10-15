@@ -65,7 +65,7 @@ public class SkillManager : MonoBehaviour
 
     void Start()
     {
-        if (IsSkillOnActive())
+        if (IsSkillOnActive() && !PlayerPrefs.HasKey("MarathonPermit"))
         {
             onStartOfTrackEffects = new List<EffectTypeBundle>();
             onEndOfTrackEffects = new List<EffectTypeBundle>();
@@ -173,8 +173,8 @@ public class SkillManager : MonoBehaviour
                 break;
         }
 
-        Debug.Log("Added format (" + (data.effectOnCondtion ? "Condition" : data.effectOnAction ? "Action" : "???") + "): " + 
-            JsonUtility.ToJson(data));
+        //Debug.Log("Added format (" + (data.effectOnCondtion ? "Condition" : data.effectOnAction ? "Action" : "???") + "): " + 
+            //JsonUtility.ToJson(data));
     }
 
     private EffectTypeBundle[] GetEffectFromList(int id)
@@ -242,7 +242,7 @@ public class SkillManager : MonoBehaviour
 
                                 CreateBuffEffect(effect.effectName);
                                 Invoke(conditionOfData[0], 0);
-                                Debug.Log("Instance: " + instance + " | OnCondition: " + conditionOfData[0] + " | ByEffect: " + effect.effectName);
+                                //Debug.Log("Instance: " + instance + " | OnCondition: " + conditionOfData[0] + " | ByEffect: " + effect.effectName);
                             }
                         }
 
@@ -255,12 +255,12 @@ public class SkillManager : MonoBehaviour
                                 SkillManager_Properties.SetEffectValueOfTrigger(instance, "Action", effect.valueOfTrigger);
 
                                 Invoke(actionOfData[0], 0);
-                                Debug.Log("Instance: " + instance + " | OnAction: " + actionOfData[0] + " | ByEffect: " + effect.effectName);
+                                //Debug.Log("Instance: " + instance + " | OnAction: " + actionOfData[0] + " | ByEffect: " + effect.effectName);
                             }
                         }
 
-                        Debug.Log((phase_index == 1 ? "On-Track Play" : phase_index == 0 ? "Start of Track" : "End of Track") +
-                            " [End of Instance]: " + instance);
+                        //Debug.Log((phase_index == 1 ? "On-Track Play" : phase_index == 0 ? "Start of Track" : "End of Track") +
+                            //" [End of Instance]: " + instance);
                     }
                 }
 
@@ -280,8 +280,8 @@ public class SkillManager : MonoBehaviour
                 SkillManager_Properties.SetEffectIsBusy(phase_index, false);
             }
         }
-        else
-            Debug.Log((phase_index == 1 ? "On-Track Play" : phase_index == 0 ? "Start of Track" : "End of Track") + " [Effect]: Not Active");
+        //else
+            //Debug.Log((phase_index == 1 ? "On-Track Play" : phase_index == 0 ? "Start of Track" : "End of Track") + " [Effect]: Not Active");
     }
     #endregion
 

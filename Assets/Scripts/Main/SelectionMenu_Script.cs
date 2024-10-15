@@ -68,6 +68,7 @@ public class SelectionMenu_Script : MonoBehaviour
 
     [Header("Additional Content")]
     public GameObject CheckCounter;
+    public GameObject CheckLevelToggle;
     public GameObject FinalPhaseDisplay;
     public GameObject PlayerProfileQuickChecker;
     public GameObject ToggleLocked;
@@ -237,6 +238,12 @@ public class SelectionMenu_Script : MonoBehaviour
         CheckCounter.SetActive(true);
         CheckCounter.transform.GetChild(0).GetComponent<Text>().text = "Stage \n" +
             PlayerPrefs.GetInt("MarathonChallenge_MCount") + "/" + checkPoint_init;
+    }
+
+    public void UpdateCounterLevel(float level)
+    {
+        CheckLevelToggle.SetActive(!PlayerPrefs.HasKey("MarathonPermit"));
+        CheckLevelToggle.transform.GetChild(0).GetComponent<Text>().text = "Lv: " + level.ToString("0.00");
     }
     #endregion
 

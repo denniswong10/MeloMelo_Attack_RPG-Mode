@@ -27,7 +27,10 @@ public class CloudSaveConfig : MonoBehaviour
         MeloMelo_GameSettings.CloudSaveSetting_PointsData,
         MeloMelo_GameSettings.CloudSaveSetting_ProfileData,
         MeloMelo_GameSettings.CloudSaveSetting_SelectionData,
-        MeloMelo_GameSettings.CloudSaveSetting_CharacterStats
+        MeloMelo_GameSettings.CloudSaveSetting_CharacterStats,
+        MeloMelo_GameSettings.CloudSaveSetting_SkillDatabase,
+        MeloMelo_GameSettings.CloudSaveSetting_ItemDatabase,
+        MeloMelo_GameSettings.CloudSaveSetting_ExchangeHistory
     };
 
     private string[] pathLoader2 =
@@ -37,27 +40,17 @@ public class CloudSaveConfig : MonoBehaviour
         MeloMelo_GameSettings.GetLocalFileChartNew
     };
 
-    void Start()
-    {
-        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_GameSettings.LoginType.GuestLogin) 
-            GetContentAccountID();
-    }
-
     #region MAIN
     public void UploadProgressToCloud()
     {
-        if (GetComponent<Options_Menu>().Icon.activeInHierarchy) GetComponent<Options_Menu>().Icon.SetActive(false);
-
-        if (LoginPage_Script.thisPage.portNumber != 0 && GetComponent<CloudSaveModeConfig>().GetCloudSave())
-            AlertBox_Upload.SetActive(true);
+        // Get prompt warning for processing this method
+        AlertBox_Upload.SetActive(PlayerPrefs.HasKey("CloudSaveLoader_Ready") && !GetComponent<Options_Menu>().IsProcessStillPending());
     }
 
     public void GetProgressFromCloud()
     {
-        if (GetComponent<Options_Menu>().Icon.activeInHierarchy) GetComponent<Options_Menu>().Icon.SetActive(false);
-
-        if (LoginPage_Script.thisPage.portNumber != 0 && GetComponent<CloudSaveModeConfig>().GetCloudSave())
-            AlertBox_Transfer.SetActive(true);
+        // Get prompt warning for processing this method
+        AlertBox_Transfer.SetActive(PlayerPrefs.HasKey("CloudSaveLoader_Ready") && !GetComponent<Options_Menu>().IsProcessStillPending());
     }
 
     public void GetCancelToAnyService(int index)
@@ -91,7 +84,7 @@ public class CloudSaveConfig : MonoBehaviour
                 "StreamingAssets/LocalData/MeloMelo_LocalSave_ChartList", ".json");
 
             // isDone
-            GetMessagePrompt("Upload Completed!");
+            StartCoroutine(GetComponent<Options_Menu>().GetOptionMessage("Upload Completed!"));
         }
     }
 
@@ -110,7 +103,7 @@ public class CloudSaveConfig : MonoBehaviour
                 "StreamingAssets/LocalData/MeloMelo_LocalSave_ChartList", ".json");
 
             // isDone
-            GetMessagePrompt("Transfer Completed!");
+            StartCoroutine(GetComponent<Options_Menu>().GetOptionMessage("Transfer Completed!"));
         }
     }
 
@@ -162,23 +155,17 @@ public class CloudSaveConfig : MonoBehaviour
     #endregion
 
     #region MISC
-    private void GetContentAccountID()
+    public void GetContentAccountID()
     {
         string id = GetComponent<Auto_Authenticate_Config>().GetAccountID();
 
-        if (id == string.Empty)
-        {
-            GetComponent<CloudSaveModeConfig>().DisableCloud();
-            AccountID.text = "Account ID: ---";
-        }
-        else
-            AccountID.text = "Account ID: " + id;
-    }
+        if (id == string.Empty) AccountID.text = "Account ID: ---";
+        else AccountID.text = "Account ID: " + id;
+    } 
 
-    private void GetMessagePrompt(string message)
+    public void GetContentIDForNotUsingServices(int index)
     {
-        GetComponent<Options_Menu>().Icon.SetActive(true);
-        GetComponent<Options_Menu>().Icon.transform.GetChild(1).GetComponent<Text>().text = "[Game Network]\n" + message;
+        AccountID.text = index == 1 ? "- Usage of database remotely through server -" : "- Cloud Save (Not Available) -";
     }
     #endregion
 }

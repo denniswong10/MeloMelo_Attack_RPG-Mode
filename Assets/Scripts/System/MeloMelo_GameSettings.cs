@@ -61,6 +61,19 @@ public struct NoteSpeed_Settings
     }
 }
 
+[System.Serializable]
+public struct VirtualItemDatabase
+{
+    public string itemName;
+    public int amount;
+
+    public VirtualItemDatabase GetItemData(string format)
+    {
+        Debug.Log(format);
+        return JsonUtility.FromJson<VirtualItemDatabase>(format);
+    }
+}
+
 public static class MeloMelo_GameSettings
 {
     public enum LoginType { GuestLogin, TempPass }
@@ -74,6 +87,9 @@ public static class MeloMelo_GameSettings
     public const string CloudSaveSetting_ProfileData = "savelog_Profile_Setup";
     public const string CloudSaveSetting_SelectionData = "savelog_SelectionBase";
     public const string CloudSaveSetting_CharacterStats = "savelog_CharacterProgressStats";
+    public const string CloudSaveSetting_SkillDatabase = "savelog_AllSkillsDatabase";
+    public const string CloudSaveSetting_ItemDatabase = "savelog_ItemDatabase";
+    public const string CloudSaveSetting_ExchangeHistory = "savelog_ExchangeTranscation";
 
     public const string GetLocalFileMainProgress = "savelog_AchievementData.txt";
     public const string GetLocalFileBattleProgress = "savelog_BattleProgressData.txt";
@@ -84,8 +100,10 @@ public static class MeloMelo_GameSettings
     public const string GetLocalFileSkillDatabase = "savelog_AllSkillsDatabase.txt";
     public const string GetLocalFilePointData = "savelog_PointsData.txt";
     public const string GetLocalFileProfileData = "savelog_Profile_Setup.txt";
-    public const string GetLocalFileCharacterData = "savelog_Character_Info.txt";
     public const string GetLocalFileSelectionData = "savelog_SelectionBase.txt";
+    public const string GetLocalFileVirtualItemData = "savelog_ItemDatabase.txt";
+    public const string GetLocalFileExchangeHistory = "savelog_ExchangeTranscation.txt";
+
     public const string GetLocalFileChartLegacy = "ChartData_1";
     public const string GetLocalFileChartOld = "ChartData_2";
     public const string GetLocalFileChartNew = "ChartData_3";
@@ -108,6 +126,7 @@ public static class MeloMelo_GameSettings
     private static List<MeloMelo_ScoreRankSetup> scoreRankListing = null;
     private static List<MeloMelo_StatusRemarkData> statusRemark = null;
     public static List<MeloMelo_TrackSelectionData> selectionLisitng = new List<MeloMelo_TrackSelectionData>();
+    private static List<VirtualItemDatabase> allStoredItem = null;
 
     #region GERENAL SETUP
     public static void GetScoreStructureSetup()
@@ -226,7 +245,72 @@ public static class MeloMelo_GameSettings
 
         return 1;
     }
+
+    public static void StoreAllItemToLocal(string jsonData)
+    {
+        string[] splitData = jsonData.Split("/");
+        allStoredItem = new List<VirtualItemDatabase>();
+        foreach (string data in splitData)
+        {
+            if (data != string.Empty)
+            {
+                VirtualItemDatabase newItem = new VirtualItemDatabase().GetItemData(data);
+                allStoredItem.Add(newItem);
+            }
+        }
+    }
+        
+    public static VirtualItemDatabase GetAllItemFromLocal(string itemName)
+    {
+        if (allStoredItem != null)
+        {
+            foreach (VirtualItemDatabase itemStorage in allStoredItem)
+                if (itemStorage.itemName == itemName) return itemStorage;
+        }
+
+        return new VirtualItemDatabase();
+    }
+
+    public static bool GetCodeNotReedemable(string code_access)
+    {
+        MeloMelo_Local.LocalLoad_DataManagement loadForUse = new MeloMelo_Local.LocalLoad_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
+            "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+
+        string[] dataForUse = loadForUse.GetLocalJsonFile(GetLocalFileExchangeHistory, true).Split("/");
+        foreach (string data in dataForUse)
+        {
+            if (data != string.Empty)
+            {
+                DataPackStructure dataPack = JsonUtility.FromJson<DataPackStructure>(data);
+                if (dataPack.unqiueCode == code_access) return true;
+            }
+        }
+
+        return false;
+    }
     #endregion
+}
+
+public static class MeloMelo_PlayerSettings
+{
+    public static readonly string GetBGM_ValueKey = "BGM_DataKey";
+    public static readonly string GetSE_ValueKey = "SE_DataKey";
+    public static readonly string GetAudioMute_ValueKey = "AudioMute_DataKey";
+    public static readonly string GetAudioVoice_ValueKey = "AudioVoice_DataKey";
+
+    public static readonly string GetCharacterAnimation_ValueKey = "CharacterAnimation_DataKey";
+    public static readonly string GetEnemyAnimation_ValueKey = "EnemyAnimation_DataKey";
+    public static readonly string GetInterfaceAnimation_ValueKey = "InterfaceAnimation_DataKey";
+    public static readonly string GetDamageIndicatorA_ValueKey = "DamageIndicator_A_DataKey";
+    public static readonly string GetDamageIndicatorB_ValueKey = "DamageIndicator_B_DataKey";
+
+    public static readonly string GetSpeedMeter_ValueKey = "SpeedMeter_DataKey";
+    public static readonly string GetAirGuide_ValueKey = "AirGuide_DataKey";
+    public static readonly string GetJudgeTimingOffset_ValueKey = "JudgeTiming_DataKey";
+
+    public static readonly string GetAutoSaveProgress_ValueKey = "SaveProgress_Auto_DataKey";
+    public static readonly string GetAutoSavePlaySettings_ValueKey = "SavePlaySettings_Auto_DataKey";
+    public static readonly string GetAutoSaveGameSettings_ValueKey = "SaveGameSettings_Auto_DataKey";
 }
 
 public static class MeloMelo_CharacterInfo_Settings
@@ -319,4 +403,45 @@ public static class MeloMelo_UnitData_Settings
         }
     }
     public static int GetSuccessPickItem() { return PlayerPrefs.GetInt("MISC_Character_TotalOPickCount", 0); }
+}
+
+public static class MeloMelo_ItemUsage_Settings
+{ 
+    public static void SetItemUsed(string itemName) 
+    { 
+        int amount = PlayerPrefs.GetInt(itemName + "_VirtualItem_Unsaved_Used", 0);
+        PlayerPrefs.SetInt(itemName + "_VirtualItem_Unsaved_Used", amount + 1);
+    }
+    public static int GetItemUsed(string itemName) { return PlayerPrefs.GetInt(itemName + "_VirtualItem_Unsaved_Used", 0); }
+    public static string[] GetAllItemUsed() 
+    {
+        List<string> itemListing = new List<string>();
+        MeloMelo_Local.LocalLoad_DataManagement loadForCheck = new MeloMelo_Local.LocalLoad_DataManagement(
+            LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+
+        foreach (string itemData in loadForCheck.GetLocalJsonFileToArray(LoginPage_Script.thisPage.GetUserPortOutput() + "_" + 
+            MeloMelo_GameSettings.GetLocalFileVirtualItemData))
+        {
+            if (itemData != string.Empty)
+            {
+                VirtualItemDatabase item = new VirtualItemDatabase().GetItemData(itemData);
+                if (PlayerPrefs.GetInt(item.itemName + "_VirtualItem_Unsaved_Used", 0) > 0)
+                {
+                    PlayerPrefs.DeleteKey(item.itemName + "_VirtualItem_Unsaved_Used");
+                    itemListing.Add(item.itemName);
+                }
+            }
+        }
+
+        return itemListing.ToArray();
+    }
+
+    public static void SetExpBoost(string className, int amount) 
+    { 
+        int currentAmount = PlayerPrefs.GetInt(className + "_EXP_BOOST", 0);
+        PlayerPrefs.SetInt(className + "_EXP_BOOST", currentAmount + amount); 
+    }
+    public static void SetAllyExpBoost(int multiple, int amount) { PlayerPrefs.SetInt("ALLY_EXP_BOOST_" + multiple, amount); }
+
+    public static int GetExpBoost(string className) { return PlayerPrefs.GetInt(className + "_EXP_BOOST", 0); }
 }

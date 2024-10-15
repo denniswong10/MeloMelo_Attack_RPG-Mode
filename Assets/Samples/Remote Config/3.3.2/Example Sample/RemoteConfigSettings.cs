@@ -84,17 +84,20 @@ public class RemoteConfigSettings : MonoBehaviour
     #region COMPONENT
     private void GetGameApplicationValue()
     {
+        // Game Overview: Configuration
         PlayerPrefs.SetString("GameLatest_Update", RemoteConfigService.Instance.appConfig.GetString("Latest_Version"));
         PlayerPrefs.SetString("GameUpdate_URL", RemoteConfigService.Instance.appConfig.GetString("GameApplication_URL"));
-        //PlayerPrefs.SetString("GameWeb_URL", RemoteConfigService.Instance.appConfig.GetString("GameWebpage_URL"));
         PlayerPrefs.SetString("MeloMelo_NewsReport_Daily", RemoteConfigService.Instance.appConfig.GetJson("MeloMelo_GameUpdates"));
+
+        // Auto Patcher: Configuration
+        PlayerPrefs.SetString("Application_Direct_Link", RemoteConfigService.Instance.appConfig.GetString("AutoPatcher_DirectLink_URL"));
+        PlayerPrefs.SetString("Application_VersionControl_Log", RemoteConfigService.Instance.appConfig.GetString("AutoPatcher_VersionControl_URL"));
     }
 
     private void ResetGameApplicationValue()
     {
         PlayerPrefs.DeleteKey("GameLatest_Update");
         PlayerPrefs.DeleteKey("GameUpdate_URL");
-        //PlayerPrefs.DeleteKey("GameWeb_URL");
         PlayerPrefs.DeleteKey("MeloMelo_NewsReport_Daily");
     }
     #endregion

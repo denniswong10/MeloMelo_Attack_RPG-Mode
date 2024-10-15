@@ -41,6 +41,13 @@ public class ClassBase : ScriptableObject
 
     // Stats Loader: Function
     public void StatLoader() {  }
+
+    public void ResetLevel()
+    {
+        level = 1;
+        experience = 0;
+        UpdateCurrentStats(true);
+    }
     #endregion
 
     #region CHECKER_ZONE

@@ -567,6 +567,9 @@ public class MusicSelectionPage : MonoBehaviour
                 PlayerPrefs.SetString(GetDifficultyDataDetail(DifficultyValueIndex.Ultimate), ((level - ((int)level + 0.5f) > 0f && level > 10) ? (int)level + "+" : (int)level + ""));
                 break;
         }
+
+        // Update level display
+        if (PlayerPrefs.GetInt("DifficultyLevel_valve", 1) == index) SelectionMenu_Script.thisSelect.UpdateCounterLevel(level);
     }
     #endregion
 

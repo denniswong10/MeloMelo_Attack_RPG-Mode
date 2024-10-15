@@ -78,7 +78,8 @@ public class GameManager : MonoBehaviour, IGameManager
         //PreSet_BattleSetup();
         //PlayerPrefs.SetInt("NoteSpeed", 6);
 
-        if (JudgeCounter) IntiJudgeCounterContent();
+        if (JudgeCounter && PlayerPrefs.GetInt("JudgeMeter_Setup", 0) != 2) IntiJudgeCounterContent();
+        else JudgeCounter.SetActive(false);
 
         // Setup components
         progressMeter = new BattleProgressMeter();
@@ -421,7 +422,7 @@ public class GameManager : MonoBehaviour, IGameManager
     public void GameStarting()
     {
         // Display skill features
-        if (GetComponent<SkillManager>().IsSkillOnActive()) StartCoroutine(SkillFeatures());
+        if (GetComponent<SkillManager>().IsSkillOnActive() && !PlayerPrefs.HasKey("MarathonPermit")) StartCoroutine(SkillFeatures());
         else OnStandyForPlay();
     }
 
@@ -588,12 +589,13 @@ public class GameManager : MonoBehaviour, IGameManager
 
     private IEnumerator EndOfBattle()
     {
+        bool onSkillStillActive = GetComponent<SkillManager>().IsSkillOnActive() && !PlayerPrefs.HasKey("MarathonPermit");
         yield return new WaitForSeconds(4);
         UpdateEndResult();
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(onSkillStillActive ? 3 : 0.05f);
 
         // Update miss count
-        if (GetComponent<SkillManager>().IsSkillOnActive()) ActivationOfEffect(2);
+        if (onSkillStillActive) ActivationOfEffect(2);
         PlayerPrefs.SetInt("Miss_count", judgeWindow.get_miss);
         Invoke("TransitionToResult", 5);
     }
@@ -698,11 +700,14 @@ public class GameManager : MonoBehaviour, IGameManager
             {
                 if (slotStatus.GetComponent<Animator>() != null)
                 {
-                    if (amount < 0 && !slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.activeInHierarchy)
-                        slotStatus.GetComponent<Animator>().SetTrigger("Damage" + ResMelo);
+                    if (PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, 1) == 1)
+                    {
+                        if (amount < 0 && !slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.activeInHierarchy)
+                            slotStatus.GetComponent<Animator>().SetTrigger("Damage" + ResMelo);
 
-                    else
-                        slotStatus.GetComponent<Animator>().SetTrigger("Heal" + ResMelo);
+                        else
+                            slotStatus.GetComponent<Animator>().SetTrigger("Heal" + ResMelo);
+                    }
                 }
 
                 if (amount < 0)
@@ -745,8 +750,9 @@ public class GameManager : MonoBehaviour, IGameManager
             }
             else
             {
-                if (amount < 0 && !slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.activeInHierarchy) 
-                { slotStatus.GetComponent<Animator>().SetTrigger("Damage" + ResMelo); }
+                if (PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, 1) == 1 &&
+                    amount < 0 && !slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.activeInHierarchy) 
+                        { slotStatus.GetComponent<Animator>().SetTrigger("Damage" + ResMelo); }
                 enemyStatus.ModifyHealth(amount);
             }
 
@@ -769,14 +775,18 @@ public class GameManager : MonoBehaviour, IGameManager
 
     public void SpawnDamageIndicator(Vector3 target, int typeOfTarget, int damage)
     {
-        if ((typeOfTarget == 1 && characterStatus.get_health > 0 && characterStatus.get_health < characterStatus.get_maxHealth)
-            || (typeOfTarget == 2 && enemyStatus.get_health > 0 && enemyStatus.get_health < enemyStatus.get_maxHealth))
+        if ((typeOfTarget == 1 && PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorA_ValueKey, 1) == 1) ||
+            (typeOfTarget == 2 && PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey, 1) == 1))
         {
-            GameObject damageIndicator = Instantiate(Resources.Load<GameObject>("Prefabs/Floating Damage/DamageIndicator"));
-            damageIndicator.GetComponent<TextMesh>().color = damage < 0 ? new Color32(125, 36, 5, 255) : new Color32(50, 137, 50, 255);
-            damageIndicator.GetComponent<TextMesh>().text = (damage > 0 ? "+" : string.Empty) + damage.ToString();
-            damageIndicator.transform.position = typeOfTarget == 1 ? new Vector3(target.x, 0, -3.5f) : new Vector3(target.x, 2.5f, 0);
-            Destroy(damageIndicator, 0.5f);
+            if ((typeOfTarget == 1 && characterStatus.get_health > 0 && characterStatus.get_health < characterStatus.get_maxHealth)
+            || (typeOfTarget == 2 && enemyStatus.get_health > 0 && enemyStatus.get_health < enemyStatus.get_maxHealth))
+            {
+                GameObject damageIndicator = Instantiate(Resources.Load<GameObject>("Prefabs/Floating Damage/DamageIndicator"));
+                damageIndicator.GetComponent<TextMesh>().color = damage < 0 ? new Color32(125, 36, 5, 255) : new Color32(50, 137, 50, 255);
+                damageIndicator.GetComponent<TextMesh>().text = (damage > 0 ? "+" : string.Empty) + damage.ToString();
+                damageIndicator.transform.position = typeOfTarget == 1 ? new Vector3(target.x, 0, -3.5f) : new Vector3(target.x, 2.5f, 0);
+                Destroy(damageIndicator, 0.5f);
+            }
         }
     }
 
@@ -784,7 +794,8 @@ public class GameManager : MonoBehaviour, IGameManager
     private void OverkillBonus_Display(int overkill_value, int enemyHP_MAXvalue)
     {
         if (!OverKill_Bar.activeInHierarchy) { OverKill_Bar.SetActive(true); }
-        else { OverKill_Bar.GetComponent<Animator>().SetTrigger("Hit"); }
+        else if (PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, 1) == 1) 
+        { OverKill_Bar.GetComponent<Animator>().SetTrigger("Hit"); }
 
         if (enemyHP_MAXvalue != 0)
         { OverKill_Bar.transform.GetChild(0).GetComponent<Text>().text = "Overkill Bonus: " + (100f / enemyHP_MAXvalue * overkill_value).ToString("0.00") + "%"; }

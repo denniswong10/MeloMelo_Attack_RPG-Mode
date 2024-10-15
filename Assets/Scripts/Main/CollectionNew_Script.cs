@@ -131,6 +131,11 @@ public class CollectionNew_Script : MonoBehaviour
         collection_formation.ClearAllFormation();
     }
 
+    public void Formation_SlotModify_Setup(int slot)
+    {
+        collection_formation.ChangeCharacterSettings(slot);
+    }
+
     public void Formation_Toggle_UpdateContent(Dropdown content)
     {
 
@@ -280,6 +285,34 @@ public class CollectionNew_Script : MonoBehaviour
     {
         collection_characterAlbum.CancelMastery();
     }
+
+    public void ExperienceBoost_StartUpButton(GameObject miniPanel)
+    {
+        miniPanel.SetActive(collection_characterAlbum.UseOfTicketAllow());
+        collection_characterAlbum.UpdateTicketPrompt();
+    }
+
+    public void CloseButton_ExperienceBoost(GameObject miniPanel)
+    {
+        miniPanel.SetActive(false);
+    }
+
+    public void ToggleOver_TicketInformationTab(string title)
+    {
+        collection_characterAlbum.UpdateTicketUsage(true, title);
+    }
+
+    public void ToggleOut_TicketInformationTab()
+    {
+        collection_characterAlbum.UpdateTicketUsage(false);
+    }
+
+    public void ActivationOfTicket_ExperienceBoost(string title)
+    {
+        if (!collection_characterAlbum.UseOfTicketAllow()) return;
+        if (PlayerPrefs.GetString("TicketUsage_Bound", string.Empty) == title) { collection_characterAlbum.ActivateTicketUse(title); }
+        else PlayerPrefs.SetString("TicketUsage_Bound", title);
+    }
     #endregion
 
     [System.Serializable]
@@ -293,6 +326,7 @@ public class CollectionNew_Script : MonoBehaviour
         [SerializeField] private GameObject[] MasteryTabs;
         [SerializeField] private GameObject MasteryInfoTab;
         [SerializeField] private GameObject CharacterTab_MessageTab;
+        [SerializeField] private Text TicketPromptMessage;
 
         private List<ClassBase> Character_Database;
         private List<StatsManage_Database> characterStatus;
@@ -335,17 +369,25 @@ public class CollectionNew_Script : MonoBehaviour
 
         public void ToggleContentTab(int index)
         {
-            // Restart content information and continue for below
-            for (int i = 0; i < 3; i++)
+            if (index == 2 && !MeloMelo_CharacterInfo_Settings.GetCharacterStatus(Character_Database[characterToggleIndex - 1].name))
             {
-                selectionPanel.transform.GetChild(2).GetChild(5 + i).gameObject.SetActive(false);
-                selectionPanel.transform.GetChild(8 + i).GetComponent<RawImage>().color = Color.white;
+                thisCollect.StartCoroutine(PromptLockedFeatures());
+                thisCollect.StartCoroutine(GetPromptMessage("Unlock this character first"));
             }
+            else
+            {
+                // Restart content information and continue for below
+                for (int i = 0; i < 3; i++)
+                {
+                    selectionPanel.transform.GetChild(2).GetChild(5 + i).gameObject.SetActive(false);
+                    selectionPanel.transform.GetChild(8 + i).GetComponent<RawImage>().color = Color.white;
+                }
 
-            // Get content information 
-            selectionPanel.transform.GetChild(2).GetChild(5 + index).gameObject.SetActive(true);
-            // Get button tab selected
-            selectionPanel.transform.GetChild(8 + index).GetComponent<RawImage>().color = Color.green;
+                // Get content information 
+                selectionPanel.transform.GetChild(2).GetChild(5 + index).gameObject.SetActive(true);
+                // Get button tab selected
+                selectionPanel.transform.GetChild(8 + index).GetComponent<RawImage>().color = Color.green;
+            }
         }
         #endregion
 
@@ -382,8 +424,8 @@ public class CollectionNew_Script : MonoBehaviour
             string[] breakData = MasteryInfoTab.transform.GetChild(5).name.Split("_");
             ProcessToAddonsMastery(GetMasteryInfo(int.Parse(breakData[1])));
 
-            int currentPoint = MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name);
-            MeloMelo_ExtraStats_Settings.SetMasteryPoint(Character_Database[characterToggleIndex - 1].name, currentPoint - 1);
+            MeloMelo_ExtraStats_Settings.SetMasteryPoint(Character_Database[characterToggleIndex - 1].name, GetMasteryPointCost());
+            if (GetMasteryInfo(int.Parse(breakData[1])).name.Split("_")[1] == "Ultimate") Character_Database[characterToggleIndex - 1].ResetLevel();          
             PlayerPrefs.DeleteKey("MasteryShuffleTab");
             UpdateRebornTab();
         }
@@ -423,6 +465,7 @@ public class CollectionNew_Script : MonoBehaviour
 
             // Get new information set from loader
             UpdateStatsTab();
+            if (!MeloMelo_CharacterInfo_Settings.GetCharacterStatus(Character_Database[characterToggleIndex - 1].name)) ToggleContentTab(0);
         }
         #endregion
 
@@ -502,9 +545,87 @@ public class CollectionNew_Script : MonoBehaviour
             // Update content card with the assigned number
             UpdateRebornCardContent();
         }
+
+        private IEnumerator PromptLockedFeatures()
+        {
+            selectionPanel.transform.GetChild(10).GetChild(1).gameObject.SetActive(true);
+            yield return new WaitForSeconds(1.5f);
+            selectionPanel.transform.GetChild(10).GetChild(1).gameObject.SetActive(false);
+        }
         #endregion
 
         #region MISC 
+        public bool UseOfTicketAllow()
+        {
+            // Allow only character which are unlocked
+            return MeloMelo_CharacterInfo_Settings.GetCharacterStatus(Character_Database[characterToggleIndex - 1].name);
+        }
+
+        public void UpdateTicketUsage(bool active, string title = "")
+        {
+            // Display message tab: ItemName with amount stated
+            CharacterTab_MessageTab.SetActive(active);
+            CharacterTab_MessageTab.transform.GetChild(0).GetComponent<Text>().text = title + 
+                " ( x" + GetTotalTicketCount(title) + " )";
+        }
+
+        public void ActivateTicketUse(string title)
+        {
+            // Check for ticket and update amount uses
+            VirtualItemDatabase ticket = MeloMelo_GameSettings.GetAllItemFromLocal(title);
+            if (ticket.itemName == title && GetTotalTicketCount(title) > 0) 
+            { 
+                PlayerPrefs.DeleteKey("TicketUsage_Bound"); 
+                MeloMelo_ItemUsage_Settings.SetItemUsed(ticket.itemName);
+                DistributeExperienceBoostToCharacter(title);
+            }
+        }
+
+        private int GetTotalTicketCount(string title)
+        {
+            // Ticket counted in storage bag and current used items
+            int ticketAmount = MeloMelo_GameSettings.GetAllItemFromLocal(title).amount -
+                MeloMelo_ItemUsage_Settings.GetItemUsed(title);
+
+            return ticketAmount;
+        }
+
+        private void DistributeExperienceBoostToCharacter(string title)
+        {
+            switch (title)
+            {
+                case "500 EXP TICKET":
+                    MeloMelo_ItemUsage_Settings.SetExpBoost(Character_Database[characterToggleIndex - 1].name, 500);
+                    break;
+
+                case "1000 EXP TICKET":
+                    MeloMelo_ItemUsage_Settings.SetExpBoost(Character_Database[characterToggleIndex - 1].name, 1000);
+                    break;
+
+                case "2500 EXP TICKET":
+                    MeloMelo_ItemUsage_Settings.SetExpBoost(Character_Database[characterToggleIndex - 1].name, 2500);
+                    break;
+
+                case "5000 EXP TICKET":
+                    MeloMelo_ItemUsage_Settings.SetExpBoost(Character_Database[characterToggleIndex - 1].name, 5000);
+                    break;
+
+                default:
+                    break;
+            }
+
+            UpdateTicketPrompt();
+        }
+
+        public void UpdateTicketPrompt()
+        {
+            if (MeloMelo_ItemUsage_Settings.GetExpBoost(Character_Database[characterToggleIndex - 1].name) > 0)
+                TicketPromptMessage.text = "Boosted x" + MeloMelo_ItemUsage_Settings.GetExpBoost(Character_Database[characterToggleIndex - 1].name) +
+                    " experience through ticket";
+            else
+                TicketPromptMessage.text = "No ticket has been used";
+        }
+
         private Button NagivatorSelector(int index)
         {
             switch (index)
@@ -613,12 +734,12 @@ public class CollectionNew_Script : MonoBehaviour
                 MasteryInfoTab.transform.GetChild(2).GetComponent<Text>().text = GetMasteryInfo(index - 1).description;
                 MasteryInfoTab.transform.GetChild(3).GetComponent<Text>().text = "Required Point: " +
                     MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) + " >> " +
-                    (MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) - 1);
+                    (MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) - GetMasteryPointCost());
 
                 // Check condition on confirm mastery
                 MasteryInfoTab.transform.GetChild(5).name = "Confirm_" + (index - 1) + "_Btn";
                 MasteryInfoTab.transform.GetChild(5).GetComponent<Button>().interactable = 
-                    MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) > 0;
+                    MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) >= GetMasteryPointCost();
             }
         }
 
@@ -658,6 +779,12 @@ public class CollectionNew_Script : MonoBehaviour
 
             // Prompt user about the info
             thisCollect.StartCoroutine(GetPromptMessage(messagePrinter));
+        }
+
+        private int GetMasteryPointCost()
+        {
+            int level = Character_Database[characterToggleIndex - 1].level;
+            return level > 99 ? 0 : 1;
         }
 
         private IEnumerator GetPromptMessage(string long_message)
@@ -719,6 +846,13 @@ public class CollectionNew_Script : MonoBehaviour
             thisCollect.StartCoroutine(PromptMessage("All character have been dismissed."));
         }
 
+        public void ChangeCharacterSettings(int slot)
+        {
+            PlayerPrefs.SetInt("SlotSelect_setup", slot);
+            PlayerPrefs.SetString("SlotSelect_lastSelect", SceneManager.GetActiveScene().name);
+            SceneManager.LoadScene("Ref_CharacterSelection");
+        }
+
         public void UpdateFormationList()
         {
             // Update slot: Content information
@@ -730,8 +864,11 @@ public class CollectionNew_Script : MonoBehaviour
             selectionPanel.transform.GetChild(11).GetComponent<Button>().interactable = IsFormationHasSet();
 
             // All Slot: Ready for editing
-            for (int slot = 0; slot < 3; slot++) 
+            for (int slot = 0; slot < 3; slot++)
+            {
                 selectionPanel.transform.GetChild(3 + slot).GetChild(3).gameObject.SetActive(formationEditingMode);
+                selectionPanel.transform.GetChild(3 + slot).GetComponent<Button>().interactable = formationEditingMode;
+            }
         }
         #endregion
 

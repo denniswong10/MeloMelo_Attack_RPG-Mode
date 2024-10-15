@@ -1225,6 +1225,7 @@ namespace MeloMelo_Local
         public bool HTP;
         public bool Control_N;
         public bool battleGuide;
+
         public bool isOptionVisited;
         public bool isTransferDone;
         public bool isRetreatUsed;
@@ -1233,6 +1234,21 @@ namespace MeloMelo_Local
 
         public string currentVersion;
         public string chartVersion;
+
+        public float bgm_audio_data;
+        public float se_audio_data;
+        public bool audio_mute_data;
+        public bool audio_voice_data;
+
+        public bool allowIntefaceAnimation;
+        public bool allowCharacterAnimation;
+        public bool allowEnemyAnimation;
+        public bool allowDamageIndicatorOnAlly;
+        public bool allowDamageIndicatorOnEnemy;
+
+        public bool autoSaveGameProgress;
+        public bool autoSavePlaySettings;
+        public bool autoSaveGameSettings;
 
         public PlayerSettingsDatabase GetSettingsData(string format)
         {
@@ -1736,6 +1752,17 @@ namespace MeloMelo_Local
                 if (data.isMarathonVisited) PlayerPrefs.SetInt("MarathonPass_Eternal", 1);
                 if (data.isCollectionVisited) PlayerPrefs.SetInt("CollectionAlbum_Visited", 1);
                 if (data.isRetreatUsed) PlayerPrefs.SetInt("RetreatRoute", 1);
+
+                PlayerPrefs.SetFloat(MeloMelo_PlayerSettings.GetBGM_ValueKey, data.bgm_audio_data);
+                PlayerPrefs.SetFloat(MeloMelo_PlayerSettings.GetSE_ValueKey, data.se_audio_data);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, data.allowIntefaceAnimation ? 1 : 0);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetCharacterAnimation_ValueKey, data.allowCharacterAnimation ? 1 : 0);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetEnemyAnimation_ValueKey, data.allowEnemyAnimation ? 1 : 0);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetDamageIndicatorA_ValueKey, data.allowDamageIndicatorOnAlly ? 1 : 0);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey, data.allowDamageIndicatorOnEnemy ? 1 : 0);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSaveProgress_ValueKey, data.autoSaveGameProgress ? 1 : 0);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSaveGameSettings_ValueKey, data.autoSaveGameSettings ? 1 : 0);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSavePlaySettings_ValueKey, data.autoSavePlaySettings ? 1 : 0);
             }
 
             return true;
@@ -1856,6 +1883,7 @@ namespace MeloMelo_Local
                 {
                     PlayerPrefs.SetInt(data.id + "_LEVEL", data.level);
                     PlayerPrefs.SetInt(data.id + "_EXP", data.experience);
+                    MeloMelo_CharacterInfo_Settings.UnlockCharacter(data.id);
 
                     int unUsedMasteryPoint = data.level * 2 - data.totalMasteryAdded;
                     MeloMelo_ExtraStats_Settings.SetMasteryPoint(data.id, unUsedMasteryPoint);
@@ -1895,11 +1923,17 @@ namespace MeloMelo_Local
                                 MeloMelo_SkillData_Settings.LearnSkill(data.skillName);
                         }
                     }
-                    else 
+                    else
                         MeloMelo_SkillData_Settings.LockedSkill(data.skillName);
                 }
             }
 
+            return true;
+        }
+
+        public bool LoadVirtualItemToPlayer()
+        {
+            if (File.Exists(directory + combinePath)) MeloMelo_GameSettings.StoreAllItemToLocal(GetProgressFile());
             return true;
         }
 
@@ -1909,7 +1943,8 @@ namespace MeloMelo_Local
             if (getUserId) SelectFileForActionWithUserTag(fileName);
             else SelectFileForAction(fileName);
 
-            return GetProgressFile();
+            if (File.Exists(directory + combinePath)) return GetProgressFile();
+            else return string.Empty;
         }
 
         public string[] GetLocalJsonFileToArray(string fileName)
@@ -1984,6 +2019,21 @@ namespace MeloMelo_Local
             data.isMarathonVisited = PlayerPrefs.HasKey("MarathonPass_Eternal");
             data.isRetreatUsed = PlayerPrefs.HasKey("RetreatRoute");
             data.isCollectionVisited = PlayerPrefs.HasKey("CollectionAlbum_Visited");
+
+            data.bgm_audio_data = PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetBGM_ValueKey, 0.5f);
+            data.se_audio_data = PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetSE_ValueKey, 0.5f);
+            data.audio_mute_data = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAudioMute_ValueKey, 1) == 1 ? true : false;
+            data.audio_voice_data = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAudioVoice_ValueKey, 1) == 1 ? true : false;
+
+            data.allowIntefaceAnimation = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, 1) == 1 ? true : false;
+            data.allowCharacterAnimation = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetCharacterAnimation_ValueKey, 1) == 1 ? true : false;
+            data.allowEnemyAnimation = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetEnemyAnimation_ValueKey, 1) == 1 ? true : false;
+            data.allowDamageIndicatorOnAlly = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorA_ValueKey, 1) == 1 ? true : false;
+            data.allowDamageIndicatorOnEnemy = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey, 1) == 1 ? true : false;
+
+            data.autoSaveGameProgress = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAutoSaveProgress_ValueKey, 1) == 1 ? true : false;
+            data.autoSaveGameSettings = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAutoSaveGameSettings_ValueKey, 1) == 1 ? true : false;
+            data.autoSavePlaySettings = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAutoSavePlaySettings_ValueKey, 1) == 1 ? true : false;
 
             JsonFormat += JsonUtility.ToJson(data);
             WriteToFile(JsonFormat);
@@ -2132,7 +2182,8 @@ namespace MeloMelo_Local
                 {
                     SkillUnitDatabase onSave = new SkillUnitDatabase();
                     onSave.skillName = data.skillName;
-                    onSave.grade = MeloMelo_SkillData_Settings.CheckSkillGrade(data.skillName);
+                    onSave.grade = MeloMelo_SkillData_Settings.CheckSkillGrade(data.skillName) == 0 ? 1 :
+                        MeloMelo_SkillData_Settings.CheckSkillGrade(data.skillName);
                     onSave.status = MeloMelo_SkillData_Settings.CheckSkillStatus(data.skillName) ? 1 : 0;
                     listing.Add(onSave);
                 }
@@ -2141,6 +2192,50 @@ namespace MeloMelo_Local
             string jsonFormat = string.Empty;
             foreach (SkillUnitDatabase list in listing) { jsonFormat += JsonUtility.ToJson(list) + "/"; }
             WriteToFile(jsonFormat);
+        }
+
+        public void SaveVirtualItemFromPlayer(string itemName, int amount)
+        {
+            List<VirtualItemDatabase> listing = new List<VirtualItemDatabase>();
+            VirtualItemDatabase itemLoader = new VirtualItemDatabase();
+
+            int updateAmount = amount;
+            itemLoader.itemName = itemName;
+
+            if (File.Exists(directory + combinePath))
+            {
+                foreach (string data_decode in GetFormatToList())
+                    if (data_decode != string.Empty) listing.Add(new VirtualItemDatabase().GetItemData(data_decode));
+
+                File.Delete(directory + combinePath);
+
+                foreach (VirtualItemDatabase list in listing)
+                    if (list.itemName == itemName) 
+                    {
+                        updateAmount += list.amount;
+                        listing.Remove(list); 
+                        break; 
+                    }
+            }
+
+            itemLoader.amount = updateAmount;
+            listing.Add(itemLoader);
+
+            string jsonFormat = string.Empty;
+            foreach (VirtualItemDatabase list in listing) { jsonFormat += JsonUtility.ToJson(list) + "/"; }
+            WriteToFile(jsonFormat);
+        }
+
+        public void SaveExchangeTranscationHistory(string jsonData)
+        {
+            string currentTranscation = jsonData + "/";
+            if (File.Exists(directory + combinePath))
+            {
+                File.Delete(directory + combinePath);
+                currentTranscation += GetProgressFile();
+            }
+
+            WriteToFile(currentTranscation);
         }
     }
 

@@ -17,7 +17,7 @@ public class BattleSetup_Script : MonoBehaviour
     private string[] scoreDisplay_label = { "Score", "Points", "Score & Points", "Score & CP", "Score & HiScore", "Score With Rank" };
     private string[] scoreDisplay2_label = { "OFF", "Points", "CP", "HiPoints", "HiScore", "Max Score", "Min Score", "Points V2" };
     private string[] autoRetreat_label = { "OFF", "CP +0", "BORDER/S", "BORDER/SS", "BORDER/X", "MY BEST SCORE" };
-    private string[] bottomDisplay_label = { "Default", "JudgeTiming" };
+    private string[] bottomDisplay_label = { "Default", "JudgeTiming", "Nothing" };
     private string[] feedbackDisplay_label = { "ALL", "Perfect & below", "OFF" };
     private string[] feedbackDisplay2_label = { "Critical Included", "Standard", "Don't Include" };
 

@@ -169,7 +169,8 @@ public class GuestLogin_Script : MonoBehaviour
             MeloMelo_GameSettings.GetLocalFileCharacterSettings,
             MeloMelo_GameSettings.GetLocalFileProfileData,
             MeloMelo_GameSettings.GetLocalFileCharacterStats,
-            MeloMelo_GameSettings.GetLocalFileSkillDatabase
+            MeloMelo_GameSettings.GetLocalFileSkillDatabase,
+            MeloMelo_GameSettings.GetLocalFileVirtualItemData
         };
 
         LoginPage_Script.thisPage.Icon.SetActive(true);
@@ -212,6 +213,10 @@ public class GuestLogin_Script : MonoBehaviour
 
                 case 8:
                     data.LoadAllSkillsType();
+                    break;
+
+                case 9:
+                    data.LoadVirtualItemToPlayer();
                     break;
 
                 default:

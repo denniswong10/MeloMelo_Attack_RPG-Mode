@@ -10,31 +10,45 @@ public class CloudSaveModeConfig : MonoBehaviour
     struct LatestVersionArray
     {
         public string[] versions;
-
-        public LatestVersionArray GetLatestVersion(string format)
-        {
-            return JsonUtility.FromJson<LatestVersionArray>(format);
-        }
+        public LatestVersionArray GetLatestVersion(string format) { return JsonUtility.FromJson<LatestVersionArray>(format); }
     }
 
     [SerializeField] private GameObject[] CloudFeatures;
 
-    async void Start()
+    #region SETUP
+    private void GetCloudSetupData()
     {
-        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_GameSettings.LoginType.GuestLogin && AuthenticationService.Instance.IsSignedIn)
+        CloudControlPanel(RemoteConfigService.Instance.appConfig.GetBool("CloudSave_Mode") && GetSupportCloudService());
+        GetComponent<CloudSaveConfig>().GetContentAccountID();
+        PlayerPrefs.SetInt("CloudSaveLoader_Ready", 1);
+    }
+
+    private async void GetSetupReady()
+    {
+        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_GameSettings.LoginType.GuestLogin)
         {
+            // Refresh the latest cloud data to local data
             await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
-            foreach (GameObject feature in CloudFeatures) feature.SetActive(GetSupportCloudService());
+            GetCloudSetupData();
         }
     }
+    #endregion
 
     #region MAIN
-    public bool GetCloudSave()
+    public void RefreshCloudServices()
     {
-        return RemoteConfigService.Instance.appConfig.GetBool("CloudSave_Mode");
+        PlayerPrefs.DeleteKey("CloudSaveLoader_Ready");
+        if (AuthenticationService.Instance.IsSignedIn) GetSetupReady();
+        else
+        {
+            CloudControlPanel(false);
+            GetComponent<CloudSaveConfig>().GetContentIDForNotUsingServices(0);
+        }
     }
+    #endregion
 
-    public bool GetSupportCloudService()
+    #region COMPONENT
+    private bool GetSupportCloudService()
     {
         string current = StartMenu_Script.thisMenu.get_version;
 
@@ -47,9 +61,9 @@ public class CloudSaveModeConfig : MonoBehaviour
         return false;
     }
 
-    public void DisableCloud()
+    private void CloudControlPanel(bool active)
     {
-        foreach (GameObject feature in CloudFeatures) feature.SetActive(false);
+        foreach (GameObject feature in CloudFeatures) feature.SetActive(active);
     }
     #endregion
 }

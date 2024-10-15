@@ -82,6 +82,7 @@ public class StartMenu_Script : MonoBehaviour
         {
             UpdateAlert.SetActive(true);
             UpdateAlert.transform.GetChild(3).GetComponent<Text>().text = description;
+            GerenateUpdateConfig();
         }
         else
         {
@@ -149,6 +150,67 @@ public class StartMenu_Script : MonoBehaviour
         if (GameObject.Find("BGM").activeInHierarchy) Destroy(GameObject.Find("BGM"));
         AsyncOperation operate = SceneManager.LoadSceneAsync("LoadScene");
         yield return new WaitWhile(() => !operate.isDone);
+    }
+    #endregion
+
+    #region COMPONENT (Update Config)
+    private void GerenateUpdateConfig()
+    {
+        string[] infoToConfig =
+        {
+            "APPLICATION_NAME=", // Name of the file zip
+            "DOWNLOAD_URL=", // Download link to the zip
+            "VERSION_URL=", // Version Control to a drive txt
+            "FILE_TO_RUN=", // Name of the folder + executable name
+            "DOWNLOAD_VERSION_FILE=true",
+            "FORCE_UPDATE=false"
+        };
+
+        if (GetFileOnConfig(Application.isEditor))
+        {
+            int toggleInfo = 0;
+            System.IO.StreamWriter config = new System.IO.StreamWriter(Application.isEditor ? "Assets/StreamingAssets/config.txt" : "../../../config.txt");
+            foreach (string writeToConfig in infoToConfig)
+            {
+                config.WriteLine(writeToConfig + GetConfigurationInformation(toggleInfo));
+                toggleInfo++;
+            }
+
+            Debug.Log("New patch config have been modify...");
+            config.Close();
+        }
+
+        Debug.Log("Patch config not found...");
+    }
+
+    private string GetConfigurationInformation(int id)
+    {
+        switch (id)
+        {
+            case 0:
+                return "MeloMelo v" + PlayerPrefs.GetString("GameLatest_Update", string.Empty);
+
+            case 1:
+                return PlayerPrefs.GetString("Application_Direct_Link", string.Empty);
+
+            case 2:
+                return PlayerPrefs.GetString("Application_VersionControl_Log", string.Empty);
+
+            case 3:
+                return "MeloMelo v" + PlayerPrefs.GetString("GameLatest_Update", string.Empty) + "/MeloMelo.exe";
+
+            default:
+                return string.Empty;
+        }
+    }
+
+    private bool GetFileOnConfig(bool platformMode)
+    {
+        if ((!platformMode && System.IO.File.Exists("../../../config.txt")) || 
+            (platformMode && System.IO.File.Exists("Assets/StreamingAssets/config.txt")))
+            return true;
+        else
+            return false;
     }
     #endregion
 }

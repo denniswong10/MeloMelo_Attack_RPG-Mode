@@ -139,7 +139,9 @@ public class ResultMenu_Script : MonoBehaviour
             StatsManage_Database database = new StatsManage_Database(stats.slot_Stats[i].name);
             stats.slot_Stats[i].UpdateCurrentStats(false);
 
-            stats.slot_Stats[i].experience += ((PlayerPrefs.HasKey("Mission_Played")) ? 0 : PlayerPrefs.GetInt("Temp_Experience", 0));
+            stats.slot_Stats[i].experience += PlayerPrefs.GetInt("Temp_Experience", 0) + 
+                MeloMelo_ItemUsage_Settings.GetExpBoost(stats.slot_Stats[i].name);
+
             stats.slot_Stats[i].UpdateCurrentStats(true);
 
             if (stats.slot_Stats[i].name != "None")
@@ -152,7 +154,10 @@ public class ResultMenu_Script : MonoBehaviour
                 } while (checkLevel != stats.slot_Stats[i].level);
 
                 GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(2).GetComponent<Text>().text = "- " + stats.slot_Stats[i].characterName + " -";
-                GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(3).GetComponent<Text>().text = "EXP: " + stats.slot_Stats[i].experience + "/" + database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience + " (+" + PlayerPrefs.GetInt("Temp_Experience", 0) + ")";
+                GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(3).GetComponent<Text>().text = "EXP: " + stats.slot_Stats[i].experience + "/" + 
+                    database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience + 
+                    " (+" + (PlayerPrefs.GetInt("Temp_Experience", 0) + MeloMelo_ItemUsage_Settings.GetExpBoost(stats.slot_Stats[i].name)) + ")";
+
                 GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(4).GetComponent<Text>().text = "LEVEL: " + stats.slot_Stats[i].level;
 
                 GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(1).GetComponent<Image>().enabled = true;
@@ -557,11 +562,17 @@ public class ResultMenu_Script : MonoBehaviour
                 {
                     data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileCharacterStats);
                     data.SaveCharacterStatsProgress(character.name, character.level, character.experience);
+                    if (MeloMelo_ItemUsage_Settings.GetExpBoost(character.name) > 0) MeloMelo_ItemUsage_Settings.SetExpBoost(character.name, 0);
                 }
             }
 
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileSkillDatabase);
             data.SaveAllSkillsType();
+
+            //data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
+            //string[] listOfUsedItem = MeloMelo_ItemUsage_Settings.GetAllItemUsed();
+            //foreach (string itemName in listOfUsedItem) data.SaveVirtualItemFromPlayer(itemName,
+            //    -MeloMelo_ItemUsage_Settings.GetItemUsed(itemName));
         }
 
         yield return new WaitForSeconds(1.5f);

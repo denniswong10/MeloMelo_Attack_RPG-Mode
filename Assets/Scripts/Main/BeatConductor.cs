@@ -139,6 +139,10 @@ public class BeatConductor : MonoBehaviour
         // Update Music Info
         if (!GameManager.thisManager.DeveloperMode)
         {
+            // Enable animator for music info
+            SideUI_MusicInfo.GetComponent<Animator>().enabled = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, 1) == 1;
+
+            // Get music info for modification upon play
             SideUI_MusicInfo.transform.GetChild(0).GetComponent<RawImage>().texture = Music_Database.Background_Cover;
             SideUI_MusicInfo.transform.GetChild(1).GetComponent<Text>().text = Music_Database.ArtistName;
             SideUI_MusicInfo.transform.GetChild(2).GetComponent<Text>().text = Music_Database.Title;
