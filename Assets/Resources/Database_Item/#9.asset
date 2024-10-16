@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
+  m_Name: '#9'
+  m_EditorClassIdentifier: 
+  ItemName: WELCOME GIFT
+  Icon: {fileID: 2800000, guid: 2c7ecd858028ccb438569acc6add4135, type: 3}
+  thisItemType: 0
+  description: A gift for new player to start off their first adventure. Click on
+    this item again to open this gift.
+  ItemValue: 1
+  NoQuantityLimit: 0
+  CreditSet: 0

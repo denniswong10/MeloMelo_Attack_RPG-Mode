@@ -255,11 +255,16 @@ public static class MeloMelo_GameSettings
             if (data != string.Empty)
             {
                 VirtualItemDatabase newItem = new VirtualItemDatabase().GetItemData(data);
-                allStoredItem.Add(newItem);
+                if (newItem.amount > 0) allStoredItem.Add(newItem);
             }
         }
     }
         
+    public static VirtualItemDatabase[] GetAllActiveItem()
+    {
+        return allStoredItem != null ? allStoredItem.ToArray() : null;
+    }
+
     public static VirtualItemDatabase GetAllItemFromLocal(string itemName)
     {
         if (allStoredItem != null)
@@ -412,6 +417,7 @@ public static class MeloMelo_ItemUsage_Settings
         int amount = PlayerPrefs.GetInt(itemName + "_VirtualItem_Unsaved_Used", 0);
         PlayerPrefs.SetInt(itemName + "_VirtualItem_Unsaved_Used", amount + 1);
     }
+
     public static int GetItemUsed(string itemName) { return PlayerPrefs.GetInt(itemName + "_VirtualItem_Unsaved_Used", 0); }
     public static string[] GetAllItemUsed() 
     {
@@ -426,10 +432,7 @@ public static class MeloMelo_ItemUsage_Settings
             {
                 VirtualItemDatabase item = new VirtualItemDatabase().GetItemData(itemData);
                 if (PlayerPrefs.GetInt(item.itemName + "_VirtualItem_Unsaved_Used", 0) > 0)
-                {
-                    PlayerPrefs.DeleteKey(item.itemName + "_VirtualItem_Unsaved_Used");
                     itemListing.Add(item.itemName);
-                }
             }
         }
 
@@ -441,7 +444,10 @@ public static class MeloMelo_ItemUsage_Settings
         int currentAmount = PlayerPrefs.GetInt(className + "_EXP_BOOST", 0);
         PlayerPrefs.SetInt(className + "_EXP_BOOST", currentAmount + amount); 
     }
-    public static void SetAllyExpBoost(int multiple, int amount) { PlayerPrefs.SetInt("ALLY_EXP_BOOST_" + multiple, amount); }
+    public static void SetAllyExpBoost(int amount) { PlayerPrefs.SetInt("ALLY_EXP_BOOST_", amount); }
+    public static void SetAllyPowerBoost(int amount) { PlayerPrefs.SetInt("ALLY_POWER_BOOST_", amount); }
 
     public static int GetExpBoost(string className) { return PlayerPrefs.GetInt(className + "_EXP_BOOST", 0); }
+    public static int GetAllyExpBoost() { return PlayerPrefs.GetInt("ALLY_EXP_BOOST_", 0); }
+    public static int GetAllyPowerBoost() { return PlayerPrefs.GetInt("ALLY_POWER_BOOST_", 0); }
 }

@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
   m_Name: '#0'
   m_EditorClassIdentifier: 
-  ItemName: None
+  ItemName: ???
   Icon: {fileID: 2800000, guid: 2c7ecd858028ccb438569acc6add4135, type: 3}
-  thisItemType: 0
-  description: 
+  thisItemType: 2
+  description: This item is still unknown.
   ItemValue: 0
   NoQuantityLimit: 0
   CreditSet: 0

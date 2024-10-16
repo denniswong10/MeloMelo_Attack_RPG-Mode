@@ -12,104 +12,63 @@ namespace MeloMelo_VirtualItem
 {
     public class InventoryManagement
     {
-        private int StorageSize = 10;
-        private bool UnsaveItem = false;
-        public bool Get_UnsaveItem { get { return UnsaveItem; } }
 
-        public bool CheckForItem(int itemId)
+    }
+
+    public class MiniStorageManagement
+    {
+        private string currentBoundItem;
+        private bool itemOnUse;
+        private List<GameObject> panels;
+
+        #region SETUP
+        public void SetupPanelBoundName(string name)
         {
-            bool check = false;
-            for (int i = 0; i < StorageSize; i++) 
-            { 
-                if (PlayerPrefs.HasKey("Slot" + (i + 1) + "_ItemStore") &&
-                    PlayerPrefs.GetInt("Slot" + (i + 1) + "_ItemStore", 0) == itemId) { check = true; break; } 
-            }
-
-            // Default check
-            return check;
+            currentBoundItem = name;
         }
 
-        public void SaveItemToLocal(int itemId)
+        public void AddReferencePanel(GameObject panel)
         {
-            for (int i = 0; i < StorageSize; i++)
+            if (panels == null) panels = new List<GameObject>();
+            panels.Add(panel);
+        }
+        #endregion
+
+        #region MAIN
+        public void UseItemFromStorage(string itemName)
+        {
+            itemOnUse = false;
+
+            if (PlayerPrefs.GetString(currentBoundItem, string.Empty) == itemName)
             {
-                if (!PlayerPrefs.HasKey("Slot" + (i + 1) + "_ItemStore")) { PlayerPrefs.SetInt("Slot" + (i + 1) + "_ItemStore", itemId); break; }
-            }
-
-            UnsaveItem = true;
-        }
-
-        public void RemoveItemToLocal(int itemId)
-        {
-            for (int i = 0; i < StorageSize; i++)
-            {
-                if (!PlayerPrefs.HasKey("Slot" + (i + 1) + "_ItemStore") && PlayerPrefs.GetInt("Slot" + (i + 1) + "_ItemStore") == itemId) 
-                { PlayerPrefs.DeleteKey("Slot" + (i + 1) + "_ItemStore"); break; }
-            }
-
-            UnsaveItem = true;
-        }
-
-        public void ClearCache_ItemDatabase() { UnsaveItem = false; }
-
-        public IEnumerator SaveItemToGlobal(string user)
-        {
-            WWWForm form = new WWWForm();
-            form.AddField("user", user);
-
-            for (int i = 0; i < StorageSize; i++)
-            {
-                if (PlayerPrefs.HasKey("Slot" + (i + 1) + "_ItemStore")) 
-                { form.AddField("Slot_" + (i + 1), PlayerPrefs.GetInt("Slot" + (i + 1) + "_ItemStore")); }
-            }
-
-            UnityWebRequest save = UnityWebRequest.Post("https://denniswong10-webpage.ml/database/transcripts/site5/MeloMelo_SaveItemZone.php", form);
-            yield return save.SendWebRequest();
-
-            save.Dispose();
-            PlayerPrefs.SetInt("ItemSaved_Completed", 1);
-        }
-
-        public IEnumerator RemoveItemToGlobal(string user)
-        {
-            WWWForm form = new WWWForm();
-            form.AddField("user", user);
-
-            UnityWebRequest remove = UnityWebRequest.Post("https://denniswong10-webpage.ml/database/transcripts/site5/MeloMelo_RemoveItemZone.php", form);
-            yield return remove.SendWebRequest();
-
-            remove.Dispose();
-            PlayerPrefs.SetInt("ItemRemoved_Completed", 1);
-        }
-
-        public IEnumerator LoadItemFromGlobal(string user)
-        {
-            bool check = false;
-            int point = 0;
-
-            WWWForm form = new WWWForm();
-            form.AddField("User", user);
-
-            UnityWebRequest loadItem = UnityWebRequest.Post("https://denniswong10-webpage.ml/database/transcripts/site5/MeloMelo_LoadItemZone.php", form);
-            yield return loadItem.SendWebRequest();
-            
-            string[] ItemData = loadItem.downloadHandler.text.Split('\n');  
-            for (int i = 0; i < ItemData.Length / 2; i++)
-            {
-                for (int j = 0; j < 10; j++)
+                // Check for exp potion and update amount uses
+                VirtualItemDatabase itemFromStorage = MeloMelo_GameSettings.GetAllItemFromLocal(itemName);
+                if (itemFromStorage.itemName == itemName && GetTotalAmountFromStorage(itemName) > 0)
                 {
-                    if (!PlayerPrefs.HasKey("Slot" + (j + 1) + "_ItemStore"))
-                    { PlayerPrefs.SetInt("Slot" + (j + 1) + "_ItemStore", int.Parse(ItemData[i * 1])); check = true; break; }
+                    PlayerPrefs.DeleteKey(currentBoundItem);
+                    MeloMelo_ItemUsage_Settings.SetItemUsed(itemFromStorage.itemName);
+                    itemOnUse = true;
                 }
-
-                if (!check) { point++; }
-                check = false;
             }
-
-            PlayerPrefs.SetInt("Marathon_ServerData", 1);
-            Debug.Log(PlayerPrefs.GetInt("Marathon_ServerData"));
-            loadItem.Dispose();
+            else PlayerPrefs.SetString(currentBoundItem, itemName);
         }
+        #endregion
+
+        #region COMPONENT
+        private int GetTotalAmountFromStorage(string itemName)
+        {
+            // Items counted in storage bag and current used items
+            int itemAmount = MeloMelo_GameSettings.GetAllItemFromLocal(itemName).amount -
+                MeloMelo_ItemUsage_Settings.GetItemUsed(itemName);
+
+            return itemAmount;
+        }
+        #endregion
+
+        #region MISC
+        public string GetPanelItemInfo(string itemName) { return itemName + " ( x " + GetTotalAmountFromStorage(itemName) + " )"; }
+        public bool CurrentlyInUse() { return itemOnUse; }
+        #endregion
     }
 }
 
@@ -2219,7 +2178,7 @@ namespace MeloMelo_Local
             }
 
             itemLoader.amount = updateAmount;
-            listing.Add(itemLoader);
+            if (itemLoader.amount > 0) listing.Add(itemLoader);
 
             string jsonFormat = string.Empty;
             foreach (VirtualItemDatabase list in listing) { jsonFormat += JsonUtility.ToJson(list) + "/"; }

@@ -16,8 +16,8 @@ MonoBehaviour:
   Difficultylevel:
   - 14
   - 14
-  - 15
-  - 15
+  - 14
+  - 14
   DifficultyType: 02000000020000000200000002000000
   clearingType: 1
-  clearingValue: 30
+  clearingValue: 25

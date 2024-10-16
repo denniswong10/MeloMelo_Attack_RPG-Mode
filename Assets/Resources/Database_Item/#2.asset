@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
   m_Name: '#2'
   m_EditorClassIdentifier: 
-  ItemName: Sliver Pass
-  Icon: {fileID: 2800000, guid: 30e7b79185513604abbbdf20c34948b3, type: 3}
-  thisItemType: 0
-  description: Grant access to Advance r Entry
-  ItemValue: 0
+  ItemName: 1000 EXP TICKET
+  Icon: {fileID: 2800000, guid: b180d0f4dfe782741af3a140d2cda228, type: 3}
+  thisItemType: 1
+  description: Get 1000 experience points to a single character.
+  ItemValue: 1
   NoQuantityLimit: 0
-  CreditSet: 50
+  CreditSet: 0

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
+  m_Name: '#13'
+  m_EditorClassIdentifier: 
+  ItemName: 10X CREDIT COUPON
+  Icon: {fileID: 2800000, guid: 451978fe62486e5429ee96c4aa0602f8, type: 3}
+  thisItemType: 0
+  description: Can be exchange for in-game currency. This coupon worth 10 credits
+    after reedem it. Click on this item again to reedem this coupon.
+  ItemValue: 1
+  NoQuantityLimit: 0
+  CreditSet: 0

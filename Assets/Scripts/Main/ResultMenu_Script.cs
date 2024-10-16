@@ -139,8 +139,11 @@ public class ResultMenu_Script : MonoBehaviour
             StatsManage_Database database = new StatsManage_Database(stats.slot_Stats[i].name);
             stats.slot_Stats[i].UpdateCurrentStats(false);
 
-            stats.slot_Stats[i].experience += PlayerPrefs.GetInt("Temp_Experience", 0) + 
-                MeloMelo_ItemUsage_Settings.GetExpBoost(stats.slot_Stats[i].name);
+            int experienceAfterBoost = (MeloMelo_ItemUsage_Settings.GetAllyExpBoost() > 0 ? MeloMelo_ItemUsage_Settings.GetAllyExpBoost() : 1) *
+                PlayerPrefs.GetInt("Temp_Experience", 0);
+
+            stats.slot_Stats[i].experience += PlayerPrefs.HasKey("MarathonPermit") ? 0 : 
+                (experienceAfterBoost + MeloMelo_ItemUsage_Settings.GetExpBoost(stats.slot_Stats[i].name));
 
             stats.slot_Stats[i].UpdateCurrentStats(true);
 
@@ -155,8 +158,8 @@ public class ResultMenu_Script : MonoBehaviour
 
                 GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(2).GetComponent<Text>().text = "- " + stats.slot_Stats[i].characterName + " -";
                 GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(3).GetComponent<Text>().text = "EXP: " + stats.slot_Stats[i].experience + "/" + 
-                    database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience + 
-                    " (+" + (PlayerPrefs.GetInt("Temp_Experience", 0) + MeloMelo_ItemUsage_Settings.GetExpBoost(stats.slot_Stats[i].name)) + ")";
+                    database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience + " (+" 
+                    + (PlayerPrefs.HasKey("MarathonPermit") ? 0 : (experienceAfterBoost +  MeloMelo_ItemUsage_Settings.GetExpBoost(stats.slot_Stats[i].name))) + ")";
 
                 GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(4).GetComponent<Text>().text = "LEVEL: " + stats.slot_Stats[i].level;
 
@@ -521,18 +524,21 @@ public class ResultMenu_Script : MonoBehaviour
         {
             LocalSave_DataManagement data = new LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
 
+            // Save: Achievement
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileMainProgress);
             data.SaveProgress(BeatConductor.thisBeat.Music_Database.Title,
                 PlayerPrefs.GetInt("DifficultyLevel_valve", 1),
                 GameManager.thisManager.get_score1.get_score,
                 MeloMelo_GameSettings.GetScoreRankStructure(GameManager.thisManager.get_score1.get_score.ToString()).rank);
 
+            // Save: Points
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFilePointData);
             data.SavePointProgress(BeatConductor.thisBeat.Music_Database.Title,
                 PlayerPrefs.GetInt("DifficultyLevel_valve", 1),
                 (int)GameManager.thisManager.get_point.get_score,
                 PlayerPrefs.GetInt("OverallCombo", 0) * 3);
 
+            // Save: Battle
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileBattleProgress);
             data.SaveBattleProgress(
                 BeatConductor.thisBeat.Music_Database.Title,
@@ -541,12 +547,15 @@ public class ResultMenu_Script : MonoBehaviour
                 PlayerPrefs.GetString(BeatConductor.thisBeat.Music_Database.Title + "_SuccessBattle_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + PlayerPrefs.GetInt("BattleDifficulty_Mode", 1), "F") == "T" ? true : false,
                 (int)GameManager.thisManager.get_score2.get_score);
 
+            // Save: Profile
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileProfileData);
             data.SaveProfileState();
 
+            // Save: Account
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileAccountSettings);
             data.SaveAccountSettings();
 
+            // Save: Last Selection Point
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileSelectionData);
             if (!PlayerPrefs.HasKey("MarathonPermit"))
                 data.SaveLatestSelectionPoint(PreSelection_Script.thisPre.get_AreaData.AreaName, PlayerPrefs.GetInt("LastSelection", 1));
@@ -560,22 +569,33 @@ public class ResultMenu_Script : MonoBehaviour
             {
                 if (character.characterName != "None")
                 {
+                    // Save: Character Progress
                     data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileCharacterStats);
                     data.SaveCharacterStatsProgress(character.name, character.level, character.experience);
+
+                    // Clear effect buff: After used
                     if (MeloMelo_ItemUsage_Settings.GetExpBoost(character.name) > 0) MeloMelo_ItemUsage_Settings.SetExpBoost(character.name, 0);
+                    if (MeloMelo_ItemUsage_Settings.GetAllyExpBoost() > 0) MeloMelo_ItemUsage_Settings.SetAllyExpBoost(0);
+                    if (MeloMelo_ItemUsage_Settings.GetAllyPowerBoost() > 0) MeloMelo_ItemUsage_Settings.SetAllyPowerBoost(0);
                 }
             }
 
+            // Save: Skills
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileSkillDatabase);
             data.SaveAllSkillsType();
 
-            //data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
-            //string[] listOfUsedItem = MeloMelo_ItemUsage_Settings.GetAllItemUsed();
-            //foreach (string itemName in listOfUsedItem) data.SaveVirtualItemFromPlayer(itemName,
-            //    -MeloMelo_ItemUsage_Settings.GetItemUsed(itemName));
+            // Save: Items
+            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
+            string[] listOfUsedItem = MeloMelo_ItemUsage_Settings.GetAllItemUsed();
+            foreach (string itemName in listOfUsedItem)
+            {
+                Debug.Log("Item Used: " + itemName + " ( x" + MeloMelo_ItemUsage_Settings.GetItemUsed(itemName) + " )");
+                data.SaveVirtualItemFromPlayer(itemName, -MeloMelo_ItemUsage_Settings.GetItemUsed(itemName));
+                PlayerPrefs.DeleteKey(itemName + "_VirtualItem_Unsaved_Used");
+            }
         }
 
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(2.5f);
         ContentSavedCompleted(serverTitle, isInvaild);
 
         yield return new WaitForSeconds(1);

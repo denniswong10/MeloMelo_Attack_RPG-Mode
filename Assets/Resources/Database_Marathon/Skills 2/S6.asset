@@ -15,9 +15,9 @@ MonoBehaviour:
   title: 6th Dan
   Difficultylevel:
   - 11
-  - 11
+  - 12
   - 12
   - 13
   DifficultyType: 02000000020000000200000002000000
   clearingType: 1
-  clearingValue: 10
+  clearingValue: 25

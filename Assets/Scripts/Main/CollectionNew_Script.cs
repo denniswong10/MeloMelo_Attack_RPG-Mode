@@ -87,7 +87,7 @@ public class CollectionNew_Script : MonoBehaviour
     IEnumerator LoadUpSubSelection(int index)
     {
         yield return new WaitForSeconds(1.5f);
-        SubSelection[index].GetComponent<Animator>().SetTrigger("Opening" + ResMelo);
+        if (index < SubSelection.Length) SubSelection[index].GetComponent<Animator>().SetTrigger("Opening" + ResMelo);
 
         switch (index)
         {
@@ -98,6 +98,10 @@ public class CollectionNew_Script : MonoBehaviour
             case 2:
                 if (album == null) album = new MusicAlbum();
                 LoadMusicContent();
+                break;
+
+            case 3:
+                SceneManager.LoadScene("StoragePage");
                 break;
 
             default:
@@ -566,7 +570,7 @@ public class CollectionNew_Script : MonoBehaviour
             // Display message tab: ItemName with amount stated
             CharacterTab_MessageTab.SetActive(active);
             CharacterTab_MessageTab.transform.GetChild(0).GetComponent<Text>().text = title + 
-                " ( x" + GetTotalTicketCount(title) + " )";
+                " ( x" + Mathf.Clamp(GetTotalTicketCount(title), 0, 9999) + " )";
         }
 
         public void ActivateTicketUse(string title)
@@ -577,7 +581,8 @@ public class CollectionNew_Script : MonoBehaviour
             { 
                 PlayerPrefs.DeleteKey("TicketUsage_Bound"); 
                 MeloMelo_ItemUsage_Settings.SetItemUsed(ticket.itemName);
-                DistributeExperienceBoostToCharacter(title);
+                MeloMelo_ItemUsage_Settings.SetExpBoost(Character_Database[characterToggleIndex - 1].name, int.Parse(title.Split(" ")[0]));
+                UpdateTicketPrompt();
             }
         }
 
@@ -588,33 +593,6 @@ public class CollectionNew_Script : MonoBehaviour
                 MeloMelo_ItemUsage_Settings.GetItemUsed(title);
 
             return ticketAmount;
-        }
-
-        private void DistributeExperienceBoostToCharacter(string title)
-        {
-            switch (title)
-            {
-                case "500 EXP TICKET":
-                    MeloMelo_ItemUsage_Settings.SetExpBoost(Character_Database[characterToggleIndex - 1].name, 500);
-                    break;
-
-                case "1000 EXP TICKET":
-                    MeloMelo_ItemUsage_Settings.SetExpBoost(Character_Database[characterToggleIndex - 1].name, 1000);
-                    break;
-
-                case "2500 EXP TICKET":
-                    MeloMelo_ItemUsage_Settings.SetExpBoost(Character_Database[characterToggleIndex - 1].name, 2500);
-                    break;
-
-                case "5000 EXP TICKET":
-                    MeloMelo_ItemUsage_Settings.SetExpBoost(Character_Database[characterToggleIndex - 1].name, 5000);
-                    break;
-
-                default:
-                    break;
-            }
-
-            UpdateTicketPrompt();
         }
 
         public void UpdateTicketPrompt()

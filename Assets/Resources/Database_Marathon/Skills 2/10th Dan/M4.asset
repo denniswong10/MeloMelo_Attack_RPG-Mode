@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8f566feb4d36e4c842b8c38bf076f4, type: 3}
+  m_Name: M4
+  m_EditorClassIdentifier: 
+  BPM: 300
+  offset: 23366
+  Music: {fileID: 8300000, guid: 37f48abd9163c2846b8e9fdc60a2d924, type: 3}
+  PreviewTime: 88.2
+  ArtistName: nao
+  Title: Blue-Love Chime
+  DesignerName: Dennis Wong
+  Background_Cover: {fileID: 2800000, guid: c72cc24729b9b754ebd65b93b258131e, type: 3}
+  ScoreObject: {fileID: 6436031956457662534, guid: 00b2cb4f171f5bd4182a6ac88ff85d0c,
+    type: 3}
+  videoImport: {fileID: 0}
+  videoOffset: 0
+  Insert_Enemy:
+  - {fileID: 11400000, guid: 7a76d2bfb115317478faf9c0b0734b63, type: 2}
+  - {fileID: 11400000, guid: a8489771ecc007f48b4eb5a5054e2d73, type: 2}
+  - {fileID: 11400000, guid: 1daa2f6f6c149ae46b188f2fbc0f3fd1, type: 2}
+  creditPoint: "\u5929\u8272\uFF0A\u30A2\u30A4\u30EB\u30CE\u30FC\u30C4"
+  BPM_Skin: 150
+  UseBPMDisplay: 1
+  ReleasedDate: 11-12-2023
+  ScaleLevel: 4
+  seasonNo: 3
+  NewChartSystem: 1
+  addons1: []
+  addons2: []
+  addons3:
+  - {fileID: 11400000, guid: 825040af1e866784f8747fc101dccb86, type: 2}
+  - {fileID: 11400000, guid: 06145b490d3518d47899af538d8df20a, type: 2}
+  - {fileID: 11400000, guid: d39cb7e4d6892c44caa49bb6cb38fb63, type: 2}
+  - {fileID: 11400000, guid: 37f504a9404129d41998d4396d5ed349, type: 2}
+  - {fileID: 11400000, guid: 64ac9d7f8e8c5b04393eca09b406cfa0, type: 2}
+  - {fileID: 11400000, guid: 5497d23d21004394793e843e4157a0af, type: 2}
+  - {fileID: 11400000, guid: f941fee9cab05b24d9fc1c12cf9f4264, type: 2}
+  - {fileID: 11400000, guid: 3cc1590e63443a94d93a1d68d458bd2d, type: 2}
+  - {fileID: 11400000, guid: 87fea1e148859084b8323d0d34b25f0c, type: 2}
+  - {fileID: 11400000, guid: f4b0bfce988b441449b38a418d0a4e5d, type: 2}
+  - {fileID: 11400000, guid: e33e3ac7002e3d340bbd4ab2edeb8768, type: 2}
+  - {fileID: 11400000, guid: 53db78436fbdb7d46b24dfef46070a9d, type: 2}
+  - {fileID: 11400000, guid: 39e71055bd0ee2f4f996e8e7e8a76374, type: 2}
+  - {fileID: 11400000, guid: bdedbbdd04913c24c802575858c1b79b, type: 2}
+  - {fileID: 11400000, guid: 4dc5186d972b7aa4b97b815adaf6a036, type: 2}
+  - {fileID: 11400000, guid: 82fc2e351c33bb4498f335b9337deb25, type: 2}
+  - {fileID: 11400000, guid: 137a43f088101ad44b66d19aeadf34e6, type: 2}
+  - {fileID: 11400000, guid: ab7e687f1f9c1754e9cbed8a6396ea6a, type: 2}
+  addons3b:
+  - {fileID: 11400000, guid: d885a9d6cf8a1a44c92aba824f2fb78d, type: 2}
+  - {fileID: 11400000, guid: a7673047a3fa2524ebd5d1f3b868ee06, type: 2}
+  - {fileID: 11400000, guid: 9d444b9e6a72dce4592399e7b3cb807a, type: 2}
+  - {fileID: 11400000, guid: f5c6f649d01927a47b066fdaea3d14ef, type: 2}
+  UltimateAddons: 0
+  SetRestriction: 0
+  RestrictRequirement: []

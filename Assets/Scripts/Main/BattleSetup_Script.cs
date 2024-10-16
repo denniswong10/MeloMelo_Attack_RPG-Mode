@@ -67,6 +67,9 @@ public class BattleSetup_Script : MonoBehaviour
     [SerializeField] private GameObject[] FeedbackDisplay_Panel;
 
     [SerializeField] private GameObject SkillSlot_Panel;
+    [SerializeField] private GameObject[] BoostPanel;
+    [SerializeField] private GameObject BoostPanelTemplate;
+    [SerializeField] private GameObject MessagePrompt;
 
     // Load All Database
     void Start()
@@ -123,6 +126,8 @@ public class BattleSetup_Script : MonoBehaviour
         IntiFeedbackDisplay();
 
         AssignSkillSlot();
+        AddonsToExpBoost();
+        AddonsToPowerBoost();
     }
     #endregion
 
@@ -355,7 +360,7 @@ public class BattleSetup_Script : MonoBehaviour
     private void TransitionInCharacterSelection() { SceneManager.LoadScene("Ref_CharacterSelection"); }
 
     // Skill Selection
-    public void AssignSkillSlot()
+    private void AssignSkillSlot()
     {
         SkillContainer autoSelectedSkill = Resources.Load<SkillContainer>("Database_Skills/" + PlayerPrefs.GetString("CharacterFront", "None") + "_Primary_Skill");
         bool isSkillActive = PlayerPrefs.GetString("Character_Active_Skill", "T") == "T" ? true : false;
@@ -395,6 +400,184 @@ public class BattleSetup_Script : MonoBehaviour
             PlayerPrefs.GetString("CharacterFront", "None")
             );
     }
+
+    // Boost Panel
+    #region BOOST PANEL:
+    #region SETUP
+    private void AddonsToExpBoost()
+    {
+        GameObject panel = GameObject.Find("ExpBoostSlot");
+        if (panel)
+        {
+            panel.transform.GetChild(1).GetComponent<Text>().text = MeloMelo_ItemUsage_Settings.GetAllyExpBoost() > 0 ? "x " +
+                MeloMelo_ItemUsage_Settings.GetAllyExpBoost() : "- None -";
+
+            panel.transform.GetChild(2).GetComponent<Button>().interactable = MeloMelo_ItemUsage_Settings.GetAllyExpBoost() == 0;
+        }
+    }
+
+    private void AddonsToPowerBoost()
+    {
+        GameObject panel = GameObject.Find("PowerBoostSlot");
+        if (panel)
+        {
+            panel.transform.GetChild(1).GetComponent<Text>().text = MeloMelo_ItemUsage_Settings.GetAllyPowerBoost() > 0 ? "+ " +
+                MeloMelo_ItemUsage_Settings.GetAllyPowerBoost() : "- None -";
+
+            panel.transform.GetChild(2).GetComponent<Button>().interactable = MeloMelo_ItemUsage_Settings.GetAllyPowerBoost() == 0;
+        }
+    }
+
+    private int GetTotalPotionCount(string title)
+    {
+        // Potion counted in storage bag and current used items
+        int potionAmount = MeloMelo_GameSettings.GetAllItemFromLocal(title).amount -
+            MeloMelo_ItemUsage_Settings.GetItemUsed(title);
+
+        return potionAmount;
+    }
+    #endregion
+
+    #region MAIN
+    public void GetBoostPanel(string parameterData)
+    {
+        // Parameter: Panel, Display_id
+        string[] option = parameterData.Split(",");
+        BoostPanel[int.Parse(option[0])].SetActive(!PlayerPrefs.HasKey("MarathonPermit") && (option[1] == "1" ? true : false));
+    }
+
+    public void DisplayPoitionInfo(string parameterData)
+    {
+        // Parameter: Title, Display_id
+        string[] option = parameterData.Split(",");
+        MessagePrompt.SetActive(option[1] == "1" ? true : false);
+        MessagePrompt.transform.GetChild(0).GetComponent<Text>().text = option[0] + " ( x " + Mathf.Clamp(GetTotalPotionCount(option[0]), 0, 9999) + " )";
+    }
+
+    public void ActivationOfExpBoost(string parameterData)
+    {
+        // Parameter: Panel, title
+        string[] option = parameterData.Split(",");
+
+        if (PlayerPrefs.GetString("AllyExpBoost_Bound", string.Empty) == option[1])
+        {
+            // Check for exp potion and update amount uses
+            VirtualItemDatabase expPotion = MeloMelo_GameSettings.GetAllItemFromLocal(option[1]);
+            if (expPotion.itemName == option[1] && GetTotalPotionCount(option[1]) > 0)
+            {
+                PlayerPrefs.DeleteKey("TicketUsage_Bound");
+                MeloMelo_ItemUsage_Settings.SetItemUsed(expPotion.itemName);
+                MeloMelo_ItemUsage_Settings.SetAllyExpBoost(int.Parse(option[1].Split("X")[0]));
+
+                AddonsToExpBoost();
+                BoostPanel[int.Parse(option[0])].SetActive(false);
+                DisplayPoitionInfo(option[1] + ",0");
+            }
+        }
+        else PlayerPrefs.SetString("AllyExpBoost_Bound", option[1]);
+    }
+
+    public void ActivationOfPowerBoost(string parameterData)
+    {
+        // Parameter: Panel, title, opertaorType, amount
+        string[] option = parameterData.Split(",");
+
+        if (PlayerPrefs.GetString("AllyPowerBoost_Bound", string.Empty) == option[1])
+        {
+            // Check for power potion and update amount uses
+            VirtualItemDatabase powerPotion = MeloMelo_GameSettings.GetAllItemFromLocal(option[1]);
+            if (powerPotion.itemName == option[1] && GetTotalPotionCount(option[1]) > 0)
+            {
+                PlayerPrefs.DeleteKey("AllyPowerBoost_Bound");
+                MeloMelo_ItemUsage_Settings.SetItemUsed(powerPotion.itemName);
+                MeloMelo_ItemUsage_Settings.SetAllyPowerBoost(option[2] == "A" ? int.Parse(option[3]) :
+                    GetPowerUnitWithMultipleBoost(int.Parse(option[3])));
+
+                AddonsToPowerBoost();
+                BoostPanel[int.Parse(option[0])].SetActive(false);
+                DisplayPoitionInfo(option[1] + ",0");
+            }
+        }
+        else PlayerPrefs.SetString("AllyPowerBoost_Bound", option[1]);
+    }
+
+    public void DragInterfaceComponent(int index)
+    {
+        BoostPanel[index].transform.position = new Vector3(Mathf.Clamp(Input.mousePosition.x, BoostPanel[index].transform.localScale.x * 0.5f, 
+            Screen.width - (BoostPanel[index].transform.localScale.x * 0.5f)),
+                Mathf.Clamp(Input.mousePosition.y, BoostPanel[index].transform.localScale.y * 0.5f, 
+                    Screen.height - (BoostPanel[index].transform.localScale.y * 0.5f)), 0);
+    }
+
+    private int GetPowerUnitWithMultipleBoost(int multiple)
+    {
+        int totalUnitValue = 0;
+        StatsDistribution units = new StatsDistribution();
+        units.load_Stats();
+
+        foreach (ClassBase unit in units.slot_Stats)
+        {
+            if (PlayerPrefs.GetString("CharacterFront", "NA") == unit.name)
+            {
+                totalUnitValue += unit.strength;
+                totalUnitValue += unit.vitality;
+                totalUnitValue += unit.magic;
+                break;
+            }
+        }
+
+        return totalUnitValue * multiple;
+    }
+    #endregion
+    #endregion
+
+    #region BOOST PANEL 2:
+    public void GetInstancePanel(string parameterData)
+    {
+        string[] option = parameterData.Split(",");
+
+        if (GameObject.Find(option[0]) == null)
+        {
+            GameObject instance_panel = Instantiate(BoostPanelTemplate);
+            instance_panel.name = option[0];
+
+            instance_panel.GetComponent<VirtualStorageBag>().SetAlertPopReference(MessagePrompt);
+            instance_panel.GetComponent<VirtualStorageBag>().SetDefaultDescription(option[1]);
+            instance_panel.GetComponent<VirtualStorageBag>().SetItemForDisplay(GetItemArray(option[0]));
+            instance_panel.transform.SetParent(CharacterSetup_GUI.transform);
+        }
+    }
+
+    private VirtualItemDatabase[] GetItemArray(string panelType)
+    {
+        List<VirtualItemDatabase> listOfItem;
+
+        switch (panelType)
+        {
+            case "EXP_Boost_Panel":
+                listOfItem = new List<VirtualItemDatabase>();
+                string[] filteredItem_EXP = { "2X EXP POTION", "5X EXP POTION", "10X EXP POTION" };
+                foreach (string item in filteredItem_EXP)
+                {
+                    VirtualItemDatabase itemFound = MeloMelo_GameSettings.GetAllItemFromLocal(item);
+                    if (itemFound.amount > 0) listOfItem.Add(itemFound);
+                }
+                return listOfItem.ToArray();
+
+            case "Power_Boost_Panel":
+                listOfItem = new List<VirtualItemDatabase>();
+                string[] filteredItem_POWER = { "+5 POWER POTION", "+10 POWER POTION", "2X POWER POTION" };
+                foreach (string item in filteredItem_POWER)
+                {
+                    VirtualItemDatabase itemFound = MeloMelo_GameSettings.GetAllItemFromLocal(item);
+                    if (itemFound.amount > 0) listOfItem.Add(itemFound);
+                }
+                return listOfItem.ToArray();
+        }
+
+        return null;
+    }
+    #endregion
     #endregion
 
     #region MISC (MV)

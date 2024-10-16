@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
   m_Name: '#4'
   m_EditorClassIdentifier: 
-  ItemName: Platinum Pass
-  Icon: {fileID: 2800000, guid: c7faa663222972f4d9c871e8e43f2d02, type: 3}
-  thisItemType: 0
-  description: Grant access to Extra Entry
-  ItemValue: 0
+  ItemName: 5X EXP POTION
+  Icon: {fileID: 2800000, guid: e2995d6900cb6b04b994ae4a662990d3, type: 3}
+  thisItemType: 1
+  description: Receive 5 times the experience points during battle. Applies for all
+    characters.
+  ItemValue: 2
   NoQuantityLimit: 0
-  CreditSet: 300
+  CreditSet: 0
