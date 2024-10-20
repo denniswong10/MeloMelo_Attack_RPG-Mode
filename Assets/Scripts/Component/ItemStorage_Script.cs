@@ -18,7 +18,7 @@ public class ItemStorage_Script : MonoBehaviour
             }
             else { ItemDatabase = Resources.Load<ItemData>("Database_Item/#0"); }
 
-            if (ItemDatabase.ItemName == "None")
+            if (ItemDatabase.itemName == "None")
             {
                 Slots[i].transform.GetChild(0).GetComponent<RawImage>().color = new Color(0, 0, 0, 0);
                 Slots[i].transform.GetChild(0).GetComponent<RawImage>().texture = null;

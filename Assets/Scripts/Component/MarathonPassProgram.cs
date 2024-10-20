@@ -11,7 +11,7 @@ public class MarathonPassProgram : MonoBehaviour
     private void Setup()
     {
         Ref.transform.GetChild(1).GetComponent<RawImage>().texture = itemId.Icon;
-        Ref.transform.GetChild(2).GetComponent<Text>().text = itemId.ItemName;
+        Ref.transform.GetChild(2).GetComponent<Text>().text = itemId.itemName;
         Ref.transform.GetChild(3).GetComponent<Text>().text = itemId.CreditSet + " Credit";
     }
 

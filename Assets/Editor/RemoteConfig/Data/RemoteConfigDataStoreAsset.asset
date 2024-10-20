@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: 
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"32e585e5-3a27-47e4-b82f-20055862fb5b\"\r\n   
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"4a705004-3830-495d-a757-a0e6435290a9\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"Latest_Version\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"1.4.3_Build_A\"\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"d0a24010-199e-499e-8d5f-be9c8a054757\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"edca28e9-f063-4214-b42c-0f26ed701bd3\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameApplication_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/946z91ygp1ody9o/MeloMelo_v1.4.3_Build_A.zip/file\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"03d90fc6-41c8-48e9-9427-e8a25e6a8f79\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"24e38abb-24d7-4b6f-8101-dd02ba1f0014\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameWebpage_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"f7e67b26-4c64-4ae6-881d-d0802228cac8\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"cfa9699c-60a4-4202-b1ff-eb9f2c4ea2bd\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"7a76cdfc-fbba-449d-abf5-3ff27d71816d\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"47ce80cf-b287-4a73-9a31-d7988a8a2bdf\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue_v2\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"4da45a98-f602-458c-b173-76c3f652e27e\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"f2059654-9ad0-43ae-820d-41b6bebdc6c0\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"NoteSpeed_Settings_Configuration\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"data\": [\r\n         
     {\r\n            \"bpm\": 550,\r\n            \"baseSpeed\": 140\r\n         
@@ -43,14 +43,14 @@ MonoBehaviour:
     \"baseSpeed\": 30\r\n          },\r\n          {\r\n            \"bpm\": 160,\r\n           
     \"baseSpeed\": 25\r\n          },\r\n          {\r\n            \"bpm\": 150,\r\n           
     \"baseSpeed\": 23\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"26cc523d-e7ee-45a5-9103-d76792c7d5ea\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"9c5fc557-da11-4a26-8a6d-30fcfffbef3b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"NoteSpeed_Default_Configuration\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
     \"bpm\": 150,\r\n        \"baseSpeed\": 20\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"0cd9d6ea-0f9a-42f2-832f-4418c55f63b8\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"51417e9a-8787-4b76-8bb0-5ef891f0f276\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"CloudSave_Mode\",\r\n      \"type\":
     \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"3b7e224d-a5e5-49f4-aa73-95ba84ec85d6\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"b459266d-9979-48c9-957b-9c6296834c20\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"CloudSave_Support\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"versions\": [\r\n         
     \"1.4.1a\",\r\n          \"1.4.2a\",\r\n          \"1.4.0EX\",\r\n          \"1.4.0EX_Build_A\",\r\n         
@@ -58,13 +58,13 @@ MonoBehaviour:
     \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\",\r\n          \"1.4.1_Build_A\",\r\n         
     \"1.4.1_Build_B\",\r\n          \"1.4.2_Build_A\",\r\n          \"1.4.2_Build_B\",\r\n         
     \"1.4.3_Build_A\",\r\n          \"1.4.3_Build_B\"\r\n        ]\r\n      }\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"d7e66b8b-5fba-41ae-a538-0b6979eb6134\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"d61476b5-99bb-4eb3-8ab8-bb041334e3b7\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"TrackTag_Support\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"newReleaseTrack\":
     [\r\n          \"Coloring\",\r\n          \"Monochrome*HAPPY DAY\",\r\n         
     \"Starry Wish\",\r\n          \"Choumusubi Amulet\",\r\n          \"Lostorage\"\r\n       
     ],\r\n        \"areaBonusTrack\": []\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"ca508e84-e44f-4b5a-8b76-9c5ec453f749\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"57e83a18-368e-4729-b66f-e035dbff4b3e\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"data_array\":
     [\r\n          {\r\n            \"title\": \"Released of 1.4.3 Build A\",\r\n           
@@ -100,50 +100,32 @@ MonoBehaviour:
     \"releasedDate\": \"(17 June 2024)\",\r\n            \"description\": \"Added
     content, Added fast/late features, Program Rearrangement\"\r\n          }\r\n       
     ]\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"064fda3e-f3f3-4658-9c06-b9927095b733\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"537db42c-6340-4524-89bd-efc68ed26032\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"AutoPatcher_DirectLink_URL\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"https://download848.mediafire.com/6pb1fx31ogngBcNzOxzrX6V9XEz-Px90yu41gpTL_PQ26UZQ1uI6ajqO3Vrk760xfue87787h8rYRkme1ObPfhCKSTMAcqZXl_8WhhSnWsatjka9IFD-fDbXA7SdoYBZm8YAQsUqKtmSYNKnry7tF-pZBD8rW9B3K-bLX6rgONJzDzk/946z91ygp1ody9o/MeloMelo+v1.4.3_Build_A.zip\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"36f25c71-a24f-4206-bafe-ac64562fc5a5\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"9125c744-66fe-4727-8dcd-bbcf1295b4a0\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"AutoPatcher_VersionControl_URL\",\r\n     
     \"type\": \"string\",\r\n      \"value\": \"https://drive.google.com/uc?export=download&id=1_cJeR8e__gZ_tdrURmsuBhA2dzMzJbDt\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a6bbc3c5-7a6c-4af5-b6a8-96d578fef661\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ee3accbe-3a00-4b75-914d-289235dc1fce\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_Exchange_Management\",\r\n     
-    \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
-    \"data\": [\r\n          {\r\n            \"packageName\": \"WELCOME GIFT\",\r\n           
-    \"dataSeriesKey\": \"Gift\",\r\n            \"unqiueCode\": \"11JS8467KF99\",\r\n           
-    \"version\": \"1.4.3_Build_B\"\r\n          },\r\n          {\r\n           
-    \"packageName\": \"500 EXP TICKET\",\r\n            \"dataSeriesKey\": \"Gift\",\r\n           
-    \"unqiueCode\": \"75XP2829EK14\",\r\n            \"version\": \"1.4.3_Build_B\"\r\n         
-    },\r\n          {\r\n            \"packageName\": \"1000 EXP TICKET\",\r\n           
-    \"dataSeriesKey\": \"Gift\",\r\n            \"unqiueCode\": \"59GP6752JL44\",\r\n           
-    \"version\": \"1.4.3_Build_B\"\r\n          },\r\n          {\r\n           
-    \"packageName\": \"2X EXP POTION\",\r\n            \"dataSeriesKey\": \"Gift\",\r\n           
-    \"unqiueCode\": \"40UX7549SP32\",\r\n            \"version\": \"1.4.3_Build_B\"\r\n         
-    },\r\n          {\r\n            \"packageName\": \"5X EXP POTION\",\r\n           
-    \"dataSeriesKey\": \"Gift\",\r\n            \"unqiueCode\": \"47KV7586MX86\",\r\n           
-    \"version\": \"1.4.3_Build_B\"\r\n          },\r\n          {\r\n           
-    \"packageName\": \"10X EXP POTION\",\r\n            \"dataSeriesKey\": \"Gift\",\r\n           
-    \"unqiueCode\": \"68EK8596GH29\",\r\n            \"version\": \"1.4.3_Build_B\"\r\n         
-    },\r\n          {\r\n            \"packageName\": \"2X POWER POTION\",\r\n           
-    \"dataSeriesKey\": \"Gift\",\r\n            \"unqiueCode\": \"17EE9380KW91\",\r\n           
-    \"version\": \"1.4.3_Build_B\"\r\n          }\r\n        ]\r\n      }\r\n   
+    \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {}\r\n   
     }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"32e585e5-3a27-47e4-b82f-20055862fb5b\"\r\n   
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"4a705004-3830-495d-a757-a0e6435290a9\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"Latest_Version\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"1.4.3_Build_A\"\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"d0a24010-199e-499e-8d5f-be9c8a054757\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"edca28e9-f063-4214-b42c-0f26ed701bd3\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameApplication_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/946z91ygp1ody9o/MeloMelo_v1.4.3_Build_A.zip/file\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"03d90fc6-41c8-48e9-9427-e8a25e6a8f79\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"24e38abb-24d7-4b6f-8101-dd02ba1f0014\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameWebpage_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"f7e67b26-4c64-4ae6-881d-d0802228cac8\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"cfa9699c-60a4-4202-b1ff-eb9f2c4ea2bd\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"7a76cdfc-fbba-449d-abf5-3ff27d71816d\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"47ce80cf-b287-4a73-9a31-d7988a8a2bdf\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue_v2\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"4da45a98-f602-458c-b173-76c3f652e27e\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"f2059654-9ad0-43ae-820d-41b6bebdc6c0\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"NoteSpeed_Settings_Configuration\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"data\": [\r\n         
     {\r\n            \"bpm\": 550,\r\n            \"baseSpeed\": 140\r\n         
@@ -159,14 +141,14 @@ MonoBehaviour:
     \"baseSpeed\": 30\r\n          },\r\n          {\r\n            \"bpm\": 160,\r\n           
     \"baseSpeed\": 25\r\n          },\r\n          {\r\n            \"bpm\": 150,\r\n           
     \"baseSpeed\": 23\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"26cc523d-e7ee-45a5-9103-d76792c7d5ea\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"9c5fc557-da11-4a26-8a6d-30fcfffbef3b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"NoteSpeed_Default_Configuration\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
     \"bpm\": 150,\r\n        \"baseSpeed\": 20\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"0cd9d6ea-0f9a-42f2-832f-4418c55f63b8\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"51417e9a-8787-4b76-8bb0-5ef891f0f276\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"CloudSave_Mode\",\r\n      \"type\":
     \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"3b7e224d-a5e5-49f4-aa73-95ba84ec85d6\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"b459266d-9979-48c9-957b-9c6296834c20\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"CloudSave_Support\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"versions\": [\r\n         
     \"1.4.1a\",\r\n          \"1.4.2a\",\r\n          \"1.4.0EX\",\r\n          \"1.4.0EX_Build_A\",\r\n         
@@ -174,13 +156,13 @@ MonoBehaviour:
     \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\",\r\n          \"1.4.1_Build_A\",\r\n         
     \"1.4.1_Build_B\",\r\n          \"1.4.2_Build_A\",\r\n          \"1.4.2_Build_B\",\r\n         
     \"1.4.3_Build_A\",\r\n          \"1.4.3_Build_B\"\r\n        ]\r\n      }\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"d7e66b8b-5fba-41ae-a538-0b6979eb6134\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"d61476b5-99bb-4eb3-8ab8-bb041334e3b7\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"TrackTag_Support\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"newReleaseTrack\":
     [\r\n          \"Coloring\",\r\n          \"Monochrome*HAPPY DAY\",\r\n         
     \"Starry Wish\",\r\n          \"Choumusubi Amulet\",\r\n          \"Lostorage\"\r\n       
     ],\r\n        \"areaBonusTrack\": []\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"ca508e84-e44f-4b5a-8b76-9c5ec453f749\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"57e83a18-368e-4729-b66f-e035dbff4b3e\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"data_array\":
     [\r\n          {\r\n            \"title\": \"Released of 1.4.3 Build A\",\r\n           
@@ -216,33 +198,15 @@ MonoBehaviour:
     \"releasedDate\": \"(17 June 2024)\",\r\n            \"description\": \"Added
     content, Added fast/late features, Program Rearrangement\"\r\n          }\r\n       
     ]\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"064fda3e-f3f3-4658-9c06-b9927095b733\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"537db42c-6340-4524-89bd-efc68ed26032\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"AutoPatcher_DirectLink_URL\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"https://download848.mediafire.com/6pb1fx31ogngBcNzOxzrX6V9XEz-Px90yu41gpTL_PQ26UZQ1uI6ajqO3Vrk760xfue87787h8rYRkme1ObPfhCKSTMAcqZXl_8WhhSnWsatjka9IFD-fDbXA7SdoYBZm8YAQsUqKtmSYNKnry7tF-pZBD8rW9B3K-bLX6rgONJzDzk/946z91ygp1ody9o/MeloMelo+v1.4.3_Build_A.zip\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"36f25c71-a24f-4206-bafe-ac64562fc5a5\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"9125c744-66fe-4727-8dcd-bbcf1295b4a0\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"AutoPatcher_VersionControl_URL\",\r\n     
     \"type\": \"string\",\r\n      \"value\": \"https://drive.google.com/uc?export=download&id=1_cJeR8e__gZ_tdrURmsuBhA2dzMzJbDt\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a6bbc3c5-7a6c-4af5-b6a8-96d578fef661\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ee3accbe-3a00-4b75-914d-289235dc1fce\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_Exchange_Management\",\r\n     
-    \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
-    \"data\": [\r\n          {\r\n            \"packageName\": \"WELCOME GIFT\",\r\n           
-    \"dataSeriesKey\": \"Gift\",\r\n            \"unqiueCode\": \"11JS8467KF99\",\r\n           
-    \"version\": \"1.4.3_Build_B\"\r\n          },\r\n          {\r\n           
-    \"packageName\": \"500 EXP TICKET\",\r\n            \"dataSeriesKey\": \"Gift\",\r\n           
-    \"unqiueCode\": \"75XP2829EK14\",\r\n            \"version\": \"1.4.3_Build_B\"\r\n         
-    },\r\n          {\r\n            \"packageName\": \"1000 EXP TICKET\",\r\n           
-    \"dataSeriesKey\": \"Gift\",\r\n            \"unqiueCode\": \"59GP6752JL44\",\r\n           
-    \"version\": \"1.4.3_Build_B\"\r\n          },\r\n          {\r\n           
-    \"packageName\": \"2X EXP POTION\",\r\n            \"dataSeriesKey\": \"Gift\",\r\n           
-    \"unqiueCode\": \"40UX7549SP32\",\r\n            \"version\": \"1.4.3_Build_B\"\r\n         
-    },\r\n          {\r\n            \"packageName\": \"5X EXP POTION\",\r\n           
-    \"dataSeriesKey\": \"Gift\",\r\n            \"unqiueCode\": \"47KV7586MX86\",\r\n           
-    \"version\": \"1.4.3_Build_B\"\r\n          },\r\n          {\r\n           
-    \"packageName\": \"10X EXP POTION\",\r\n            \"dataSeriesKey\": \"Gift\",\r\n           
-    \"unqiueCode\": \"68EK8596GH29\",\r\n            \"version\": \"1.4.3_Build_B\"\r\n         
-    },\r\n          {\r\n            \"packageName\": \"2X POWER POTION\",\r\n           
-    \"dataSeriesKey\": \"Gift\",\r\n            \"unqiueCode\": \"17EE9380KW91\",\r\n           
-    \"version\": \"1.4.3_Build_B\"\r\n          }\r\n        ]\r\n      }\r\n   
+    \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {}\r\n   
     }\r\n  }\r\n]"
   _environments: "[\r\n  {\r\n    \"projectId\": \"f3a9f63d-58ab-4394-9b31-71188bf39fb2\",\r\n   
     \"name\": \"production\",\r\n    \"id\": \"b422a025-f10e-43d8-8a39-f7829099065c\",\r\n   

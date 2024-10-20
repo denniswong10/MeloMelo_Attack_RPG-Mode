@@ -7,12 +7,12 @@ using UnityEngine.UI;
 public class ItemData : ScriptableObject
 {
     [Header("General")]
-    public string ItemName;
+    public string itemName;
     public Texture Icon;
     public enum ItemType { Item, Consumable, None };
     public ItemType thisItemType;
     [TextArea] public string description;
-    public ushort ItemValue;
+    public ushort itemValue;
 
     [Header("In-Store Purchase")]
     public bool NoQuantityLimit;

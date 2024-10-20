@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class VirtualStorageBag : MonoBehaviour
 {
     [SerializeField] private GameObject storagePanel;
+    private bool limitedUseTime;
     private GameObject AlertPop;
 
     void Start()
@@ -19,7 +20,7 @@ public class VirtualStorageBag : MonoBehaviour
         if (PlayerPrefs.HasKey(name + "_PositionStand"))
             GetComponent<RectTransform>().position = JsonUtility.FromJson<Vector3>(PlayerPrefs.GetString(name + "_PositionStand", string.Empty));
         else
-            GetComponent<RectTransform>().position = new Vector3(0, 0, 0);
+            GetComponent<RectTransform>().position = Input.mousePosition;
     }
 
     public void SetDefaultDescription(string description)
@@ -30,6 +31,11 @@ public class VirtualStorageBag : MonoBehaviour
     public void SetAlertPopReference(GameObject panel)
     {
         AlertPop = panel;
+    }
+
+    public void SetLimitedUsageTime(bool active)
+    {
+        limitedUseTime = active;
     }
 
     public void SetItemForDisplay(VirtualItemDatabase[] itemList)
@@ -71,6 +77,16 @@ public class VirtualStorageBag : MonoBehaviour
         }
     }
 
+    public void UseStorageItem(int index)
+    {
+        if (PlayerPrefs.GetString(name + "_ItemUsingBound", string.Empty) ==
+            PlayerPrefs.GetString(index + "_" + name + "_Slot_ItemBound", string.Empty))
+            ActivationOfItemUsage(PlayerPrefs.GetString(index + "_" + name + "_Slot_ItemBound", string.Empty));
+        else 
+            PlayerPrefs.SetString(name + "_ItemUsingBound", 
+                PlayerPrefs.GetString(index + "_" + name + "_Slot_ItemBound", string.Empty));
+    }
+
     public void DragPanel()
     {
         transform.position = new Vector3(Mathf.Clamp(Input.mousePosition.x, transform.localScale.x * 0.5f,
@@ -94,7 +110,7 @@ public class VirtualStorageBag : MonoBehaviour
     #region COMPONENT
     private ItemData FindItemToPlot(string itemName)
     {
-        foreach (ItemData item in Resources.LoadAll<ItemData>("Database_Item")) if (item.ItemName == itemName) return item;
+        foreach (ItemData item in Resources.LoadAll<ItemData>("Database_Item")) if (item.itemName == itemName) return item;
         return Resources.Load<ItemData>("Database_Item/#0");
     }
 
@@ -105,6 +121,46 @@ public class VirtualStorageBag : MonoBehaviour
             MeloMelo_ItemUsage_Settings.GetItemUsed(itemName);
 
         return itemAmount;
+    }
+
+    private void ActivationOfItemUsage(string itemToUsed)
+    {
+        VirtualItemDatabase itemFound = MeloMelo_GameSettings.GetAllItemFromLocal(itemToUsed);
+        if (itemFound.itemName == itemToUsed && GetTotalCountItem(itemToUsed) > 0)
+        {
+            PlayerPrefs.DeleteKey(name + "_ItemUsingBound");
+
+            // Use of item and activation
+            foreach (UsageOfItemDetail item in Resources.LoadAll<UsageOfItemDetail>
+                ("Database_Item/Filtered_Items/" + itemToUsed.Split(" ")[1] + "_" + itemToUsed.Split(" ")[2]))
+            {
+                if (item.itemName == itemFound.itemName)
+                {
+                    if (PlayerPrefs.HasKey("Character_VirtualItem_UsageOfItem"))
+                    {
+                        // Stackable: Comsumable for one character
+                        string onlyCharacter = PlayerPrefs.GetString("Character_VirtualItem_UsageOfItem", "None");
+                        int currentAmount = PlayerPrefs.GetInt(onlyCharacter + item.dataArray.Split(",")[0], 0);
+
+                        PlayerPrefs.SetInt(onlyCharacter + item.dataArray.Split(",")[0], 
+                            currentAmount + int.Parse(item.dataArray.Split(",")[1]));
+                    }
+                    else
+                    {
+                        // Single Usage: Consumable for all characters 
+                        for (int slot_id = 0; slot_id < 3; slot_id++)
+                        {
+                            string currentCharacter = PlayerPrefs.GetString("Slot" + (slot_id + 1) + "_charName", "None");
+                            PlayerPrefs.SetInt(currentCharacter + item.dataArray.Split(",")[0], 
+                                int.Parse(item.dataArray.Split(",")[1]));
+                        }
+                    }
+
+                    MeloMelo_ItemUsage_Settings.SetItemUsed(itemFound.itemName);
+                    if (limitedUseTime) ClosePanel();
+                }
+            }
+        }
     }
     #endregion
 }

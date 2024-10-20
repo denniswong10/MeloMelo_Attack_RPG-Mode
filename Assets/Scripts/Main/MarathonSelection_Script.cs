@@ -85,6 +85,8 @@ public partial class MainSelection_Script
     [SerializeField] private ContentSelectionLocker_Script contentVisiblility;
     public ContentSelectionLocker_Script get_lockedContent { get { return contentVisiblility; } }
 
+    [SerializeField] private GameObject[] CurrencyPanel;
+
     public MainSelection_Script()
     {
         contentVisiblility = new ContentSelectionLocker_Script();
@@ -120,12 +122,16 @@ public partial class MainSelection_Script
 
     private void UpdateCurrencyInterface()
     {
-        if (GameObject.Find("Credit_Currency") != null)
-            GameObject.Find("Credit_Currency").GetComponentInChildren<Text>().text = 
-                PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_Credit", 0).ToString();
+        LocalLoad_DataManagement itemLoader = new LocalLoad_DataManagement(
+           LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+        itemLoader.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
+        itemLoader.LoadVirtualItemToPlayer();
 
-        if (GameObject.Find("QuestCleared_Currency") != null)
-            GameObject.Find("QuestCleared_Currency").GetComponentInChildren<Text>().text = "0";
+        PlayerPrefs.SetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_" + "Honor Coin", 
+            MeloMelo_GameSettings.GetAllItemFromLocal("HONOR COIN").amount);
+
+        for (int panel = 0; panel < CurrencyPanel.Length; panel++)
+            CurrencyPanel[panel].GetComponent<CurrencyInTag_Scripts>().UpdateCurrencyValue();
     }
     #endregion
 }

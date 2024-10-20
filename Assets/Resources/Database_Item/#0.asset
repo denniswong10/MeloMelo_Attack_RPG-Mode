@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
   m_Name: '#0'
   m_EditorClassIdentifier: 
-  ItemName: ???
+  itemName: ???
   Icon: {fileID: 2800000, guid: 2c7ecd858028ccb438569acc6add4135, type: 3}
   thisItemType: 2
-  description: This item is still unknown.
-  ItemValue: 0
+  description: This item is still unknown. Do you still want to keep it as the game
+    update this item.
+  itemValue: 0
   NoQuantityLimit: 0
   CreditSet: 0

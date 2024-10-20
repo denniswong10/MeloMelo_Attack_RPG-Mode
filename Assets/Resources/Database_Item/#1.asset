@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
   m_Name: '#1'
   m_EditorClassIdentifier: 
-  ItemName: 500 EXP TICKET
-  Icon: {fileID: 2800000, guid: b180d0f4dfe782741af3a140d2cda228, type: 3}
+  itemName: 500 EXP TICKET
+  Icon: {fileID: 2800000, guid: a778163da4887b64e98aee197b39d7cb, type: 3}
   thisItemType: 1
   description: Get 500 experience points to a single character.
-  ItemValue: 1
+  itemValue: 1
   NoQuantityLimit: 0
   CreditSet: 0

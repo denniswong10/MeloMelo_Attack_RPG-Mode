@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
   m_Name: '#5'
   m_EditorClassIdentifier: 
-  ItemName: 10X EXP POTION
+  itemName: 10X EXP POTION
   Icon: {fileID: 2800000, guid: 4571d46e9894794429d4d88524cb2a91, type: 3}
   thisItemType: 1
   description: Receive 10 times of experience points during battle. Applies for all
     characters.
-  ItemValue: 3
+  itemValue: 8
   NoQuantityLimit: 0
   CreditSet: 0

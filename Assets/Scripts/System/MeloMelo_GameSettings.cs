@@ -281,15 +281,19 @@ public static class MeloMelo_GameSettings
         MeloMelo_Local.LocalLoad_DataManagement loadForUse = new MeloMelo_Local.LocalLoad_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
             "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
 
-        string[] dataForUse = loadForUse.GetLocalJsonFile(GetLocalFileExchangeHistory, true).Split("/");
-        foreach (string data in dataForUse)
+        try
         {
-            if (data != string.Empty)
+            string[] dataForUse = loadForUse.GetLocalJsonFile(GetLocalFileExchangeHistory, true).Split("/");
+            foreach (string data in dataForUse)
             {
-                DataPackStructure dataPack = JsonUtility.FromJson<DataPackStructure>(data);
-                if (dataPack.unqiueCode == code_access) return true;
+                if (data != string.Empty)
+                {
+                    DataPackStructure dataPack = JsonUtility.FromJson<DataPackStructure>(data);
+                    if (dataPack.unqiueCode == code_access) return true;
+                }
             }
         }
+        catch { }
 
         return false;
     }
@@ -421,33 +425,32 @@ public static class MeloMelo_ItemUsage_Settings
     public static int GetItemUsed(string itemName) { return PlayerPrefs.GetInt(itemName + "_VirtualItem_Unsaved_Used", 0); }
     public static string[] GetAllItemUsed() 
     {
-        List<string> itemListing = new List<string>();
-        MeloMelo_Local.LocalLoad_DataManagement loadForCheck = new MeloMelo_Local.LocalLoad_DataManagement(
-            LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
-
-        foreach (string itemData in loadForCheck.GetLocalJsonFileToArray(LoginPage_Script.thisPage.GetUserPortOutput() + "_" + 
-            MeloMelo_GameSettings.GetLocalFileVirtualItemData))
+        try
         {
-            if (itemData != string.Empty)
+            List<string> itemListing = new List<string>();
+            MeloMelo_Local.LocalLoad_DataManagement loadForCheck = new MeloMelo_Local.LocalLoad_DataManagement(
+                LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+
+            foreach (string itemData in loadForCheck.GetLocalJsonFileToArray(LoginPage_Script.thisPage.GetUserPortOutput() + "_" +
+                MeloMelo_GameSettings.GetLocalFileVirtualItemData))
             {
-                VirtualItemDatabase item = new VirtualItemDatabase().GetItemData(itemData);
-                if (PlayerPrefs.GetInt(item.itemName + "_VirtualItem_Unsaved_Used", 0) > 0)
-                    itemListing.Add(item.itemName);
+                if (itemData != string.Empty)
+                {
+                    VirtualItemDatabase item = new VirtualItemDatabase().GetItemData(itemData);
+                    if (PlayerPrefs.GetInt(item.itemName + "_VirtualItem_Unsaved_Used", 0) > 0)
+                        itemListing.Add(item.itemName);
+                }
             }
+
+            return itemListing.ToArray();
         }
+        catch { }
 
-        return itemListing.ToArray();
+        return null;
     }
-
-    public static void SetExpBoost(string className, int amount) 
-    { 
-        int currentAmount = PlayerPrefs.GetInt(className + "_EXP_BOOST", 0);
-        PlayerPrefs.SetInt(className + "_EXP_BOOST", currentAmount + amount); 
-    }
-    public static void SetAllyExpBoost(int amount) { PlayerPrefs.SetInt("ALLY_EXP_BOOST_", amount); }
-    public static void SetAllyPowerBoost(int amount) { PlayerPrefs.SetInt("ALLY_POWER_BOOST_", amount); }
 
     public static int GetExpBoost(string className) { return PlayerPrefs.GetInt(className + "_EXP_BOOST", 0); }
-    public static int GetAllyExpBoost() { return PlayerPrefs.GetInt("ALLY_EXP_BOOST_", 0); }
-    public static int GetAllyPowerBoost() { return PlayerPrefs.GetInt("ALLY_POWER_BOOST_", 0); }
+    public static int GetExpBoostByMultiply(string className) { return PlayerPrefs.GetInt(className + "_EXP_BOOST_2", 0); }
+    public static int GetPowerBoost(string className) { return PlayerPrefs.GetInt(className + "_POWER_BOOST", 0); }
+    public static int GetPowerBoostByMultiply(string className) { return PlayerPrefs.GetInt(className + "_POWER_BOOST_2", 0); }
 }

@@ -32,6 +32,7 @@ public class CollectionNew_Script : MonoBehaviour
 
     public GameObject ContentTrackDashBoard;
     public GameObject LoadingScreen_TrackContent;
+    [SerializeField] private GameObject BoostPanelTemplate;
 
     [SerializeField] private CharacterAlbum_Base collection_characterAlbum;
     [SerializeField] private CharacterFormation_Base collection_formation;
@@ -39,6 +40,7 @@ public class CollectionNew_Script : MonoBehaviour
     void Update()
     {
         if (Input.anyKeyDown && ContentTrackDashBoard.activeInHierarchy) ContentTrackDashBoard.SetActive(false);
+        if (GameObject.Find("EXP_Boost_Panel") != null) collection_characterAlbum.UpdateTicketPrompt("EXP_Boost_Panel");
     }
 
     // Component System: Start-up
@@ -290,46 +292,52 @@ public class CollectionNew_Script : MonoBehaviour
         collection_characterAlbum.CancelMastery();
     }
 
-    public void ExperienceBoost_StartUpButton(GameObject miniPanel)
+    public void ExperienceBoost_StartUpButton(string miniPanel)
     {
-        miniPanel.SetActive(collection_characterAlbum.UseOfTicketAllow());
-        collection_characterAlbum.UpdateTicketPrompt();
+        if (collection_characterAlbum.UseOfTicketAllow())
+        {
+            if (GameObject.Find(miniPanel) == null)
+            {
+                GameObject instance_panel = Instantiate(BoostPanelTemplate);
+                instance_panel.name = miniPanel;
+
+                instance_panel.GetComponent<VirtualStorageBag>().SetAlertPopReference(collection_characterAlbum.CharacterTab_MessageTab);
+                instance_panel.GetComponent<VirtualStorageBag>().SetDefaultDescription("No ticket has been used");
+                instance_panel.GetComponent<VirtualStorageBag>().SetItemForDisplay(GetItemArray());
+                instance_panel.GetComponent<VirtualStorageBag>().SetLimitedUsageTime(false);
+                instance_panel.transform.SetParent(collection_characterAlbum.selectionPanel.transform);
+            }
+
+            if (GameObject.Find(miniPanel) != null)
+                PlayerPrefs.SetString("Character_VirtualItem_UsageOfItem", collection_characterAlbum.GetCurrentSelectCharacter());
+        }
     }
 
-    public void CloseButton_ExperienceBoost(GameObject miniPanel)
+    private VirtualItemDatabase[] GetItemArray()
     {
-        miniPanel.SetActive(false);
-    }
+        List<VirtualItemDatabase> listOfItem; 
+        listOfItem = new List<VirtualItemDatabase>();
+        foreach (UsageOfItemDetail item in Resources.LoadAll<UsageOfItemDetail>("Database_Item/Filtered_Items/EXP_TICKET"))
+        {
+            VirtualItemDatabase itemFound = MeloMelo_GameSettings.GetAllItemFromLocal(item.itemName);
+            if (itemFound.amount > 0) listOfItem.Add(itemFound);
+        }
 
-    public void ToggleOver_TicketInformationTab(string title)
-    {
-        collection_characterAlbum.UpdateTicketUsage(true, title);
-    }
-
-    public void ToggleOut_TicketInformationTab()
-    {
-        collection_characterAlbum.UpdateTicketUsage(false);
-    }
-
-    public void ActivationOfTicket_ExperienceBoost(string title)
-    {
-        if (!collection_characterAlbum.UseOfTicketAllow()) return;
-        if (PlayerPrefs.GetString("TicketUsage_Bound", string.Empty) == title) { collection_characterAlbum.ActivateTicketUse(title); }
-        else PlayerPrefs.SetString("TicketUsage_Bound", title);
+        return listOfItem.ToArray();
     }
     #endregion
 
     [System.Serializable]
     public class CharacterAlbum_Base
     {
-        [SerializeField] private GameObject selectionPanel;
+        public GameObject selectionPanel;
         [SerializeField] private Texture NoneOfAbove;
         [SerializeField] private Texture[] ElementListing;
 
         private List<SkillContainer> skill_listing_container;
         [SerializeField] private GameObject[] MasteryTabs;
         [SerializeField] private GameObject MasteryInfoTab;
-        [SerializeField] private GameObject CharacterTab_MessageTab;
+        public GameObject CharacterTab_MessageTab;
         [SerializeField] private Text TicketPromptMessage;
 
         private List<ClassBase> Character_Database;
@@ -565,43 +573,19 @@ public class CollectionNew_Script : MonoBehaviour
             return MeloMelo_CharacterInfo_Settings.GetCharacterStatus(Character_Database[characterToggleIndex - 1].name);
         }
 
-        public void UpdateTicketUsage(bool active, string title = "")
-        {
-            // Display message tab: ItemName with amount stated
-            CharacterTab_MessageTab.SetActive(active);
-            CharacterTab_MessageTab.transform.GetChild(0).GetComponent<Text>().text = title + 
-                " ( x" + Mathf.Clamp(GetTotalTicketCount(title), 0, 9999) + " )";
-        }
-
-        public void ActivateTicketUse(string title)
-        {
-            // Check for ticket and update amount uses
-            VirtualItemDatabase ticket = MeloMelo_GameSettings.GetAllItemFromLocal(title);
-            if (ticket.itemName == title && GetTotalTicketCount(title) > 0) 
-            { 
-                PlayerPrefs.DeleteKey("TicketUsage_Bound"); 
-                MeloMelo_ItemUsage_Settings.SetItemUsed(ticket.itemName);
-                MeloMelo_ItemUsage_Settings.SetExpBoost(Character_Database[characterToggleIndex - 1].name, int.Parse(title.Split(" ")[0]));
-                UpdateTicketPrompt();
-            }
-        }
-
-        private int GetTotalTicketCount(string title)
-        {
-            // Ticket counted in storage bag and current used items
-            int ticketAmount = MeloMelo_GameSettings.GetAllItemFromLocal(title).amount -
-                MeloMelo_ItemUsage_Settings.GetItemUsed(title);
-
-            return ticketAmount;
-        }
-
-        public void UpdateTicketPrompt()
+        public void UpdateTicketPrompt(string panel)
         {
             if (MeloMelo_ItemUsage_Settings.GetExpBoost(Character_Database[characterToggleIndex - 1].name) > 0)
-                TicketPromptMessage.text = "Boosted x" + MeloMelo_ItemUsage_Settings.GetExpBoost(Character_Database[characterToggleIndex - 1].name) +
+                GameObject.Find(panel).transform.GetChild(2).GetComponent<Text>().text = 
+                    "Boosted x" + MeloMelo_ItemUsage_Settings.GetExpBoost(Character_Database[characterToggleIndex - 1].name) +
                     " experience through ticket";
             else
-                TicketPromptMessage.text = "No ticket has been used";
+                GameObject.Find(panel).transform.GetChild(2).GetComponent<Text>().text = "No ticket has been used";
+        }
+
+        public string GetCurrentSelectCharacter()
+        {
+            return Character_Database[characterToggleIndex - 1].name;
         }
 
         private Button NagivatorSelector(int index)

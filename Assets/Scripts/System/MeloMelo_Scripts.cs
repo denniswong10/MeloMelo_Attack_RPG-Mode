@@ -1279,6 +1279,7 @@ namespace MeloMelo_Local
         public int ratePoint;
         public int playedCount;
         public int creditValue;
+        public int magicStoneValue;
 
         public ProfileProgressDatabase GetProfileData(string format)
         {
@@ -1771,6 +1772,7 @@ namespace MeloMelo_Local
                 PlayerPrefs.SetInt(user + "UserRatePointToggle", data.ratePoint);
                 PlayerPrefs.SetInt(user + "PlayedCount_Data", data.playedCount);
                 PlayerPrefs.SetInt(user + "_Credit", data.creditValue);
+                PlayerPrefs.SetInt(user + "_Magic Stone", data.magicStoneValue);
             }
 
             return true;
@@ -2065,7 +2067,8 @@ namespace MeloMelo_Local
 
             data.ratePoint = PlayerPrefs.GetInt(user + "totalRatePoint", 0);
             data.playedCount = PlayerPrefs.GetInt(user + "PlayedCount_Data", 0) + 1;
-            data.creditValue = PlayerPrefs.GetInt(user + "_Credit", 0);
+            data.creditValue = PlayerPrefs.GetInt(user + "_Credits", 0);
+            data.magicStoneValue = PlayerPrefs.GetInt(user + "_Magic Stone", 0);
 
             JsonFormat += JsonUtility.ToJson(data);
             WriteToFile(JsonFormat);

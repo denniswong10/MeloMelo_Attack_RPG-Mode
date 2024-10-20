@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
   m_Name: '#13'
   m_EditorClassIdentifier: 
-  ItemName: 10X CREDIT COUPON
+  itemName: 10 CREDIT COUPON
   Icon: {fileID: 2800000, guid: 451978fe62486e5429ee96c4aa0602f8, type: 3}
   thisItemType: 0
   description: Can be exchange for in-game currency. This coupon worth 10 credits
     after reedem it. Click on this item again to reedem this coupon.
-  ItemValue: 1
+  itemValue: 0
   NoQuantityLimit: 0
   CreditSet: 0

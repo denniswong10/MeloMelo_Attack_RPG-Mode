@@ -17,14 +17,15 @@ public class StoragePage_Script : MonoBehaviour
     [SerializeField] private Button[] NagivatorSelector;
     [SerializeField] private GameObject ItemDesPanel;
     [SerializeField] private GameObject AlertPop;
+    [SerializeField] private GameObject DiscardPit;
+
     [SerializeField] private GameObject[] CurrencyPanel;
 
     void Start()
     {
         BGM_Loader();
-        Selection.GetComponent<Animator>().SetTrigger("Opening");
-        Invoke("GetStorageOnCurrency", 2);
 
+        Selection.GetComponent<Animator>().SetTrigger("Opening");
         Invoke("RefreshStorageLoader", 2);
         Invoke("GetNagivator", 2);
     }
@@ -57,8 +58,10 @@ public class StoragePage_Script : MonoBehaviour
     {
         int currentPage = PlayerPrefs.GetInt("StorageBag_PageIndex", 0);
         ClearSlotData();
-        VirtualItemDatabase[] allItems = MeloMelo_GameSettings.GetAllActiveItem();
+        PerformItemFileLoader();
 
+        VirtualItemDatabase[] allItems = MeloMelo_GameSettings.GetAllActiveItem();
+        GetStorageOnCurrency();
         for (int slot_id = 0; slot_id < slots.Length; slot_id++)
         {
             int currentSlot = slots.Length * currentPage + slot_id;
@@ -106,19 +109,23 @@ public class StoragePage_Script : MonoBehaviour
         if (PlayerPrefs.HasKey(slot_index + "_Slot_ItemName"))
         {
             ItemData currentData = RetrieveItemData(PlayerPrefs.GetString(slot_index + "_Slot_ItemName", string.Empty));
-            ItemDesPanel.transform.GetChild(0).GetComponent<Text>().text = currentData.ItemName == string.Empty ? "???" :
-                currentData.ItemName;
+            string[] typeOfItems = { "Item", "Consumable", "Non-Item" };
+            ItemDesPanel.transform.GetChild(0).GetComponent<Text>().text = currentData.itemName == string.Empty ? "???" :
+                currentData.itemName;
 
             ItemDesPanel.transform.GetChild(1).GetComponent<Text>().text = currentData.description;
 
             ItemDesPanel.transform.GetChild(2).GetComponent<Text>().text =
-                currentData.ItemValue > 0 ? "Item Rank: " + currentData.ItemValue : string.Empty;
+                currentData.itemValue > 0 ? "Item Rank: " + currentData.itemValue : string.Empty;
+
+            ItemDesPanel.transform.GetChild(3).GetComponent<Text>().text = "Item Type: " + typeOfItems[(int)currentData.thisItemType];
         }
         else
         {
             ItemDesPanel.transform.GetChild(0).GetComponent<Text>().text = string.Empty;
             ItemDesPanel.transform.GetChild(1).GetComponent<Text>().text = "Select an item to view details";
             ItemDesPanel.transform.GetChild(2).GetComponent<Text>().text = string.Empty;
+            ItemDesPanel.transform.GetChild(3).GetComponent<Text>().text = string.Empty;
         }
     }
 
@@ -133,9 +140,13 @@ public class StoragePage_Script : MonoBehaviour
                 switch (RetrieveItemData(PlayerPrefs.GetString(slot_index + "_Slot_ItemName", string.Empty)).thisItemType)
                 {
                     case ItemData.ItemType.Item:
-                        MeloMelo_ItemUsage_Settings.SetItemUsed(PlayerPrefs.GetString(slot_index + "_Slot_ItemName", string.Empty));
+                        ItemData itemfound = RetrieveItemData(PlayerPrefs.GetString(slot_index + "_Slot_ItemName", string.Empty));
+                        MeloMelo_ItemUsage_Settings.SetItemUsed(itemfound.itemName);
+                        PerformItemUpdateFile(itemfound.itemName, -MeloMelo_ItemUsage_Settings.GetItemUsed(itemfound.itemName));
+                        StartCoroutine(PerformItemInCaterogy(itemfound.itemName));
+
                         RefreshStorageLoader();
-                        StartCoroutine(PromptMessageBox("Successfully Used: " + PlayerPrefs.GetString(slot_index + "_Slot_ItemName", string.Empty)));
+                        GetStorageOnCurrency();
                         break;
 
                     case ItemData.ItemType.Consumable:
@@ -143,7 +154,7 @@ public class StoragePage_Script : MonoBehaviour
                         break;
 
                     default:
-                        StartCoroutine(PromptMessageBox("Empty!"));
+                        DiscardPit.SetActive(true);
                         break;
                 }
             }
@@ -160,6 +171,49 @@ public class StoragePage_Script : MonoBehaviour
     #endregion
 
     #region COMPONENT
+    private IEnumerator PerformItemInCaterogy(string item_Reference)
+    {
+        // Use item and perform item
+        foreach (UsageOfItemDetail item in Resources.LoadAll<UsageOfItemDetail>("Database_Item/Filtered_Items/Others"))
+        {
+            if (item_Reference == item.itemName)
+            {
+                switch (item.useTypeDetail)
+                {
+                    case UsageOfItemDetail.UseType.Bundle:
+                        string[] listOfItems = item.dataArray.Split("/");
+                        foreach (string itemThroughJson in listOfItems)
+                        {
+                            if (itemThroughJson != string.Empty)
+                            {
+                                VirtualItemDatabase fromJson = JsonUtility.FromJson<VirtualItemDatabase>(itemThroughJson);
+                                ItemData itemInDatabase = RetrieveItemData(fromJson.itemName);
+
+                                PerformItemUpdateFile(fromJson.itemName, fromJson.amount);
+                                StartCoroutine(PromptMessageBox(fromJson.amount + "X Obtained Item: " + itemInDatabase.itemName));
+                                yield return new WaitForSeconds(3);
+                            }
+                        }
+                        break;
+
+                    case UsageOfItemDetail.UseType.Consumable:
+                        string[] instant_value = item.dataArray.Split(",");
+                        PlayerPrefs.SetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_" + instant_value[0],
+                            int.Parse(instant_value[1]));
+
+                        StartCoroutine(PromptMessageBox("New Balance ( " + instant_value[0] + " ) : " +
+                            PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_" + instant_value[0], 0)));
+                        yield return new WaitForSeconds(3);
+                        break;
+                }
+
+                RefreshStorageLoader();
+                GetStorageOnCurrency();
+                StartCoroutine(PromptMessageBox("Successfully Used: " + item.itemName));
+            }
+        }
+    }
+
     private void GetNagivator()
     {
         NagivatorSelector[0].interactable = PlayerPrefs.GetInt("StorageBag_PageIndex", 0) > 0;
@@ -175,7 +229,7 @@ public class StoragePage_Script : MonoBehaviour
 
     private ItemData RetrieveItemData(string itemName)
     {
-        foreach (ItemData item in Resources.LoadAll<ItemData>("Database_Item")) if (item.ItemName == itemName) return item;
+        foreach (ItemData item in Resources.LoadAll<ItemData>("Database_Item")) if (item.itemName == itemName) return item;
         return Resources.Load<ItemData>("Database_Item/#0");
     }
 
@@ -183,10 +237,29 @@ public class StoragePage_Script : MonoBehaviour
     {
         AlertPop.SetActive(true);
         AlertPop.transform.GetChild(0).GetComponent<Text>().text = message;
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(3);
         AlertPop.SetActive(false); 
     }
 
     private void LeaveStoragePage_2() { SceneManager.LoadScene("Collections"); }
+    #endregion
+
+    #region MISC
+    private void PerformItemUpdateFile(string itemName, int updateAmount)
+    {
+        MeloMelo_Local.LocalSave_DataManagement itemLoader = new MeloMelo_Local.LocalSave_DataManagement(
+                            LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+        itemLoader.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
+        itemLoader.SaveVirtualItemFromPlayer(itemName, updateAmount);
+        PlayerPrefs.DeleteKey(itemName + "_VirtualItem_Unsaved_Used");
+    }
+
+    private void PerformItemFileLoader()
+    {
+        MeloMelo_Local.LocalLoad_DataManagement itemLoader = new MeloMelo_Local.LocalLoad_DataManagement(
+           LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+        itemLoader.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
+        itemLoader.LoadVirtualItemToPlayer();
+    }
     #endregion
 }

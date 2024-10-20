@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
   m_Name: '#3'
   m_EditorClassIdentifier: 
-  ItemName: 2X EXP POTION
+  itemName: 2X EXP POTION
   Icon: {fileID: 2800000, guid: 8cd2506f55c5aa147857230784e7d4d6, type: 3}
   thisItemType: 1
   description: Double up the experience points during battle. Applies for all characters.
-  ItemValue: 1
+  itemValue: 4
   NoQuantityLimit: 0
   CreditSet: 0

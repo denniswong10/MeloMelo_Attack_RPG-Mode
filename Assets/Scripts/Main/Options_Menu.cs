@@ -478,7 +478,7 @@ public class Options_Menu : MonoBehaviour
 public class SettingsScripts
 {
     private readonly string[] sceneTransitionList = { "Menu", "Controls", "Credits" };
-    private readonly string[] sceneSubTransitionList = { "ProfileView", "ServerGateway" };
+    private readonly string[] sceneSubTransitionList = { "ServerGateway", "ProfileView" };
 
     private List<BundleOptionSettings> optionSettings;
     private int currentOptionCaterogy;
@@ -685,21 +685,25 @@ public class SettingsScripts
         int lengthOfVersion = 0, currentVersion = -1;
         bool isVerify = false;
 
-        foreach (DataPackStructure key in allData.data)
+        try
         {
-            if (key.unqiueCode == dataKey)
+            foreach (DataPackStructure key in allData.data)
             {
-                isVerify = true;
-                for (int countOfVersion = 0; countOfVersion < versionControl.versions.Length; countOfVersion++)
+                if (key.unqiueCode == dataKey)
                 {
-                    if (versionControl.versions[countOfVersion] == StartMenu_Script.thisMenu.get_version)
-                        currentVersion = countOfVersion;
+                    isVerify = true;
+                    for (int countOfVersion = 0; countOfVersion < versionControl.versions.Length; countOfVersion++)
+                    {
+                        if (versionControl.versions[countOfVersion] == StartMenu_Script.thisMenu.get_version)
+                            currentVersion = countOfVersion;
 
-                    if (versionControl.versions[countOfVersion] == key.version)
-                        lengthOfVersion = countOfVersion;
+                        if (versionControl.versions[countOfVersion] == key.version)
+                            lengthOfVersion = countOfVersion;
+                    }
                 }
             }
         }
+        catch { }
 
         //Debug.Log("Current Version: " + currentVersion + " | Latest Version: " + lengthOfVersion);
         return isVerify && lengthOfVersion != -1 && currentVersion >= lengthOfVersion;

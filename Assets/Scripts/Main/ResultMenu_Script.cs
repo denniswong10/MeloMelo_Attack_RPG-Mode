@@ -24,6 +24,7 @@ public class ResultMenu_Script : MonoBehaviour
     [Header("Output: Result")]
     [SerializeField] private GameObject ScoreResult;
     [SerializeField] private GameObject PointResult;
+    [SerializeField] private GameObject PromptMessage;
 
     // Allocate: Stats Database
     private StatsDistribution stats = new StatsDistribution();
@@ -139,12 +140,12 @@ public class ResultMenu_Script : MonoBehaviour
             StatsManage_Database database = new StatsManage_Database(stats.slot_Stats[i].name);
             stats.slot_Stats[i].UpdateCurrentStats(false);
 
-            int experienceAfterBoost = (MeloMelo_ItemUsage_Settings.GetAllyExpBoost() > 0 ? MeloMelo_ItemUsage_Settings.GetAllyExpBoost() : 1) *
-                PlayerPrefs.GetInt("Temp_Experience", 0);
+            int experienceAfterBoost = MeloMelo_ItemUsage_Settings.GetExpBoost(stats.slot_Stats[i].name) +
+                (MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(stats.slot_Stats[i].name) > 0 ?
+                    MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(stats.slot_Stats[i].name) * PlayerPrefs.GetInt("Temp_Experience", 0) :
+                        PlayerPrefs.GetInt("Temp_Experience", 0));
 
-            stats.slot_Stats[i].experience += PlayerPrefs.HasKey("MarathonPermit") ? 0 : 
-                (experienceAfterBoost + MeloMelo_ItemUsage_Settings.GetExpBoost(stats.slot_Stats[i].name));
-
+            stats.slot_Stats[i].experience += PlayerPrefs.HasKey("MarathonPermit") ? 0 : experienceAfterBoost;
             stats.slot_Stats[i].UpdateCurrentStats(true);
 
             if (stats.slot_Stats[i].name != "None")
@@ -159,7 +160,7 @@ public class ResultMenu_Script : MonoBehaviour
                 GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(2).GetComponent<Text>().text = "- " + stats.slot_Stats[i].characterName + " -";
                 GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(3).GetComponent<Text>().text = "EXP: " + stats.slot_Stats[i].experience + "/" + 
                     database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience + " (+" 
-                    + (PlayerPrefs.HasKey("MarathonPermit") ? 0 : (experienceAfterBoost +  MeloMelo_ItemUsage_Settings.GetExpBoost(stats.slot_Stats[i].name))) + ")";
+                    + (PlayerPrefs.HasKey("MarathonPermit") ? 0 : experienceAfterBoost) + ")";
 
                 GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(4).GetComponent<Text>().text = "LEVEL: " + stats.slot_Stats[i].level;
 
@@ -179,15 +180,10 @@ public class ResultMenu_Script : MonoBehaviour
 
         // Load Result 
         GameObject.Find("Perfect2").GetComponent<Text>().text = "Critical Perfect: " + GameManager.thisManager.getJudgeWindow.get_perfect2;
-        //PlayerPrefs.GetInt("Perfect2_count", 0);
-
         GameObject.Find("Perfect").GetComponent<Text>().text = "Perfect: " + GameManager.thisManager.getJudgeWindow.get_perfect; 
-        //PlayerPrefs.GetInt("Perfect_count", 0);
-
-        GameObject.Find("Bad").GetComponent<Text>().text = "Bad: " + GameManager.thisManager.getJudgeWindow.get_bad; 
-        //PlayerPrefs.GetInt("Bad_count", 0);
-
+        GameObject.Find("Bad").GetComponent<Text>().text = "Bad: " + GameManager.thisManager.getJudgeWindow.get_bad;
         GameObject.Find("Miss").GetComponent<Text>().text = "Miss: " + PlayerPrefs.GetInt("Miss_count", 0);
+
         GameObject.Find("MaxCombo_Value").GetComponent<Text>().text = GameManager.thisManager.getJudgeWindow.getMaxCombo + " / " + 
             GameManager.thisManager.getJudgeWindow.getOverallCombo;
 
@@ -574,9 +570,14 @@ public class ResultMenu_Script : MonoBehaviour
                     data.SaveCharacterStatsProgress(character.name, character.level, character.experience);
 
                     // Clear effect buff: After used
-                    if (MeloMelo_ItemUsage_Settings.GetExpBoost(character.name) > 0) MeloMelo_ItemUsage_Settings.SetExpBoost(character.name, 0);
-                    if (MeloMelo_ItemUsage_Settings.GetAllyExpBoost() > 0) MeloMelo_ItemUsage_Settings.SetAllyExpBoost(0);
-                    if (MeloMelo_ItemUsage_Settings.GetAllyPowerBoost() > 0) MeloMelo_ItemUsage_Settings.SetAllyPowerBoost(0);
+                    if (MeloMelo_ItemUsage_Settings.GetExpBoost(character.name) > 0) 
+                        PlayerPrefs.SetInt(character.name + "_EXP_BOOST", 0);
+                    if (MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(character.name) > 0) 
+                        PlayerPrefs.SetInt(character.name + "_EXP_BOOST_2", 0);
+                    if (MeloMelo_ItemUsage_Settings.GetPowerBoost(character.name) > 0) 
+                        PlayerPrefs.SetInt(character.name + "_POWER_BOOST", 0);
+                    if (MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(character.name) > 0) 
+                        PlayerPrefs.SetInt(character.name + "_POWER_BOOST_2", 0);
                 }
             }
 
@@ -587,11 +588,20 @@ public class ResultMenu_Script : MonoBehaviour
             // Save: Items
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
             string[] listOfUsedItem = MeloMelo_ItemUsage_Settings.GetAllItemUsed();
-            foreach (string itemName in listOfUsedItem)
+
+            if (listOfUsedItem != null)
             {
-                Debug.Log("Item Used: " + itemName + " ( x" + MeloMelo_ItemUsage_Settings.GetItemUsed(itemName) + " )");
-                data.SaveVirtualItemFromPlayer(itemName, -MeloMelo_ItemUsage_Settings.GetItemUsed(itemName));
-                PlayerPrefs.DeleteKey(itemName + "_VirtualItem_Unsaved_Used");
+                foreach (string itemName in listOfUsedItem)
+                {
+                    PromptMessage.SetActive(true);
+                    PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Successful Used: " + 
+                        itemName + " ( x" + MeloMelo_ItemUsage_Settings.GetItemUsed(itemName) + " )";
+
+                    data.SaveVirtualItemFromPlayer(itemName, -MeloMelo_ItemUsage_Settings.GetItemUsed(itemName));
+                    PlayerPrefs.DeleteKey(itemName + "_VirtualItem_Unsaved_Used");
+                    yield return new WaitForSeconds(2);
+                    PromptMessage.SetActive(false);
+                }
             }
         }
 

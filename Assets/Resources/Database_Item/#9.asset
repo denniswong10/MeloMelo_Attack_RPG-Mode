@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
   m_Name: '#9'
   m_EditorClassIdentifier: 
-  ItemName: WELCOME GIFT
-  Icon: {fileID: 2800000, guid: 2c7ecd858028ccb438569acc6add4135, type: 3}
+  itemName: WELCOME GIFT
+  Icon: {fileID: 2800000, guid: e8c9f2f52fd644f44bf01ce23700601f, type: 3}
   thisItemType: 0
   description: A gift for new player to start off their first adventure. Click on
     this item again to open this gift.
-  ItemValue: 1
+  itemValue: 0
   NoQuantityLimit: 0
   CreditSet: 0
