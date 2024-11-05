@@ -76,7 +76,7 @@ public class GameManager : MonoBehaviour, IGameManager
     {
         thisManager = this;
         //PreSet_BattleSetup();
-        //PlayerPrefs.SetInt("NoteSpeed", 6);
+        //PlayerPrefs.SetInt("NoteSpeed", 3);
 
         if (JudgeCounter && PlayerPrefs.GetInt("JudgeMeter_Setup", 0) != 2) IntiJudgeCounterContent();
         else JudgeCounter.SetActive(false);
@@ -612,22 +612,27 @@ public class GameManager : MonoBehaviour, IGameManager
 
     private void CheckingRetreatStatus()
     {
-        if (GameObject.Find("Character") && GameObject.Find("Character").GetComponent<Character>().get_character.getInput.GetForInputExitPlay() 
-            && !RetreatSuccess && BeatConductor.thisBeat.get_startNote)
-        {
-            if (Time.time >= NextRetreatTime)
-            {
-                NextRetreatTime = Time.time + 1;
-                RetreatCounter--;
-                RetreatDisplay(true);
+        GameObject character = GameObject.FindGameObjectWithTag("MainCharacter");
 
-                if (RetreatCounter <= 0) RetreatTrigger();
-            }
-        }
-        else if (!RetreatSuccess)
+        if (character != null)
         {
-            RetreatDisplay(false);
-            RetreatCounter = 4;
+            if (character.GetComponent<Character>().get_character.getInput.GetForInputExitPlay()
+                && !RetreatSuccess && BeatConductor.thisBeat.get_startNote)
+            {
+                if (Time.time >= NextRetreatTime)
+                {
+                    NextRetreatTime = Time.time + 1;
+                    RetreatCounter--;
+                    RetreatDisplay(true);
+
+                    if (RetreatCounter <= 0) RetreatTrigger();
+                }
+            }
+            else if (!RetreatSuccess)
+            {
+                RetreatDisplay(false);
+                RetreatCounter = 4;
+            }
         }
     }
     #endregion

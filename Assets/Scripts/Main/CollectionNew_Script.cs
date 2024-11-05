@@ -294,22 +294,16 @@ public class CollectionNew_Script : MonoBehaviour
 
     public void ExperienceBoost_StartUpButton(string miniPanel)
     {
-        if (collection_characterAlbum.UseOfTicketAllow())
+        if (GameObject.Find(miniPanel) == null)
         {
-            if (GameObject.Find(miniPanel) == null)
-            {
-                GameObject instance_panel = Instantiate(BoostPanelTemplate);
-                instance_panel.name = miniPanel;
+            GameObject instance_panel = Instantiate(BoostPanelTemplate);
+            instance_panel.name = miniPanel;
 
-                instance_panel.GetComponent<VirtualStorageBag>().SetAlertPopReference(collection_characterAlbum.CharacterTab_MessageTab);
-                instance_panel.GetComponent<VirtualStorageBag>().SetDefaultDescription("No ticket has been used");
-                instance_panel.GetComponent<VirtualStorageBag>().SetItemForDisplay(GetItemArray());
-                instance_panel.GetComponent<VirtualStorageBag>().SetLimitedUsageTime(false);
-                instance_panel.transform.SetParent(collection_characterAlbum.selectionPanel.transform);
-            }
-
-            if (GameObject.Find(miniPanel) != null)
-                PlayerPrefs.SetString("Character_VirtualItem_UsageOfItem", collection_characterAlbum.GetCurrentSelectCharacter());
+            instance_panel.GetComponent<VirtualStorageBag>().SetAlertPopReference(collection_characterAlbum.CharacterTab_MessageTab);
+            instance_panel.GetComponent<VirtualStorageBag>().SetDefaultDescription("No ticket has been used");
+            instance_panel.GetComponent<VirtualStorageBag>().SetItemForDisplay(GetItemArray());
+            instance_panel.GetComponent<VirtualStorageBag>().SetLimitedUsageTime(false);
+            instance_panel.transform.SetParent(collection_characterAlbum.selectionPanel.transform);
         }
     }
 
@@ -436,7 +430,10 @@ public class CollectionNew_Script : MonoBehaviour
             string[] breakData = MasteryInfoTab.transform.GetChild(5).name.Split("_");
             ProcessToAddonsMastery(GetMasteryInfo(int.Parse(breakData[1])));
 
-            MeloMelo_ExtraStats_Settings.SetMasteryPoint(Character_Database[characterToggleIndex - 1].name, GetMasteryPointCost());
+            int currentMasteryPoint = MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name);
+            MeloMelo_ExtraStats_Settings.SetMasteryPoint(Character_Database[characterToggleIndex - 1].name, 
+                currentMasteryPoint - GetMasteryPointCost());
+
             if (GetMasteryInfo(int.Parse(breakData[1])).name.Split("_")[1] == "Ultimate") Character_Database[characterToggleIndex - 1].ResetLevel();          
             PlayerPrefs.DeleteKey("MasteryShuffleTab");
             UpdateRebornTab();
@@ -528,6 +525,7 @@ public class CollectionNew_Script : MonoBehaviour
                 currentExperience + "/" + characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetExperience;
 
             selectionPanel.transform.GetChild(2).GetChild(4).GetComponent<Text>().text = "REBIRTH: " + MeloMelo_ExtraStats_Settings.GetRebirthPoint(className);
+            PlayerPrefs.SetString(VirtualStorageBag.VirtualStorage_UsableKey, Character_Database[characterToggleIndex - 1].name);
             UpdateSkillTab();
         }
 
@@ -581,11 +579,6 @@ public class CollectionNew_Script : MonoBehaviour
                     " experience through ticket";
             else
                 GameObject.Find(panel).transform.GetChild(2).GetComponent<Text>().text = "No ticket has been used";
-        }
-
-        public string GetCurrentSelectCharacter()
-        {
-            return Character_Database[characterToggleIndex - 1].name;
         }
 
         private Button NagivatorSelector(int index)

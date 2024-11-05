@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
+  m_Name: '#24'
+  m_EditorClassIdentifier: 
+  itemName: PREMIUM TRACK TICKET
+  Icon: {fileID: 2800000, guid: 3b2025efcb21f26468ba7a47f3c7cea2, type: 3}
+  thisItemType: 1
+  description: This ticket can be use in varitey way such as restricted or dungeon
+    boss track. Ticket are high value obtainable within the event period. Used of
+    this ticket on restricted area can be played 5 times.
+  itemValue: 5
+  NoQuantityLimit: 0
+  CreditSet: 0

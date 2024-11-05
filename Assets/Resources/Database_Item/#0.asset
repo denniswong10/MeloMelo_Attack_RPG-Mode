@@ -15,8 +15,8 @@ MonoBehaviour:
   itemName: ???
   Icon: {fileID: 2800000, guid: 2c7ecd858028ccb438569acc6add4135, type: 3}
   thisItemType: 2
-  description: This item is still unknown. Do you still want to keep it as the game
-    update this item.
+  description: "This item is still unknown. \nDo you still want to keep it as the
+    game update this item."
   itemValue: 0
   NoQuantityLimit: 0
   CreditSet: 0

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
   m_Name: '#10'
   m_EditorClassIdentifier: 
-  itemName: 5 EXP POTION
+  itemName: 5 POWER POTION
   Icon: {fileID: 2800000, guid: 21902d8d569f2db46bbb0ef0ca73e40e, type: 3}
   thisItemType: 1
   description: Increase all stats by 5 during the battle. Applies for all characters.

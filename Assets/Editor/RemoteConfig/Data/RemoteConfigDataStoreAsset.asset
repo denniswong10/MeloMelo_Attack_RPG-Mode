@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: 
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"4a705004-3830-495d-a757-a0e6435290a9\"\r\n   
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"d7d12cc2-5c10-4b55-acb0-ca644e336f12\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"Latest_Version\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"1.4.3_Build_A\"\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"edca28e9-f063-4214-b42c-0f26ed701bd3\"\r\n   
+    \"string\",\r\n      \"value\": \"1.4.3_Build_B\"\r\n    }\r\n  },\r\n  {\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"1401d055-2caf-4680-9406-4dc17262bc8a\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameApplication_URL\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/946z91ygp1ody9o/MeloMelo_v1.4.3_Build_A.zip/file\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"24e38abb-24d7-4b6f-8101-dd02ba1f0014\"\r\n   
+    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/70lbsxj5uy97qz4/MeloMelo_v1.4.3_Build_B.zip/file\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"c916d758-77fc-4e93-a41b-760d32d8971f\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameWebpage_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"cfa9699c-60a4-4202-b1ff-eb9f2c4ea2bd\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"05cee8e5-c17f-4bdd-8ceb-5c0c27d9e408\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"47ce80cf-b287-4a73-9a31-d7988a8a2bdf\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"a55e2128-8678-4a84-8148-a6e35d8b1ea3\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue_v2\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"f2059654-9ad0-43ae-820d-41b6bebdc6c0\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"14934cfd-0c52-4975-819b-ece2bd9ed077\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"NoteSpeed_Settings_Configuration\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"data\": [\r\n         
     {\r\n            \"bpm\": 550,\r\n            \"baseSpeed\": 140\r\n         
@@ -43,14 +43,14 @@ MonoBehaviour:
     \"baseSpeed\": 30\r\n          },\r\n          {\r\n            \"bpm\": 160,\r\n           
     \"baseSpeed\": 25\r\n          },\r\n          {\r\n            \"bpm\": 150,\r\n           
     \"baseSpeed\": 23\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"9c5fc557-da11-4a26-8a6d-30fcfffbef3b\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"ce09e906-5faa-48fd-ae74-669411c2537d\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"NoteSpeed_Default_Configuration\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
     \"bpm\": 150,\r\n        \"baseSpeed\": 20\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"51417e9a-8787-4b76-8bb0-5ef891f0f276\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"baaa0d58-4a71-4892-8b64-4c99a0c163b1\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"CloudSave_Mode\",\r\n      \"type\":
     \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"b459266d-9979-48c9-957b-9c6296834c20\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"d46471c8-7e0e-46a8-9eec-1a71dc76fdbf\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"CloudSave_Support\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"versions\": [\r\n         
     \"1.4.1a\",\r\n          \"1.4.2a\",\r\n          \"1.4.0EX\",\r\n          \"1.4.0EX_Build_A\",\r\n         
@@ -58,18 +58,26 @@ MonoBehaviour:
     \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\",\r\n          \"1.4.1_Build_A\",\r\n         
     \"1.4.1_Build_B\",\r\n          \"1.4.2_Build_A\",\r\n          \"1.4.2_Build_B\",\r\n         
     \"1.4.3_Build_A\",\r\n          \"1.4.3_Build_B\"\r\n        ]\r\n      }\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"d61476b5-99bb-4eb3-8ab8-bb041334e3b7\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ed40eaec-fb58-4e20-aac6-4fea09f74ec0\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"TrackTag_Support\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"newReleaseTrack\":
-    [\r\n          \"Coloring\",\r\n          \"Monochrome*HAPPY DAY\",\r\n         
-    \"Starry Wish\",\r\n          \"Choumusubi Amulet\",\r\n          \"Lostorage\"\r\n       
-    ],\r\n        \"areaBonusTrack\": []\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"57e83a18-368e-4729-b66f-e035dbff4b3e\"\r\n   
+    [\r\n          \"ONOMATO Pairing!!!\",\r\n          \"Monochrome Kajuen\",\r\n         
+    \"Sakurako Introduce\",\r\n          \"SKY FULL of MAGIC\",\r\n          \"Koi
+    no Uta - feat. Yuzaki Tsukasa (CV: Kito Akari)\",\r\n          \"Hoshikuzu no
+    Interlude\",\r\n          \"Shiny Sky Memories\",\r\n          \"Blow out\",\r\n         
+    \"Hate no Nai Tabi\"\r\n        ],\r\n        \"areaBonusTrack\": []\r\n     
+    }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"3065086b-a48c-48d0-90fa-8422127ea6b3\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"data_array\":
-    [\r\n          {\r\n            \"title\": \"Released of 1.4.3 Build A\",\r\n           
-    \"releasedDate\": \"(15 October 2024)\",\r\n            \"description\": \"Added
-    content, Added reborn features, Fixed marathon minor bug, Added option exchange\"\r\n         
+    [\r\n          {\r\n            \"title\": \"Released of 1.4.3 Build B\",\r\n           
+    \"releasedDate\": \"(11 November 2024)\",\r\n            \"description\": \"Added
+    track content, Added storage bag, Added virtual item storage, Added item content\"\r\n         
+    },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.3 Build B\",\r\n           
+    \"releasedDate\": \"(28 October 2024)\",\r\n            \"description\": \"Annouce
+    of the new features which will available\\nfor this version\"\r\n          },\r\n         
+    {\r\n            \"title\": \"Released of 1.4.3 Build A\",\r\n            \"releasedDate\":
+    \"(15 October 2024)\",\r\n            \"description\": \"Added content, Added
+    reborn features, Fixed marathon minor bug, Added option exchange\"\r\n         
     },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.3 Build A\",\r\n           
     \"releasedDate\": \"(13 October 2024)\",\r\n            \"description\": \"Annouce
     of the new features which will available\\nfor this version\"\r\n          },\r\n         
@@ -100,32 +108,32 @@ MonoBehaviour:
     \"releasedDate\": \"(17 June 2024)\",\r\n            \"description\": \"Added
     content, Added fast/late features, Program Rearrangement\"\r\n          }\r\n       
     ]\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"537db42c-6340-4524-89bd-efc68ed26032\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"5f269f06-b889-4336-a2e5-c058a1d27350\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"AutoPatcher_DirectLink_URL\",\r\n      \"type\": \"string\",\r\n     
-    \"value\": \"https://download848.mediafire.com/6pb1fx31ogngBcNzOxzrX6V9XEz-Px90yu41gpTL_PQ26UZQ1uI6ajqO3Vrk760xfue87787h8rYRkme1ObPfhCKSTMAcqZXl_8WhhSnWsatjka9IFD-fDbXA7SdoYBZm8YAQsUqKtmSYNKnry7tF-pZBD8rW9B3K-bLX6rgONJzDzk/946z91ygp1ody9o/MeloMelo+v1.4.3_Build_A.zip\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"9125c744-66fe-4727-8dcd-bbcf1295b4a0\"\r\n   
+    \"value\": \"https://download1640.mediafire.com/ht9l3fupt4sgpgjFMOhHM2YbWe7w8gdNQVc6M1unfRJT09U0n3qIQKicQz0WoSQDwjHqIqm_ps481R4vl8lBCdqMBS2NtkcT_6xh-MVc-BksP7b2YBQf55jvR1-VX4jogVQWcXJaDr9FI9fURVeg-ibMXg3flApDb9iMTTrsEEUuk10/70lbsxj5uy97qz4/MeloMelo+v1.4.3_Build_B.zip\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ab68a0d2-8b2a-420a-b487-c4dc22a8642e\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"AutoPatcher_VersionControl_URL\",\r\n     
     \"type\": \"string\",\r\n      \"value\": \"https://drive.google.com/uc?export=download&id=1_cJeR8e__gZ_tdrURmsuBhA2dzMzJbDt\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ee3accbe-3a00-4b75-914d-289235dc1fce\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"56bafc8e-fe14-4694-a73e-784233f69e72\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_Exchange_Management\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {}\r\n   
     }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"4a705004-3830-495d-a757-a0e6435290a9\"\r\n   
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"d7d12cc2-5c10-4b55-acb0-ca644e336f12\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"Latest_Version\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"1.4.3_Build_A\"\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"edca28e9-f063-4214-b42c-0f26ed701bd3\"\r\n   
+    \"string\",\r\n      \"value\": \"1.4.3_Build_B\"\r\n    }\r\n  },\r\n  {\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"1401d055-2caf-4680-9406-4dc17262bc8a\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameApplication_URL\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/946z91ygp1ody9o/MeloMelo_v1.4.3_Build_A.zip/file\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"24e38abb-24d7-4b6f-8101-dd02ba1f0014\"\r\n   
+    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/70lbsxj5uy97qz4/MeloMelo_v1.4.3_Build_B.zip/file\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"c916d758-77fc-4e93-a41b-760d32d8971f\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameWebpage_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"cfa9699c-60a4-4202-b1ff-eb9f2c4ea2bd\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"05cee8e5-c17f-4bdd-8ceb-5c0c27d9e408\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"47ce80cf-b287-4a73-9a31-d7988a8a2bdf\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"a55e2128-8678-4a84-8148-a6e35d8b1ea3\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue_v2\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"f2059654-9ad0-43ae-820d-41b6bebdc6c0\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"14934cfd-0c52-4975-819b-ece2bd9ed077\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"NoteSpeed_Settings_Configuration\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"data\": [\r\n         
     {\r\n            \"bpm\": 550,\r\n            \"baseSpeed\": 140\r\n         
@@ -141,14 +149,14 @@ MonoBehaviour:
     \"baseSpeed\": 30\r\n          },\r\n          {\r\n            \"bpm\": 160,\r\n           
     \"baseSpeed\": 25\r\n          },\r\n          {\r\n            \"bpm\": 150,\r\n           
     \"baseSpeed\": 23\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"9c5fc557-da11-4a26-8a6d-30fcfffbef3b\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"ce09e906-5faa-48fd-ae74-669411c2537d\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"NoteSpeed_Default_Configuration\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
     \"bpm\": 150,\r\n        \"baseSpeed\": 20\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"51417e9a-8787-4b76-8bb0-5ef891f0f276\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"baaa0d58-4a71-4892-8b64-4c99a0c163b1\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"CloudSave_Mode\",\r\n      \"type\":
     \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"b459266d-9979-48c9-957b-9c6296834c20\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"d46471c8-7e0e-46a8-9eec-1a71dc76fdbf\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"CloudSave_Support\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"versions\": [\r\n         
     \"1.4.1a\",\r\n          \"1.4.2a\",\r\n          \"1.4.0EX\",\r\n          \"1.4.0EX_Build_A\",\r\n         
@@ -156,18 +164,26 @@ MonoBehaviour:
     \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\",\r\n          \"1.4.1_Build_A\",\r\n         
     \"1.4.1_Build_B\",\r\n          \"1.4.2_Build_A\",\r\n          \"1.4.2_Build_B\",\r\n         
     \"1.4.3_Build_A\",\r\n          \"1.4.3_Build_B\"\r\n        ]\r\n      }\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"d61476b5-99bb-4eb3-8ab8-bb041334e3b7\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ed40eaec-fb58-4e20-aac6-4fea09f74ec0\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"TrackTag_Support\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"newReleaseTrack\":
-    [\r\n          \"Coloring\",\r\n          \"Monochrome*HAPPY DAY\",\r\n         
-    \"Starry Wish\",\r\n          \"Choumusubi Amulet\",\r\n          \"Lostorage\"\r\n       
-    ],\r\n        \"areaBonusTrack\": []\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"57e83a18-368e-4729-b66f-e035dbff4b3e\"\r\n   
+    [\r\n          \"ONOMATO Pairing!!!\",\r\n          \"Monochrome Kajuen\",\r\n         
+    \"Sakurako Introduce\",\r\n          \"SKY FULL of MAGIC\",\r\n          \"Koi
+    no Uta - feat. Yuzaki Tsukasa (CV: Kito Akari)\",\r\n          \"Hoshikuzu no
+    Interlude\",\r\n          \"Shiny Sky Memories\",\r\n          \"Blow out\",\r\n         
+    \"Hate no Nai Tabi\"\r\n        ],\r\n        \"areaBonusTrack\": []\r\n     
+    }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"3065086b-a48c-48d0-90fa-8422127ea6b3\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"data_array\":
-    [\r\n          {\r\n            \"title\": \"Released of 1.4.3 Build A\",\r\n           
-    \"releasedDate\": \"(15 October 2024)\",\r\n            \"description\": \"Added
-    content, Added reborn features, Fixed marathon minor bug, Added option exchange\"\r\n         
+    [\r\n          {\r\n            \"title\": \"Released of 1.4.3 Build B\",\r\n           
+    \"releasedDate\": \"(11 November 2024)\",\r\n            \"description\": \"Added
+    track content, Added storage bag, Added virtual item storage, Added item content\"\r\n         
+    },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.3 Build B\",\r\n           
+    \"releasedDate\": \"(28 October 2024)\",\r\n            \"description\": \"Annouce
+    of the new features which will available\\nfor this version\"\r\n          },\r\n         
+    {\r\n            \"title\": \"Released of 1.4.3 Build A\",\r\n            \"releasedDate\":
+    \"(15 October 2024)\",\r\n            \"description\": \"Added content, Added
+    reborn features, Fixed marathon minor bug, Added option exchange\"\r\n         
     },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.3 Build A\",\r\n           
     \"releasedDate\": \"(13 October 2024)\",\r\n            \"description\": \"Annouce
     of the new features which will available\\nfor this version\"\r\n          },\r\n         
@@ -198,13 +214,13 @@ MonoBehaviour:
     \"releasedDate\": \"(17 June 2024)\",\r\n            \"description\": \"Added
     content, Added fast/late features, Program Rearrangement\"\r\n          }\r\n       
     ]\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"537db42c-6340-4524-89bd-efc68ed26032\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"5f269f06-b889-4336-a2e5-c058a1d27350\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"AutoPatcher_DirectLink_URL\",\r\n      \"type\": \"string\",\r\n     
-    \"value\": \"https://download848.mediafire.com/6pb1fx31ogngBcNzOxzrX6V9XEz-Px90yu41gpTL_PQ26UZQ1uI6ajqO3Vrk760xfue87787h8rYRkme1ObPfhCKSTMAcqZXl_8WhhSnWsatjka9IFD-fDbXA7SdoYBZm8YAQsUqKtmSYNKnry7tF-pZBD8rW9B3K-bLX6rgONJzDzk/946z91ygp1ody9o/MeloMelo+v1.4.3_Build_A.zip\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"9125c744-66fe-4727-8dcd-bbcf1295b4a0\"\r\n   
+    \"value\": \"https://download1640.mediafire.com/ht9l3fupt4sgpgjFMOhHM2YbWe7w8gdNQVc6M1unfRJT09U0n3qIQKicQz0WoSQDwjHqIqm_ps481R4vl8lBCdqMBS2NtkcT_6xh-MVc-BksP7b2YBQf55jvR1-VX4jogVQWcXJaDr9FI9fURVeg-ibMXg3flApDb9iMTTrsEEUuk10/70lbsxj5uy97qz4/MeloMelo+v1.4.3_Build_B.zip\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ab68a0d2-8b2a-420a-b487-c4dc22a8642e\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"AutoPatcher_VersionControl_URL\",\r\n     
     \"type\": \"string\",\r\n      \"value\": \"https://drive.google.com/uc?export=download&id=1_cJeR8e__gZ_tdrURmsuBhA2dzMzJbDt\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ee3accbe-3a00-4b75-914d-289235dc1fce\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"56bafc8e-fe14-4694-a73e-784233f69e72\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_Exchange_Management\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {}\r\n   
     }\r\n  }\r\n]"

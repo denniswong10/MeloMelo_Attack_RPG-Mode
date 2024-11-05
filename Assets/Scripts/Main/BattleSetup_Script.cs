@@ -456,14 +456,14 @@ public class BattleSetup_Script : MonoBehaviour
 
         if (GameObject.Find(option[0]) == null)
         {
-            GameObject instance_panel = Instantiate(BoostPanelTemplate);
+            GameObject instance_panel = Instantiate(BoostPanelTemplate, CharacterSetup_GUI.transform);
             instance_panel.name = option[0];
 
             instance_panel.GetComponent<VirtualStorageBag>().SetAlertPopReference(MessagePrompt);
             instance_panel.GetComponent<VirtualStorageBag>().SetDefaultDescription(option[1]);
             instance_panel.GetComponent<VirtualStorageBag>().SetItemForDisplay(GetItemArray(option[0]));
             instance_panel.GetComponent<VirtualStorageBag>().SetLimitedUsageTime(true);
-            instance_panel.transform.SetParent(CharacterSetup_GUI.transform);
+            PlayerPrefs.SetString(VirtualStorageBag.VirtualStorage_UsableKey, PlayerPrefs.GetString("CharacterFront", "None"));
         }
     }
 

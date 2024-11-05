@@ -664,7 +664,7 @@ MonoBehaviour:
   GameLoader_Icon: {fileID: 1227354902}
   seasonOutput: 4
   versionIndex: 3
-  buildLabel: _Build_B
+  buildLabel: _Build_C
   UpdateAlert: {fileID: 1405033224}
   ConnectionAlert: {fileID: 158424521}
 --- !u!114 &355645383
@@ -1495,7 +1495,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ???
+  m_Text: XGImSCCyHImzAXuvL9Xe5jik7zgt
 --- !u!222 &815214500
 CanvasRenderer:
   m_ObjectHideFlags: 0

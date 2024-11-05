@@ -20,6 +20,7 @@ public class StoragePage_Script : MonoBehaviour
     [SerializeField] private GameObject DiscardPit;
 
     [SerializeField] private GameObject[] CurrencyPanel;
+    [SerializeField] private GameObject OpenChoiceTemplate;
 
     void Start()
     {
@@ -66,7 +67,7 @@ public class StoragePage_Script : MonoBehaviour
         {
             int currentSlot = slots.Length * currentPage + slot_id;
 
-            if (currentSlot < allItems.Length)
+            if (allItems.Length != 0 && currentSlot < allItems.Length)
             {
                 int totalAmount = allItems[currentSlot].amount - MeloMelo_ItemUsage_Settings.GetItemUsed(allItems[currentSlot].itemName);
 
@@ -133,7 +134,7 @@ public class StoragePage_Script : MonoBehaviour
     {
         if (PlayerPrefs.HasKey(slot_index + "_Slot_ItemName"))
         {
-            if (PlayerPrefs.GetString("StorageBag_UseItem_Bound", string.Empty) == PlayerPrefs.GetString(slot_index + "_Slot_ItemName", string.Empty))
+            if (PlayerPrefs.GetInt("StorageBag_UseItem_Bound", -1) == slot_index)
             {
                 PlayerPrefs.DeleteKey("StorageBag_UseItem_Bound");
 
@@ -141,12 +142,7 @@ public class StoragePage_Script : MonoBehaviour
                 {
                     case ItemData.ItemType.Item:
                         ItemData itemfound = RetrieveItemData(PlayerPrefs.GetString(slot_index + "_Slot_ItemName", string.Empty));
-                        MeloMelo_ItemUsage_Settings.SetItemUsed(itemfound.itemName);
-                        PerformItemUpdateFile(itemfound.itemName, -MeloMelo_ItemUsage_Settings.GetItemUsed(itemfound.itemName));
-                        StartCoroutine(PerformItemInCaterogy(itemfound.itemName));
-
-                        RefreshStorageLoader();
-                        GetStorageOnCurrency();
+                        PerformItemInCaterogy(itemfound.itemName);
                         break;
 
                     case ItemData.ItemType.Consumable:
@@ -154,13 +150,15 @@ public class StoragePage_Script : MonoBehaviour
                         break;
 
                     default:
-                        DiscardPit.SetActive(true);
+                        StartCoroutine(PromptMessageBox("Invalid Item"));
                         break;
                 }
             }
             else
-                PlayerPrefs.SetString("StorageBag_UseItem_Bound", PlayerPrefs.GetString(slot_index + "_Slot_ItemName", string.Empty));
+                PlayerPrefs.SetInt("StorageBag_UseItem_Bound", slot_index);
         }
+        else
+            PlayerPrefs.DeleteKey("StorageBag_UseItem_Bound");
     }
 
     public void ExitStorageBag()
@@ -171,7 +169,7 @@ public class StoragePage_Script : MonoBehaviour
     #endregion
 
     #region COMPONENT
-    private IEnumerator PerformItemInCaterogy(string item_Reference)
+    private void PerformItemInCaterogy(string item_Reference)
     {
         // Use item and perform item
         foreach (UsageOfItemDetail item in Resources.LoadAll<UsageOfItemDetail>("Database_Item/Filtered_Items/Others"))
@@ -181,37 +179,33 @@ public class StoragePage_Script : MonoBehaviour
                 switch (item.useTypeDetail)
                 {
                     case UsageOfItemDetail.UseType.Bundle:
-                        string[] listOfItems = item.dataArray.Split("/");
-                        foreach (string itemThroughJson in listOfItems)
-                        {
-                            if (itemThroughJson != string.Empty)
-                            {
-                                VirtualItemDatabase fromJson = JsonUtility.FromJson<VirtualItemDatabase>(itemThroughJson);
-                                ItemData itemInDatabase = RetrieveItemData(fromJson.itemName);
-
-                                PerformItemUpdateFile(fromJson.itemName, fromJson.amount);
-                                StartCoroutine(PromptMessageBox(fromJson.amount + "X Obtained Item: " + itemInDatabase.itemName));
-                                yield return new WaitForSeconds(3);
-                            }
-                        }
+                        ConfirmOnUsingItem(item.itemName);
+                        StartCoroutine(UsePackableItem(item));
                         break;
 
-                    case UsageOfItemDetail.UseType.Consumable:
-                        string[] instant_value = item.dataArray.Split(",");
-                        PlayerPrefs.SetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_" + instant_value[0],
-                            int.Parse(instant_value[1]));
+                    case UsageOfItemDetail.UseType.Instant:
+                        ConfirmOnUsingItem(item.itemName);
+                        StartCoroutine(UseEconomyClassic(item));
+                        break;
 
-                        StartCoroutine(PromptMessageBox("New Balance ( " + instant_value[0] + " ) : " +
-                            PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_" + instant_value[0], 0)));
-                        yield return new WaitForSeconds(3);
+                    case UsageOfItemDetail.UseType.RandomObtain:
+                        ConfirmOnUsingItem(item.itemName);
+                        StartCoroutine(UseMysteryPackItem(item));
+                        break;
+
+                    case UsageOfItemDetail.UseType.OpenChoice:
+                        UseSelectionPackItem(item);
+                        break;
+
+                    case UsageOfItemDetail.UseType.OpenResultUsage:
                         break;
                 }
 
-                RefreshStorageLoader();
-                GetStorageOnCurrency();
-                StartCoroutine(PromptMessageBox("Successfully Used: " + item.itemName));
-            }
+                return;
+            }           
         }
+        
+        StartCoroutine(PromptMessageBox("This item isn't available at the moment"));
     }
 
     private void GetNagivator()
@@ -244,7 +238,74 @@ public class StoragePage_Script : MonoBehaviour
     private void LeaveStoragePage_2() { SceneManager.LoadScene("Collections"); }
     #endregion
 
-    #region MISC
+    #region MISC (Item Cateogry Sorter)
+    private IEnumerator UsePackableItem(UsageOfItemDetail production)
+    {
+        string[] listOfItems = production.dataArray.Split("/");
+        foreach (string itemThroughJson in listOfItems)
+        {
+            if (itemThroughJson != string.Empty)
+            {
+                VirtualItemDatabase fromJson = JsonUtility.FromJson<VirtualItemDatabase>(itemThroughJson);
+                GiveawayItemToPlayer(fromJson.itemName, fromJson.amount);
+                yield return new WaitForSeconds(3);
+                RefreshStorageLoader();
+            }
+        }
+    }
+
+    private IEnumerator UseEconomyClassic(UsageOfItemDetail prodution)
+    {
+        string[] instant_value = prodution.dataArray.Split(",");
+        GiveawayCurrencyToPlayer(instant_value[0], int.Parse(instant_value[1]));
+        yield return new WaitForSeconds(0.5f);
+
+        RefreshStorageLoader();
+        GetStorageOnCurrency();
+    }
+
+    private IEnumerator UseMysteryPackItem(UsageOfItemDetail production)
+    {
+        string[] allItemForRandomize = production.dataArray.Split("/");
+        int numberPicked = Mathf.Clamp(Random.Range(-1, allItemForRandomize.Length), 0, allItemForRandomize.Length - 1);
+
+        if (allItemForRandomize[numberPicked] != null && allItemForRandomize[numberPicked] != string.Empty)
+        {
+            VirtualItemDatabase afterRandom = JsonUtility.FromJson<VirtualItemDatabase>(allItemForRandomize[numberPicked]);
+            GiveawayItemToPlayer(afterRandom.itemName, afterRandom.amount);
+            yield return new WaitForSeconds(0.5f);
+            RefreshStorageLoader();
+        }
+    }
+
+    private void UseSelectionPackItem(UsageOfItemDetail production)
+    {
+        string[] allItemToChoose = production.dataArray.Split("/");
+        List<VirtualItemDatabase> listOfItemForChoose = null;
+
+        for (int id = 0; id < allItemToChoose.Length - 1; id++)
+        {
+            if (allItemToChoose[id] != string.Empty)
+            {
+                if (listOfItemForChoose == null) listOfItemForChoose = new List<VirtualItemDatabase>();
+                VirtualItemDatabase getItem = JsonUtility.FromJson<VirtualItemDatabase>(allItemToChoose[id]);
+                listOfItemForChoose.Add(getItem);
+            }
+        }
+
+        if (!PlayerPrefs.HasKey("GetOpenChoicePanel"))
+        {
+            PlayerPrefs.SetInt("GetOpenChoicePanel", 1);
+            GameObject panel = Instantiate(OpenChoiceTemplate, Selection.transform);
+
+            panel.GetComponent<VirtualOpenChoice>().SetCurrentItemForSelection(production.itemName);
+            panel.GetComponent<VirtualOpenChoice>().SetTitleDescription(production.dataArray.Split("^")[1]);
+            panel.GetComponent<VirtualOpenChoice>().GetChoiceAvailableReady(listOfItemForChoose.ToArray());
+        }
+    }
+    #endregion
+
+    #region MISC (System File)
     private void PerformItemUpdateFile(string itemName, int updateAmount)
     {
         MeloMelo_Local.LocalSave_DataManagement itemLoader = new MeloMelo_Local.LocalSave_DataManagement(
@@ -260,6 +321,48 @@ public class StoragePage_Script : MonoBehaviour
            LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
         itemLoader.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
         itemLoader.LoadVirtualItemToPlayer();
+    }
+
+    private void PerformForceUpdateFile()
+    {
+        MeloMelo_Local.LocalSave_DataManagement saveToDrive = new MeloMelo_Local.LocalSave_DataManagement(
+            LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+        saveToDrive.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileProfileData);
+        saveToDrive.SaveProfileState();
+    }
+
+    public void ConfirmOnUsingItem(string itemName)
+    {
+        MeloMelo_ItemUsage_Settings.SetItemUsed(itemName);
+        PerformItemUpdateFile(itemName, -MeloMelo_ItemUsage_Settings.GetItemUsed(itemName));
+        StartCoroutine(PromptMessageBox("Successfully Used: " + itemName));
+        RefreshStorageLoader();
+    }
+    #endregion
+
+    #region MISC (Player Economy)
+    public void GiveawayItemToPlayer(string itemName, int amount)
+    {
+        ItemData itemInDatabase = RetrieveItemData(itemName);
+        if (itemInDatabase != null)
+        {
+            PerformItemUpdateFile(itemName, amount);
+            StartCoroutine(PromptMessageBox(amount + "X Obtained Item: " + itemName));
+        }
+    }
+
+    public void GiveawayCurrencyToPlayer(string nameOfCurrency, int new_balance)
+    {
+        int currentBalance = PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_" + nameOfCurrency, 0);
+        PlayerPrefs.SetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_" + nameOfCurrency,
+            currentBalance + new_balance);
+
+        if (new_balance > 0)
+        {
+            PerformForceUpdateFile();
+            StartCoroutine(PromptMessageBox("Get " + PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_" +
+                nameOfCurrency, 0) + " " + nameOfCurrency));
+        }
     }
     #endregion
 }

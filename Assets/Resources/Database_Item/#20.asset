@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
+  m_Name: '#20'
+  m_EditorClassIdentifier: 
+  itemName: Progression Gift
+  Icon: {fileID: 2800000, guid: 5caab6e658eb3e542a4d6e6c39b30939, type: 3}
+  thisItemType: 0
+  description: "A small gift from the developer who is \rmaintaining this game for
+    years now. \nThis gift contain random consumable\r to keep the player active
+    while waiting\r for the next update. \nClick them to open it."
+  itemValue: 0
+  NoQuantityLimit: 0
+  CreditSet: 0

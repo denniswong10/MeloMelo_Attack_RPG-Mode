@@ -8,6 +8,7 @@ using UnityEngine.Video;
 public class RestrictedZoneTemplate
 {
     public string TrackTitle;
+    public string coverImage_name;
     public int difficulty;
     public int score;
 }

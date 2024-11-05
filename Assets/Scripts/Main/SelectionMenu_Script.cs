@@ -83,8 +83,7 @@ public class SelectionMenu_Script : MonoBehaviour
 
     private string ResMelo = string.Empty;
 
-    [SerializeField] private GameObject currentActiveInfo;
-
+    public GameObject currentActiveInfo;
     private LocalLoad_DataManagement local;
 
     // Program: Music Selection Scene
@@ -151,14 +150,6 @@ public class SelectionMenu_Script : MonoBehaviour
         // Continue animate the selection panel for further setup
         StartCoroutine(OpeningSelection(casualMode, loadDifficultyName));
     }
-    #endregion
-
-    #region MAIN
-    public void ClosingSelection()
-    {
-        GameObject.Find("Selection").GetComponent<Animator>().SetTrigger("Closing" + ResMelo);
-        Invoke("CloseSelection", 2);
-    }
 
     private IEnumerator OpeningSelection(bool enableSelection, int getDifficulty)
     {
@@ -179,7 +170,7 @@ public class SelectionMenu_Script : MonoBehaviour
         // Final-Phase: Display
         if (!enableSelection)
         {
-            if (PlayerPrefs.GetInt("MarathonChallenge_MCount") > 
+            if (PlayerPrefs.GetInt("MarathonChallenge_MCount") >
                 Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length - 1)
             {
                 FinalPhaseDisplay.SetActive(true);
@@ -200,6 +191,36 @@ public class SelectionMenu_Script : MonoBehaviour
 
         // Cursor
         if (!Cursor.visible) Cursor.visible = true;
+    }
+    #endregion
+
+    #region MAIN
+    public void ClosingSelection()
+    {
+        GameObject.Find("Selection").GetComponent<Animator>().SetTrigger("Closing" + ResMelo);
+        Invoke("CloseSelection", 2);
+    }
+
+    public void BeginBattle(GameObject obj)
+    {
+        switch (obj.transform.GetChild(0).GetComponent<Text>().text)
+        {
+            case "PROCESS":
+                BattleMode();
+                break;
+
+            case "INSPECT SETUP":
+                InspectBattleDetail();
+                break;
+
+            case "HOW TO GET":
+                if (selection != null && selection.get_form.SetRestriction)
+                    GetComponent<FreeAccessTrack_Script>().OpenMainSelection();
+                break;
+
+            default:
+                break;
+        }
     }
     #endregion
 
@@ -224,6 +245,22 @@ public class SelectionMenu_Script : MonoBehaviour
             notice.Opening_QuickLook("Selection_Control");
             notice.NoticePlay(HowToPlay_Page, ButtonUI_HTP);
         }
+    }
+
+    public void BattleMode()
+    {
+        if (PlayerPrefs.GetInt("GetMaxPoint_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0) != 0)
+        {
+            GameObject.Find("Selection").GetComponent<Animator>().SetTrigger("Closing" + ResMelo);
+            GetComponent<FreeAccessTrack_Script>().ResetUnusedTicket();
+            StartCoroutine(GoBatleMode());
+        }
+    }
+
+    private void InspectBattleDetail()
+    {
+        if (PlayerPrefs.GetInt("GetMaxPoint_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0) != 0)
+            InformationMode("Selection_Info");
     }
     #endregion
 
@@ -257,30 +294,7 @@ public class SelectionMenu_Script : MonoBehaviour
     #endregion
 
     // Loader: Music Content
-
     protected void DifficultyChanger_encode() { selection.DifficultyChanger(false); }
-
-    public void BattleMode(GameObject obj)
-    {
-        switch (obj.transform.GetChild(0).GetComponent<Text>().text)
-        {
-            case "PROCESS":
-                if (PlayerPrefs.GetInt("GetMaxPoint_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0) != 0)
-                {
-                    GameObject.Find("Selection").GetComponent<Animator>().SetTrigger("Closing" + ResMelo);
-                    StartCoroutine(GoBatleMode());
-                }
-                break;
-
-            case "INSPECT SETUP":
-                if (PlayerPrefs.GetInt("GetMaxPoint_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0) != 0)
-                    InformationMode("Selection_Info");
-                break;
-
-            default:
-                break;
-        }
-    }
 
     IEnumerator GoBatleMode()
     {

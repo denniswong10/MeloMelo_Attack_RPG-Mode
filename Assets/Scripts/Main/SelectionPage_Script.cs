@@ -62,6 +62,10 @@ public class SelectionPage_Script : MonoBehaviour
                 destinationZone = "DungeonTransition";
                 break;
 
+            case 4:
+                destinationZone = "GameStoreTransition";
+                break;
+
             default:
                 break;
         }
@@ -86,7 +90,7 @@ public class SelectionPage_Script : MonoBehaviour
     {
         target.GetComponent<Animator>().SetTrigger("Opening");
         if (LoadAfterTransition != string.Empty) Invoke(LoadAfterTransition, 1);
-        if (currentSelection == 0) UpdateMainSectionMenu();
+        //if (currentSelection == 0) UpdateMainSectionMenu();
     }
 
     private void ClosingSelection(GameObject target, string LoadAfterTransition)
@@ -126,6 +130,11 @@ public class SelectionPage_Script : MonoBehaviour
     private void MarathonSelection()
     {
         SceneManager.LoadScene("MarathonSelection");
+    }
+
+    private void GameStoreTransition()
+    {
+        SceneManager.LoadScene("GameStore");
     }
     #endregion
 }

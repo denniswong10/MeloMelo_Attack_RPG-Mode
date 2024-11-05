@@ -518,7 +518,8 @@ public class ResultMenu_Script : MonoBehaviour
 
         if (isInvaild)
         {
-            LocalSave_DataManagement data = new LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+            LocalSave_DataManagement data = new LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(), 
+                "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
 
             // Save: Achievement
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileMainProgress);
@@ -581,6 +582,13 @@ public class ResultMenu_Script : MonoBehaviour
                 }
             }
 
+            // BonusPlay: Reset
+            if (PlayerPrefs.GetInt("BonusTrackPlay", 0) > 0)
+            {
+                int currentUsed = PlayerPrefs.GetInt("BonusTrackPlay", 0);
+                PlayerPrefs.SetInt("BonusTrackPlay", currentUsed - 1);
+            }
+
             // Save: Skills
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileSkillDatabase);
             data.SaveAllSkillsType();
@@ -602,6 +610,11 @@ public class ResultMenu_Script : MonoBehaviour
                     yield return new WaitForSeconds(2);
                     PromptMessage.SetActive(false);
                 }
+
+                LocalLoad_DataManagement loadData = new LocalLoad_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
+                    "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+                loadData.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
+                loadData.LoadVirtualItemToPlayer();
             }
         }
 

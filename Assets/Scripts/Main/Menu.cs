@@ -44,10 +44,6 @@ public class Menu : MonoBehaviour
 
         // Right Section: News Report
         UpdateNewsReport();
-
-        // Middle Section: Credit Counter Display
-        GameObject.Find("CreidtCounter").transform.GetChild(0).GetComponent<Text>().text = 
-            "Credit: " + PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_Credit", 0);
     }
     #endregion
 

@@ -3898,8 +3898,10 @@ namespace MeloMelo_RPGEditor
 
                     case "Character":
                         slot_Stats[i].UpdateStatsCache(false);
-                        DMG += baseDamage * (slot_Stats[i].strength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[i].name)) +
-                            baseDamage;
+                        int originalDamage = baseDamage * (slot_Stats[i].strength + 
+                            MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[i].name)) + baseDamage;
+                        DMG += originalDamage + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name) + 
+                            originalDamage * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
                         break;
                 }
             }
@@ -3923,7 +3925,10 @@ namespace MeloMelo_RPGEditor
                         if (slot_Stats[i].icon != null)
                         {
                             slot_Stats[i].UpdateStatsCache(false);
-                            HP += slot_Stats[i].health + (baseHealth * (slot_Stats[i].vitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[i].name)));
+                            int originalValue = slot_Stats[i].health + (baseHealth * 
+                                (slot_Stats[i].vitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[i].name)));
+                            HP += originalValue + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name) +
+                            originalValue * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
                         }
                         break;
 
