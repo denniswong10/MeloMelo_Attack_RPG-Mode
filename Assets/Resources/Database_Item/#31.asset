@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
+  m_Name: '#31'
+  m_EditorClassIdentifier: 
+  itemName: Scroll Set Pack
+  Icon: {fileID: 2800000, guid: e9d89484667afc645a7ecb0d17304fe6, type: 3}
+  stackable: 0
+  thisItemType: 0
+  description: This pack comes with varitey of ticket usage to help character on
+    their training. Click to obtain all of them.
+  itemValue: 0
+  NoQuantityLimit: 0
+  CreditSet: 0

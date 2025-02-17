@@ -38,6 +38,7 @@ public class TrackTagSetup : MonoBehaviour
         {
             await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
             JsonConvertTrackAssign();
+            JsonConvertPlayEvent();
         }
     }
 
@@ -52,6 +53,12 @@ public class TrackTagSetup : MonoBehaviour
 
         foreach (string track in areaBonusTag.areaBonusTrack)
             PlayerPrefs.SetInt(track + "_areaBonusTrack", 1);
+    }
+
+    private void JsonConvertPlayEvent()
+    {
+        // Refresh: Every time event is started or ended
+        MeloMelo_GameSettings.LoadPlayEventRewards(RemoteConfigService.Instance.appConfig.GetJson("MeloMelo_PlayEvent_Reward"));
     }
     #endregion
 }

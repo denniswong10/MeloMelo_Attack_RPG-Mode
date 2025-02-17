@@ -292,26 +292,42 @@ public class CollectionNew_Script : MonoBehaviour
         collection_characterAlbum.CancelMastery();
     }
 
-    public void ExperienceBoost_StartUpButton(string miniPanel)
+    public void OpenVirtualStorageUsage(string typeOfStorage)
     {
-        if (GameObject.Find(miniPanel) == null)
-        {
-            GameObject instance_panel = Instantiate(BoostPanelTemplate);
-            instance_panel.name = miniPanel;
+        GameObject instance_panel = Instantiate(BoostPanelTemplate);
+        instance_panel.GetComponent<VirtualStorageBag>().SetAlertPopReference(collection_characterAlbum.CharacterTab_MessageTab);
+        instance_panel.GetComponent<VirtualStorageBag>().SetLimitedUsageTime(false);
+        instance_panel.transform.SetParent(collection_characterAlbum.selectionPanel.transform);
 
-            instance_panel.GetComponent<VirtualStorageBag>().SetAlertPopReference(collection_characterAlbum.CharacterTab_MessageTab);
-            instance_panel.GetComponent<VirtualStorageBag>().SetDefaultDescription("No ticket has been used");
-            instance_panel.GetComponent<VirtualStorageBag>().SetItemForDisplay(GetItemArray());
-            instance_panel.GetComponent<VirtualStorageBag>().SetLimitedUsageTime(false);
-            instance_panel.transform.SetParent(collection_characterAlbum.selectionPanel.transform);
+        switch (typeOfStorage)
+        {
+            case "ExperienceBoost":
+                if (GameObject.Find("EXP_Boost_Panel") == null)
+                {
+                    instance_panel.name = "EXP_Boost_Panel";
+                    instance_panel.GetComponent<VirtualStorageBag>().SetDefaultDescription("No ticket has been used");
+                    PlayerPrefs.SetString("ItemDirectoryToUsed", "Filtered_Items/EXP_TICKET");                   
+                }
+                break;
+
+            case "ItemUsage":
+                if (GameObject.Find("ItemUsage_CharacterPanel") == null)
+                {
+                    instance_panel.name = "ItemUsage_CharacterPanel";
+                    instance_panel.GetComponent<VirtualStorageBag>().SetDefaultDescription("Select an item to use for this character");
+                    PlayerPrefs.SetString("ItemDirectoryToUsed", "Filtered_Items/CharacterItem_Usage");
+                }
+                break;
         }
+
+        instance_panel.GetComponent<VirtualStorageBag>().SetItemForDisplay(GetItemArray(PlayerPrefs.GetString("ItemDirectoryToUsed", string.Empty)));
     }
 
-    private VirtualItemDatabase[] GetItemArray()
+    private VirtualItemDatabase[] GetItemArray(string itemFinder)
     {
         List<VirtualItemDatabase> listOfItem; 
         listOfItem = new List<VirtualItemDatabase>();
-        foreach (UsageOfItemDetail item in Resources.LoadAll<UsageOfItemDetail>("Database_Item/Filtered_Items/EXP_TICKET"))
+        foreach (UsageOfItemDetail item in Resources.LoadAll<UsageOfItemDetail>("Database_Item/" + itemFinder))
         {
             VirtualItemDatabase itemFound = MeloMelo_GameSettings.GetAllItemFromLocal(item.itemName);
             if (itemFound.amount > 0) listOfItem.Add(itemFound);
@@ -332,11 +348,12 @@ public class CollectionNew_Script : MonoBehaviour
         [SerializeField] private GameObject[] MasteryTabs;
         [SerializeField] private GameObject MasteryInfoTab;
         public GameObject CharacterTab_MessageTab;
-        [SerializeField] private Text TicketPromptMessage;
 
         private List<ClassBase> Character_Database;
         private List<StatsManage_Database> characterStatus;
         private int characterToggleIndex = 1;
+
+        [SerializeField] private GameObject CharacterInfoTemplate;
 
         #region SETUP
         public void LoadContent()
@@ -434,7 +451,17 @@ public class CollectionNew_Script : MonoBehaviour
             MeloMelo_ExtraStats_Settings.SetMasteryPoint(Character_Database[characterToggleIndex - 1].name, 
                 currentMasteryPoint - GetMasteryPointCost());
 
-            if (GetMasteryInfo(int.Parse(breakData[1])).name.Split("_")[1] == "Ultimate") Character_Database[characterToggleIndex - 1].ResetLevel();          
+            if (GetMasteryInfo(int.Parse(breakData[1])).name.Split("_")[1] == "Ultimate")
+            {
+                int currentRebirthPoint = MeloMelo_ExtraStats_Settings.GetRebirthPoint(Character_Database[characterToggleIndex - 1].name);
+                MeloMelo_ExtraStats_Settings.IncreaseStrengthStats(Character_Database[characterToggleIndex - 1].name, Character_Database[characterToggleIndex - 1].strength);
+                MeloMelo_ExtraStats_Settings.IncreaseVitalityStats(Character_Database[characterToggleIndex - 1].name, Character_Database[characterToggleIndex - 1].vitality);
+                MeloMelo_ExtraStats_Settings.IncreaseMagicStats(Character_Database[characterToggleIndex - 1].name, Character_Database[characterToggleIndex - 1].magic);
+                
+                MeloMelo_ExtraStats_Settings.SetRebirthPoint(Character_Database[characterToggleIndex - 1].name, currentRebirthPoint + 1);
+                Character_Database[characterToggleIndex - 1].ResetLevel();
+            }
+
             PlayerPrefs.DeleteKey("MasteryShuffleTab");
             UpdateRebornTab();
         }
@@ -483,7 +510,9 @@ public class CollectionNew_Script : MonoBehaviour
         {
             // Assign data information of level, experience through class base
             int currentLevel, currentExperience;
-            string className = Character_Database[characterToggleIndex - 1].name;
+            string className = string.Empty;
+
+            className = Character_Database[characterToggleIndex - 1].name;
             currentLevel = Character_Database[characterToggleIndex - 1].level;
             currentExperience = Character_Database[characterToggleIndex - 1].experience;
 
@@ -521,12 +550,26 @@ public class CollectionNew_Script : MonoBehaviour
             selectionPanel.transform.GetChild(2).GetChild(2).GetComponent<Text>().text = "LEVEL: " +
                 characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetLevel;
 
-            selectionPanel.transform.GetChild(2).GetChild(3).GetComponent<Text>().text = "EXP: " +
-                currentExperience + "/" + characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetExperience;
+            selectionPanel.transform.GetChild(2).GetChild(3).GetComponent<Text>().text =
+                GetMaxHitPoint(characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetExperience) == 0 ?
+                string.Empty :
+                "EXP: " + currentExperience + "/" + characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetExperience;
 
             selectionPanel.transform.GetChild(2).GetChild(4).GetComponent<Text>().text = "REBIRTH: " + MeloMelo_ExtraStats_Settings.GetRebirthPoint(className);
-            PlayerPrefs.SetString(VirtualStorageBag.VirtualStorage_UsableKey, Character_Database[characterToggleIndex - 1].name);
+            PlayerPrefs.SetString(VirtualStorageBag.VirtualStorage_UsableKey, Character_Database[characterToggleIndex - 1].name + ",1," +
+                (GetMaxHitPoint(characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetExperience) == 0 ?
+                "0" : "1"));
+
+            Character_Database[characterToggleIndex - 1].UpdateStatsCache(false);
+            CharacterInfoTemplate.GetComponent<CharacterInfo_DataBuild>().GetCharacterBase(Character_Database[characterToggleIndex - 1]);
+
             UpdateSkillTab();
+        }
+
+        private int GetMaxHitPoint(int score)
+        {
+            if (score > 0) return score;
+            else return 0;
         }
 
         private void UpdateSkillTab()
@@ -671,9 +714,14 @@ public class CollectionNew_Script : MonoBehaviour
 
         private MasteryContainer GetMasteryInfo(int slot_index)
         {
-            string masteryRarity = Character_Database[characterToggleIndex - 1].level >= 99 ? "Ultimate" : "Common";
+            string masteryRarity = Character_Database[characterToggleIndex - 1].level >= 99 ? "Ultimate_" + (slot_index + 1) : "Common";
             MasteryContainer masteryContent = Resources.Load<MasteryContainer>("Database_Reborn_Cards/" +
-               Character_Database[characterToggleIndex - 1].name + "_" + masteryRarity + "_" + PlayerPrefs.GetInt("Mastery" + (slot_index + 1), 1));
+               Character_Database[characterToggleIndex - 1].name + "_" + 
+
+               (
+               Character_Database[characterToggleIndex - 1].level >= 99 ?
+               masteryRarity : masteryRarity + "_" + PlayerPrefs.GetInt("Mastery" + (slot_index + 1), 1))
+               );
 
             return masteryContent;
         }
@@ -723,7 +771,11 @@ public class CollectionNew_Script : MonoBehaviour
                         break;
 
                     case AwardsSettings.TypeOfAwards.SKILL:
-                        if (!MeloMelo_SkillData_Settings.CheckSkillStatus(awards.awards_value)) MeloMelo_SkillData_Settings.UnlockSkill(awards.awards_value);
+                        if (!MeloMelo_SkillData_Settings.CheckSkillStatus(awards.awards_value))
+                        {
+                            MeloMelo_SkillData_Settings.UnlockSkill(awards.awards_value);
+                            MeloMelo_SkillData_Settings.LearnSkill(awards.awards_value);
+                        }
                         else MeloMelo_SkillData_Settings.UpgradeSkill(awards.awards_value);
                         messagePrinter += (!MeloMelo_SkillData_Settings.CheckSkillStatus(awards.awards_value) ? "Skill Learned: " : "Skill Upgraded: ") + awards.awards_value;
                             break;

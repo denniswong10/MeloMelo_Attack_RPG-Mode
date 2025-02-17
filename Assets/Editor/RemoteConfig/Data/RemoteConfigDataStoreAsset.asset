@@ -12,29 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: 
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"d7d12cc2-5c10-4b55-acb0-ca644e336f12\"\r\n   
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"0a5ef145-de32-4942-a017-175feaf55a15\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"Latest_Version\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"1.4.3_Build_B\"\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"1401d055-2caf-4680-9406-4dc17262bc8a\"\r\n   
+    \"string\",\r\n      \"value\": \"1.4.4_Build_D\"\r\n    }\r\n  },\r\n  {\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"89d0ffe6-3c27-4203-9951-9eaffad29092\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameApplication_URL\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/70lbsxj5uy97qz4/MeloMelo_v1.4.3_Build_B.zip/file\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"c916d758-77fc-4e93-a41b-760d32d8971f\"\r\n   
+    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/2wbev2mu3x5hvac/MeloMelo+v1.4.4_Build_D.zip/file\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"0122555c-0294-440a-8218-89ba17a3fdcd\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameWebpage_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"05cee8e5-c17f-4bdd-8ceb-5c0c27d9e408\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"f18ddd99-e50c-4412-9f31-7cbf17c8122f\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"a55e2128-8678-4a84-8148-a6e35d8b1ea3\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"598be96b-9e30-49df-a307-d9086def4c08\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue_v2\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"14934cfd-0c52-4975-819b-ece2bd9ed077\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"65b22c59-32e8-4f23-b354-b11af1894028\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"NoteSpeed_Settings_Configuration\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"data\": [\r\n         
     {\r\n            \"bpm\": 550,\r\n            \"baseSpeed\": 140\r\n         
     },\r\n          {\r\n            \"bpm\": 500,\r\n            \"baseSpeed\":
-    115\r\n          },\r\n          {\r\n            \"bpm\": 400,\r\n           
-    \"baseSpeed\": 90\r\n          },\r\n          {\r\n            \"bpm\": 360,\r\n           
-    \"baseSpeed\": 70\r\n          },\r\n          {\r\n            \"bpm\": 340,\r\n           
+    90\r\n          },\r\n          {\r\n            \"bpm\": 400,\r\n           
+    \"baseSpeed\": 75\r\n          },\r\n          {\r\n            \"bpm\": 360,\r\n           
+    \"baseSpeed\": 65\r\n          },\r\n          {\r\n            \"bpm\": 340,\r\n           
     \"baseSpeed\": 60\r\n          },\r\n          {\r\n            \"bpm\": 300,\r\n           
     \"baseSpeed\": 55\r\n          },\r\n          {\r\n            \"bpm\": 280,\r\n           
     \"baseSpeed\": 50\r\n          },\r\n          {\r\n            \"bpm\": 260,\r\n           
@@ -43,49 +43,77 @@ MonoBehaviour:
     \"baseSpeed\": 30\r\n          },\r\n          {\r\n            \"bpm\": 160,\r\n           
     \"baseSpeed\": 25\r\n          },\r\n          {\r\n            \"bpm\": 150,\r\n           
     \"baseSpeed\": 23\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"ce09e906-5faa-48fd-ae74-669411c2537d\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"0a1c4342-f67f-4147-b3f4-e8c8cd74f932\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"NoteSpeed_Default_Configuration\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
     \"bpm\": 150,\r\n        \"baseSpeed\": 20\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"baaa0d58-4a71-4892-8b64-4c99a0c163b1\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"88e3e111-1808-4fc4-9b05-0dfa5e480d67\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"CloudSave_Mode\",\r\n      \"type\":
     \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"d46471c8-7e0e-46a8-9eec-1a71dc76fdbf\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"2eedfb95-ec26-4cfd-ae8c-2d9d67a59628\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"CloudSave_Support\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"versions\": [\r\n         
     \"1.4.1a\",\r\n          \"1.4.2a\",\r\n          \"1.4.0EX\",\r\n          \"1.4.0EX_Build_A\",\r\n         
     \"1.4.0EX_Build_B\",\r\n          \"1.4.0EX_Build_C\",\r\n          \"1.4.0EX_Build_D\",\r\n         
     \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\",\r\n          \"1.4.1_Build_A\",\r\n         
     \"1.4.1_Build_B\",\r\n          \"1.4.2_Build_A\",\r\n          \"1.4.2_Build_B\",\r\n         
-    \"1.4.3_Build_A\",\r\n          \"1.4.3_Build_B\"\r\n        ]\r\n      }\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ed40eaec-fb58-4e20-aac6-4fea09f74ec0\"\r\n   
+    \"1.4.3_Build_A\",\r\n          \"1.4.3_Build_B\",\r\n          \"1.4.3_Build_C\",\r\n         
+    \"1.4.4_Build_A\",\r\n          \"1.4.4_Build_B\",\r\n          \"1.4.4_Build_C\",\r\n         
+    \"1.4.4_Build_D\",\r\n          \"1.4.5_Build_A\"\r\n        ]\r\n      }\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ad10a0c6-5812-4405-ae2a-05e06324e7ea\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"TrackTag_Support\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"newReleaseTrack\":
-    [\r\n          \"ONOMATO Pairing!!!\",\r\n          \"Monochrome Kajuen\",\r\n         
-    \"Sakurako Introduce\",\r\n          \"SKY FULL of MAGIC\",\r\n          \"Koi
-    no Uta - feat. Yuzaki Tsukasa (CV: Kito Akari)\",\r\n          \"Hoshikuzu no
-    Interlude\",\r\n          \"Shiny Sky Memories\",\r\n          \"Blow out\",\r\n         
-    \"Hate no Nai Tabi\"\r\n        ],\r\n        \"areaBonusTrack\": []\r\n     
-    }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"3065086b-a48c-48d0-90fa-8422127ea6b3\"\r\n   
-    },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\":
-    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"data_array\":
-    [\r\n          {\r\n            \"title\": \"Released of 1.4.3 Build B\",\r\n           
-    \"releasedDate\": \"(11 November 2024)\",\r\n            \"description\": \"Added
-    track content, Added storage bag, Added virtual item storage, Added item content\"\r\n         
-    },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.3 Build B\",\r\n           
-    \"releasedDate\": \"(28 October 2024)\",\r\n            \"description\": \"Annouce
-    of the new features which will available\\nfor this version\"\r\n          },\r\n         
-    {\r\n            \"title\": \"Released of 1.4.3 Build A\",\r\n            \"releasedDate\":
-    \"(15 October 2024)\",\r\n            \"description\": \"Added content, Added
-    reborn features, Fixed marathon minor bug, Added option exchange\"\r\n         
-    },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.3 Build A\",\r\n           
-    \"releasedDate\": \"(13 October 2024)\",\r\n            \"description\": \"Annouce
-    of the new features which will available\\nfor this version\"\r\n          },\r\n         
-    {\r\n            \"title\": \"Released of 1.4.2 Build B\",\r\n            \"releasedDate\":
-    \"(23 September 2024)\",\r\n            \"description\": \"Added content, Added
-    skills features, Added new character, Fixed minor gameplay bug,\\nFixed major
-    new features bug\"\r\n          },\r\n          {\r\n            \"title\": \"Upcoming
-    of 1.4.2 Build B\",\r\n            \"releasedDate\": \"(22 September 2024)\",\r\n           
+    [\r\n          \"One Way Love\",\r\n          \"illMenate\",\r\n          \"Kessen\",\r\n         
+    \"Ten to Sen\",\r\n          \"Kokoro Somali\",\r\n          \"Kimiiro no Kiseki\",\r\n         
+    \"Naughty Love\",\r\n          \"Okusuri nonde neyou\"\r\n        ],\r\n       
+    \"areaBonusTrack\": []\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
+    {\r\n      \"entityId\": \"5a58e2d9-791f-4888-a69d-c3f3f7f3e3e4\"\r\n    },\r\n   
+    \"rs\": {\r\n      \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\": \"json\",\r\n     
+    \"schemaId\": null,\r\n      \"value\": {\r\n        \"data_array\": [\r\n         
+    {\r\n            \"title\": \"Released of 1.4.4 Build D\",\r\n            \"releasedDate\":
+    \"(27 January 2025)\",\r\n            \"description\": \"This update is from
+    the previous one, which fixed features on them. Hope to see you on the next one\\n\\n\"\r\n         
+    },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.4 Build D\",\r\n           
+    \"releasedDate\": \"(26 January 2025)\",\r\n            \"description\": \"Added
+    track content, Fixed item usage for not showing experience multipler, Fixed of
+    stats reassign which not updated correctly\\n\\n\"\r\n          },\r\n         
+    {\r\n            \"title\": \"Released of 1.4.4 Build C\",\r\n            \"releasedDate\":
+    \"(20 January 2025)\",\r\n            \"description\": \"Added track content,
+    Added item content, Added play event system, Improve rate on mystery pack\\n\\n\"\r\n         
+    },\r\n          {\r\n            \"title\": \"Released of 1.4.4 Build B\",\r\n           
+    \"releasedDate\": \"(30 December 2024)\",\r\n            \"description\": \"Added
+    track content\\n\\n\"\r\n          },\r\n          {\r\n            \"title\":
+    \"Released of 1.4.4 Build A\",\r\n            \"releasedDate\": \"(9 December
+    2024)\",\r\n            \"description\": \"Added track content, Added item content,
+    Exchange point major fixed, Storage bag minor fixed, Added adventureer meter,
+    \\nEmbed adventureer meter to tech scoring, Result minor fixed cause game froze
+    for max level\\n\"\r\n          },\r\n          {\r\n            \"title\": \"Upcoming
+    of 1.4.4 Build A\",\r\n            \"releasedDate\": \"(8 December 2024)\",\r\n           
+    \"description\": \"Getting ready and tested for our next update\\nStay tuned
+    for more\"\r\n          },\r\n          {\r\n            \"title\": \"Released
+    of 1.4.3 Build C\",\r\n            \"releasedDate\": \"(18 November 2024)\",\r\n           
+    \"description\": \"Added track content, Fixed item usage of exp and power potion,\\nFixed
+    minor bug for storage bag\"\r\n          },\r\n          {\r\n            \"title\":
+    \"Upcoming of 1.4.3 Build C\",\r\n            \"releasedDate\": \"(12 November
+    2024)\",\r\n            \"description\": \"Stay tuned for new content and improvement
+    which will available\\nfor this version\"\r\n          },\r\n          {\r\n           
+    \"title\": \"Released of 1.4.3 Build B\",\r\n            \"releasedDate\": \"(11
+    November 2024)\",\r\n            \"description\": \"Added track content, Added
+    storage bag, Added virtual item storage, Added item content\"\r\n          },\r\n         
+    {\r\n            \"title\": \"Upcoming of 1.4.3 Build B\",\r\n            \"releasedDate\":
+    \"(28 October 2024)\",\r\n            \"description\": \"Annouce of the new features
+    which will available\\nfor this version\"\r\n          },\r\n          {\r\n           
+    \"title\": \"Released of 1.4.3 Build A\",\r\n            \"releasedDate\": \"(15
+    October 2024)\",\r\n            \"description\": \"Added content, Added reborn
+    features, Fixed marathon minor bug, Added option exchange\"\r\n          },\r\n         
+    {\r\n            \"title\": \"Upcoming of 1.4.3 Build A\",\r\n            \"releasedDate\":
+    \"(13 October 2024)\",\r\n            \"description\": \"Annouce of the new features
+    which will available\\nfor this version\"\r\n          },\r\n          {\r\n           
+    \"title\": \"Released of 1.4.2 Build B\",\r\n            \"releasedDate\": \"(23
+    September 2024)\",\r\n            \"description\": \"Added content, Added skills
+    features, Added new character, Fixed minor gameplay bug,\\nFixed major new features
+    bug\"\r\n          },\r\n          {\r\n            \"title\": \"Upcoming of
+    1.4.2 Build B\",\r\n            \"releasedDate\": \"(22 September 2024)\",\r\n           
     \"description\": \"Annouce of the new features and content which will available\\nfor
     this version\"\r\n          },\r\n          {\r\n            \"title\": \"Released
     of 1.4.2 Build A\",\r\n            \"releasedDate\": \"(9 September 2024)\",\r\n           
@@ -108,39 +136,45 @@ MonoBehaviour:
     \"releasedDate\": \"(17 June 2024)\",\r\n            \"description\": \"Added
     content, Added fast/late features, Program Rearrangement\"\r\n          }\r\n       
     ]\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"5f269f06-b889-4336-a2e5-c058a1d27350\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"d81a8b93-7791-4997-9252-aca60bc60b3f\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"AutoPatcher_DirectLink_URL\",\r\n      \"type\": \"string\",\r\n     
-    \"value\": \"https://download1640.mediafire.com/ht9l3fupt4sgpgjFMOhHM2YbWe7w8gdNQVc6M1unfRJT09U0n3qIQKicQz0WoSQDwjHqIqm_ps481R4vl8lBCdqMBS2NtkcT_6xh-MVc-BksP7b2YBQf55jvR1-VX4jogVQWcXJaDr9FI9fURVeg-ibMXg3flApDb9iMTTrsEEUuk10/70lbsxj5uy97qz4/MeloMelo+v1.4.3_Build_B.zip\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ab68a0d2-8b2a-420a-b487-c4dc22a8642e\"\r\n   
+    \"value\": \"https://download1078.mediafire.com/n06194h304vgTv9-sl3tZzjobmogSy6MKjPzHEOMADOq70KTSadzLKu71bqdWgoG0u6fjMnkPekXiHepIWOQcCr0Cnp9Oc8IlKxi1dtZXvMTXV9Sq2Gc0dR4ZEJfLflFZl05wzoZj4pIhZGrImCiLZeIN1PnVPHFWPQ4PAp5W9dWuCw/6840vmcq9ewajpt/MeloMelo+v1.4.4_Build_A.zip\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6fd492fe-8fa7-4e70-b5ef-4edf51eeb12b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"AutoPatcher_VersionControl_URL\",\r\n     
     \"type\": \"string\",\r\n      \"value\": \"https://drive.google.com/uc?export=download&id=1_cJeR8e__gZ_tdrURmsuBhA2dzMzJbDt\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"56bafc8e-fe14-4694-a73e-784233f69e72\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"97b36af4-0bbb-4f2e-97b3-e9e2b60b4513\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_Exchange_Management\",\r\n     
+    \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
+    \"data\": [\r\n          {\r\n            \"packageName\": \"WELCOME GIFT\",\r\n           
+    \"dataSeriesKey\": \"Gift\",\r\n            \"unqiueCode\": \"NEWPLAYER\",\r\n           
+    \"version\": \"1.4.3_Build_B\"\r\n          }\r\n        ]\r\n      }\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"c7f84954-a644-4943-853f-8423e5d7f246\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_PlayEvent_Reward\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {}\r\n   
     }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"d7d12cc2-5c10-4b55-acb0-ca644e336f12\"\r\n   
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"0a5ef145-de32-4942-a017-175feaf55a15\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"Latest_Version\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"1.4.3_Build_B\"\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"1401d055-2caf-4680-9406-4dc17262bc8a\"\r\n   
+    \"string\",\r\n      \"value\": \"1.4.4_Build_D\"\r\n    }\r\n  },\r\n  {\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"89d0ffe6-3c27-4203-9951-9eaffad29092\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameApplication_URL\",\r\n      \"type\":
-    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/70lbsxj5uy97qz4/MeloMelo_v1.4.3_Build_B.zip/file\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"c916d758-77fc-4e93-a41b-760d32d8971f\"\r\n   
+    \"string\",\r\n      \"value\": \"https://www.mediafire.com/file/2wbev2mu3x5hvac/MeloMelo+v1.4.4_Build_D.zip/file\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"0122555c-0294-440a-8218-89ba17a3fdcd\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"GameWebpage_URL\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"05cee8e5-c17f-4bdd-8ceb-5c0c27d9e408\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"f18ddd99-e50c-4412-9f31-7cbf17c8122f\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"a55e2128-8678-4a84-8148-a6e35d8b1ea3\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"598be96b-9e30-49df-a307-d9086def4c08\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"NoteSpeed_Legacy_speedValue_v2\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"14934cfd-0c52-4975-819b-ece2bd9ed077\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"65b22c59-32e8-4f23-b354-b11af1894028\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"NoteSpeed_Settings_Configuration\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"data\": [\r\n         
     {\r\n            \"bpm\": 550,\r\n            \"baseSpeed\": 140\r\n         
     },\r\n          {\r\n            \"bpm\": 500,\r\n            \"baseSpeed\":
-    115\r\n          },\r\n          {\r\n            \"bpm\": 400,\r\n           
-    \"baseSpeed\": 90\r\n          },\r\n          {\r\n            \"bpm\": 360,\r\n           
-    \"baseSpeed\": 70\r\n          },\r\n          {\r\n            \"bpm\": 340,\r\n           
+    90\r\n          },\r\n          {\r\n            \"bpm\": 400,\r\n           
+    \"baseSpeed\": 75\r\n          },\r\n          {\r\n            \"bpm\": 360,\r\n           
+    \"baseSpeed\": 65\r\n          },\r\n          {\r\n            \"bpm\": 340,\r\n           
     \"baseSpeed\": 60\r\n          },\r\n          {\r\n            \"bpm\": 300,\r\n           
     \"baseSpeed\": 55\r\n          },\r\n          {\r\n            \"bpm\": 280,\r\n           
     \"baseSpeed\": 50\r\n          },\r\n          {\r\n            \"bpm\": 260,\r\n           
@@ -149,49 +183,77 @@ MonoBehaviour:
     \"baseSpeed\": 30\r\n          },\r\n          {\r\n            \"bpm\": 160,\r\n           
     \"baseSpeed\": 25\r\n          },\r\n          {\r\n            \"bpm\": 150,\r\n           
     \"baseSpeed\": 23\r\n          }\r\n        ]\r\n      }\r\n    }\r\n  },\r\n 
-    {\r\n    \"metadata\": {\r\n      \"entityId\": \"ce09e906-5faa-48fd-ae74-669411c2537d\"\r\n   
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"0a1c4342-f67f-4147-b3f4-e8c8cd74f932\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"NoteSpeed_Default_Configuration\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
     \"bpm\": 150,\r\n        \"baseSpeed\": 20\r\n      }\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"baaa0d58-4a71-4892-8b64-4c99a0c163b1\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"88e3e111-1808-4fc4-9b05-0dfa5e480d67\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"CloudSave_Mode\",\r\n      \"type\":
     \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"d46471c8-7e0e-46a8-9eec-1a71dc76fdbf\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"2eedfb95-ec26-4cfd-ae8c-2d9d67a59628\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"CloudSave_Support\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": {\r\n        \"versions\": [\r\n         
     \"1.4.1a\",\r\n          \"1.4.2a\",\r\n          \"1.4.0EX\",\r\n          \"1.4.0EX_Build_A\",\r\n         
     \"1.4.0EX_Build_B\",\r\n          \"1.4.0EX_Build_C\",\r\n          \"1.4.0EX_Build_D\",\r\n         
     \"1.4.0EX_Build_E\",\r\n          \"1.4.0EX_Build_F\",\r\n          \"1.4.1_Build_A\",\r\n         
     \"1.4.1_Build_B\",\r\n          \"1.4.2_Build_A\",\r\n          \"1.4.2_Build_B\",\r\n         
-    \"1.4.3_Build_A\",\r\n          \"1.4.3_Build_B\"\r\n        ]\r\n      }\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ed40eaec-fb58-4e20-aac6-4fea09f74ec0\"\r\n   
+    \"1.4.3_Build_A\",\r\n          \"1.4.3_Build_B\",\r\n          \"1.4.3_Build_C\",\r\n         
+    \"1.4.4_Build_A\",\r\n          \"1.4.4_Build_B\",\r\n          \"1.4.4_Build_C\",\r\n         
+    \"1.4.4_Build_D\",\r\n          \"1.4.5_Build_A\"\r\n        ]\r\n      }\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ad10a0c6-5812-4405-ae2a-05e06324e7ea\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"TrackTag_Support\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"newReleaseTrack\":
-    [\r\n          \"ONOMATO Pairing!!!\",\r\n          \"Monochrome Kajuen\",\r\n         
-    \"Sakurako Introduce\",\r\n          \"SKY FULL of MAGIC\",\r\n          \"Koi
-    no Uta - feat. Yuzaki Tsukasa (CV: Kito Akari)\",\r\n          \"Hoshikuzu no
-    Interlude\",\r\n          \"Shiny Sky Memories\",\r\n          \"Blow out\",\r\n         
-    \"Hate no Nai Tabi\"\r\n        ],\r\n        \"areaBonusTrack\": []\r\n     
-    }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"3065086b-a48c-48d0-90fa-8422127ea6b3\"\r\n   
-    },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\":
-    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n        \"data_array\":
-    [\r\n          {\r\n            \"title\": \"Released of 1.4.3 Build B\",\r\n           
-    \"releasedDate\": \"(11 November 2024)\",\r\n            \"description\": \"Added
-    track content, Added storage bag, Added virtual item storage, Added item content\"\r\n         
-    },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.3 Build B\",\r\n           
-    \"releasedDate\": \"(28 October 2024)\",\r\n            \"description\": \"Annouce
-    of the new features which will available\\nfor this version\"\r\n          },\r\n         
-    {\r\n            \"title\": \"Released of 1.4.3 Build A\",\r\n            \"releasedDate\":
-    \"(15 October 2024)\",\r\n            \"description\": \"Added content, Added
-    reborn features, Fixed marathon minor bug, Added option exchange\"\r\n         
-    },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.3 Build A\",\r\n           
-    \"releasedDate\": \"(13 October 2024)\",\r\n            \"description\": \"Annouce
-    of the new features which will available\\nfor this version\"\r\n          },\r\n         
-    {\r\n            \"title\": \"Released of 1.4.2 Build B\",\r\n            \"releasedDate\":
-    \"(23 September 2024)\",\r\n            \"description\": \"Added content, Added
-    skills features, Added new character, Fixed minor gameplay bug,\\nFixed major
-    new features bug\"\r\n          },\r\n          {\r\n            \"title\": \"Upcoming
-    of 1.4.2 Build B\",\r\n            \"releasedDate\": \"(22 September 2024)\",\r\n           
+    [\r\n          \"One Way Love\",\r\n          \"illMenate\",\r\n          \"Kessen\",\r\n         
+    \"Ten to Sen\",\r\n          \"Kokoro Somali\",\r\n          \"Kimiiro no Kiseki\",\r\n         
+    \"Naughty Love\",\r\n          \"Okusuri nonde neyou\"\r\n        ],\r\n       
+    \"areaBonusTrack\": []\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
+    {\r\n      \"entityId\": \"5a58e2d9-791f-4888-a69d-c3f3f7f3e3e4\"\r\n    },\r\n   
+    \"rs\": {\r\n      \"key\": \"MeloMelo_GameUpdates\",\r\n      \"type\": \"json\",\r\n     
+    \"schemaId\": null,\r\n      \"value\": {\r\n        \"data_array\": [\r\n         
+    {\r\n            \"title\": \"Released of 1.4.4 Build D\",\r\n            \"releasedDate\":
+    \"(27 January 2025)\",\r\n            \"description\": \"This update is from
+    the previous one, which fixed features on them. Hope to see you on the next one\\n\\n\"\r\n         
+    },\r\n          {\r\n            \"title\": \"Upcoming of 1.4.4 Build D\",\r\n           
+    \"releasedDate\": \"(26 January 2025)\",\r\n            \"description\": \"Added
+    track content, Fixed item usage for not showing experience multipler, Fixed of
+    stats reassign which not updated correctly\\n\\n\"\r\n          },\r\n         
+    {\r\n            \"title\": \"Released of 1.4.4 Build C\",\r\n            \"releasedDate\":
+    \"(20 January 2025)\",\r\n            \"description\": \"Added track content,
+    Added item content, Added play event system, Improve rate on mystery pack\\n\\n\"\r\n         
+    },\r\n          {\r\n            \"title\": \"Released of 1.4.4 Build B\",\r\n           
+    \"releasedDate\": \"(30 December 2024)\",\r\n            \"description\": \"Added
+    track content\\n\\n\"\r\n          },\r\n          {\r\n            \"title\":
+    \"Released of 1.4.4 Build A\",\r\n            \"releasedDate\": \"(9 December
+    2024)\",\r\n            \"description\": \"Added track content, Added item content,
+    Exchange point major fixed, Storage bag minor fixed, Added adventureer meter,
+    \\nEmbed adventureer meter to tech scoring, Result minor fixed cause game froze
+    for max level\\n\"\r\n          },\r\n          {\r\n            \"title\": \"Upcoming
+    of 1.4.4 Build A\",\r\n            \"releasedDate\": \"(8 December 2024)\",\r\n           
+    \"description\": \"Getting ready and tested for our next update\\nStay tuned
+    for more\"\r\n          },\r\n          {\r\n            \"title\": \"Released
+    of 1.4.3 Build C\",\r\n            \"releasedDate\": \"(18 November 2024)\",\r\n           
+    \"description\": \"Added track content, Fixed item usage of exp and power potion,\\nFixed
+    minor bug for storage bag\"\r\n          },\r\n          {\r\n            \"title\":
+    \"Upcoming of 1.4.3 Build C\",\r\n            \"releasedDate\": \"(12 November
+    2024)\",\r\n            \"description\": \"Stay tuned for new content and improvement
+    which will available\\nfor this version\"\r\n          },\r\n          {\r\n           
+    \"title\": \"Released of 1.4.3 Build B\",\r\n            \"releasedDate\": \"(11
+    November 2024)\",\r\n            \"description\": \"Added track content, Added
+    storage bag, Added virtual item storage, Added item content\"\r\n          },\r\n         
+    {\r\n            \"title\": \"Upcoming of 1.4.3 Build B\",\r\n            \"releasedDate\":
+    \"(28 October 2024)\",\r\n            \"description\": \"Annouce of the new features
+    which will available\\nfor this version\"\r\n          },\r\n          {\r\n           
+    \"title\": \"Released of 1.4.3 Build A\",\r\n            \"releasedDate\": \"(15
+    October 2024)\",\r\n            \"description\": \"Added content, Added reborn
+    features, Fixed marathon minor bug, Added option exchange\"\r\n          },\r\n         
+    {\r\n            \"title\": \"Upcoming of 1.4.3 Build A\",\r\n            \"releasedDate\":
+    \"(13 October 2024)\",\r\n            \"description\": \"Annouce of the new features
+    which will available\\nfor this version\"\r\n          },\r\n          {\r\n           
+    \"title\": \"Released of 1.4.2 Build B\",\r\n            \"releasedDate\": \"(23
+    September 2024)\",\r\n            \"description\": \"Added content, Added skills
+    features, Added new character, Fixed minor gameplay bug,\\nFixed major new features
+    bug\"\r\n          },\r\n          {\r\n            \"title\": \"Upcoming of
+    1.4.2 Build B\",\r\n            \"releasedDate\": \"(22 September 2024)\",\r\n           
     \"description\": \"Annouce of the new features and content which will available\\nfor
     this version\"\r\n          },\r\n          {\r\n            \"title\": \"Released
     of 1.4.2 Build A\",\r\n            \"releasedDate\": \"(9 September 2024)\",\r\n           
@@ -214,14 +276,20 @@ MonoBehaviour:
     \"releasedDate\": \"(17 June 2024)\",\r\n            \"description\": \"Added
     content, Added fast/late features, Program Rearrangement\"\r\n          }\r\n       
     ]\r\n      }\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"5f269f06-b889-4336-a2e5-c058a1d27350\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"d81a8b93-7791-4997-9252-aca60bc60b3f\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"AutoPatcher_DirectLink_URL\",\r\n      \"type\": \"string\",\r\n     
-    \"value\": \"https://download1640.mediafire.com/ht9l3fupt4sgpgjFMOhHM2YbWe7w8gdNQVc6M1unfRJT09U0n3qIQKicQz0WoSQDwjHqIqm_ps481R4vl8lBCdqMBS2NtkcT_6xh-MVc-BksP7b2YBQf55jvR1-VX4jogVQWcXJaDr9FI9fURVeg-ibMXg3flApDb9iMTTrsEEUuk10/70lbsxj5uy97qz4/MeloMelo+v1.4.3_Build_B.zip\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"ab68a0d2-8b2a-420a-b487-c4dc22a8642e\"\r\n   
+    \"value\": \"https://download1078.mediafire.com/n06194h304vgTv9-sl3tZzjobmogSy6MKjPzHEOMADOq70KTSadzLKu71bqdWgoG0u6fjMnkPekXiHepIWOQcCr0Cnp9Oc8IlKxi1dtZXvMTXV9Sq2Gc0dR4ZEJfLflFZl05wzoZj4pIhZGrImCiLZeIN1PnVPHFWPQ4PAp5W9dWuCw/6840vmcq9ewajpt/MeloMelo+v1.4.4_Build_A.zip\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6fd492fe-8fa7-4e70-b5ef-4edf51eeb12b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"AutoPatcher_VersionControl_URL\",\r\n     
     \"type\": \"string\",\r\n      \"value\": \"https://drive.google.com/uc?export=download&id=1_cJeR8e__gZ_tdrURmsuBhA2dzMzJbDt\"\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"56bafc8e-fe14-4694-a73e-784233f69e72\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"97b36af4-0bbb-4f2e-97b3-e9e2b60b4513\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_Exchange_Management\",\r\n     
+    \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {\r\n       
+    \"data\": [\r\n          {\r\n            \"packageName\": \"WELCOME GIFT\",\r\n           
+    \"dataSeriesKey\": \"Gift\",\r\n            \"unqiueCode\": \"NEWPLAYER\",\r\n           
+    \"version\": \"1.4.3_Build_B\"\r\n          }\r\n        ]\r\n      }\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"c7f84954-a644-4943-853f-8423e5d7f246\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"MeloMelo_PlayEvent_Reward\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": {}\r\n   
     }\r\n  }\r\n]"
   _environments: "[\r\n  {\r\n    \"projectId\": \"f3a9f63d-58ab-4394-9b31-71188bf39fb2\",\r\n   

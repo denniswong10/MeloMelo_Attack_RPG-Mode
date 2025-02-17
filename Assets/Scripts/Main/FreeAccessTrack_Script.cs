@@ -67,7 +67,7 @@ public class FreeAccessTrack_Script : MonoBehaviour
 
                 trackDetail.transform.GetChild(0).GetComponent<Text>().text = "Title: " + track.TrackTitle + "\n"
                     + "Difficulty: " + (track.difficulty == 1 ? "NORMAL" : track.difficulty == 2 ? "HARD" : 
-                        track.difficulty == 3 ? "ULTIMATE" : "--") + "\n"
+                        track.difficulty == 3 ? "ULTIMATE" : "ANY ONE") + "\n"
                             + "Cleared: " + MeloMelo_GameSettings.GetScoreRankStructure(track.score.ToString()).rank;
             }
         }

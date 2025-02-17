@@ -1847,7 +1847,8 @@ namespace MeloMelo_Local
                     MeloMelo_CharacterInfo_Settings.UnlockCharacter(data.id);
 
                     int unUsedMasteryPoint = data.level * 2 - data.totalMasteryAdded;
-                    MeloMelo_ExtraStats_Settings.SetMasteryPoint(data.id, unUsedMasteryPoint);
+                    int rebirthMasteryPoint = data.totalRebirthPoint * 99 * 2;
+                    MeloMelo_ExtraStats_Settings.SetMasteryPoint(data.id, unUsedMasteryPoint + rebirthMasteryPoint);
                     MeloMelo_ExtraStats_Settings.SetRebirthPoint(data.id, data.totalRebirthPoint);
 
                     MeloMelo_ExtraStats_Settings.IncreaseStrengthStats(data.id, data.baseStrengthStats);
@@ -2156,32 +2157,72 @@ namespace MeloMelo_Local
             WriteToFile(jsonFormat);
         }
 
-        public void SaveVirtualItemFromPlayer(string itemName, int amount)
+        public void SaveVirtualItemFromPlayer(string itemName, int amount, bool isStackable)
         {
             List<VirtualItemDatabase> listing = new List<VirtualItemDatabase>();
-            VirtualItemDatabase itemLoader = new VirtualItemDatabase();
-
-            int updateAmount = amount;
-            itemLoader.itemName = itemName;
+            VirtualItemDatabase itemContain = new VirtualItemDatabase(itemName, amount);
 
             if (File.Exists(directory + combinePath))
             {
+                // Load all others existing item before overwriting the data
                 foreach (string data_decode in GetFormatToList())
                     if (data_decode != string.Empty) listing.Add(new VirtualItemDatabase().GetItemData(data_decode));
 
-                File.Delete(directory + combinePath);
-
-                foreach (VirtualItemDatabase list in listing)
-                    if (list.itemName == itemName) 
+                // Checking item amount isn't zero
+                if (amount != 0)
+                {
+                    if (itemContain.amount < 0)
                     {
-                        updateAmount += list.amount;
-                        listing.Remove(list); 
-                        break; 
+                        // Find existing item and modify the value
+                        for (int itemOnUsed = 0; itemOnUsed < listing.ToArray().Length; itemOnUsed++)
+                        {
+                            // Get item and deduct them accordingly
+                            if (listing[itemOnUsed].itemName == itemContain.itemName)
+                            {
+                                itemContain.amount += listing[itemOnUsed].amount;
+                                listing.RemoveAt(itemOnUsed);
+                                if (itemContain.amount > 0) listing.Insert(itemOnUsed, itemContain);
+                                break;
+                            }
+                        }
                     }
+
+                    else
+                    {
+                        bool isItemEmpty = false;
+
+                        for (int itemToAdd = 0; itemToAdd < listing.ToArray().Length; itemToAdd++)
+                        {
+                            // Get item and add into the current amount
+                            if (listing[itemToAdd].itemName == itemContain.itemName && isStackable)
+                            {
+                                itemContain.amount += listing[itemToAdd].amount;
+                                listing.RemoveAt(itemToAdd);
+                                listing.Insert(itemToAdd, itemContain);
+                                isItemEmpty = true;
+                                break;
+                            }
+                        }
+
+                        if (!isItemEmpty)
+                        {
+                            // Create new slot of item stack them together. Otherwise make them individually
+                            if (isStackable) listing.Add(itemContain);
+                            else
+                            {
+                                for (int itemSpawn = 0; itemSpawn < itemContain.amount; itemSpawn++)
+                                    listing.Add(new VirtualItemDatabase(itemContain.itemName, 1));
+                            }
+                        }
+                    }
+                }
+
+                // Remove old data file from directory
+                File.Delete(directory + combinePath);
             }
 
-            itemLoader.amount = updateAmount;
-            if (itemLoader.amount > 0) listing.Add(itemLoader);
+            // Create new slot for item
+            else if (itemContain.amount > 0) listing.Add(itemContain);
 
             string jsonFormat = string.Empty;
             foreach (VirtualItemDatabase list in listing) { jsonFormat += JsonUtility.ToJson(list) + "/"; }
@@ -2193,8 +2234,8 @@ namespace MeloMelo_Local
             string currentTranscation = jsonData + "/";
             if (File.Exists(directory + combinePath))
             {
-                File.Delete(directory + combinePath);
                 currentTranscation += GetProgressFile();
+                File.Delete(directory + combinePath);
             }
 
             WriteToFile(currentTranscation);
@@ -3862,17 +3903,14 @@ namespace MeloMelo_RPGEditor
 
         public CharacterStats GetCharacterStatus(int level)
         {
-            return statsListing.ToArray().Length != 0 ? statsListing[level - 1] : new CharacterStats();
+            if (level >= statsListing.ToArray().Length) return statsListing[statsListing.ToArray().Length - 1];
+            else return statsListing[level < 0 ? 0 : (level - 1)];
         }
     }
 
     public class StatsDistribution
     {
-        public readonly int baseDamage = 5;
-        public readonly float baseDefense = 2.5f;
         public readonly int baseHealth = 10;
-        public readonly int baseMagic = 5;
-
         public ClassBase[] slot_Stats = new ClassBase[3];
 
         public void load_Stats()
@@ -3890,22 +3928,77 @@ namespace MeloMelo_RPGEditor
             int DMG = 0;
             for (int i = 0; i < 3; i++)
             {
+                slot_Stats[i].UpdateStatsCache(false);
+                ElemetStartingStats baseStats = MeloMelo_GameSettings.GetStatsWithElementBonus(
+                    slot_Stats[i].elementType == ClassBase.ElementStats.Light ? "Light" :
+                    slot_Stats[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                    slot_Stats[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+
+                UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy
+                    [PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i];
+                ElemetStartingStats basicStats = MeloMelo_GameSettings.GetStatsWithElementBonus("None");
+
                 switch (index)
                 {
                     case "Enemy":
-                        DMG += SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i].DMG;
+                        float damageAfterStats = currentUnit.str * basicStats.strength;
+
+                        float damageResistedFromCharacter = basicStats.vitality * (slot_Stats[i].vitality +
+                            MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[i].name) + 
+                            MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name));
+
+                        float damageBonusResistanceFromCharacter = basicStats.vitality *
+                            MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
+
+                        DMG += currentUnit.DMG + (int)damageAfterStats - ((int)(damageResistedFromCharacter + damageBonusResistanceFromCharacter * 0.01f * 80));
+                        if (DMG <= 0) DMG = 0;
                         break;
 
                     case "Character":
-                        slot_Stats[i].UpdateStatsCache(false);
-                        int originalDamage = baseDamage * (slot_Stats[i].strength + 
-                            MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[i].name)) + baseDamage;
-                        DMG += originalDamage + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name) + 
-                            originalDamage * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
+                        float originalDamage = baseStats.strength + baseStats.strength * (slot_Stats[i].strength +
+                            MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[i].name));
+
+                        float damageResistedFromEnemy = currentUnit.vit * baseStats.vitality;
+
+                        DMG += (int)originalDamage + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name) + 
+                            (int)originalDamage * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name) 
+                            - (int)(damageResistedFromEnemy * 0.01f * 80);
+                        if (DMG <= 0) DMG = 0;
                         break;
                 }
             }
             return DMG;
+        }
+
+        public int get_UnitSpellResist(string index)
+        {
+            float resistance = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                switch (index)
+                {
+                    case "Character":
+                        slot_Stats[i].UpdateStatsCache(false);
+                        ElemetStartingStats baseStats = MeloMelo_GameSettings.GetStatsWithElementBonus(
+                            slot_Stats[i].elementType == ClassBase.ElementStats.Light ? "Light" :
+                            slot_Stats[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                            slot_Stats[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+
+                        resistance += slot_Stats[i].magic - slot_Stats[i].vitality * baseStats.multipler;
+                        if (resistance <= 0) resistance = 0;
+                        break;
+
+                    case "Enemy":
+                        UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy
+                            [PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i];
+                        ElemetStartingStats basicStats = MeloMelo_GameSettings.GetStatsWithElementBonus("None");
+
+                        resistance += currentUnit.mag - currentUnit.vit * basicStats.multipler;
+                        if (resistance <= 0) resistance = 0;
+                        break;
+                }
+            }
+            return (int)resistance;
         }
 
         // Unit Health: Get All Types
@@ -3917,18 +4010,27 @@ namespace MeloMelo_RPGEditor
                 switch (index)
                 {
                     case "Enemy":
-                        HP += SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i].HP;
-                        HP += PreSelection_Script.thisPre.get_AreaData.EnemyBaseHealth[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1];
+                        UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i];
+                        ElemetStartingStats basicStats = MeloMelo_GameSettings.GetStatsWithElementBonus("None");
+
+                        HP += PreSelection_Script.thisPre.get_AreaData.EnemyBaseHealth[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1]
+                            + currentUnit.HP + (int)(baseHealth * basicStats.multipler * currentUnit.vit);
                         break;
 
                     case "Character":
                         if (slot_Stats[i].icon != null)
                         {
                             slot_Stats[i].UpdateStatsCache(false);
-                            int originalValue = slot_Stats[i].health + (baseHealth * 
+                            ElemetStartingStats baseStats = MeloMelo_GameSettings.GetStatsWithElementBonus(
+                                slot_Stats[i].elementType == ClassBase.ElementStats.Light ? "Light" :
+                                slot_Stats[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                                slot_Stats[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+
+                            float originalValue = slot_Stats[i].health + (baseHealth * baseStats.multipler * 
                                 (slot_Stats[i].vitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[i].name)));
-                            HP += originalValue + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name) +
-                            originalValue * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
+
+                            HP += (int)originalValue + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name) +
+                            (int)originalValue * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
                         }
                         break;
 
@@ -3942,17 +4044,22 @@ namespace MeloMelo_RPGEditor
         // Unit Power: Get All Types
         public int get_UnitPower(string classType = "Character")
         {
-            int power = 0;
+            float power = 0;
             for (int id = 0; id < slot_Stats.Length; id++)
             {
                 if (classType == slot_Stats[id].name)
                 {
                     slot_Stats[id].UpdateStatsCache(false);
-                    power += baseDamage * (slot_Stats[id].strength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[id].name));
-                    power += baseMagic * (slot_Stats[id].magic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(slot_Stats[id].name));
-                    power += (int)(baseDefense * (slot_Stats[id].vitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[id].name)));
-                    power += baseHealth * slot_Stats[id].health;
-                    return power;
+                    ElemetStartingStats baseStats = MeloMelo_GameSettings.GetStatsWithElementBonus(
+                        slot_Stats[id].elementType == ClassBase.ElementStats.Light ? "Light" :
+                        slot_Stats[id].elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                        slot_Stats[id].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+
+                    power += baseStats.strength * (slot_Stats[id].strength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[id].name));
+                    power += baseStats.magic * (slot_Stats[id].magic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(slot_Stats[id].name));
+                    power += (int)(baseStats.vitality * (slot_Stats[id].vitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[id].name)));
+                    power += baseStats.multipler * baseHealth * slot_Stats[id].health;
+                    return (int)power;
                 }
             }
 
@@ -3961,21 +4068,30 @@ namespace MeloMelo_RPGEditor
                 switch (classType)
                 {
                     case "Enemy":
-                        power += SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[unit].str * 10;
-                        power += SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[unit].mag * 15;
-                        power += SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[unit].vit * 5;
-                        power += SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[unit].DMG * 100;
+                        UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy
+                            [PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[unit];
+                        ElemetStartingStats basicStats = MeloMelo_GameSettings.GetStatsWithElementBonus("None");
+
+                        power += currentUnit.str * basicStats.strength;
+                        power += currentUnit.mag * basicStats.magic;
+                        power += currentUnit.vit * basicStats.vitality;
+                        power += currentUnit.HP * (basicStats.multipler * baseHealth);
                         break;
 
                     case "Character":
                         if (slot_Stats[unit].icon != null)
                         {
                             slot_Stats[unit].UpdateStatsCache(false);
-                            power += baseDamage * (slot_Stats[unit].strength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[unit].name));
-                            power += baseMagic * (slot_Stats[unit].magic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(slot_Stats[unit].name));
-                            power += (int)(baseDefense * (slot_Stats[unit].vitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[unit].name)));
-                            power += baseHealth * slot_Stats[unit].health;
-                            PlayerPrefs.SetInt("Character_OverallPower", power);
+                            ElemetStartingStats baseStats = MeloMelo_GameSettings.GetStatsWithElementBonus(
+                                slot_Stats[unit].elementType == ClassBase.ElementStats.Light ? "Light" :
+                                slot_Stats[unit].elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                                slot_Stats[unit].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+
+                            power += baseStats.strength * (slot_Stats[unit].strength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[unit].name));
+                            power += baseStats.magic * (slot_Stats[unit].magic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(slot_Stats[unit].name));
+                            power += (int)(baseStats.vitality * (slot_Stats[unit].vitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[unit].name)));
+                            power += baseStats.multipler * baseHealth * slot_Stats[unit].health;
+                            PlayerPrefs.SetInt("Character_OverallPower", (int)power);
                         }
                         break;
 
@@ -3984,7 +4100,7 @@ namespace MeloMelo_RPGEditor
                 }
             }
                     
-            return power;
+            return (int)power;
         }
 
         // Area Difficulty: Get All Types

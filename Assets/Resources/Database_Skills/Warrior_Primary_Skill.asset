@@ -14,16 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillName: Enchant Sword Blade
   skillIcon: {fileID: 2800000, guid: 5f256795dc4da154d820c9a9262e8048, type: 3}
-  description: 'Perform a light blade hits to enemy health by (STR x 90% + (Grade
+  description: 'Perform a light blade hits to enemy health by (ATK x 90% + (Grade
     x 10%)). Upon activation to this skill, player have to achieve every 100 Combo. '
-  onStartOfEffect: []
-  duringPlayOfEffect:
-  - effectName: OnComboDamage
-    stats: 0
-    baseDamageStats: 90
-    extraStatsPercentage: 10
-    valueOfTrigger: 100
-  onEndOfEffect: []
   target_caterogy: 4
   customEffectData:
   - effectName: OnComboDamage

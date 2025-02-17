@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: '#15'
   m_EditorClassIdentifier: 
   itemName: Basic Skill Ticket
-  Icon: {fileID: 2800000, guid: b7bc4d08eb8e36f4e825bf23bd2e40b9, type: 3}
+  Icon: {fileID: 2800000, guid: 6e548a90c578b30468e4259194a4cd6d, type: 3}
+  stackable: 1
   thisItemType: 1
   description: "Allow a character to learn a skill or upgrade of their grade by 1.
     \nThis ticket only valid for used on primary skill."

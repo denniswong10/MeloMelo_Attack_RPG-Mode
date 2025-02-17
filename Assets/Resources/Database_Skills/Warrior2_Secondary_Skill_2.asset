@@ -15,17 +15,12 @@ MonoBehaviour:
   skillName: Anti-Bomb Reflector
   skillIcon: {fileID: 2800000, guid: 58803f8d3d53c5547ac1523b864681ec, type: 3}
   description: 'Protect against any traps which cause us trouble. Resist damage to
-    all characters fighting alongside with you. Shielding over (VIT x 20% + (Grade
-    + 30%)) against traps. Chance to damage back enemy health by (STR x 10% + (Grade
+    all characters fighting alongside with you. Shielding over (DEF x 20% + (Grade
+    + 30%)) against traps. Chance to damage back enemy health by (ATK x 10% + (Grade
     x 20%)). At the end of track, all characters get a chance to deal final damage
-    to enemy health by (STR x 10%), (VIT x 8%), (MAG x 5%).
+    to enemy health by (ATK x 10%), (DEF x 8%), (MAG x 5%).
 
 '
-  skill_type: 3
-  skillEffectKey: OnBombReflect
-  mainStats: 0
   target_caterogy: 3
-  baseDamageStats: 0
-  extraStatsPercentage: 0
-  valueOfTrigger: 20/30/10/20/10/8/5
+  customEffectData: []
   isUnlockReady: 0

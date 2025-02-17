@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: '#27'
   m_EditorClassIdentifier: 
   itemName: Medium Training Voucher
-  Icon: {fileID: 2800000, guid: b7bc4d08eb8e36f4e825bf23bd2e40b9, type: 3}
+  Icon: {fileID: 2800000, guid: 4a95eeae69849cf4ba69718272cf60dc, type: 3}
+  stackable: 1
   thisItemType: 1
   description: This voucher provide training for your character strength by leveling
     them to reach out for max level. Training provide character 30% of experience

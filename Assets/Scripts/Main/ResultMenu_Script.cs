@@ -47,6 +47,8 @@ public class ResultMenu_Script : MonoBehaviour
     void Start()
     {
         thisRes = this;
+        Screen.SetResolution(1360, 768, false);
+
         ResMelo = PlayerPrefs.GetString("Resoultion_Melo", string.Empty);
         try { userInput = GuestLogin_Script.thisScript.get_entry; } catch { userInput = LoginPage_Script.thisPage.get_user; }
 
@@ -145,23 +147,30 @@ public class ResultMenu_Script : MonoBehaviour
                     MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(stats.slot_Stats[i].name) * PlayerPrefs.GetInt("Temp_Experience", 0) :
                         PlayerPrefs.GetInt("Temp_Experience", 0));
 
-            stats.slot_Stats[i].experience += PlayerPrefs.HasKey("MarathonPermit") ? 0 : experienceAfterBoost;
+            stats.slot_Stats[i].experience += PlayerPrefs.HasKey("MarathonPermit") || 
+                database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience < 0 
+                ? 0 : experienceAfterBoost;
             stats.slot_Stats[i].UpdateCurrentStats(true);
 
             if (stats.slot_Stats[i].name != "None")
             {
                 int checkLevel;
-                do
+                if (database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience > 0)
                 {
-                    checkLevel = stats.slot_Stats[i].level;
-                    stats.slot_Stats[i].CheckLeveling(database.GetCharacterStatus(checkLevel).GetExperience);
-                } while (checkLevel != stats.slot_Stats[i].level);
+                    do
+                    {
+                        checkLevel = stats.slot_Stats[i].level;
+                        stats.slot_Stats[i].CheckLeveling(database.GetCharacterStatus(checkLevel).GetExperience);
+                    } while (checkLevel != stats.slot_Stats[i].level);
+
+                    GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(3).GetComponent<Text>().text = "EXP: "
+                        + stats.slot_Stats[i].experience + "/" + database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience +
+                        " (+" + (PlayerPrefs.HasKey("MarathonPermit") ? 0 : experienceAfterBoost) + ")";
+                }
+                else
+                    GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(3).GetComponent<Text>().text = string.Empty;
 
                 GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(2).GetComponent<Text>().text = "- " + stats.slot_Stats[i].characterName + " -";
-                GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(3).GetComponent<Text>().text = "EXP: " + stats.slot_Stats[i].experience + "/" + 
-                    database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience + " (+" 
-                    + (PlayerPrefs.HasKey("MarathonPermit") ? 0 : experienceAfterBoost) + ")";
-
                 GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(4).GetComponent<Text>().text = "LEVEL: " + stats.slot_Stats[i].level;
 
                 GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(1).GetComponent<Image>().enabled = true;
@@ -172,9 +181,13 @@ public class ResultMenu_Script : MonoBehaviour
         if (GameManager.thisManager.get_WinAlert) { GameObject.Find("Battle Status").GetComponent<Text>().text = "BATTLE SUCCESS!"; }
         else { GameObject.Find("Battle Status").GetComponent<Text>().text = "BATTLE FAILED!"; }
 
-        GameObject.Find("Score2").GetComponent<Text>().text = "TECHNICAL SCORE: " + PlayerPrefs.GetInt("TechScore", 0) + " (" + TechScore_Ref() + ")";
-        GameObject.Find("Score2_Slider").GetComponent<Slider>().maxValue = techScore;
-        GameObject.Find("Score2_Slider").GetComponent<Slider>().value = PlayerPrefs.GetInt("TechScore", 0);
+        GameObject.Find("Score2").GetComponent<Text>().text = "ADVENTURER RANK: " + (PlayerPrefs.GetInt("UpperScoreTech", 0) == 0 ? "NO STAR" :
+            PlayerPrefs.GetInt("UpperScoreTech", 0) + " STAR");
+        //+ " (" + TechScore_Ref() + ")";
+
+        GameObject.Find("Score2_Slider").GetComponent<Slider>().maxValue = 12;// techScore;
+        GameObject.Find("Score2_Slider").GetComponent<Slider>().value = PlayerPrefs.GetInt("UpperScoreTech", 0);
+        // PlayerPrefs.GetInt("TechScore", 0);
 
         GameObject.Find("BP").GetComponent<Text>().text = "BATTLE STREAK RATE: " + BattleRate_Ref().ToString("0.00") + "%";
 
@@ -515,6 +528,7 @@ public class ResultMenu_Script : MonoBehaviour
     private IEnumerator LocalSaveProgress(string serverTitle)
     {
         bool isInvaild = GameManager.thisManager.getJudgeWindow.TotalJudgeCounted() == GameManager.thisManager.getJudgeWindow.getOverallCombo;
+        bool isItemGetsRefreshed = false;
 
         if (isInvaild)
         {
@@ -593,7 +607,7 @@ public class ResultMenu_Script : MonoBehaviour
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileSkillDatabase);
             data.SaveAllSkillsType();
 
-            // Save: Items
+            // Save: Used Items
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
             string[] listOfUsedItem = MeloMelo_ItemUsage_Settings.GetAllItemUsed();
 
@@ -605,20 +619,60 @@ public class ResultMenu_Script : MonoBehaviour
                     PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Successful Used: " + 
                         itemName + " ( x" + MeloMelo_ItemUsage_Settings.GetItemUsed(itemName) + " )";
 
-                    data.SaveVirtualItemFromPlayer(itemName, -MeloMelo_ItemUsage_Settings.GetItemUsed(itemName));
+                    data.SaveVirtualItemFromPlayer(itemName, -MeloMelo_ItemUsage_Settings.GetItemUsed(itemName), true);
                     PlayerPrefs.DeleteKey(itemName + "_VirtualItem_Unsaved_Used");
                     yield return new WaitForSeconds(2);
                     PromptMessage.SetActive(false);
                 }
 
+                isItemGetsRefreshed = true;
+            }
+
+            // Save: Reward Items
+            int eventPlayedCount = PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_playedCount_EventReward", 0);
+            PlayerPrefs.SetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_playedCount_EventReward", eventPlayedCount + 1);
+            int eventPlayId = 1;
+
+            if (MeloMelo_GameSettings.GetEventRewardArray() != null)
+            {
+                foreach (PlayEventRewardData item in MeloMelo_GameSettings.GetEventRewardArray())
+                {
+                    if (PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_playedCount_EventReward", 0) >= item.playRequirement *
+                        PlayerPrefs.GetInt(eventPlayId + "_RepeatableRewarding", 1) &&
+
+                        MeloMelo_GameSettings.GetVersionNumber(StartMenu_Script.thisMenu.get_version) >= 
+                        MeloMelo_GameSettings.GetVersionNumber(item.version)
+                        )
+                    {
+                        PromptMessage.SetActive(true);
+                        PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Item Obtain: " +
+                            item.itemName + " ( x" + item.maxObtain + " )";
+
+                        data.SaveVirtualItemFromPlayer(item.itemName, item.maxObtain, true);
+                        int currentObtain = PlayerPrefs.GetInt(eventPlayId + "_RepeatableRewarding", 1);
+                        PlayerPrefs.SetInt(eventPlayId + "_RepeatableRewarding", currentObtain + 1);
+
+                        yield return new WaitForSeconds(2);
+                        PromptMessage.SetActive(false);
+                    }
+
+                    eventPlayId++;
+                }
+
+                isItemGetsRefreshed = true;
+            }
+
+            // Load: Items
+            if (isItemGetsRefreshed)
+            {
                 LocalLoad_DataManagement loadData = new LocalLoad_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
-                    "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+                   "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
                 loadData.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
                 loadData.LoadVirtualItemToPlayer();
             }
         }
 
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(!isInvaild ? 5 : isItemGetsRefreshed ? 2.5f : 0.5f);
         ContentSavedCompleted(serverTitle, isInvaild);
 
         yield return new WaitForSeconds(1);

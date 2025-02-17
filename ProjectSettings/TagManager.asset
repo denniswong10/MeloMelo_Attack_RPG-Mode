@@ -28,6 +28,8 @@ TagManager:
   - TrackList
   - RankID_System
   - Challenge_Storage
+  - DifficultyDisplaySelection
+  - Option_TopPanel_Button
   layers:
   - Default
   - TransparentFX

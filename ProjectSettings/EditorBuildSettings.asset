@@ -81,7 +81,7 @@ EditorBuildSettings:
     path: Assets/Scenes/UI/Ref_CharacterSelection.unity
     guid: f672040f6f048754da9e6e0fd350d339
   - enabled: 1
-    path: Assets/Scenes/UI/StoragePage.unity
+    path: Assets/Scenes/UI/Menu/StoragePage.unity
     guid: efe12615938f25c44ac4ea3fc7392e84
   - enabled: 1
     path: Assets/Scenes/UI/Selection/SeasonSelection.unity
@@ -92,4 +92,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UI/GameMode/DungeonSelection.unity
     guid: 6504cfc3d9b32394bb65d5065e6c7d21
+  - enabled: 1
+    path: Assets/Scenes/UI/Menu/GameStore.unity
+    guid: 8eb4c1d4118884f4abb0fae4ab5ad467
   m_configObjects: {}

@@ -70,18 +70,12 @@ public class StartMenu_Script : MonoBehaviour
 
     private void CheckParameterData()
     {
-        string description =
-            "New content required you to update your current version to " +
-            PlayerPrefs.GetString("GameLatest_Update") +
-            ". The current version are supposed to be replace to the updated version.";
-
-        MeloMelo_GameSettings.GetScoreStructureSetup();
-        MeloMelo_GameSettings.GetStatusRemarkStructureSetup();
+        LoadAllInGameAsset();
 
         if (PlayerPrefs.GetString("GameLatest_Update", string.Empty) != version && PlayerPrefs.HasKey("AccountSync"))
         {
             UpdateAlert.SetActive(true);
-            UpdateAlert.transform.GetChild(3).GetComponent<Text>().text = description;
+            UpdateAlert.transform.GetChild(3).GetComponent<Text>().text = GetUpdateInfo();
             GerenateUpdateConfig();
         }
         else
@@ -211,6 +205,22 @@ public class StartMenu_Script : MonoBehaviour
             return true;
         else
             return false;
+    }
+    #endregion
+
+    #region COMPONENT (Data Information)
+    private string GetUpdateInfo()
+    {
+        return "New content required you to update your current version to " +
+            PlayerPrefs.GetString("GameLatest_Update") +
+            ". The current version are supposed to be replace to the updated version.";
+    }
+
+    private void LoadAllInGameAsset()
+    {
+        MeloMelo_GameSettings.GetScoreStructureSetup();
+        MeloMelo_GameSettings.GetStatusRemarkStructureSetup();
+        MeloMelo_GameSettings.LoadStartingStats();
     }
     #endregion
 }

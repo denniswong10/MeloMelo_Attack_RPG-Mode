@@ -16,12 +16,9 @@ MonoBehaviour:
   skillIcon: {fileID: 2800000, guid: 0d24b509f2d1200429ade6782868916e, type: 3}
   description: "Shoot out multiple spike cover the surronding area where in-coming
     enemy can\u2019t get through them. For every 5 seconds, dealing enemy health
-    for (STR * 10%) for any in-coming enemy approach the area. At the start of track
-    and end of track, fire off spike against enemy health and damage it for (STR
-    x 50%), (VIT x 10%), (MAG x 5%) and (Grade x 50%).\r\n"
-  onStartOfEffect: []
-  duringPlayOfEffect: []
-  onEndOfEffect: []
+    for (ATK * 10%) for any in-coming enemy approach the area. At the start of track
+    and end of track, fire off spike against enemy health and damage it for (ATK
+    x 50%), (DEF x 10%), (MAG x 5%) and (Grade x 50%).\r\n"
   target_caterogy: 0
   customEffectData: []
   isUnlockReady: 0

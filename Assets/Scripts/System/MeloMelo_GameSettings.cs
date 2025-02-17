@@ -72,6 +72,70 @@ public struct VirtualItemDatabase
         Debug.Log(format);
         return JsonUtility.FromJson<VirtualItemDatabase>(format);
     }
+
+    public VirtualItemDatabase(string itemName, int amount)
+    {
+        this.itemName = itemName;
+        this.amount = amount;
+    }
+}
+
+public struct ElemetStartingStats
+{
+    public string element;
+    public float strength;
+    public float vitality;
+    public float magic;
+    public float multipler;
+
+    public ElemetStartingStats(string name, float str, float vit, float mag, float multipler)
+    {
+        element = name;
+        strength = str;
+        vitality = vit;
+        magic = mag;
+        this.multipler = multipler;
+    }
+}
+
+[System.Serializable]
+public struct PlayEventRewardData
+{
+    public string itemName;
+    public int maxObtain;
+    public bool repeatableReward;
+    public int playRequirement;
+    public string version;
+
+    public PlayEventRewardData InsertEventReward(string format)
+    {
+        Debug.Log(format);
+        return JsonUtility.FromJson<PlayEventRewardData>(format);
+    }
+}
+
+[System.Serializable]
+public struct PlayEventArray
+{
+    public PlayEventRewardData[] data;
+
+    public PlayEventArray GetBundle(string jsonData)
+    {
+        Debug.Log(jsonData);
+        return JsonUtility.FromJson<PlayEventArray>(jsonData);
+    }
+}
+
+[System.Serializable]
+struct VersionControlArray
+{
+    public string[] versions;
+
+    public VersionControlArray GetAllData(string jsonData)
+    {
+        Debug.Log(jsonData);
+        return JsonUtility.FromJson<VersionControlArray>(jsonData);
+    }
 }
 
 public static class MeloMelo_GameSettings
@@ -101,8 +165,8 @@ public static class MeloMelo_GameSettings
     public const string GetLocalFilePointData = "savelog_PointsData.txt";
     public const string GetLocalFileProfileData = "savelog_Profile_Setup.txt";
     public const string GetLocalFileSelectionData = "savelog_SelectionBase.txt";
-    public const string GetLocalFileVirtualItemData = "savelog_ItemDatabase.txt";
-    public const string GetLocalFileExchangeHistory = "savelog_ExchangeTranscation.txt";
+    public const string GetLocalFileVirtualItemData = "savelog_ItemDatabase2.txt";
+    public const string GetLocalFileExchangeHistory = "savelog_ExchangeTranscation2.txt";
 
     public const string GetLocalFileChartLegacy = "ChartData_1";
     public const string GetLocalFileChartOld = "ChartData_2";
@@ -127,6 +191,9 @@ public static class MeloMelo_GameSettings
     private static List<MeloMelo_StatusRemarkData> statusRemark = null;
     public static List<MeloMelo_TrackSelectionData> selectionLisitng = new List<MeloMelo_TrackSelectionData>();
     private static List<VirtualItemDatabase> allStoredItem = null;
+
+    private static List<ElemetStartingStats> statsLisitng = null;
+    private static PlayEventArray allStoredPlayEventRewards;
 
     #region GERENAL SETUP
     public static void GetScoreStructureSetup()
@@ -227,13 +294,16 @@ public static class MeloMelo_GameSettings
     {
         foreach (ClassBase character in Resources.LoadAll<ClassBase>("Character_Data"))
         {
-            StatsManage_Database data = new StatsManage_Database(character.name);
-            character.UpdateCurrentStats(false);
-            character.strength = data.GetCharacterStatus(character.level).GetStrength;
-            character.vitality = data.GetCharacterStatus(character.level).GetVitality;
-            character.magic = data.GetCharacterStatus(character.level).GetMagic;
-            character.health = data.GetCharacterStatus(character.level).GetHealth;
-            character.UpdateStatsCache(true);
+            if (character.name != "None")
+            {
+                StatsManage_Database data = new StatsManage_Database(character.name);
+                character.UpdateCurrentStats(false);
+                character.strength = data.GetCharacterStatus(character.level).GetStrength;
+                character.vitality = data.GetCharacterStatus(character.level).GetVitality;
+                character.magic = data.GetCharacterStatus(character.level).GetMagic;
+                character.health = data.GetCharacterStatus(character.level).GetHealth;
+                character.UpdateStatsCache(true);
+            }
         }
     }
 
@@ -296,6 +366,97 @@ public static class MeloMelo_GameSettings
         catch { }
 
         return false;
+    }
+
+    public static bool GetItemIsStackable(string itemName)
+    {
+        foreach (ItemData item in Resources.LoadAll<ItemData>("Database_Item"))
+            if (itemName == item.itemName) return item.stackable;
+
+        return false;
+    }
+    #endregion
+
+    #region EXTRA
+    public static void LoadStartingStats()
+    {
+        if (statsLisitng == null)
+        {
+            statsLisitng = new List<ElemetStartingStats>();
+            string directory = Application.isEditor ? "Assets" : "MeloMelo_Data";
+
+            System.IO.StreamReader readData = new System.IO.StreamReader(directory + "/StreamingAssets/PlaySettings/MeloMelo_RPGStartingStats.csv");
+            string currentRead = readData.ReadLine();
+
+            while (!readData.EndOfStream)
+            {
+                currentRead = readData.ReadLine();
+                string[] dataValue = currentRead.Split(',');
+
+                ElemetStartingStats setup_template = new ElemetStartingStats();
+                setup_template.element = dataValue[0];
+                setup_template.strength = float.Parse(dataValue[1]);
+                setup_template.vitality = float.Parse(dataValue[2]);
+                setup_template.magic = float.Parse(dataValue[3]);
+                setup_template.multipler = float.Parse(dataValue[4]);
+
+                statsLisitng.Add(setup_template);
+            }
+
+            readData.Close();
+        }
+    }
+
+    public static ElemetStartingStats GetStatsWithElementBonus(string element)
+    {
+        foreach (ElemetStartingStats e in statsLisitng)
+            if (e.element == element) return e;
+
+        return statsLisitng[statsLisitng.ToArray().Length - 1];
+    }
+
+    public static void LoadPlayEventRewards(string jsonData)
+    {
+        if (jsonData != string.Empty) allStoredPlayEventRewards = new PlayEventArray().GetBundle(jsonData);
+        int count = 1;
+
+        if (allStoredPlayEventRewards.data != null)
+        {
+            foreach (PlayEventRewardData playEvent in allStoredPlayEventRewards.data)
+            {
+                if (GetVersionNumber(StartMenu_Script.thisMenu.get_version) >= GetVersionNumber(playEvent.version))
+                {
+                    Debug.Log(count + ": Event Opend: " + playEvent.itemName + " x" + playEvent.maxObtain);
+                    Debug.Log(count + " - Played Obatinable Count: " + playEvent.playRequirement);
+                    Debug.Log(count + " - Event Obtainable Type: " + (playEvent.repeatableReward ? "Unlimited" : "Limited"));
+                    count++;
+                }
+            }
+
+            Debug.Log("Total Play Event: " + (count - 1));
+        }
+        else
+            Debug.Log("No play event is available");
+    }
+
+    public static PlayEventRewardData[] GetEventRewardArray()
+    {
+        return allStoredPlayEventRewards.data;
+    }
+
+    public static int GetVersionNumber(string version)
+    {
+        int versionCount = 0;
+        VersionControlArray versionControl = new VersionControlArray().GetAllData(
+            PlayerPrefs.GetString("VersionControl_PlayEvent", string.Empty));
+
+        foreach (string serachedVersion in versionControl.versions)
+        {
+            versionCount++;
+            if (version == serachedVersion) return versionCount;
+        }
+
+        return 0;
     }
     #endregion
 }

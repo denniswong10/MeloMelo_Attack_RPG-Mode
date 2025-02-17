@@ -16,10 +16,22 @@ MonoBehaviour:
   skillIcon: {fileID: 2800000, guid: 19a271ce67ad00748a4e98a77b4f08a5, type: 3}
   description: Chant a spell which allow all your character to gain (A x (MAG x 5%)
     + (Grade x 20%) of the base damage. A is equal to the number of in-coming enemy.
-    At the start of track, character gain bonus MAG stats from (STR x 8%) and (VIT
+    At the start of track, character gain bonus MAG stats from (ATK x 8%) and (DEF
     x 8%) until the end of track.
-  onStartOfEffect: []
-  duringPlayOfEffect: []
-  onEndOfEffect: []
   target_caterogy: 3
+  customEffectData:
+  - effectName: OnTriggerWornOut
+    effectActivationPhase: 0
+    effectOnCondition:
+    - effectCondition: OnEmptyConditionRun
+      valueOfTrigger: 0
+    effectOnAction:
+    - effectActionName: AttractBonusMagicStats
+      effectMainStats: 0
+      baseValue: 8
+      extraPercentage: 0
+    - effectActionName: AttractBonusMagicStats
+      effectMainStats: 1
+      baseValue: 8
+      extraPercentage: 0
   isUnlockReady: 0

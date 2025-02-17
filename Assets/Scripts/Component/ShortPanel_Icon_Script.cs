@@ -24,5 +24,10 @@ public class ShortPanel_Icon_Script : MonoBehaviour
     {
         Icon.SetActive(active);
     }
+
+    public void ToggleObjectShown(bool active)
+    {
+        panelTarget.SetActive(active);
+    }
     #endregion
 }

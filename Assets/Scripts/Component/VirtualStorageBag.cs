@@ -8,6 +8,7 @@ public class VirtualStorageBag : MonoBehaviour
     public static readonly string VirtualStorage_UsableKey = "Character_VirtualItem_UsageOfItem";
 
     [SerializeField] private GameObject storagePanel;
+    [SerializeField] private GameObject openChoiceSet;
     private bool limitedUseTime;
     private GameObject AlertPop;
 
@@ -151,10 +152,11 @@ public class VirtualStorageBag : MonoBehaviour
         if (itemFound.itemName == itemToUsed && GetTotalCountItem(itemToUsed) > 0)
         {
             PlayerPrefs.DeleteKey(name + "_ItemUsingBound");
+            string usedItemInDirectory = PlayerPrefs.GetString("ItemDirectoryToUsed", string.Empty);
 
             // Use of item and activation
             foreach (UsageOfItemDetail item in Resources.LoadAll<UsageOfItemDetail>
-                ("Database_Item/Filtered_Items/" + itemToUsed.Split(" ")[1] + "_" + itemToUsed.Split(" ")[2]))
+                ("Database_Item/" + usedItemInDirectory))
             {
                 if (item.itemName == itemFound.itemName)
                 {
@@ -172,8 +174,18 @@ public class VirtualStorageBag : MonoBehaviour
                             break;
 
                         default:
-                            if (MeloMelo_CharacterInfo_Settings.GetCharacterStatus(PlayerPrefs.GetString(VirtualStorage_UsableKey, "None")))
-                                CharacterItemUsage(item);
+                            if (MeloMelo_CharacterInfo_Settings.GetCharacterStatus(
+                                PlayerPrefs.GetString(VirtualStorage_UsableKey, "None").Split(",")[0])
+                                )
+                            {
+                                if (PlayerPrefs.GetString(VirtualStorage_UsableKey, "None").Split(",")[2] == "0")
+                                {
+                                    ItemNotAbleForUse("Character had reached the max level");
+                                    return;
+                                }
+                                else
+                                    CharacterItemUsage(item);
+                            }
                             else
                             {
                                 ItemNotAbleForUse("Item cannot be used for this character");
@@ -182,7 +194,6 @@ public class VirtualStorageBag : MonoBehaviour
                             break;
                     }
 
-                    MeloMelo_ItemUsage_Settings.SetItemUsed(itemFound.itemName);
                     if (limitedUseTime) ClosePanel();
                 }
             }
@@ -198,9 +209,7 @@ public class VirtualStorageBag : MonoBehaviour
 
                 PlayerPrefs.SetInt(itemToUsed.dataArray.Split(",")[0],
                 currentAmount + int.Parse(itemToUsed.dataArray.Split(",")[1]));
-                break;
-
-            case UsageOfItemDetail.UseType.OpenChoice:
+                MeloMelo_ItemUsage_Settings.SetItemUsed(itemToUsed.itemName);
                 break;
 
             default:
@@ -210,24 +219,48 @@ public class VirtualStorageBag : MonoBehaviour
 
     private void CharacterItemUsage(UsageOfItemDetail itemUsage)
     {
-        if (PlayerPrefs.HasKey(VirtualStorage_UsableKey))
-        {
-            // Stackable: Comsumable for one character
-            string onlyCharacter = PlayerPrefs.GetString(VirtualStorage_UsableKey, "None");
-            int currentAmount = PlayerPrefs.GetInt(onlyCharacter + itemUsage.dataArray.Split(",")[0], 0);
+        string[] splitUsage = PlayerPrefs.GetString(VirtualStorage_UsableKey, string.Empty).Split(",");
 
-            PlayerPrefs.SetInt(onlyCharacter + itemUsage.dataArray.Split(",")[0],
-                currentAmount + int.Parse(itemUsage.dataArray.Split(",")[1]));
-        }
-        else
+        switch (itemUsage.useTypeDetail)
         {
-            // Single Usage: Consumable for all characters 
-            for (int slot_id = 0; slot_id < 3; slot_id++)
-            {
-                string currentCharacter = PlayerPrefs.GetString("Slot" + (slot_id + 1) + "_charName", "None");
-                PlayerPrefs.SetInt(currentCharacter + itemUsage.dataArray.Split(",")[0],
-                    int.Parse(itemUsage.dataArray.Split(",")[1]));
-            }
+            case UsageOfItemDetail.UseType.Instant:
+                MeloMelo_ItemUsage_Settings.SetItemUsed(itemUsage.itemName);
+
+                if (splitUsage[1] == "1")
+                {
+                    // Stackable: Comsumable for one character
+                    string onlyCharacter = splitUsage[0];
+                    int currentAmount = PlayerPrefs.GetInt(onlyCharacter + itemUsage.dataArray.Split(",")[0], 0);
+
+                    PlayerPrefs.SetInt(onlyCharacter + itemUsage.dataArray.Split(",")[0],
+                        currentAmount + int.Parse(itemUsage.dataArray.Split(",")[1]));
+                }
+                else
+                {
+                    // Single Usage: Consumable for all characters 
+                    for (int slot_id = 0; slot_id < 3; slot_id++)
+                    {
+                        string currentCharacter = PlayerPrefs.GetString("Slot" + (slot_id + 1) + "_charName", "None");
+                        PlayerPrefs.SetInt(currentCharacter + itemUsage.dataArray.Split(",")[0],
+                            int.Parse(itemUsage.dataArray.Split(",")[1]));
+                    }
+                }
+                break;
+
+            case UsageOfItemDetail.UseType.OpenChoice:
+                if (GameObject.Find("OpenChoice_Setup") == null)
+                {
+                    GameObject instance = Instantiate(openChoiceSet, GameObject.Find("Selection_Character").transform);
+                    instance.name = "OpenChoice_Setup";
+
+                    int activationTicket = int.Parse(itemUsage.dataArray.Split("^")[1]);
+                    instance.GetComponent<OpenChoiceSetupScript>().Setup(activationTicket, itemUsage, splitUsage[0]);
+                    instance.GetComponent<OpenChoiceSetupScript>().SetupPromptMessage(AlertPop);
+                }
+                break;
+
+            default:
+                break;
         }
     }
     #endregion

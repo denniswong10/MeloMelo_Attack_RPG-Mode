@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
+  m_Name: '#47'
+  m_EditorClassIdentifier: 
+  itemName: XP Edition Pack
+  Icon: {fileID: 2800000, guid: b7bc4d08eb8e36f4e825bf23bd2e40b9, type: 3}
+  stackable: 1
+  thisItemType: 0
+  description: This pack contain different type of exp ticket which open through
+    player. It's so limited that noone actually sell them. Click on them to obtain
+    random ticket with amount.
+  itemValue: 0
+  NoQuantityLimit: 0
+  CreditSet: 0

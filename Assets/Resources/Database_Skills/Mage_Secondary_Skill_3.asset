@@ -15,10 +15,8 @@ MonoBehaviour:
   skillName: Bot Arise
   skillIcon: {fileID: 2800000, guid: 65d5f2c31cb67834c84e3bd2693f13c0, type: 3}
   description: Summon a bot fight alongside as you. It gain a max-health (Grade x
-    150%) with a base damage of (STR x 8%), (MAG x 5%) and (VIT x 3%). At the start
+    150%) with a base damage of (ATK x 8%), (MAG x 5%) and (DEF x 3%). At the start
     of track, as bot is summoned, deal enemy health by (MAG x 15% + (Grade x 35%)).
-  onStartOfEffect: []
-  duringPlayOfEffect: []
-  onEndOfEffect: []
   target_caterogy: 2
+  customEffectData: []
   isUnlockReady: 0

@@ -15,15 +15,10 @@ MonoBehaviour:
   skillName: 'UnBreakable Barrier '
   skillIcon: {fileID: 2800000, guid: 6086a9004c67fe44aa31c60f3e9e9149, type: 3}
   description: "Greatly against enemy attack which cause all characters to be fallen.
-    For every 10 successful hits, shield over (VIT x 10% + (Grade + 20%)) to one
+    For every 10 successful hits, shield over (DEF x 10% + (Grade + 20%)) to one
     random character against damage over enemy. Character receving this effect will
-    get additional bonus (STR x 8%) or (MAG x 5%) to their base damage. At the start
-    of track, all characters will receive shield over (VIT x 40% + (Grade x 10%)).\r"
-  skill_type: 3
-  skillEffectKey: OnShieldOverload
-  mainStats: 1
+    get additional bonus (ATK x 8%) or (MAG x 5%) to their base damage. At the start
+    of track, all characters will receive shield over (DEF x 40% + (Grade x 10%)).\r"
   target_caterogy: 3
-  baseDamageStats: 0
-  extraStatsPercentage: 0
-  valueOfTrigger: 10/20/8/5/40/10
+  customEffectData: []
   isUnlockReady: 0

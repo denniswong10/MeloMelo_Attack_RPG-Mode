@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Special Gift Pack 2024
   Icon: {fileID: 2800000, guid: e8c9f2f52fd644f44bf01ce23700601f, type: 3}
+  stackable: 0
   thisItemType: 0
   description: A limited gift pack which contain rare-obtainable items can be used
     during the play. This is a gift only obtainable during event period of 2024.

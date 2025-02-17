@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: 2X SILVER CARD
   useTypeDetail: 2
-  dataArray: '{"itemName":"500 EXP TICKET","amount":10}/
+  dataArray: '{"itemName":"500 EXP TICKET","amount":10,"obtainableRate":50}/
 
-    {"itemName":"2X EXP
-    POTION","amount":5}/
+    {"itemName":"2X
+    EXP POTION","amount":5,"obtainableRate":30}/
 
-    {"itemName":"5 POWER POTION","amount":5}/'
+    {"itemName":"5 POWER POTION","amount":5,"obtainableRate":20}/'

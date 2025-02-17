@@ -463,7 +463,7 @@ public class BattleSetup_Script : MonoBehaviour
             instance_panel.GetComponent<VirtualStorageBag>().SetDefaultDescription(option[1]);
             instance_panel.GetComponent<VirtualStorageBag>().SetItemForDisplay(GetItemArray(option[0]));
             instance_panel.GetComponent<VirtualStorageBag>().SetLimitedUsageTime(true);
-            PlayerPrefs.SetString(VirtualStorageBag.VirtualStorage_UsableKey, PlayerPrefs.GetString("CharacterFront", "None"));
+            PlayerPrefs.SetString(VirtualStorageBag.VirtualStorage_UsableKey, PlayerPrefs.GetString("CharacterFront", "None") + ",0,1");
         }
     }
 

@@ -32,18 +32,6 @@ struct DataArrayBundle
     }
 }
 
-[System.Serializable]
-struct VersionControlArray
-{
-    public string[] versions;
-
-    public VersionControlArray GetAllData(string jsonData)
-    {
-        Debug.Log(jsonData);
-        return JsonUtility.FromJson<VersionControlArray>(jsonData);
-    }
-}
-
 public class Options_Menu : MonoBehaviour
 {
     private GameObject[] BGM;
@@ -659,7 +647,7 @@ public class SettingsScripts
                             "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
 
                         saveItem.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
-                        saveItem.SaveVirtualItemFromPlayer(key.packageName, 1);
+                        saveItem.SaveVirtualItemFromPlayer(key.packageName, 1, MeloMelo_GameSettings.GetItemIsStackable(key.packageName));
 
                         saveItem.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileExchangeHistory);
                         saveItem.SaveExchangeTranscationHistory(JsonUtility.ToJson(key));

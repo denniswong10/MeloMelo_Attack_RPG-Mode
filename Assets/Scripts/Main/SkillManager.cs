@@ -8,10 +8,18 @@ public class EffectTypeBundle
 {
     public int instance;
     public string effectName;
+    public string skillName;
     public int activationKey;
     public bool effectOnCondtion;
     public bool effectOnAction;
     public string valueOfTrigger;
+}
+
+[System.Serializable]
+public class EffectToggleData
+{
+    public string skillName;
+    public string description;
 }
 
 public static class SkillManager_Properties
@@ -62,6 +70,9 @@ public class SkillManager : MonoBehaviour
     [SerializeField] private GameObject allEffectIndicator;
     [SerializeField] private GameObject skillHolder;
     [SerializeField] private Texture[] skillIconNone;
+    [SerializeField] private GameObject SkillIndicator;
+
+    private List<EffectToggleData> effectToggleData;
 
     void Start()
     {
@@ -70,6 +81,8 @@ public class SkillManager : MonoBehaviour
             onStartOfTrackEffects = new List<EffectTypeBundle>();
             onEndOfTrackEffects = new List<EffectTypeBundle>();
             onTrackEffects = new List<EffectTypeBundle>();
+            effectToggleData = new List<EffectToggleData>();
+
             skillHolder.SetActive(true);
         }
     }
@@ -77,10 +90,23 @@ public class SkillManager : MonoBehaviour
     void Update()
     {
         OnEffectUpdate(1, BeatConductor.thisBeat.gameObject.GetComponent<AudioSource>().isPlaying);
+
+        if (effectToggleData != null && effectToggleData.ToArray().Length > 0)
+        {
+            foreach (EffectToggleData _dat in effectToggleData)
+            {
+                if (!SkillIndicator.activeInHierarchy)
+                {
+                    StartCoroutine(GetSkillActiveAlert(_dat.skillName, _dat.description));
+                    effectToggleData.Remove(_dat);
+                    break;
+                }
+            }
+        }
     }
 
     #region SETUP (Effect Manipluate)
-    public void ExtractSkill(SkillContainer skill, ClassBase stats)
+    public void ExtractSkill(SkillContainer skill, ClassBase caster)
     {
         // Extract skill and convert into effect type
         if (skill.customEffectData != null)
@@ -118,17 +144,26 @@ public class SkillManager : MonoBehaviour
                         foreach (EffectActionData actionData in skill.customEffectData[unloadAndModify].effectOnAction)
                         {
                             EffectTypeBundle effectBundle_onAction = new EffectTypeBundle();
+                            ElemetStartingStats baseStats = MeloMelo_GameSettings.GetStatsWithElementBonus(
+                                caster.elementType == ClassBase.ElementStats.Earth ? "Earth" :
+                                caster.elementType == ClassBase.ElementStats.Light ? "Light" :
+                                caster.elementType == ClassBase.ElementStats.Dark ? "Dark" : "None");
+
                             effectBundle_onAction.instance = effectBundle.instance;
                             effectBundle_onAction.effectName = effectBundle.effectName;
+                            effectBundle_onAction.skillName = skill.skillName;
                             effectBundle_onAction.activationKey = effectBundle.activationKey;
                             effectBundle_onAction.effectOnCondtion = false;
                             effectBundle_onAction.effectOnAction = true;
                             effectBundle_onAction.valueOfTrigger = actionData.effectActionName + "," + actionData.baseValue + "," + actionData.extraPercentage + "," +
+
                                 ((skill.customEffectData[unloadAndModify].effectOnAction[actionArray].effectMainStats == EffectActionData.EffectActionStats.STR ?
-                                stats.strength :
+                                caster.strength * baseStats.strength :
                                 skill.customEffectData[unloadAndModify].effectOnAction[actionArray].effectMainStats == EffectActionData.EffectActionStats.VIT ?
-                                stats.vitality : stats.magic) + 1) + "," + (MeloMelo_SkillData_Settings.CheckSkillGrade(skill.skillName) > 0 ?
-                                MeloMelo_SkillData_Settings.CheckSkillGrade(skill.skillName) : 1);
+                                caster.vitality * baseStats.vitality : caster.magic * baseStats.magic) + baseStats.strength)
+
+                                 + "," + (MeloMelo_SkillData_Settings.CheckSkillGrade(skill.skillName) > 0 ? 
+                                 MeloMelo_SkillData_Settings.CheckSkillGrade(skill.skillName) : 1);
 
                             // Add following condition and action type to list
                             actionArray++;
@@ -253,7 +288,7 @@ public class SkillManager : MonoBehaviour
                                 // Format: ActionName, Base, Pecentage, MainStats
                                 string[] actionOfData = effect.valueOfTrigger.Split(",");
                                 SkillManager_Properties.SetEffectValueOfTrigger(instance, "Action", effect.valueOfTrigger);
-
+                                PlayerPrefs.SetString("CurrentSkill_Active", effect.skillName);
                                 Invoke(actionOfData[0], 0);
                                 //Debug.Log("Instance: " + instance + " | OnAction: " + actionOfData[0] + " | ByEffect: " + effect.effectName);
                             }
@@ -480,6 +515,17 @@ public class SkillManager : MonoBehaviour
         MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(0, 3);
         MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(0, -1);
     }
+
+    private void OnResetTrapBeenTrigger()
+    {
+        PlayerPrefs.DeleteKey("MISC_OnTrapsTrigger");
+    }
+
+    private void OnBuffInstantSheild()
+    {
+        CreateInstanceOfSkillInfo(PlayerPrefs.GetString("CurrentSkill_Active", string.Empty),
+            "Characater gain shield");
+    }
     #endregion
 
     #region COMPONENT (CONDITION LIST)
@@ -605,53 +651,95 @@ public class SkillManager : MonoBehaviour
             indicator.text = (countLimit - 1).ToString();
 
             // Allow to perform action
-            SkillManager_Properties.SetEffectCondition(typeOfJudge >= int.Parse(onJudgeCountTriggerData[1]));
-            if (typeOfJudge >= int.Parse(onJudgeCountTriggerData[1]))
+            bool isJudgeTrigger = typeOfJudge >= int.Parse(onJudgeCountTriggerData[1]) * SkillManager_Properties.GetEffectLimit(SkillManager_Properties.GetEffectName());
+            SkillManager_Properties.SetEffectCondition(isJudgeTrigger);
+
+            if (isJudgeTrigger)
                 SkillManager_Properties.SetEffectLimit(SkillManager_Properties.GetEffectName(), countLimit + 1);
         }
+    }
+
+    private void OnTrapsTrigger()
+    {
+        SkillManager_Properties.SetEffectCondition(PlayerPrefs.HasKey("MISC_OnTrapsTrigger"));
+        if (PlayerPrefs.HasKey("MISC_OnTrapsTrigger")) PlayerPrefs.DeleteKey("MISC_OnTrapsTrigger");
+    }
+
+    private void OnChanceCondition()
+    {
+        // Format: ConditionName, Percentage of Chance
+        int randomRange = Random.Range(0, 100);
+        bool cooldownTime = Time.time >= SkillManager_Properties.GetEffectLimit(SkillManager_Properties.GetEffectName());
+        string[] onChanceTrigger = SkillManager_Properties.GetEffectValueOfTrigger(SkillManager_Properties.GetActiveInstance(), "Condition").Split(",");
+        Text indicator = GameObject.Find(SkillManager_Properties.GetEffectName()).transform.GetChild(0).GetComponent<Text>();
+
+        if (indicator)
+        {
+            // Allow to perform action
+            if (cooldownTime)
+            {
+                indicator.text = (100 - randomRange).ToString();
+                SkillManager_Properties.SetEffectCondition(100 - randomRange >= int.Parse(onChanceTrigger[1]));
+                SkillManager_Properties.SetEffectLimit(SkillManager_Properties.GetEffectName(), (int)Time.time + 30);
+            }
+        }
+    }
+
+    private void OnEmptyConditionRun()
+    {
+        SkillManager_Properties.SetEffectCondition(true);
     }
     #endregion
 
     #region COMPONENT (ACTION LIST)
     private void OnDamageEnemyHealth()
     {
-        // Format: ActionName, baseValue, GradeValue, StatsValue, GradeLevel
-        string[] data_value = SkillManager_Properties.GetEffectValueOfTrigger(SkillManager_Properties.GetActiveInstance(), "Action").Split(",");
+        // Deal direct damage to enemy unit
+        int allDamage = GetEffectCalculatedValue(1) + GetEffectCalculatedValue(2) - PlayerPrefs.GetInt("Enemy_MagicDefense", 0);
+        GameManager.thisManager.UpdateEnemy_Health(-allDamage, false);
+        CreateInstanceOfSkillInfo(PlayerPrefs.GetString("CurrentSkill_Active", string.Empty), 
+            allDamage + " damage taken to enemy");
 
-        // Damage enemy health with base damage and percentage
-        GameManager.thisManager.UpdateEnemy_Health(-(int.Parse(data_value[1]) * int.Parse(data_value[3]) + 
-            int.Parse(data_value[2]) * int.Parse(data_value[4])), false);
+        // Arrange indicator for damage check
+        GameManager.thisManager.SpawnDamageIndicator(GameObject.Find("Boss").transform.position, 2, -allDamage);
 
-        GameManager.thisManager.SpawnDamageIndicator(GameObject.Find("Boss").transform.position, 2,
-            -(int.Parse(data_value[1]) * int.Parse(data_value[3]) +
-            int.Parse(data_value[2]) * int.Parse(data_value[4])));
-
-        PromptDamageIndicator(SkillManager_Properties.GetActiveInstance(), SkillManager_Properties.GetEffectName(), 
-            int.Parse(data_value[1]) * int.Parse(data_value[3]), int.Parse(data_value[2]) * int.Parse(data_value[4]));
+        //PromptDamageIndicator(SkillManager_Properties.GetActiveInstance(), SkillManager_Properties.GetEffectName(),
+            //GetEffectCalculatedValue(1), GetEffectCalculatedValue(2));
     }
 
     private void AttractDamageResistance()
     {
-        // Format: ActionName, baseValue, GradeValue, StatusValue, GradeLevel
-        string[] data_value = SkillManager_Properties.GetEffectValueOfTrigger(SkillManager_Properties.GetActiveInstance(), "Action").Split(",");
-
         // Giving out damage resistance to character
-        MeloMelo_ExtraStats_Settings.GiveOutDamageResistance(int.Parse(data_value[1]) * int.Parse(data_value[3]) +
-            int.Parse(data_value[2]) + int.Parse(data_value[4]));
+        int resistance = GetEffectCalculatedValue(1) + GetEffectCalculatedValue(2);
+        MeloMelo_ExtraStats_Settings.GiveOutDamageResistance(resistance);
 
-        PromptDamageResistanceIndicator(SkillManager_Properties.GetActiveInstance(), SkillManager_Properties.GetEffectName(),
-            int.Parse(data_value[1]) * int.Parse(data_value[3]), int.Parse(data_value[2]) + int.Parse(data_value[4]));
+        // Toggle user alert
+        CreateInstanceOfSkillInfo(PlayerPrefs.GetString("CurrentSkill_Active", string.Empty),
+            "Gain " + resistance + " damage resist to character");
+
+        //PromptDamageResistanceIndicator(SkillManager_Properties.GetActiveInstance(), SkillManager_Properties.GetEffectName(),
+        //GetEffectCalculatedValue(1), GetEffectCalculatedValue(2));
     }
 
     private void AttractBonusBaseDamage()
     {
-        // Format: ActionName, baseValue, GradeValue, StatusValue, GradeLevel
-        string[] data_value = SkillManager_Properties.GetEffectValueOfTrigger(SkillManager_Properties.GetActiveInstance(), "Action").Split(",");
+        // Giving out base damage to character
+        int bonusDamage = GetEffectCalculatedValue(1) + GetEffectCalculatedValue(2);
+        MeloMelo_ExtraStats_Settings.GiveOutBonusBaseDamage(bonusDamage + MeloMelo_ExtraStats_Settings.GetBonusDamage());
 
-        // Giving out damage resistance to character
-        int existingStats = MeloMelo_ExtraStats_Settings.GetBonusDamage();
-        MeloMelo_ExtraStats_Settings.GiveOutBonusBaseDamage(existingStats + int.Parse(data_value[1]) * int.Parse(data_value[3]) +
-            int.Parse(data_value[2]) * int.Parse(data_value[4]));
+        CreateInstanceOfSkillInfo(PlayerPrefs.GetString("CurrentSkill_Active", string.Empty), 
+            "Gain " + bonusDamage + " bonus damage to character basic attack");
+    }
+
+    private void AttractBonusMagicStats()
+    {
+        // Giving out magic stats to character
+        int bonusMAGStats = GetEffectCalculatedValue(1) + GetEffectCalculatedValue(2);
+        //int existingStats = MeloMelo_ExtraStats_Settings.GetExtraMagicStats();
+        //MeloMelo_ExtraStats_Settings.GiveOutBonusBaseDamage(existingStats + GetEffectCalculatedValue(1) + GetEffectCalculatedValue(2));
+
+        CreateInstanceOfSkillInfo(PlayerPrefs.GetString("CurrentSkill_Active", string.Empty), 
+            "Gain " + bonusMAGStats + " MAG stats to character");
     }
     #endregion
 
@@ -707,6 +795,49 @@ public class SkillManager : MonoBehaviour
         bool getTotalInstance = activeId == 1 && onTrackEffects != null ? true : activeId == 2 && onEndOfTrackEffects != null ? true :
             activeId == 0 && onStartOfTrackEffects != null ? true : false;
         return getTotalInstance ? SkillManager_Properties.GetTotalActiveInstance(activeId) : 0;
+    }
+
+    private int GetEffectCalculatedValue(int findIndexOfValue)
+    {
+        // Format: ActionName, baseValue, GradeValue, StatsValue, GradeLevel
+        string[] data_spliter = SkillManager_Properties.GetEffectValueOfTrigger(SkillManager_Properties.GetActiveInstance(), "Action").Split(",");
+        float totalValue = 0;
+
+        switch (findIndexOfValue)
+        {
+            case 1:
+                totalValue = int.Parse(data_spliter[1]) * 0.01f * int.Parse(data_spliter[3]);
+                break;
+
+            case 2:
+                totalValue = int.Parse(data_spliter[1]) * 0.01f * (int.Parse(data_spliter[2]) * int.Parse(data_spliter[4]));
+                break;
+
+            default:
+                break;
+        }
+
+        return (int)totalValue;
+    }
+
+    private IEnumerator GetSkillActiveAlert(string skillName, string description)
+    {
+        SkillIndicator.SetActive(true);
+        SkillIndicator.transform.GetChild(0).GetComponent<Text>().text = "Skill Effect: " + skillName;
+        SkillIndicator.transform.GetChild(1).GetComponent<Text>().text = description;
+        yield return new WaitForSeconds(2.5f);
+        SkillIndicator.SetActive(false);
+    }
+
+    private void CreateInstanceOfSkillInfo(string title, string details)
+    {
+        if (effectToggleData != null)
+        {
+            EffectToggleData temp = new EffectToggleData();
+            temp.skillName = title;
+            temp.description = details;
+            effectToggleData.Add(temp);
+        }
     }
     #endregion
 

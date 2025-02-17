@@ -15,15 +15,13 @@ MonoBehaviour:
   skillName: Blast Shot
   skillIcon: {fileID: 2800000, guid: 7336e194324d85a4baa5639e0069791d, type: 3}
   description: 'Brust fire over a large firepower of shot towards enemy target. Dealing
-    enemy health of (STR x 30% + (Grade x 50%)) in every 10 seconds. For every critical
+    enemy health of (ATK x 30% + (Grade x 50%)) in every 10 seconds. For every critical
     hit, target 1 random unit, if the target is ally, heal the unit for (MAG x 5%
-    + (Grade x 10%)). Otherwise damage the unit for (STR x 20% + (Grade x 30%)).
-    At the start of track, fire blast shot which give shield to ally for (VIT x 15%
+    + (Grade x 10%)). Otherwise damage the unit for (ATK x 20% + (Grade x 30%)).
+    At the start of track, fire blast shot which give shield to ally for (DEF x 15%
     + (Grade x 25%)).
 
 '
-  onStartOfEffect: []
-  duringPlayOfEffect: []
-  onEndOfEffect: []
   target_caterogy: 0
+  customEffectData: []
   isUnlockReady: 0

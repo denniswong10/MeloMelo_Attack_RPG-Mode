@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: 2X GOLD CARD
   Icon: {fileID: 2800000, guid: d4e64f5d054426e4599a3a5e47bc7889, type: 3}
+  stackable: 1
   thisItemType: 0
   description: "A gold card can be exchange for greatly exp ticket, exp potion or
     power potion. \nThis card is valid for one claim after successful use."

@@ -363,6 +363,7 @@ public class Character : MonoBehaviour
 
             if (stats.get_name != "NA" && isJudgeAsTraps.get_judge == 4)
             {
+                PlayerPrefs.SetInt("MISC_OnTrapsTrigger", 1);
                 GameManager.thisManager.UpdateCharacter_Health(-PlayerPrefs.GetInt("Enemy_OverallDamage", 0), false);
                 GameManager.thisManager.SpawnDamageIndicator(transform.position, 1, -PlayerPrefs.GetInt("Enemy_OverallDamage", 0));
             }
@@ -517,7 +518,7 @@ public class Character : MonoBehaviour
 
             foreach (ClassBase character in stats.slot_Stats)
             {
-                int originalValue = stats.baseMagic * (character.magic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(character.name));
+                int originalValue = healing_value * (character.magic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(character.name));
                 healing_value += originalValue + MeloMelo_ItemUsage_Settings.GetPowerBoost(character.name) +
                     originalValue * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(character.name);
             }

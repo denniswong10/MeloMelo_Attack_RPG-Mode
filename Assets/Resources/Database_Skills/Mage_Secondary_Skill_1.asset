@@ -15,12 +15,30 @@ MonoBehaviour:
   skillName: Search Detector
   skillIcon: {fileID: 2800000, guid: 11cf11e217a3892489595d573f2d34ac, type: 3}
   description: Search up any in-coming traps which will damage your character. Resist
-    all in-coming traps which can cause damage to your character by (VIT x 15% +
+    all in-coming traps which can cause damage to your character by (DEF x 15% +
     (Grade x 15%)) in additional of (MAG x 10% + (Grade x 20%)). At the end of track,
     player gain bonus tech score by the number of traps have been detected by (Grade
     x 55%)).
-  onStartOfEffect: []
-  duringPlayOfEffect: []
-  onEndOfEffect: []
   target_caterogy: 4
+  customEffectData:
+  - effectName: OnCountdownShield
+    effectActivationPhase: 1
+    effectOnCondition:
+    - effectCondition: OnTrapsTrigger
+      valueOfTrigger: 1
+    effectOnAction:
+    - effectActionName: AttractDamageResistance
+      effectMainStats: 1
+      baseValue: 15
+      extraPercentage: 15
+    - effectActionName: AttractDamageResistance
+      effectMainStats: 2
+      baseValue: 10
+      extraPercentage: 20
+  - effectName: OnTriggerWornOut
+    effectActivationPhase: 0
+    effectOnCondition:
+    - effectCondition: OnResetTrapBeenTrigger
+      valueOfTrigger: 
+    effectOnAction: []
   isUnlockReady: 0

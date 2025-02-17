@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: 2X POWER POTION
   Icon: {fileID: 2800000, guid: af1a8a416f281e94f8e55baecda22c4e, type: 3}
+  stackable: 1
   thisItemType: 1
   description: Double up all stats during the battle. Applies for all characters.
   itemValue: 12

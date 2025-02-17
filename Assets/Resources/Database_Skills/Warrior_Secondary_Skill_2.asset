@@ -15,26 +15,25 @@ MonoBehaviour:
   skillName: Total Defensive Shield
   skillIcon: {fileID: 2800000, guid: cfae231dfc3a70448bee28ff781b2b95, type: 3}
   description: 'Shield any attack that breaking your way through. Resist damage taken
-    by (VIT x 5% + (Grade x 20%)). Chance to damage back enemy health by (STR x 5%
+    by (DEF x 5% + (Grade x 20%)). Chance to damage back enemy health by (ATK x 5%
     + (Grade x 15%)). At the start of track, gain invulnerable shield which will
     not damage your character for once. '
-  onStartOfEffect:
-  - effectName: GivingOutInstantSheildProctector
-    stats: 1
-    baseDamageStats: 0
-    extraStatsPercentage: 0
-    valueOfTrigger: 0
-  duringPlayOfEffect:
-  - effectName: OnResistOfDamageTaken
-    stats: 1
-    baseDamageStats: 5
-    extraStatsPercentage: 20
-    valueOfTrigger: 0
-  - effectName: OnSuddenDamageEnemyHealth
-    stats: 0
-    baseDamageStats: 5
-    extraStatsPercentage: 15
-    valueOfTrigger: 50
-  onEndOfEffect: []
   target_caterogy: 4
+  customEffectData:
+  - effectName: GivingOutInstantSheildProctector
+    effectActivationPhase: 0
+    effectOnCondition:
+    - effectCondition: OnBuffInstantSheild
+      valueOfTrigger: 
+    effectOnAction: []
+  - effectName: OnCountdownShield
+    effectActivationPhase: 1
+    effectOnCondition:
+    - effectCondition: OnJudgeCount
+      valueOfTrigger: 5,4
+    effectOnAction:
+    - effectActionName: AttractDamageResistance
+      effectMainStats: 1
+      baseValue: 5
+      extraPercentage: 20
   isUnlockReady: 0

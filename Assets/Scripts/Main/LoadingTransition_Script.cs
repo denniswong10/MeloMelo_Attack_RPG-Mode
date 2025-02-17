@@ -93,6 +93,9 @@ public class LoadingTransition_Script : MonoBehaviour
             PlayerPrefs.SetInt("Character_OverallDamage", getstats.get_UnitDamage("Character"));
             PlayerPrefs.SetInt("Enemy_OverallHealth", getstats.get_UnitHealth("Enemy"));
             PlayerPrefs.SetInt("Enemy_OverallDamage", getstats.get_UnitDamage("Enemy"));
+
+            PlayerPrefs.SetInt("Character_MagicDefense", (int)(getstats.get_UnitSpellResist("Character") * 0.01f * 80));
+            PlayerPrefs.SetInt("Enemy_MagicDefense", (int)(getstats.get_UnitSpellResist("Enemy") * 0.01f * 80));
         }
         else
         {

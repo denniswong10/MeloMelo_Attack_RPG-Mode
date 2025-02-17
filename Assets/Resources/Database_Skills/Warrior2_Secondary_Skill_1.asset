@@ -15,14 +15,9 @@ MonoBehaviour:
   skillName: Quick Draw
   skillIcon: {fileID: 2800000, guid: 892309e1f9217bf4daaa6f8b637f6bee, type: 3}
   description: Draw out your sword in a fast pace, slash your enemy into pieces.
-    Double damage dealing with base damage and a bonus damage of (STR x 15%), (VIT
+    Double damage dealing with base damage and a bonus damage of (ATK x 15%), (DEF
     x 8%) and (Grade x 50%). At the start of track, deal a random range of damage
     between (Grade x 5%) to (Grade x 50%) of the enemy health.
-  skill_type: 3
-  skillEffectKey: OnQuickSlash
-  mainStats: 0
   target_caterogy: 4
-  baseDamageStats: 0
-  extraStatsPercentage: 0
-  valueOfTrigger: 15/8/50/5/50
+  customEffectData: []
   isUnlockReady: 0

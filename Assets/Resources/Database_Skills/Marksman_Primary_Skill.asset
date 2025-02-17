@@ -15,9 +15,9 @@ MonoBehaviour:
   skillName: Piercing Shots
   skillIcon: {fileID: 2800000, guid: 965e5177bfa5bb241b2706d73c2173b6, type: 3}
   description: 'Every shot take you close to success. For every successful hit towards
-    target, gain additional bonus damage of (STR x 2%), (MAG x 1%) until the end
+    target, gain additional bonus damage of (ATK x 2%), (MAG x 1%) until the end
     of track. Every successful hit gain a stack, for every 10 stacks, dealing enemy
-    health for (STR x 25% + (Grade x 15%)). Stack will be reset upon activation or
+    health for (ATK x 25% + (Grade x 15%)). Stack will be reset upon activation or
     losing hit to target. Maximum bonus damage able to gain up to (Grade x 50%).
 
 '

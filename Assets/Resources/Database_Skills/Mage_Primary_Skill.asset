@@ -16,14 +16,6 @@ MonoBehaviour:
   skillIcon: {fileID: 2800000, guid: b8e50d3476d59ca4fa937dfb9683f666, type: 3}
   description: 'Searching for treasure and make me want to have more. Dealing extra
     damage to enemy upon picking up 50 Items for (MAG x 50% + (Grade x 25%)). '
-  onStartOfEffect: []
-  duringPlayOfEffect:
-  - effectName: OnItemCountForDamage
-    stats: 2
-    baseDamageStats: 50
-    extraStatsPercentage: 25
-    valueOfTrigger: 50
-  onEndOfEffect: []
   target_caterogy: 4
   customEffectData:
   - effectName: OnItemCountForDamage

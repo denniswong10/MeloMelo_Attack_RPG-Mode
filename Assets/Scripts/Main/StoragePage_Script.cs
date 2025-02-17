@@ -34,7 +34,8 @@ public class StoragePage_Script : MonoBehaviour
     #region SETUP
     private void GetStorageOnCurrency()
     {
-        PlayerPrefs.SetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_Active Items", MeloMelo_GameSettings.GetAllActiveItem().Length);
+        PlayerPrefs.SetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_Active Items", MeloMelo_GameSettings.GetAllActiveItem() != null
+            ? MeloMelo_GameSettings.GetAllActiveItem().Length : 0);
         for (int instance = 0; instance < CurrencyPanel.Length; instance++)
             CurrencyPanel[instance].GetComponent<CurrencyInTag_Scripts>().UpdateCurrencyValue();
     }
@@ -63,26 +64,30 @@ public class StoragePage_Script : MonoBehaviour
 
         VirtualItemDatabase[] allItems = MeloMelo_GameSettings.GetAllActiveItem();
         GetStorageOnCurrency();
-        for (int slot_id = 0; slot_id < slots.Length; slot_id++)
+
+        if (allItems != null)
         {
-            int currentSlot = slots.Length * currentPage + slot_id;
-
-            if (allItems.Length != 0 && currentSlot < allItems.Length)
+            for (int slot_id = 0; slot_id < slots.Length; slot_id++)
             {
-                int totalAmount = allItems[currentSlot].amount - MeloMelo_ItemUsage_Settings.GetItemUsed(allItems[currentSlot].itemName);
+                int currentSlot = slots.Length * currentPage + slot_id;
 
-                if (totalAmount > 0)
+                if (allItems.Length != 0 && currentSlot < allItems.Length)
                 {
-                    slots[slot_id].transform.GetChild(0).GetComponent<RawImage>().enabled = true;
-                    slots[slot_id].transform.GetChild(0).GetComponent<RawImage>().texture = RetrieveItemData(allItems[currentSlot].itemName).Icon;
-                    slots[slot_id].transform.GetChild(1).GetComponent<Text>().text = "x" + Mathf.Clamp(totalAmount, 0, 9999);
-                    PlayerPrefs.SetString(slot_id + "_Slot_ItemName", allItems[currentSlot].itemName);
+                    int totalAmount = allItems[currentSlot].amount - MeloMelo_ItemUsage_Settings.GetItemUsed(allItems[currentSlot].itemName);
+
+                    if (totalAmount > 0)
+                    {
+                        slots[slot_id].transform.GetChild(0).GetComponent<RawImage>().enabled = true;
+                        slots[slot_id].transform.GetChild(0).GetComponent<RawImage>().texture = RetrieveItemData(allItems[currentSlot].itemName).Icon;
+                        slots[slot_id].transform.GetChild(1).GetComponent<Text>().text = "x" + Mathf.Clamp(totalAmount, 0, 9999);
+                        PlayerPrefs.SetString(slot_id + "_Slot_ItemName", allItems[currentSlot].itemName);
+                    }
+                    else
+                        PlayerPrefs.DeleteKey(slot_id + "_Slot_ItemName");
                 }
                 else
-                    PlayerPrefs.DeleteKey(slot_id + "_Slot_ItemName");
+                    break;
             }
-            else
-                break;
         }
     }
     #endregion
@@ -123,10 +128,11 @@ public class StoragePage_Script : MonoBehaviour
         }
         else
         {
-            ItemDesPanel.transform.GetChild(0).GetComponent<Text>().text = string.Empty;
-            ItemDesPanel.transform.GetChild(1).GetComponent<Text>().text = "Select an item to view details";
-            ItemDesPanel.transform.GetChild(2).GetComponent<Text>().text = string.Empty;
-            ItemDesPanel.transform.GetChild(3).GetComponent<Text>().text = string.Empty;
+            for (int index = 0; index < ItemDesPanel.transform.childCount; index++)
+            {
+                ItemDesPanel.transform.GetChild(index).GetComponent<Text>().text = index == 1 ? 
+                    "Select an item to view details" : string.Empty;
+            }
         }
     }
 
@@ -217,7 +223,7 @@ public class StoragePage_Script : MonoBehaviour
 
     private int GetTotalPageAvailable()
     {
-        int total = MeloMelo_GameSettings.GetAllActiveItem().Length;
+        int total = MeloMelo_GameSettings.GetAllActiveItem() != null ? MeloMelo_GameSettings.GetAllActiveItem().Length : 0;
         return total / slots.Length;
     }
 
@@ -264,17 +270,39 @@ public class StoragePage_Script : MonoBehaviour
         GetStorageOnCurrency();
     }
 
+    struct ItemRateContainer
+    {
+        public string itemName;
+        public int amount;
+        public float obtainableRate;
+    }
+
     private IEnumerator UseMysteryPackItem(UsageOfItemDetail production)
     {
-        string[] allItemForRandomize = production.dataArray.Split("/");
-        int numberPicked = Mathf.Clamp(Random.Range(-1, allItemForRandomize.Length), 0, allItemForRandomize.Length - 1);
+        const float fixedPercentageRate = 100;
+        float generateNumber = Random.Range(0, fixedPercentageRate);
 
-        if (allItemForRandomize[numberPicked] != null && allItemForRandomize[numberPicked] != string.Empty)
+        List<ItemRateContainer> itemListing = new List<ItemRateContainer>();
+        string[] itemInArray = production.dataArray.Split("/");
+
+        foreach (string item in itemInArray)
         {
-            VirtualItemDatabase afterRandom = JsonUtility.FromJson<VirtualItemDatabase>(allItemForRandomize[numberPicked]);
-            GiveawayItemToPlayer(afterRandom.itemName, afterRandom.amount);
-            yield return new WaitForSeconds(0.5f);
-            RefreshStorageLoader();
+            if (item != string.Empty) 
+                itemListing.Add(JsonUtility.FromJson<ItemRateContainer>(item));
+        }
+
+        foreach (ItemRateContainer itemSearch in itemListing)
+        {
+            if (fixedPercentageRate - itemSearch.obtainableRate >= generateNumber)
+            {               
+                GiveawayItemToPlayer(itemSearch.itemName, itemSearch.amount);
+                Debug.Log("SuccessRate: " + generateNumber + " %");
+                Debug.Log("Item Obtained: " + itemSearch.itemName + " | " + itemSearch.obtainableRate + " %");
+
+                yield return new WaitForSeconds(0.5f);
+                RefreshStorageLoader();
+                break;
+            }
         }
     }
 
@@ -311,7 +339,7 @@ public class StoragePage_Script : MonoBehaviour
         MeloMelo_Local.LocalSave_DataManagement itemLoader = new MeloMelo_Local.LocalSave_DataManagement(
                             LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
         itemLoader.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
-        itemLoader.SaveVirtualItemFromPlayer(itemName, updateAmount);
+        itemLoader.SaveVirtualItemFromPlayer(itemName, updateAmount, MeloMelo_GameSettings.GetItemIsStackable(itemName));
         PlayerPrefs.DeleteKey(itemName + "_VirtualItem_Unsaved_Used");
     }
 
@@ -360,8 +388,7 @@ public class StoragePage_Script : MonoBehaviour
         if (new_balance > 0)
         {
             PerformForceUpdateFile();
-            StartCoroutine(PromptMessageBox("Get " + PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_" +
-                nameOfCurrency, 0) + " " + nameOfCurrency));
+            StartCoroutine(PromptMessageBox("Get " + new_balance + " " + nameOfCurrency));
         }
     }
     #endregion

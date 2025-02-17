@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: 500 EXP TICKET
   Icon: {fileID: 2800000, guid: a778163da4887b64e98aee197b39d7cb, type: 3}
+  stackable: 1
   thisItemType: 1
   description: Get 500 experience points to a single character.
   itemValue: 1

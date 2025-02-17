@@ -31,6 +31,7 @@ public class SelectionMenu_Script : MonoBehaviour
 
     [SerializeField] private GameObject AreaBonusSign;
     [SerializeField] private GameObject NewReleaseSign;
+    [SerializeField] private GameObject PlayEventNotice;
 
     [Header("LeaderBoard: Component")]
     [SerializeField] private GameObject NetworkCofig;
@@ -188,6 +189,7 @@ public class SelectionMenu_Script : MonoBehaviour
 
         loadBGM = true;
         selection.Invoke("Setup_Page", 0.1f);
+        if (MeloMelo_GameSettings.GetEventRewardArray() != null) Invoke("PlayEventAlertBox", 0.5f);
 
         // Cursor
         if (!Cursor.visible) Cursor.visible = true;
@@ -439,6 +441,44 @@ public class SelectionMenu_Script : MonoBehaviour
                 NewReleaseSign.SetActive(active);
                 break;
         }
+    }
+    #endregion
+
+    #region MISC (Play Event)
+    private void PlayEventAlertBox()
+    {
+        PlayEventNotice.SetActive(true);
+        bool isUpdateRequire = false;
+
+        foreach (PlayEventRewardData data in MeloMelo_GameSettings.GetEventRewardArray())
+        {
+            if (MeloMelo_GameSettings.GetVersionNumber(StartMenu_Script.thisMenu.get_version) <
+                MeloMelo_GameSettings.GetVersionNumber(data.version))
+            {
+                isUpdateRequire = true;
+                break;
+            }
+        }
+
+        PlayEventNotice.transform.GetChild(0).GetChild(0).GetComponent<Text>().text =
+            GetPlayEventMessage(false, isUpdateRequire ? 
+            "Game isn't up-to-date for this event" : 
+            "Keep playing track to obtain reward");
+
+        Invoke("ClosePanelPlayEventNotice", 5);
+    }
+
+    private string GetPlayEventMessage(bool eventFinsihed, string extraMessage)
+    {
+        if (eventFinsihed)
+            return "Play Event has ended\n" + "Hope to see you on the next event";
+        else
+            return "Play Event is happening\n" + extraMessage;
+    }
+
+    private void ClosePanelPlayEventNotice()
+    {
+        PlayEventNotice.SetActive(false);
     }
     #endregion
 }

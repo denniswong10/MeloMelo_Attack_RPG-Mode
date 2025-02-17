@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Progression Gift
   Icon: {fileID: 2800000, guid: 5caab6e658eb3e542a4d6e6c39b30939, type: 3}
+  stackable: 1
   thisItemType: 0
   description: "A small gift from the developer who is \rmaintaining this game for
     years now. \nThis gift contain random consumable\r to keep the player active

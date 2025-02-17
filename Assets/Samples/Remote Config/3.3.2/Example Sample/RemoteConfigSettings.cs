@@ -92,6 +92,9 @@ public class RemoteConfigSettings : MonoBehaviour
         // Auto Patcher: Configuration
         PlayerPrefs.SetString("Application_Direct_Link", RemoteConfigService.Instance.appConfig.GetString("AutoPatcher_DirectLink_URL"));
         PlayerPrefs.SetString("Application_VersionControl_Log", RemoteConfigService.Instance.appConfig.GetString("AutoPatcher_VersionControl_URL"));
+
+        // Game BackEnd: Event Mode
+        PlayerPrefs.SetString("VersionControl_PlayEvent", RemoteConfigService.Instance.appConfig.GetJson("CloudSave_Support"));
     }
 
     private void ResetGameApplicationValue()

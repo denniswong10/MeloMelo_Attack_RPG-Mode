@@ -9,6 +9,8 @@ public class ItemData : ScriptableObject
     [Header("General")]
     public string itemName;
     public Texture Icon;
+    public bool stackable;
+
     public enum ItemType { Item, Consumable, None };
     public ItemType thisItemType;
     [TextArea] public string description;

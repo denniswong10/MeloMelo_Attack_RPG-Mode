@@ -14,16 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillName: 'Divine Shield '
   skillIcon: {fileID: 2800000, guid: cf64583433e5a384bb3d2ad3c1db9f84, type: 3}
-  description: 'Take absoulte no damage by (VIT x 130% + (Grade x 20%)) from enemy.
+  description: 'Take absoulte no damage by (DEF x 130% + (Grade x 20%)) from enemy.
     Upon activation to this skill, every 5 seconds of track time. '
-  onStartOfEffect: []
-  duringPlayOfEffect:
-  - effectName: OnCountdownShield
-    stats: 1
-    baseDamageStats: 130
-    extraStatsPercentage: 20
-    valueOfTrigger: 5
-  onEndOfEffect: []
   target_caterogy: 4
   customEffectData:
   - effectName: OnCountdownShield

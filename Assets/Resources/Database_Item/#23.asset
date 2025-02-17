@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: BASIC TRACK TICKET
   Icon: {fileID: 2800000, guid: ccca7daef32e16541b3456a1a6034ebf, type: 3}
+  stackable: 1
   thisItemType: 1
   description: This ticket is only basics use for restricted area. Ticket are in
     a good condition where its come and go along. Ticket are valid for one use.

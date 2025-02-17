@@ -14,13 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillName: Sword Of Light
   skillIcon: {fileID: 2800000, guid: 999faaa89abf32c4b9f45ea5d25fc727, type: 3}
-  description: 'Create a light slash through all incoming enemy. Dealing any successful
-    hits enemy for (STR * 15% + (Grade x 35%)). Dealing a range of incoming enemy
+  description: 'Create a light slash through all incoming enemy. For every 15 successful
+    hits enemy for (ATK * 15% + (Grade x 35%)). Dealing a range of incoming enemy
     for (MAG x 5% + (Grade x 25%)). At the end of track, dealing enemy health by
-    the total number of successful hits by (STR x 5% + (Grade x 10%) + MAG x 5% +
+    the total number of successful hits by (ATK x 5% + (Grade x 10%) + MAG x 5% +
     (Grade x 10%)). '
-  onStartOfEffect: []
-  duringPlayOfEffect: []
-  onEndOfEffect: []
   target_caterogy: 2
+  customEffectData:
+  - effectName: OnStackSuccessDamage
+    effectActivationPhase: 1
+    effectOnCondition:
+    - effectCondition: OnCountStackTarget
+      valueOfTrigger: 15,1^2^3
+    effectOnAction:
+    - effectActionName: OnDamageEnemyHealth
+      effectMainStats: 0
+      baseValue: 15
+      extraPercentage: 35
+    - effectActionName: OnDamageEnemyHealth
+      effectMainStats: 2
+      baseValue: 5
+      extraPercentage: 25
   isUnlockReady: 0

@@ -75,8 +75,10 @@ public class GameManager : MonoBehaviour, IGameManager
     void Start()
     {
         thisManager = this;
+        Screen.SetResolution(1360, 768, false);
+
         //PreSet_BattleSetup();
-        //PlayerPrefs.SetInt("NoteSpeed", 3);
+        //PlayerPrefs.SetInt("NoteSpeed", 4);
 
         if (JudgeCounter && PlayerPrefs.GetInt("JudgeMeter_Setup", 0) != 2) IntiJudgeCounterContent();
         else JudgeCounter.SetActive(false);
@@ -105,12 +107,15 @@ public class GameManager : MonoBehaviour, IGameManager
 
         // Remove Point
         PlayerPrefs.DeleteKey("Point_Scoring");
+        PlayerPrefs.DeleteKey("UpperScoreTech");
 
         // Scoring Structure
         if (Application.isEditor)
         {
             MeloMelo_GameSettings.GetScoreStructureSetup();
             MeloMelo_GameSettings.GetStatusRemarkStructureSetup();
+            MeloMelo_GameSettings.LoadStartingStats();
+            PlayerPrefs.SetString("Character_Active_Skill", "F");
         }
 
         // Cursor
@@ -465,7 +470,9 @@ public class GameManager : MonoBehaviour, IGameManager
             // Add technical score to the status board and update the display
             int scoreFilter = !OverKill_Bar.activeInHierarchy ? _score : (_score * 2);
             score2.ModifyScore(scoreFilter);
-            Score2.text = score2.get_score.ToString();
+            UpperLimitTechScore();
+
+            Score2.text = Mathf.Clamp(score2.get_score, 0, 9999999).ToString();
         }
     }
 
@@ -513,13 +520,13 @@ public class GameManager : MonoBehaviour, IGameManager
                 UpdateSkillInformation(loadedSkill);
                 yield return new WaitForSeconds(2);
 
-                foreach (ClassBase currentPick in characterStats.slot_Stats)
+                foreach (ClassBase skillCaster in characterStats.slot_Stats)
                 {
                     // Get character is leading the party member
-                    if (PlayerPrefs.GetString("CharacterFront", "None") == currentPick.name)
+                    if (PlayerPrefs.GetString("CharacterFront", "None") == skillCaster.name)
                     {
                         // Get character skill ready for use
-                        GetComponent<SkillManager>().ExtractSkill(loadedSkill, currentPick);
+                        GetComponent<SkillManager>().ExtractSkill(loadedSkill, skillCaster);
                         GetComponent<SkillManager>().RegisterForSkillUsage(loadedSkill, skillIsOnPrimary[skillLoader]);
                         break;
                     }
@@ -783,12 +790,12 @@ public class GameManager : MonoBehaviour, IGameManager
         if ((typeOfTarget == 1 && PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorA_ValueKey, 1) == 1) ||
             (typeOfTarget == 2 && PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey, 1) == 1))
         {
-            if ((typeOfTarget == 1 && characterStatus.get_health > 0 && characterStatus.get_health < characterStatus.get_maxHealth)
-            || (typeOfTarget == 2 && enemyStatus.get_health > 0 && enemyStatus.get_health < enemyStatus.get_maxHealth))
+            if ((typeOfTarget == 1 && characterStatus.get_health > 0 && characterStatus.get_health + damage <= characterStatus.get_maxHealth)
+            || (typeOfTarget == 2 && enemyStatus.get_health > 0 && enemyStatus.get_health + damage <= enemyStatus.get_maxHealth))
             {
                 GameObject damageIndicator = Instantiate(Resources.Load<GameObject>("Prefabs/Floating Damage/DamageIndicator"));
-                damageIndicator.GetComponent<TextMesh>().color = damage < 0 ? new Color32(125, 36, 5, 255) : new Color32(50, 137, 50, 255);
-                damageIndicator.GetComponent<TextMesh>().text = (damage > 0 ? "+" : string.Empty) + damage.ToString();
+                damageIndicator.GetComponent<TextMesh>().color = damage == 0 ? Color.grey : damage < 0 ? new Color32(125, 36, 5, 255) : new Color32(50, 137, 50, 255);
+                damageIndicator.GetComponent<TextMesh>().text = damage == 0 ? "Miss" : damage > 0 ? "+" + damage.ToString() : damage.ToString();
                 damageIndicator.transform.position = typeOfTarget == 1 ? new Vector3(target.x, 0, -3.5f) : new Vector3(target.x, 2.5f, 0);
                 Destroy(damageIndicator, 0.5f);
             }
@@ -1015,6 +1022,45 @@ public class GameManager : MonoBehaviour, IGameManager
             Alert_sign.transform.GetComponent<Animator>().SetTrigger("Play");
             Alert_sign.transform.GetChild(0).GetComponent<Text>().text = progressMeter.GetProgressPassNFailStatus();
         }
+    }
+    #endregion
+
+    #region EXTRA (Tech Status)
+    private void UpperLimitTechScore()
+    {
+        const int maxLimit = 9999999;
+
+        if (Score2 != null && score2.get_score > maxLimit)
+        {
+            if (RaiseStarStatus())
+            {
+                float exceedPoint = score2.get_score - maxLimit - 1;
+                score2.ResetScore();
+                score2.ModifyScore((int)exceedPoint);
+            }
+        }
+    }
+
+    private bool RaiseStarStatus()
+    {
+        bool isRaised = false;
+        int count = 0;
+
+        for (int star = 0; star < characterSlotStatus[0].transform.GetChild(7).transform.childCount; star++)
+        {
+            if (characterSlotStatus[0].transform.GetChild(7).GetChild(star).GetComponent<RawImage>().color.a != 1)
+            {
+                isRaised = true;
+                count++;
+                characterSlotStatus[0].transform.GetChild(7).GetChild(star).GetComponent<RawImage>().color = new Color(1, 1, 1, 1);
+                break;
+            }
+            else
+                count++;
+        }
+
+        PlayerPrefs.SetInt("UpperScoreTech", count);
+        return isRaised;
     }
     #endregion
 
