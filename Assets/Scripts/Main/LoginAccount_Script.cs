@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using MeloMelo_Network;
 
 public class LoginAccount_Script : MonoBehaviour
 {
@@ -32,12 +33,13 @@ public class LoginAccount_Script : MonoBehaviour
     #region MAIN
     public void LoginAccount()
     {
-
+        //Authenticate_DataManagement services = new Authenticate_DataManagement(userName.text, MeloMelo_PlayerSettings.GetWebServerUrl());
+        //StartCoroutine(services.GetAuthenticationFromServer(passWord.text));
     }
 
     public void RegisterAccount()
     {
-        Application.OpenURL(PlayerPrefs.GetString("GameWeb_URL", string.Empty) + "/form_content.php");
+        Application.OpenURL(MeloMelo_PlayerSettings.GetWebServerUrl() + "/form_content.php");
     }
 
     public void UpdateInformationFiller()

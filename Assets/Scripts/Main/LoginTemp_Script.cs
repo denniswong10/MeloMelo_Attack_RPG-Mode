@@ -58,7 +58,7 @@ public class LoginTemp_Script : MonoBehaviour
         LoginPage_Script.thisPage.portNumber = 1;
 
         // Use cloud services through the available network
-        cloudService = new CloudUsage_TempServices(PlayerPrefs.GetString("GameWeb_URL"));
+        cloudService = new CloudUsage_TempServices(MeloMelo_PlayerSettings.GetWebServerUrl());
 
         // Generating playerId from the cloud database
         StartCoroutine(cloudService.GeneratingPlayerId());
@@ -71,7 +71,7 @@ public class LoginTemp_Script : MonoBehaviour
         LoadTempDetail();
 
         // Setup login authenticate through cloud
-        login = new Authenticate_DataManagement(playerid, PlayerPrefs.GetString("GameWeb_URL"));
+        //login = new Authenticate_DataManagement(playerid, MeloMelo_PlayerSettings.GetWebServerUrl());
 
         // Create or transfer
         switch (LoginBtn.gameObject.transform.GetChild(0).GetComponent<Text>().text)
@@ -87,7 +87,7 @@ public class LoginTemp_Script : MonoBehaviour
 
             default:
                 LoadingTempPage("Data Transfer...");
-                StartCoroutine(login.GetAuthenticationFromServer(SecureKey.text));
+               // StartCoroutine(login.GetAuthenticationFromServer(SecureKey.text));
                 break;
         }
     }
@@ -118,7 +118,7 @@ public class LoginTemp_Script : MonoBehaviour
 
     public void ConfirmPlayerNameEntry()
     {
-        StartCoroutine(login.CreateNewEntryOnServer(SecureKey.text, entryField.transform.GetChild(1).GetComponent<InputField>().text));
+        //StartCoroutine(login.CreateNewEntryOnServer(SecureKey.text, entryField.transform.GetChild(1).GetComponent<InputField>().text));
     }
     #endregion
 
@@ -140,7 +140,7 @@ public class LoginTemp_Script : MonoBehaviour
     private IEnumerator LoadCloudData()
     {
         CloudLoad_DataManagement cloudData = new CloudLoad_DataManagement(
-            LoginPage_Script.thisPage.GetUserPortOutput(), PlayerPrefs.GetString("GameWeb_URL"));
+            LoginPage_Script.thisPage.GetUserPortOutput(), MeloMelo_PlayerSettings.GetWebServerUrl());
 
         for (int save = 0; save < 3; save++)
             StartCoroutine(cloudData.LoadProgressTrack(save + 1));
@@ -180,14 +180,14 @@ public class LoginTemp_Script : MonoBehaviour
     {   
         GetComponent<LoginPage_Script>().Icon.transform.GetChild(1).GetComponent<Text>().text = "[Game Network]\n" + message;
         GetComponent<LoginPage_Script>().UpdateUserProfileName(serverUser);
-        string url = PlayerPrefs.GetString("GameWeb_URL");
+        string url = MeloMelo_PlayerSettings.GetWebServerUrl();
 
         if (login.get_success)
         {
             Debug.Log("[TempPass] Login as: " + LoginPage_Script.thisPage.get_user);
             PlayerPrefs.DeleteAll();
             PlayerPrefs.SetString("TempPass_PlayerId", playerid);
-            PlayerPrefs.SetString("GameWeb_URL", url);
+            MeloMelo_PlayerSettings.UpdateWebServerUrl(url);
 
             StartCoroutine(LoadCloudData());
             acquireEntryPass += GetMenuPlayThrough;
@@ -212,7 +212,7 @@ public class LoginTemp_Script : MonoBehaviour
     #region MISC (Auto Detection ID)
     private void GetServer_CheckID()
     {
-        CloudServices_ControlPanel services = new CloudServices_ControlPanel(PlayerPrefs.GetString("GameWeb_URL"));
+        CloudServices_ControlPanel services = new CloudServices_ControlPanel(MeloMelo_PlayerSettings.GetWebServerUrl());
         StartCoroutine(services.CheckNetwork_IDInspection(PlayerPrefs.GetString("TempPass_PlayerId", string.Empty)));
     }
 

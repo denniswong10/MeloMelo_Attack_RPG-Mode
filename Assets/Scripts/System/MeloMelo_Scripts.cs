@@ -4,8 +4,10 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 // MeloMelo: VirtualItem Component
 namespace MeloMelo_VirtualItem
@@ -42,7 +44,7 @@ namespace MeloMelo_VirtualItem
             if (PlayerPrefs.GetString(currentBoundItem, string.Empty) == itemName)
             {
                 // Check for exp potion and update amount uses
-                VirtualItemDatabase itemFromStorage = MeloMelo_GameSettings.GetAllItemFromLocal(itemName);
+                VirtualItemDatabase itemFromStorage = MeloMelo_ItemUsage_Settings.GetActiveItem(itemName);
                 if (itemFromStorage.itemName == itemName && GetTotalAmountFromStorage(itemName) > 0)
                 {
                     PlayerPrefs.DeleteKey(currentBoundItem);
@@ -58,7 +60,7 @@ namespace MeloMelo_VirtualItem
         private int GetTotalAmountFromStorage(string itemName)
         {
             // Items counted in storage bag and current used items
-            int itemAmount = MeloMelo_GameSettings.GetAllItemFromLocal(itemName).amount -
+            int itemAmount = MeloMelo_ItemUsage_Settings.GetActiveItem(itemName).amount -
                 MeloMelo_ItemUsage_Settings.GetItemUsed(itemName);
 
             return itemAmount;
@@ -79,26 +81,33 @@ namespace MeloMelo_Story
     {
         public void StoryTxtExtraction(string storyRef)
         {
-            string readTxtFile = Application.streamingAssetsPath + "/Story/" + storyRef + ".txt";
-            List<string> fileLine = File.ReadAllLines(readTxtFile).ToList();
-            string txt_printer = string.Empty;
+            if (File.Exists(Application.streamingAssetsPath + "/Story/" + storyRef + ".txt"))
+            {
+                string readTxtFile = Application.streamingAssetsPath + "/Story/" + storyRef + ".txt";
+                List<string> fileLine = File.ReadAllLines(readTxtFile).ToList();
+                string txt_printer = string.Empty;
 
-            foreach (string i in fileLine) { txt_printer += (i + "\n"); }
-            PlayerPrefs.SetString("Display_Story", txt_printer);
-            StoryMode_Scripts.thisStory.StoryLoaderPlayer(storyRef);
+                foreach (string i in fileLine) { txt_printer += (i + "\n"); }
+                PlayerPrefs.SetString("Display_Story", txt_printer);
+                StoryMode_Scripts.thisStory.StoryLoaderPlayer(storyRef);
+            }
         }
 
         public IEnumerator StoryTxtEffect()
         {
-            float speed = 0.07f;
-
-            foreach (char i in PlayerPrefs.GetString("Display_Story"))
+            if (PlayerPrefs.HasKey("Display_Story"))
             {
-                StoryMode_Scripts.thisStory.StoryDisplayTxt(i);
-                yield return new WaitForSeconds(speed);
+                float speed = 0.01f; // 0.07f;
+
+                foreach (char i in PlayerPrefs.GetString("Display_Story"))
+                {
+                    StoryMode_Scripts.thisStory.StoryDisplayTxt(i);
+                    yield return new WaitForSeconds(speed);
+                }
+
+                StoryMode_Scripts.thisStory.StoryDisplayContinue();
+                PlayerPrefs.DeleteKey("Display_Story");
             }
-           
-            StoryMode_Scripts.thisStory.StoryDisplayContinue();
         }
     }
 }
@@ -608,31 +617,183 @@ namespace MeloMelo_ScoreEditorMode
 // MeloMelo: Build Level Indicator
 namespace MeloMelo_LevelBuilder
 {
+    struct ComboArrayType
+    {
+        public string comboGroup { get; }
+        public int value { get; }
+
+        public ComboArrayType(string group, int value)
+        {
+            comboGroup = group;
+            this.value = value;
+        }
+    }
+
+    class NotationDataTemplate
+    {
+        public string notationType { get; protected set; }
+        public bool isCheck { get; private set; }
+        public string value { get; protected set; }
+        public float points { get; protected set; }
+
+        public void HasChecked(bool check) => isCheck = check;
+    }
+
+    class SingleNotationChecker : NotationDataTemplate
+    {
+        public SingleNotationChecker(string name, string index, float points = 0)
+        {
+            notationType = name;
+            value = index;
+            this.points = points;
+            HasChecked(false);
+        }
+    }
+
+    class MultipleNotationChecker : NotationDataTemplate
+    {
+        public MultipleNotationChecker(string name, string[] indexList, float points = 0)
+        {
+            notationType = name;
+            foreach (string notation in indexList) value += notation + ",";
+            this.points = points;
+            HasChecked(false);
+        }
+    }
+
+    class NotationPatternData
+    {
+        public enum AddingType { Once, Repeat };
+        public AddingType patternCheckType;
+
+        public int numberOfRequireCount { get; private set; }
+        public bool isAdded { get; private set; }
+        public float points { get; private set; }
+
+        public NotationPatternData(int numberOfCount, float setPoint, AddingType typeOfCheck)
+        {
+            numberOfRequireCount = numberOfCount;
+            patternCheckType = typeOfCheck;
+            points = setPoint;
+        }
+
+        public void HasAdded()
+        {
+            if (patternCheckType == AddingType.Once) 
+                isAdded = true;
+        }
+
+        public void ResetAdding() => isAdded = false;
+    }
+
+    class NotationCombinationChecker
+    {
+        public string notationType { get; }
+        public int totalCount { get; private set; }
+        public List<NotationPatternData> patternArray;
+
+        public NotationCombinationChecker(string name, string combinationType, string pointInArray, bool repeatableType = false)
+        {
+            notationType = name;
+            totalCount = 0;
+            patternArray = new List<NotationPatternData>();
+
+            string[] requiredCount = combinationType.Split(',');
+            string[] pointFromArray = pointInArray.Split(',');
+
+            if (requiredCount.Length == pointFromArray.Length)
+            {
+                for (int autoFill = 0; autoFill < requiredCount.Length; autoFill++)
+                {
+                    NotationPatternData data = new NotationPatternData(int.Parse(requiredCount[autoFill]), float.Parse(pointFromArray[autoFill]), 
+                        repeatableType ? NotationPatternData.AddingType.Repeat : NotationPatternData.AddingType.Once);
+
+                    data.ResetAdding();
+                    patternArray.Add(data);
+                }
+            }
+        }
+
+        public void AddCount() => totalCount++;
+        public void ResetCount() => totalCount = 0;
+    }
+
+    class NotationMixCombinationChecker
+    {
+        public List<NotationPatternData> patternRange;
+        public int totalCount { get; private set; }
+        public List<int> checkForDuplicate;
+        public List<string> filterNonExistanceValue;
+
+        public NotationMixCombinationChecker(int[] lengthOfCombination, float[] pointInArray, string[] filterOutValueNotExisted)
+        {
+            patternRange = new List<NotationPatternData>();
+            checkForDuplicate = new List<int>();
+            filterNonExistanceValue = new List<string>();
+            totalCount = 0;
+
+            if (lengthOfCombination != null && lengthOfCombination.Length > 0)
+            {
+                for (int notationId = 0; notationId < lengthOfCombination.Length; notationId++)
+                {
+                    NotationPatternData temp = new NotationPatternData(lengthOfCombination[notationId], pointInArray[notationId], NotationPatternData.AddingType.Once);
+                    temp.ResetAdding();
+                    patternRange.Add(temp);
+
+                    filterNonExistanceValue.Add(filterOutValueNotExisted[notationId]);
+                }
+            }
+        }
+
+        public void CopyValue(int value)
+        {
+            //if (totalCount < patternRange[patternRange.ToArray().Length - 1].numberOfRequireCount)
+
+            if (value != 0) checkForDuplicate.Add(value);
+            totalCount++;
+        }
+
+        public bool CheckForNextDuplicated(int value)
+        {
+            foreach (int forDuplicateValue in checkForDuplicate)
+                if (value == forDuplicateValue) return true;
+
+            return false;
+        }
+
+        public bool ValueInclude(int[] data, int currentCount)
+        {
+            if (filterNonExistanceValue[currentCount] != string.Empty)
+            {
+                string[] valueS = filterNonExistanceValue[currentCount].Split(',');
+                foreach (string value in valueS)
+                    if (data.Contains(int.Parse(value)))
+                        return true;
+            }
+
+            return false;
+        }
+
+        public void ResetCount()
+        {
+            totalCount = 0;
+            //checkForDuplicate.Clear();
+        }
+    }
+
     // Unit: ScoringMeter Function
     public class ScoringMeter
     {
         // Memory Usage: ScoringMeter
-        private int[] get_comboDiff = { 1, 50, 100, 200 };
-        private int[] get_comboDiff2 = { 1, 100, 200, 300 };
+        private List<ComboArrayType> get_combo_list;
+        private List<SingleNotationChecker> get_notation_visible;
+        private List<NotationCombinationChecker> get_notation_list;
+        private NotationMixCombinationChecker get_notation_mixElement;
 
-        private int noteCom = 0;
-        private int noteCom_enemy = 0;
-        private int noteCom_trap = 0;
         private int noteCom_all = 0;
-        private int specialItem_count = 0;
 
-        private bool[] maxCom = new bool[4];
-        private bool[] maxCom_enemy = new bool[2];
-        private bool[] maxCom_trap = new bool[2];
         private bool[] maxCom_all = new bool[3];
         private int[] noteType = new int[4];
-        private bool trapDetected = false;
-        private bool trapDetected2 = false;
-        private bool enemyAir = false;
-        private bool attackAir = false;
-        private bool fullAttack = false;
-        private bool allTraps = false;
-        private bool specialitem = false;
 
         private float difficultyLevel = 0;
         public float get_difficultyLevel { get { return difficultyLevel; } }
@@ -646,160 +807,126 @@ namespace MeloMelo_LevelBuilder
         // One-time Setup: Function
         public ScoringMeter(int[] score_database, int[] score_database2)
         {
-            LevelSetup_Program(score_database, score_database2);
+            LevelSetup_Program(1, score_database);
+            LevelSetup_Program(2, score_database2);
         }
 
         public ScoringMeter(int[] score_database, int[] score_database2, int[] score_database3)
         {
-            LevelSetup_Program(score_database, score_database2);
-            LevelSetup_ExtraProgram(score_database3);
+            LevelSetup_Program(1, score_database);
+            LevelSetup_Program(2, score_database2);
+            LevelSetup_Program(3, score_database3);
         }
 
-        public ScoringMeter(int difficultyMap, int numberofEnemy, int numberofTraps, int maxCombo, int[] data)
+        public ScoringMeter(int difficultyMap, int[] data)
         {
-            SetUp(difficultyMap, numberofEnemy, numberofTraps, maxCombo, data);
+            LevelSetup_Program(difficultyMap, data);
         }
 
         // Score Function: Level Meter
-        protected void SetUp(int difficultyMap, int numberofEnemy, int numberofTraps, int maxCombo, int[] data)
+        private void SetUp(int difficultyMap, int numberofEnemy, int numberofTraps, int maxCombo, int[] data)
         {
             difficultyLevel = 0;
             scoringCurrent = 0;
-            trapDetected = false;
-            trapDetected2 = false;
-            enemyAir = false;
-            attackAir = false;
-            fullAttack = false;
-            allTraps = false;
-            specialitem = false;
 
-            for (int i = 0; i < maxCom.Length; i++) { maxCom[i] = false; }
-            for (int i = 0; i < maxCom_enemy.Length; i++) { maxCom_enemy[i] = false; }
-            for (int i = 0; i < maxCom_trap.Length; i++) { maxCom_trap[i] = false; }
             for (int i = 0; i < maxCom_all.Length; i++) { maxCom_all[i] = false; }
             for (int i = 0; i < noteType.Length; i++) { noteType[i] = 0; }
 
+            // Start of level editior
+            LevelEditorPrompt(numberofTraps, numberofEnemy);
+
+            // Gather point system by level editior
             PlayerPrefs.SetInt("GetMaxPoint_" + difficultyMap, maxCombo * 3);
 
-            try
+            // Level combo complextity
+            if (SceneManager.GetActiveScene().name == "Music Selection Stage")
             {
-                if (GameManager.thisManager.DeveloperMode)
-                {
-                    Debug.Log("Traps: " + numberofTraps);
-                    Debug.Log("Enemy: " + numberofEnemy);
-                    Debug.Log("Combo: " + maxCombo);
-                }
-                else
-                {
-                    Debug.Log("Total Combo: " + maxCombo);
-                }
+                string combo_grouping_name =
+                    SelectionMenu_Script.thisSelect.get_selection.get_form.NewChartSystem ? "New_Chart_Scoring" :
+                    SelectionMenu_Script.thisSelect.get_selection.get_form.UltimateAddons ? "Old_Chart_Scoring" : "Old_Chart_Scoring";
+
+                scoringCurrent += GetCombo_LevelComplextity(combo_grouping_name, maxCombo);
             }
-            catch { }
-
-            // Season 3: Scoring
-            try
+            else
             {
-                if (SelectionMenu_Script.thisSelect.get_selection.get_form.NewChartSystem)
+                string combo_grouping_name =
+                    BeatConductor.thisBeat.Music_Database.NewChartSystem ? "New_Chart_Scoring" :
+                    BeatConductor.thisBeat.Music_Database.UltimateAddons ? "Old_Chart_Scoring" : "Old_Chart_Scoring";
 
-                    if (SelectionMenu_Script.thisSelect.get_selection.get_form.UltimateAddons)
-                        if (SelectionMenu_Script.thisSelect.get_selection.get_form.ScaleLevel < 4) 
-                            foreach (int i in get_comboDiff) { if (maxCombo >= i) { scoringCurrent += 7.2f; } } // S1: 7.2
-                        else
-                            foreach (int i in get_comboDiff2) { if (maxCombo >= i) { scoringCurrent += 7.2f; } } // S1: 7.2
-
-                    else if (SelectionMenu_Script.thisSelect.get_selection.get_form.addons3 != null)
-                        foreach (int i in get_comboDiff2) { if (maxCombo >= i) { scoringCurrent += 7.2f; } } // S1: 7.2
-
-                    else
-                        foreach (int i in get_comboDiff) { if (maxCombo >= i) { scoringCurrent += 7.2f; } } // S1: 7.2
-                else
-
-                    foreach (int i in get_comboDiff) { if (maxCombo >= i) { scoringCurrent += 7.2f; } } // S1: 7.2
-            }
-            catch 
-            {
-                foreach (int i in get_comboDiff) { if (maxCombo >= i) { scoringCurrent += 7.2f; } } // S1: 7.2
+                scoringCurrent += GetCombo_LevelComplextity(combo_grouping_name, maxCombo);
             }
 
-            // Season 0: Scoring
-            foreach (int i in data) { if (i == 3 && !trapDetected) { Debug.Log("Ground Trap: YES"); trapDetected = true; scoringCurrent+=2; } } // S0: 3
+            // Level Visible Complextity
+            if (get_notation_visible != null)
+                foreach (SingleNotationChecker notation in get_notation_visible) 
+                    scoringCurrent += GetVisible_LevelComplextity(data, notation.notationType);
 
-            // Season 1: Scoring
-            foreach (int i in data) { if (i == 7 && !trapDetected2) { Debug.Log("Air Trap: YES"); trapDetected2 = true; scoringCurrent += 3; } } // S1: 5
-            foreach (int i in data) { if (i == 6 && !enemyAir) { Debug.Log("Air Enemy: YES"); enemyAir = true; scoringCurrent += 2; } } // S1: 2.5
-
-            // Season 2: Scoring
-            foreach(int i in data) { if (trapDetected && trapDetected2 & !allTraps) { Debug.Log("All Trap: YES"); allTraps = true; scoringCurrent += 1; } }
-            foreach (int i in data) { if (i == 9 && !attackAir) { Debug.Log("Air Attack: YES"); attackAir = true; scoringCurrent += 0.5f; } }
-            foreach (int i in data) { if (i == 5 && attackAir && !fullAttack) { Debug.Log("Full Attack: YES"); fullAttack = true; scoringCurrent += 2; } }
-
-            // Season 3: Scoring
-            foreach (int i in data) { if (i == 93 && !specialitem) { specialitem = true; Debug.Log("Special Item: YES"); scoringCurrent -= 4.5f; } }
-            foreach (int i in data)
+            // Level Notation Pattern Complextity (One of a kind checker)
+            if (get_notation_list != null)
             {
-                if (i == 93)
+                foreach (NotationCombinationChecker notation in get_notation_list)
                 {
-                    specialItem_count++;
+                    string[] notationHolder = GetNotationStatus(notation.notationType).value.Split(',');
 
-                    switch (specialItem_count)
+                    foreach (int i in data)
                     {
-                        case 4:
-                            scoringCurrent += 1.5f;
-                            specialItem_count = 0;
-                            break;
+                        bool isPatternFound = MultiNotation_OR_Check(notationHolder, i);
 
-                        case 3:
-                            scoringCurrent += 1;
-                            specialItem_count = 0;
-                            break;
+                        if (isPatternFound)
+                        {
+                            notation.AddCount();
 
-                        case 2:
-                            scoringCurrent += 0.5f;
-                            specialItem_count = 0;
-                            break;
+                            foreach (NotationPatternData combinationCount in notation.patternArray)
+                            {
+                                if (!combinationCount.isAdded && combinationCount.numberOfRequireCount == notation.totalCount)
+                                {
+                                    combinationCount.HasAdded();
+                                    Debug.Log(notation.notationType + " ( " + combinationCount.numberOfRequireCount + ") : YES | " + combinationCount.points + "p");
+
+                                    scoringCurrent += combinationCount.points;
+                                    notation.ResetCount();
+                                    break;
+                                }
+                            }
+                        }
+                        else 
+                            notation.ResetCount();
                     }
                 }
-                else { specialItem_count = 0; }
             }
+
+            // Level Notation Pattern Complextity(Mix element in any sequence checker)
+            //if (get_notation_mixElement != null)
+            //{
+            //    foreach (int i in data)
+            //    {
+            //        if (!get_notation_mixElement.CheckForNextDuplicated(i))
+            //            get_notation_mixElement.CopyValue(i);
+
+            //        else
+            //            get_notation_mixElement.ResetCount();
+
+            //        for (int mixCombinationCount = 0; mixCombinationCount < get_notation_mixElement.patternRange.ToArray().Length; mixCombinationCount++)
+            //        {
+            //            if (!get_notation_mixElement.ValueInclude(data, mixCombinationCount) && 
+            //                !get_notation_mixElement.patternRange[mixCombinationCount].isAdded &&
+            //                get_notation_mixElement.patternRange[mixCombinationCount].numberOfRequireCount == get_notation_mixElement.totalCount
+            //                )
+            //            {
+            //                get_notation_mixElement.patternRange[mixCombinationCount].HasAdded();
+            //                Debug.Log("Creation " + get_notation_mixElement.patternRange[mixCombinationCount].numberOfRequireCount + "/4: YES | " + get_notation_mixElement.patternRange[mixCombinationCount].points + "p");
+
+            //                scoringCurrent += get_notation_mixElement.patternRange[mixCombinationCount].points;
+            //                get_notation_mixElement.ResetCount();
+            //                break;
+            //            }
+            //        }
+            //    }
+            //}
 
             // All Season: Scoring
             foreach (int i in data)
             {
-                // Enemy
-                if (i == 1)
-                {
-                    noteCom_enemy++;
-
-                    switch (noteCom_enemy)
-                    {
-                        case 3:
-                            if (!maxCom_enemy[0]) { Debug.Log("Group Enemy: YES"); maxCom_enemy[0] = true; scoringCurrent += 2; }
-                            break;
-
-                        case 4:
-                            if (!maxCom_enemy[1]) { Debug.Log("Group Enemy 2: YES"); maxCom_enemy[1] = true; scoringCurrent += 5; }
-                            break;
-                    }
-                }
-                else { noteCom_enemy = 0; }
-
-                // Trap (Ground/Air)
-                if (i == 3 || i == 7)
-                {
-                    noteCom_trap++;
-                    switch (noteCom_trap)
-                    {
-                        case 3:
-                            if (!maxCom_trap[0]) { Debug.Log("Small Trap: YES"); maxCom_trap[0] = true; scoringCurrent += 3; }
-                            break;
-
-                        case 4:
-                            if (!maxCom_trap[1]) { Debug.Log("Massive Trap: YES"); maxCom_trap[1] = true; scoringCurrent += 8; }
-                            break;
-                    }
-                }
-                else { noteCom_trap = 0; }
-
                 // All Element
                 if (i != 0)
                 {
@@ -830,109 +957,440 @@ namespace MeloMelo_LevelBuilder
                             break;
 
                         case 5:
-                            if (!trapDetected2 && !enemyAir && !maxCom_all[2]) { Debug.Log("Creation 5/4: YES"); maxCom_all[2] = true; scoringCurrent += 5; }
+                            if (!GetNotationStatus(MeloMelo_GameSettings.GetAirTrap).isCheck && !GetNotationStatus(MeloMelo_GameSettings.GetAirEnemy).isCheck && !maxCom_all[2]) { Debug.Log("Creation 5/4: YES"); maxCom_all[2] = true; scoringCurrent += 5; }
                             break;
                     }
                 }
                 else { noteCom_all = 0; }
-
-                // Mapped note
-                if (i != 0)
-                {
-                    noteCom++;
-
-                    switch (noteCom)
-                    {
-                        case 2:
-                            if (!maxCom[0]) { Debug.Log("Mapped 2/4: YES"); maxCom[0] = true; scoringCurrent+=10; }
-                            break;
-
-                        case 3:
-                            if (!maxCom[1]) { Debug.Log("Mapped 3/4: YES"); maxCom[1] = true; scoringCurrent+=12.2f; }
-                            break;
-
-                        case 4:
-                            if (!maxCom[2]) { Debug.Log("Mapped 4/4: YES"); maxCom[2] = true; scoringCurrent+=14; }
-                            break;
-
-                        case 5:
-                            if (!trapDetected2 && !enemyAir && !maxCom[3]) { Debug.Log("Mapped 5/4: YES"); maxCom[3] = true; scoringCurrent += 0; } // 2.5f
-                            break;
-                    }
-                }
-                else { noteCom = 0; }
             }
 
             difficultyLevel = 0.15f * scoringCurrent;
+            Debug.Log("Overall Level (" + difficultyMap + "): " + scoringCurrent + " => " + difficultyLevel);
 
-            if (SceneManager.GetActiveScene().name == "ArenaSelection" || SceneManager.GetActiveScene().name == "Music Selection Stage" + PlayerPrefs.GetString("Resoultion_Melo", string.Empty))
+            if (SceneManager.GetActiveScene().name == "Music Selection Stage")
+                SelectionMenu_Script.thisSelect.get_selection.UpdateData_Level(difficultyMap, difficultyLevel);
+        }
+
+        #region SETUP
+        private void GetScoringDetails()
+        {
+            // Combo complex value
+            if (get_combo_list == null) get_combo_list = new List<ComboArrayType>();
+            else get_combo_list.Clear();
+
+            if (get_combo_list != null)
             {
-                try { if (difficultyMap == 1) { SelectionMenu_Script.thisSelect.get_selection.UpdateData_Level(1, difficultyLevel); } }
-                catch { ArenaSelection_Script.thisArena.UpdateData_Level(1, difficultyLevel); }
+                get_combo_list.Add(new ComboArrayType("Old_Chart_Scoring", 1));
+                get_combo_list.Add(new ComboArrayType("New_Chart_Scoring", 1));
+                get_combo_list.Add(new ComboArrayType("Old_Chart_Scoring", 50));
+                get_combo_list.Add(new ComboArrayType("Old_Chart_Scoring", 100));
+                get_combo_list.Add(new ComboArrayType("Old_Chart_Scoring", 200));
+                get_combo_list.Add(new ComboArrayType("New_Chart_Scoring", 100));
+                get_combo_list.Add(new ComboArrayType("New_Chart_Scoring", 200));
+                get_combo_list.Add(new ComboArrayType("New_Chart_Scoring", 300));
+            }
 
-                try { if (difficultyMap == 2) { SelectionMenu_Script.thisSelect.get_selection.UpdateData_Level(2, difficultyLevel); } }
-                catch { ArenaSelection_Script.thisArena.UpdateData_Level(2, difficultyLevel); }
+            // Notation visible complex value
+            if (get_notation_visible == null) get_notation_visible = new List<SingleNotationChecker>();
+            else get_notation_visible.Clear();
 
-                try { if (difficultyMap == 3) { SelectionMenu_Script.thisSelect.get_selection.UpdateData_Level(3, difficultyLevel); } }
-                catch { ArenaSelection_Script.thisArena.UpdateData_Level(3, difficultyLevel); }
+            if (get_notation_visible != null)
+            {
+                get_notation_visible.Add(new SingleNotationChecker(MeloMelo_GameSettings.GetGroundEnemy, "1"));
+                get_notation_visible.Add(new SingleNotationChecker(MeloMelo_GameSettings.GetItem, "2"));
+                get_notation_visible.Add(new SingleNotationChecker(MeloMelo_GameSettings.GetGroundTrap, "3", 2));
+                get_notation_visible.Add(new SingleNotationChecker(MeloMelo_GameSettings.GetHeartPack, "4"));
+                get_notation_visible.Add(new SingleNotationChecker(MeloMelo_GameSettings.GetGroundAttack, "5"));
+                get_notation_visible.Add(new SingleNotationChecker(MeloMelo_GameSettings.GetAirEnemy, "6", 2));
+                get_notation_visible.Add(new SingleNotationChecker(MeloMelo_GameSettings.GetAirTrap, "7", 3));
+                get_notation_visible.Add(new SingleNotationChecker(MeloMelo_GameSettings.GetItem2, "8"));
+                get_notation_visible.Add(new SingleNotationChecker(MeloMelo_GameSettings.GetAirAttack, "9", 0.5f));
+                get_notation_visible.Add(new SingleNotationChecker(MeloMelo_GameSettings.GetSpecialItem, "93", -4.5f)); // <= This will reduce all current difficulty level
+
+                get_notation_visible.Add(new SingleNotationChecker(MeloMelo_GameSettings.GetFullAttack, 
+                    GetMultipleNotationIndex(new string[] { MeloMelo_GameSettings.GetGroundAttack, MeloMelo_GameSettings.GetAirAttack }), 2));
+
+                get_notation_visible.Add(new SingleNotationChecker(MeloMelo_GameSettings.GetAllTraps, 
+                    GetMultipleNotationIndex(new string[] { MeloMelo_GameSettings.GetGroundTrap, MeloMelo_GameSettings.GetAirTrap }), 1));
+            }
+
+            // Notation any of a kind pattern complex value
+            if (get_notation_list == null) get_notation_list = new List<NotationCombinationChecker>();
+            else get_notation_list.Clear();
+
+            if (get_notation_list != null)
+            {
+                get_notation_list.Add(new NotationCombinationChecker(MeloMelo_GameSettings.GetSpecialItem, "2,3,4", "0.5,1,1.5", true));
+                get_notation_list.Add(new NotationCombinationChecker(MeloMelo_GameSettings.GetGroundEnemy, "3,4", "2,5"));
+                get_notation_list.Add(new NotationCombinationChecker(MeloMelo_GameSettings.GetAllTraps, "3,4", "3,8"));
+            }
+
+            // Notation mix element pattern complex value
+            string checkFifthMixNotIncluded = GetNotationStatus(MeloMelo_GameSettings.GetAirTrap).value + "," + GetNotationStatus(MeloMelo_GameSettings.GetAirEnemy).value;
+            get_notation_mixElement = new NotationMixCombinationChecker(
+                new int[] { 3, 4, 5 }, 
+                new float[] { 10.2f, 14.5f, 0 }, 
+                new string[] { string.Empty, string.Empty, checkFifthMixNotIncluded }
+                );
+
+            // Notation map length pattern complex value
+            if (get_notation_visible != null)
+            {
+                string[] all_element_id = { 
+                    MeloMelo_GameSettings.GetGroundEnemy, 
+                    MeloMelo_GameSettings.GetItem, 
+                    MeloMelo_GameSettings.GetGroundTrap, 
+                    MeloMelo_GameSettings.GetHeartPack,
+                    MeloMelo_GameSettings.GetGroundAttack,
+                    MeloMelo_GameSettings.GetAirEnemy,
+                    MeloMelo_GameSettings.GetAirTrap,
+                    MeloMelo_GameSettings.GetItem2,
+                    MeloMelo_GameSettings.GetAirAttack,
+                    MeloMelo_GameSettings.GetSpecialItem
+                };
+
+                string extra_notation_value = GetMultipleCreationNotationIndex() != string.Empty ? ("," + GetMultipleCreationNotationIndex()) : string.Empty;
+                string get_allValue_notation = GetMultipleNotationIndex(all_element_id) + extra_notation_value;
+
+                get_notation_visible.Add(new SingleNotationChecker("All_Primary_Element", GetMultipleNotationIndex(all_element_id)));
+                get_notation_visible.Add(new SingleNotationChecker("All_Mapped_Element", get_allValue_notation));
+
+                if (get_notation_list != null) get_notation_list.Add(new NotationCombinationChecker("All_Mapped_Element", "2,3,4,5", "10,12.2,14,0"));
+                Debug.Log("Extra Notation Index: " + (extra_notation_value != string.Empty ? extra_notation_value : "-None-"));
             }
         }
 
         // Score Intillization: Function
-        protected void LevelSetup_Program(int[] score_database, int[] score_database2)
+        private void LevelSetup_Program(int difficulty_id, int[] score_database)
         {
-            for (int i = 0; i < 2; i++)
+            PlayerPrefs.DeleteKey("EnemyTakeCounter_" + difficulty_id);
+            PlayerPrefs.DeleteKey("TrapsTakeCounter_" + difficulty_id);
+            PlayerPrefs.DeleteKey("Total_Notation_Count" + difficulty_id);
+
+            ScanLevelDesign_ForDifficultyLevel(difficulty_id, score_database, true);
+        }
+        #endregion
+
+        #region MAIN
+        private void LevelEditorPrompt(int trapCount, int enemyCount)
+        {
+            try
             {
-                PlayerPrefs.DeleteKey("EnemyTakeCounter_" + (i + 1));
-                PlayerPrefs.DeleteKey("TrapsTakeCounter_" + (i + 1));
+                if (GameManager.thisManager.DeveloperMode)
+                {
+                    Debug.Log("Traps: " + trapCount);
+                    Debug.Log("Enemy: " + enemyCount);
+                    Debug.Log("Combo: " + maxCombo);
+                }
+                else
+                {
+                    Debug.Log("Total Combo: " + maxCombo);
+                }
+            }
+            catch { }
+        }
+        #endregion
+
+        #region COMPONENT
+        private float GetCombo_LevelComplextity(string groupTitle, int combo_reference)
+        {
+            float totalComplextity = 0;
+            const float complexitityValue = 7.2f;
+
+            if (get_combo_list != null)
+            {
+                foreach (ComboArrayType combo in get_combo_list)
+                {
+                    if (groupTitle == combo.comboGroup && combo_reference >= combo.value)
+                        totalComplextity += complexitityValue;
+                }
             }
 
-            // Normal
-            for (int i = 0; i < score_database.Length; i++)
-            {
-                if (score_database[i] == 1 || score_database[i] == 6) { EnemyCounter++; }
-                if (score_database[i] == 3 || score_database[i] == 7) { TrapCounter++; }
-                if (score_database[i] != 0 && score_database[i] < 10) { maxCombo++; }
-                if (score_database[i] == 93) { maxCombo++; }
-
-                // Pattern Charting
-                NewChartPatternSearch(score_database, i);
-                NewChartPatternModded(score_database, i);
-            }
-
-            PlayerPrefs.SetInt("EnemyTakeCounter_1", EnemyCounter);
-            PlayerPrefs.SetInt("TrapsTakeCounter_1", TrapCounter);
-
-            SetUp(1, EnemyCounter, TrapCounter, maxCombo, score_database);
-            ResetCounter();
-
-            // Hard
-            for (int i = 0; i < score_database2.Length; i++)
-            {
-                if (score_database2[i] == 1 || score_database2[i] == 6) { EnemyCounter++; }
-                if (score_database2[i] == 3 || score_database2[i] == 7) { TrapCounter++; }
-                if (score_database2[i] != 0 && score_database2[i] < 10) { maxCombo++; }
-                if (score_database2[i] == 93) { maxCombo++; }
-
-                // Pattern Charting
-                NewChartPatternSearch(score_database2, i);
-                NewChartPatternModded(score_database2, i);
-            }
-
-            PlayerPrefs.SetInt("EnemyTakeCounter_2", EnemyCounter);
-            PlayerPrefs.SetInt("TrapsTakeCounter_2", TrapCounter);
-
-            SetUp(2, EnemyCounter, TrapCounter, maxCombo, score_database2);
-            ResetCounter();
+            return totalComplextity;
         }
 
-        protected void NewChartPatternSearch(int[] score, int currentTick)
+        private float GetVisible_LevelComplextity(int[] data, string visibleType)
         {
-            if (SelectionMenu_Script.thisSelect != null &&
-                SelectionMenu_Script.thisSelect.get_selection.get_form.NewChartSystem &&
-                SelectionMenu_Script.thisSelect.get_selection.get_form.addons3 != null)
+            float totalComplextity = 0;
+
+            if (get_notation_visible != null)
             {
-                foreach (PatternCharting chart in SelectionMenu_Script.thisSelect.get_selection.get_form.addons3)
+                foreach (SingleNotationChecker checkList in get_notation_visible)
+                {
+                    if (checkList.notationType == visibleType)
+                    {
+                        string[] numberOfType = checkList.value.Split(",");
+
+                        if (numberOfType.Length > 1)
+                        {
+                            if (MultiNotation_AND_Check(numberOfType, data))
+                            {
+                                totalComplextity += checkList.points;
+                                checkList.HasChecked(true);
+                            }
+                        }
+                        else
+                        {
+                            int target = int.Parse(checkList.value);
+                            if (data.Contains(target))
+                            {
+                                totalComplextity += checkList.points;
+                                checkList.HasChecked(true);
+                            }
+                        }
+
+                        break;
+                    }
+                }
+
+                if (GetNotationStatus(visibleType).points > 0)
+                    Debug.Log(visibleType + ": " + (GetNotationStatus(visibleType).isCheck ? "YES | " + totalComplextity + "p" : "NO"));
+            }
+
+            return totalComplextity;
+        }
+
+        private SingleNotationChecker GetNotationStatus(string notationType)
+        {
+            if (get_notation_visible != null)
+            {
+                foreach (SingleNotationChecker notation in get_notation_visible)
+                {
+                    if (notation.notationType == notationType) return notation;
+                }
+            }
+
+            return new SingleNotationChecker(string.Empty, "-1");
+        }
+
+        private string GetMultipleNotationIndex(string[] notationList)
+        {
+            string indexWritten = string.Empty;
+
+            for (int notation = 0; notation < notationList.Length; notation++)
+                indexWritten += GetNotationStatus(notationList[notation]).value + 
+                    (notation + 1 < notationList.Length ? "," : string.Empty);
+
+            return indexWritten;
+        }
+
+        private string GetMultipleCreationNotationIndex()
+        {
+            List<string> listOfChartIndex = new List<string>();
+            string indexWritten = string.Empty;
+
+            if (SceneManager.GetActiveScene().name == "Music Selection Stage")
+            {
+                // Multiple Charting
+                indexWritten = WrittenNewChartIndex(
+                    SelectionMenu_Script.thisSelect.get_selection.get_form.UltimateAddons && SelectionMenu_Script.thisSelect.get_selection.get_form.addons1 != null 
+                    && SelectionMenu_Script.thisSelect.get_selection.get_form.addons1.Length > 0
+                    , SelectionMenu_Script.thisSelect.get_selection.get_form.addons1, patternList => patternList.SecondaryIndex
+                    );
+
+                if (listOfChartIndex != null && indexWritten != string.Empty) listOfChartIndex.Add(indexWritten);
+
+                // Pattern Charting
+                indexWritten = WrittenNewChartIndex(
+                    SelectionMenu_Script.thisSelect.get_selection.get_form.NewChartSystem && SelectionMenu_Script.thisSelect.get_selection.get_form.addons3 != null
+                    && SelectionMenu_Script.thisSelect.get_selection.get_form.addons3.Length > 0
+                    , SelectionMenu_Script.thisSelect.get_selection.get_form.addons3, patternList => patternList.SecondaryIndex
+                    );
+
+                if (listOfChartIndex != null && indexWritten != string.Empty) listOfChartIndex.Add(indexWritten);
+
+                // Modified Pattern Charting
+                indexWritten = WrittenNewChartIndex(
+                    SelectionMenu_Script.thisSelect.get_selection.get_form.NewChartSystem && SelectionMenu_Script.thisSelect.get_selection.get_form.addons3b != null
+                    && SelectionMenu_Script.thisSelect.get_selection.get_form.addons3b.Length > 0
+                    , SelectionMenu_Script.thisSelect.get_selection.get_form.addons3b, patternList => patternList.newIndex
+                    );
+
+                if (listOfChartIndex != null && indexWritten != string.Empty) listOfChartIndex.Add(indexWritten);
+            }
+            else
+            {
+                // Multiple Charting
+                indexWritten = WrittenNewChartIndex(
+                    BeatConductor.thisBeat.Music_Database.UltimateAddons && BeatConductor.thisBeat.Music_Database.addons1 != null
+                    && BeatConductor.thisBeat.Music_Database.addons1.Length > 0
+                    , BeatConductor.thisBeat.Music_Database.addons1, patternList => patternList.SecondaryIndex
+                    );
+
+                if (listOfChartIndex != null && indexWritten != string.Empty) listOfChartIndex.Add(indexWritten);
+
+                // Pattern Charting
+                indexWritten = WrittenNewChartIndex(
+                    BeatConductor.thisBeat.Music_Database.NewChartSystem && BeatConductor.thisBeat.Music_Database.addons3 != null
+                    && BeatConductor.thisBeat.Music_Database.addons3.Length > 0
+                    , BeatConductor.thisBeat.Music_Database.addons3, patternList => patternList.SecondaryIndex
+                    );
+
+                if (listOfChartIndex != null && indexWritten != string.Empty) listOfChartIndex.Add(indexWritten);
+
+                // Modified Pattern Charting
+                indexWritten = WrittenNewChartIndex(
+                    BeatConductor.thisBeat.Music_Database.NewChartSystem && BeatConductor.thisBeat.Music_Database.addons3b != null
+                    && BeatConductor.thisBeat.Music_Database.addons3b.Length > 0
+                    , BeatConductor.thisBeat.Music_Database.addons3b, patternList => patternList.newIndex
+                    );
+
+                if (listOfChartIndex != null && indexWritten != string.Empty) listOfChartIndex.Add(indexWritten);
+            }
+
+            // Final written all chart index
+            if (listOfChartIndex != null)
+            {
+                indexWritten = string.Empty;
+
+                for (int chartId = 0; chartId < listOfChartIndex.ToArray().Length; chartId++)
+                    indexWritten += listOfChartIndex[chartId] + (chartId + 1 < listOfChartIndex.ToArray().Length ? "," : string.Empty);
+            }
+
+            return indexWritten;
+        }
+
+        private string WrittenNewChartIndex<AnyChartType>(bool condition, AnyChartType[] chartPatternList, Func<AnyChartType, int> value)
+        {
+            string tempWrittenIndex = string.Empty;
+
+            if (condition)
+            {
+                AnyChartType[] tempPatternList = chartPatternList;
+
+                for (int id = 0; id < tempPatternList.Length; id++)
+                    tempWrittenIndex += value(tempPatternList[id]) + (id + 1 < tempPatternList.Length ? "," : string.Empty);
+            }
+
+            return tempWrittenIndex;
+        }
+
+        private void ScanLevelDesign_ForDifficultyLevel(int difficulty_id, int[] score_data, bool extraDifficultyEnable = false)
+        {
+            // Gather info scoring assets for uses
+            GetScoringDetails();
+
+            // Calculate object count from score_data
+            for (int i = 0; i < score_data.Length; i++)
+            {
+                if (score_data[i] == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundEnemy).value) ||
+                    score_data[i] == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirEnemy).value))
+                { EnemyCounter++; }
+
+                if (score_data[i] == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundTrap).value) ||
+                    score_data[i] == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirTrap).value))
+                { TrapCounter++; }
+
+                if (MultiNotation_OR_Check(GetNotationStatus("All_Primary_Element").value.Split(','), score_data[i]))
+                { maxCombo++; }
+
+                // Pattern Charting
+                if (SceneManager.GetActiveScene().name == "Music Selection Stage")
+                {
+                    bool isPatternChartingEnable = SelectionMenu_Script.thisSelect != null && SelectionMenu_Script.thisSelect.get_selection.get_form.NewChartSystem &&
+                                                SelectionMenu_Script.thisSelect.get_selection.get_form.addons3 != null;
+
+                    NewChartPatternSearch(score_data, i, isPatternChartingEnable, SelectionMenu_Script.thisSelect.get_selection.get_form.addons3.ToArray());
+
+                    isPatternChartingEnable = SelectionMenu_Script.thisSelect != null && SelectionMenu_Script.thisSelect.get_selection.get_form.NewChartSystem &&
+                                                SelectionMenu_Script.thisSelect.get_selection.get_form.addons3b != null;
+
+                    NewChartPatternModded(score_data, i, isPatternChartingEnable, SelectionMenu_Script.thisSelect.get_selection.get_form.addons3.ToArray(), SelectionMenu_Script.thisSelect.get_selection.get_form.addons3b.ToArray());
+
+                    isPatternChartingEnable = SelectionMenu_Script.thisSelect != null && SelectionMenu_Script.thisSelect.get_selection.get_form.UltimateAddons &&
+                                                SelectionMenu_Script.thisSelect.get_selection.get_form.addons1 != null;
+
+                    if (extraDifficultyEnable) NewChartMultipleSearch(score_data, i, isPatternChartingEnable, SelectionMenu_Script.thisSelect.get_selection.get_form.addons1);
+                }
+                else
+                {
+                    bool isPatternChartingEnable = BeatConductor.thisBeat != null && BeatConductor.thisBeat.Music_Database.NewChartSystem &&
+                                                BeatConductor.thisBeat.Music_Database.addons3 != null;
+
+                    NewChartPatternSearch(score_data, i, isPatternChartingEnable, BeatConductor.thisBeat.Music_Database.addons3.ToArray());
+
+                    isPatternChartingEnable = BeatConductor.thisBeat != null && BeatConductor.thisBeat.Music_Database.NewChartSystem &&
+                                                BeatConductor.thisBeat.Music_Database.addons3b != null;
+
+                    NewChartPatternModded(score_data, i, isPatternChartingEnable, BeatConductor.thisBeat.Music_Database.addons3.ToArray(), BeatConductor.thisBeat.Music_Database.addons3b.ToArray());
+
+                    isPatternChartingEnable = BeatConductor.thisBeat != null && BeatConductor.thisBeat.Music_Database.UltimateAddons &&
+                                                BeatConductor.thisBeat.Music_Database.addons1 != null;
+
+                    if (extraDifficultyEnable) NewChartMultipleSearch(score_data, i, isPatternChartingEnable, BeatConductor.thisBeat.Music_Database.addons1);
+                }
+            }
+
+            CreateAllNotationCache();
+            CreateEntriesCache(difficulty_id, EnemyCounter, TrapCounter, maxCombo);
+
+            SetUp(difficulty_id, EnemyCounter, TrapCounter, maxCombo, score_data);
+            ResetCounter();
+        }
+        #endregion
+
+        #region MISC 
+        // Extra: Reset Counter
+        private bool MultiNotation_AND_Check(string[] value, int[] data)
+        {
+            foreach (string val in value)
+            {
+                int target = int.Parse(val);
+                if (!data.Contains(target))
+                    return false;
+            }
+            return true;
+        }
+
+        private bool MultiNotation_OR_Check(string[] value, int data)
+        {
+            foreach (string val in value)
+            {
+                int target = int.Parse(val);
+                if (data == target)
+                    return true;
+            }
+            return false;
+        }
+
+        private void ResetCounter()
+        {
+            EnemyCounter = 0;
+            TrapCounter = 0;
+            maxCombo = 0;
+        }
+
+        private void CreateAllNotationCache()
+        {
+            if (get_notation_visible != null)
+            {
+                foreach (SingleNotationChecker notation in get_notation_visible)
+                {
+                    string[] value = notation.value.Split(',');
+
+                    if (value.Length == 1)
+                    {
+                        PlayerPrefs.SetInt(notation.notationType, int.Parse(notation.value));
+                        Debug.Log("Notation Cache Added: " + notation.notationType + " => " + PlayerPrefs.GetInt(notation.notationType));
+                    }
+                }
+            }
+        }
+
+        private void CreateEntriesCache(int difficulty_id, int enemyCount, int trapCount, int notationCount)
+        {
+            PlayerPrefs.SetInt("EnemyTakeCounter_" + difficulty_id, enemyCount);
+            PlayerPrefs.SetInt("TrapsTakeCounter_" + difficulty_id, trapCount);
+            PlayerPrefs.SetInt("Total_Notation_Count" + difficulty_id, notationCount);
+        }
+        #endregion
+
+        #region MISC (NEW CHART ADDONS)
+        private void NewChartPatternSearch(int[] score, int currentTick, bool condition, PatternCharting[] chartList)
+        {
+            if (condition)
+            {
+                foreach (PatternCharting chart in chartList)
                 {
                     if (score[currentTick] == chart.SecondaryIndex)
                     {
@@ -944,8 +1402,16 @@ namespace MeloMelo_LevelBuilder
                                 {
                                     maxCombo++;
 
-                                    if (col.PrimaryNote == 1 || col.PrimaryNote == 6) { EnemyCounter++; }
-                                    if (col.PrimaryNote == 3 || col.PrimaryNote == 7) { TrapCounter++; }
+                                    if (get_notation_visible != null)
+                                    {
+                                        if (col.PrimaryNote == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundEnemy).value) ||
+                                        col.PrimaryNote == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirEnemy).value))
+                                        { EnemyCounter++; }
+
+                                        if (col.PrimaryNote == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundTrap).value) ||
+                                            col.PrimaryNote == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirTrap).value))
+                                        { TrapCounter++; }
+                                    }
                                 }
                             }
                         }
@@ -954,17 +1420,15 @@ namespace MeloMelo_LevelBuilder
             }
         }
 
-        private void NewChartPatternModded(int[] score, int currentTick)
+        private void NewChartPatternModded(int[] score, int currentTick, bool condition, PatternCharting[] chartList_orginal, ChartModification[] chartList_modded)
         {
-            if (SelectionMenu_Script.thisSelect != null &&
-                SelectionMenu_Script.thisSelect.get_selection.get_form.NewChartSystem &&
-                SelectionMenu_Script.thisSelect.get_selection.get_form.addons3b != null)
+            if (condition)
             {
-                foreach (ChartModification mod in SelectionMenu_Script.thisSelect.get_selection.get_form.addons3b)
+                foreach (ChartModification mod in chartList_modded)
                 {
                     if (score[currentTick] == mod.newIndex)
                     {
-                        foreach (PatternCharting chart in SelectionMenu_Script.thisSelect.get_selection.get_form.addons3)
+                        foreach (PatternCharting chart in chartList_orginal)
                         {
                             if (mod.SecondaryNote == chart.SecondaryIndex)
                             {
@@ -976,8 +1440,16 @@ namespace MeloMelo_LevelBuilder
                                         {
                                             maxCombo++;
 
-                                            if (col.PrimaryNote == 1 || col.PrimaryNote == 6) { EnemyCounter++; }
-                                            if (col.PrimaryNote == 3 || col.PrimaryNote == 7) { TrapCounter++; }
+                                            if (get_notation_visible != null)
+                                            {
+                                                if (col.PrimaryNote == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundEnemy).value) ||
+                                                col.PrimaryNote == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirEnemy).value))
+                                                { EnemyCounter++; }
+
+                                                if (col.PrimaryNote == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundTrap).value) ||
+                                                    col.PrimaryNote == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirTrap).value))
+                                                { TrapCounter++; }
+                                            }
                                         }
                                     }
                                 }
@@ -988,76 +1460,70 @@ namespace MeloMelo_LevelBuilder
             }
         }
 
-        protected void NewChartMultipleSearch(int[] score, int currentTick)
+        private void NewChartMultipleSearch(int[] score, int currentTick, bool condition, MultipleCharting[] chartList)
         {
-            if (SelectionMenu_Script.thisSelect.get_selection.get_form.NewChartSystem && 
-                SelectionMenu_Script.thisSelect.get_selection.get_form.addons1 != null)
+            if (condition)
             {
-                foreach (MultipleCharting specialChart in SelectionMenu_Script.thisSelect.get_selection.get_form.addons1)
+                foreach (MultipleCharting specialChart in chartList)
                 {
                     if (score[currentTick] == specialChart.SecondaryIndex)
                     {
-                        // All Notes
-                        if (specialChart.FirstLane != 0) maxCombo++;
-                        if (specialChart.SecondLane != 0) maxCombo++;
-                        if (specialChart.ThirdLane != 0) maxCombo++;
-                        if (specialChart.FourthLane != 0) maxCombo++;
-                        if (specialChart.FifthLane != 0) maxCombo++;
+                        if (get_notation_visible != null)
+                        {
+                            // All Notes
+                            if (MultiNotation_OR_Check(GetNotationStatus("All_Primary_Element").value.Split(','), specialChart.FirstLane)) maxCombo++;
+                            if (MultiNotation_OR_Check(GetNotationStatus("All_Primary_Element").value.Split(','), specialChart.SecondLane)) maxCombo++;
+                            if (MultiNotation_OR_Check(GetNotationStatus("All_Primary_Element").value.Split(','), specialChart.ThirdLane)) maxCombo++;
+                            if (MultiNotation_OR_Check(GetNotationStatus("All_Primary_Element").value.Split(','), specialChart.FourthLane)) maxCombo++;
+                            if (MultiNotation_OR_Check(GetNotationStatus("All_Primary_Element").value.Split(','), specialChart.FifthLane)) maxCombo++;
 
-                        // Enemys
-                        if (specialChart.FirstLane == 1 || specialChart.FirstLane == 6) { EnemyCounter++; }
-                        if (specialChart.SecondLane == 1 || specialChart.SecondLane == 6) { EnemyCounter++; }
-                        if (specialChart.ThirdLane == 1 || specialChart.ThirdLane == 6) { EnemyCounter++; }
-                        if (specialChart.FourthLane == 1 || specialChart.FourthLane == 6) { EnemyCounter++; }
-                        if (specialChart.FifthLane == 1 || specialChart.FifthLane == 6) { EnemyCounter++; }
+                            // Enemys
+                            if (specialChart.FirstLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundEnemy).value) ||
+                                specialChart.FirstLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirEnemy).value))
+                            { EnemyCounter++; }
 
-                        // Traps
-                        if (specialChart.FirstLane == 3 || specialChart.FirstLane == 7) { TrapCounter++; }
-                        if (specialChart.SecondLane == 3 || specialChart.SecondLane == 7) { TrapCounter++; }
-                        if (specialChart.ThirdLane == 3 || specialChart.ThirdLane == 7) { TrapCounter++; }
-                        if (specialChart.FourthLane == 3 || specialChart.FourthLane == 7) { TrapCounter++; }
-                        if (specialChart.FifthLane == 3 || specialChart.FifthLane == 7) { TrapCounter++; }
+                            if (specialChart.SecondLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundEnemy).value) ||
+                                specialChart.SecondLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirEnemy).value))
+                            { EnemyCounter++; }
+
+                            if (specialChart.ThirdLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundEnemy).value) ||
+                                specialChart.ThirdLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirEnemy).value))
+                            { EnemyCounter++; }
+
+                            if (specialChart.FourthLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundEnemy).value) ||
+                                specialChart.FourthLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirEnemy).value))
+                            { EnemyCounter++; }
+
+                            if (specialChart.FifthLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundEnemy).value) ||
+                                specialChart.FifthLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirEnemy).value))
+                            { EnemyCounter++; }
+
+                            // Traps
+                            if (specialChart.FirstLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundTrap).value) ||
+                                specialChart.FirstLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirTrap).value))
+                            { TrapCounter++; }
+
+                            if (specialChart.SecondLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundTrap).value) ||
+                                specialChart.SecondLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirTrap).value))
+                            { TrapCounter++; }
+
+                            if (specialChart.ThirdLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundTrap).value) ||
+                                specialChart.ThirdLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirTrap).value))
+                            { TrapCounter++; }
+
+                            if (specialChart.FourthLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundTrap).value) ||
+                                specialChart.FourthLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirTrap).value))
+                            { TrapCounter++; }
+
+                            if (specialChart.FifthLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetGroundTrap).value) ||
+                                specialChart.FifthLane == int.Parse(GetNotationStatus(MeloMelo_GameSettings.GetAirTrap).value))
+                            { TrapCounter++; }
+                        }
                     }
                 }
             }
         }
-
-        protected void LevelSetup_ExtraProgram(int[] score_database)
-        {
-            PlayerPrefs.DeleteKey("EnemyTakeCounter_3");
-            PlayerPrefs.DeleteKey("TrapsTakeCounter_3");
-
-            // Ultimate
-            for (int i = 0; i < score_database.Length; i++)
-            {
-                if (score_database[i] == 1 || score_database[i] == 6) { EnemyCounter++; }
-                if (score_database[i] == 3 || score_database[i] == 7) { TrapCounter++; }
-                if (score_database[i] != 0 && score_database[i] < 10) { maxCombo++; }
-                if (score_database[i] == 93) { maxCombo++; }
-
-                // Pattern Charting
-                NewChartPatternSearch(score_database, i);
-                NewChartPatternModded(score_database, i);
-
-                // Count max combo of pattern note
-                NewChartMultipleSearch(score_database, i);
-            }
-
-            Debug.Log("MaxCombo (Level Editor): " + maxCombo);
-            PlayerPrefs.SetInt("EnemyTakeCounter_3", EnemyCounter);
-            PlayerPrefs.SetInt("TrapsTakeCounter_3", TrapCounter);
-
-            SetUp(3, EnemyCounter, TrapCounter, maxCombo, score_database);
-            ResetCounter();
-        }
-
-        // Extra: Reset Counter
-        protected void ResetCounter()
-        {
-            EnemyCounter = 0;
-            TrapCounter = 0;
-            maxCombo = 0;
-        }
+        #endregion
     }
 
     // Unit: Scoring_Control Function
@@ -1146,7 +1612,7 @@ namespace MeloMelo_LevelBuilder
 namespace MeloMelo_Local
 {
     [System.Serializable]
-    struct ScoreDatabase
+    public struct ScoreDatabase
     {
         public string user;
         public string title;
@@ -1163,7 +1629,7 @@ namespace MeloMelo_Local
     }
 
     [System.Serializable]
-    struct PointDatabase
+    public struct PointDatabase
     {
         public string user;
         public string title;
@@ -1179,7 +1645,7 @@ namespace MeloMelo_Local
     }
 
     [System.Serializable]
-    struct PlayerSettingsDatabase
+    public struct PlayerSettingsDatabase
     {
         public bool HTP;
         public bool Control_N;
@@ -1205,6 +1671,14 @@ namespace MeloMelo_Local
         public bool allowDamageIndicatorOnAlly;
         public bool allowDamageIndicatorOnEnemy;
 
+        public int maxFrameLimit;
+        public int performanceOptimize;
+        public int unitDisplayHealthOnCharacter;
+        public int unitDisplayHealthOnEnemy;
+
+        public bool sppedMeterOption;
+        public bool fancyMovementOption;
+
         public bool autoSaveGameProgress;
         public bool autoSavePlaySettings;
         public bool autoSaveGameSettings;
@@ -1229,6 +1703,9 @@ namespace MeloMelo_Local
         public int JudgeMeterSetup;
         public int JudgeFeedback_TypeA;
         public int JudgeFeedback_TypeB;
+
+        public int audio_offset;
+        public int judge_offset;
 
         public PlayerGameplaySettings GetSettingsData(string format)
         {
@@ -1257,7 +1734,7 @@ namespace MeloMelo_Local
     }
 
     [System.Serializable]
-    struct BattleProgressDatabase
+    public struct BattleProgressDatabase
     {
         public string user;
         public string title;
@@ -1280,6 +1757,7 @@ namespace MeloMelo_Local
         public int playedCount;
         public int creditValue;
         public int magicStoneValue;
+        public int submittedMapFragment;
 
         public ProfileProgressDatabase GetProfileData(string format)
         {
@@ -1302,7 +1780,7 @@ namespace MeloMelo_Local
     }
 
     [System.Serializable]
-    struct BattleUnitDatabase
+    public struct BattleUnitDatabase
     {
         public string id;
         public int level;
@@ -1336,7 +1814,7 @@ namespace MeloMelo_Local
     }
 
     [System.Serializable]
-    struct SkillUnitDatabase
+    public struct SkillUnitDatabase
     {
         public string skillName;
         public int grade;
@@ -1418,7 +1896,7 @@ namespace MeloMelo_Local
             LocalPlayerIdentification user = new LocalPlayerIdentification();
             user.playerId = this.user;
 
-            if (uniqueId == string.Empty) user.uniqueId = Random.Range(99, 999) + "_T2024_t&" + Random.Range(5, 55);
+            if (uniqueId == string.Empty) user.uniqueId = "1111";// Random.Range(99, 999) + "_T2024_t&" + Random.Range(5, 55);
             else user.uniqueId = uniqueId;
 
             // Process for checking new entry title
@@ -1631,10 +2109,12 @@ namespace MeloMelo_Local
             Debug.Log("Registered_User (Load_Database): " + user);
         }
 
-        public bool LoadProgress()
+        public async Task<List<ScoreDatabase>> PreLoading_ScoreData()
         {
-            if (File.Exists(directory + combinePath))
+            return await Task.Run(() =>
             {
+                if (!File.Exists(directory + combinePath)) return new List<ScoreDatabase>();
+
                 List<ScoreDatabase> dataArray = new List<ScoreDatabase>();
 
                 foreach (string s in GetFormatToList())
@@ -1643,36 +2123,45 @@ namespace MeloMelo_Local
                         dataArray.Add(new ScoreDatabase().GetTrackData(s));
                 }
 
-                foreach (ScoreDatabase data in dataArray)
-                {
-                    if (user == data.user)
-                    {
-                        // Score is taken to the highest
-                        if (data.score >= PlayerPrefs.GetInt(data.title + "_score" + data.difficulty, 0))
-                            PlayerPrefs.SetInt(data.title + "_score" + data.difficulty, (int)data.score);
-
-                        // Battle Status update to the latest
-                        if (data.remark <= PlayerPrefs.GetInt(data.title + "_BattleRemark_" + data.difficulty, 6))
-                            PlayerPrefs.SetInt(data.title + "_BattleRemark_" + data.difficulty, data.remark);
-
-                        // ???
-                        if (PlayerPrefs.GetInt(data.title + "_score" + data.difficulty, 0) >= 1000000)
-                            PlayerPrefs.SetString(data.title + "_score" + data.difficulty + "_SS", "T");
-
-                        // Reduce score to 0 when defeated
-                        if (PlayerPrefs.GetInt(data.title + "_BattleRemark_" + data.difficulty) == 5)
-                            PlayerPrefs.SetInt(data.title + "_score" + data.difficulty, 0);
-                    }
-                }
-            }
-
-            return true;
+                return dataArray;
+            });
         }
 
-        public bool LoadPointProgress()
+        public IEnumerator PostLoading_ScoreData(ScoreDatabase[] preLoaded_scoreData)
         {
-            if (File.Exists(directory + combinePath))
+            if (preLoaded_scoreData != null)
             {
+                int maxLoadLimit = 50;
+                int currentLoadIndex = 0;
+
+                foreach (ScoreDatabase encode_data in preLoaded_scoreData)
+                {
+                    if (user == encode_data.user)
+                    {
+                        // Score is taken to the highest
+                        if (encode_data.score >= PlayerPrefs.GetInt(encode_data.title + "_score" + encode_data.difficulty, 0))
+                            PlayerPrefs.SetInt(encode_data.title + "_score" + encode_data.difficulty, (int)encode_data.score);
+
+                        // Battle Status update to the latest
+                        if (encode_data.remark <= PlayerPrefs.GetInt(encode_data.title + "_BattleRemark_" + encode_data.difficulty, 6))
+                            PlayerPrefs.SetInt(encode_data.title + "_BattleRemark_" + encode_data.difficulty, encode_data.remark);
+
+                        // Reduce score to 0 when defeated
+                        if (PlayerPrefs.GetInt(encode_data.title + "_BattleRemark_" + encode_data.difficulty) == 5)
+                            PlayerPrefs.SetInt(encode_data.title + "_score" + encode_data.difficulty, 0);
+                    }
+
+                    currentLoadIndex++;
+                    if (currentLoadIndex % maxLoadLimit == 0) yield return null;
+                }
+            }
+        }
+
+        public async Task<List<PointDatabase>> PreLoading_PointData()
+        {
+            return await Task.Run(() =>
+            {
+                if (!File.Exists(directory + combinePath)) return new List<PointDatabase>();
                 List<PointDatabase> dataArray = new List<PointDatabase>();
 
                 foreach (string s in GetFormatToList())
@@ -1681,21 +2170,33 @@ namespace MeloMelo_Local
                         dataArray.Add(new PointDatabase().GetTrackData(s));
                 }
 
-                foreach (PointDatabase data in dataArray)
-                {
-                    if (user == data.user && data.current >= PlayerPrefs.GetInt(data.title + "_point" + data.difficulty, 0))
-                    {
-                        // Fomrat: User, Difficulty, Points, MaxPoints
-                        PlayerPrefs.SetInt(data.title + "_point" + data.difficulty, data.current);
-                        PlayerPrefs.SetInt(data.title + "_maxPoint" + data.difficulty, data.max);
-                    }
-                }
-            }
-
-            return true;
+                return dataArray;
+            });
         }
 
-        public bool LoadAccountSettings()
+        public IEnumerator PostLoading_PointData(PointDatabase[] preLoaded_pointData)
+        {
+            if (preLoaded_pointData != null)
+            {
+                int maxLoadLimit = 50;
+                int currentLoadIndex = 0;
+
+                foreach (PointDatabase encode_data in preLoaded_pointData)
+                {
+                    if (encode_data.current >= PlayerPrefs.GetInt(encode_data.title + "_point" + encode_data.difficulty, 0))
+                    {
+                        // Fomrat: User, Difficulty, Points, MaxPoints
+                        PlayerPrefs.SetInt(encode_data.title + "_point" + encode_data.difficulty, encode_data.current);
+                        PlayerPrefs.SetInt(encode_data.title + "_maxPoint" + encode_data.difficulty, encode_data.max);
+                    }
+
+                    currentLoadIndex++;
+                    if (currentLoadIndex % maxLoadLimit == 0) yield return null;
+                }
+            }
+        }
+
+        public void LoadAccountSettings()
         {
             if (File.Exists(directory + combinePath))
             {
@@ -1715,20 +2216,59 @@ namespace MeloMelo_Local
 
                 PlayerPrefs.SetFloat(MeloMelo_PlayerSettings.GetBGM_ValueKey, data.bgm_audio_data);
                 PlayerPrefs.SetFloat(MeloMelo_PlayerSettings.GetSE_ValueKey, data.se_audio_data);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAudioMute_ValueKey, data.audio_mute_data ? 1 : 0);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAudioVoice_ValueKey, data.audio_voice_data ? 1 : 0);
+
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, data.allowIntefaceAnimation ? 1 : 0);
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetCharacterAnimation_ValueKey, data.allowCharacterAnimation ? 1 : 0);
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetEnemyAnimation_ValueKey, data.allowEnemyAnimation ? 1 : 0);
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetDamageIndicatorA_ValueKey, data.allowDamageIndicatorOnAlly ? 1 : 0);
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey, data.allowDamageIndicatorOnEnemy ? 1 : 0);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetFrameRateLimit_ValueKey, data.maxFrameLimit);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPeformanceOptimize_ValueKey, data.performanceOptimize);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetUnitHealthOnCharacter_ValueKey, data.unitDisplayHealthOnCharacter);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetUnitHealthOnEnemy_ValueKey, data.unitDisplayHealthOnEnemy);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetSpeedMeter_ValueKey, data.sppedMeterOption ? 0 : 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetFacnyMovement_ValueKey, data.fancyMovementOption ? 0 : 1);
+
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSaveProgress_ValueKey, data.autoSaveGameProgress ? 1 : 0);
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSaveGameSettings_ValueKey, data.autoSaveGameSettings ? 1 : 0);
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSavePlaySettings_ValueKey, data.autoSavePlaySettings ? 1 : 0);
             }
+            else
+            {
+                PlayerPrefs.SetString("HowToPlay_Notice", "T");
+                PlayerPrefs.SetString("Control_notice", "T");
+                PlayerPrefs.SetString("BattleSetup_Guide", "T");
 
-            return true;
+                PlayerPrefs.SetFloat(MeloMelo_PlayerSettings.GetBGM_ValueKey, 0.5f);
+                PlayerPrefs.SetFloat(MeloMelo_PlayerSettings.GetSE_ValueKey, 0.5f);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAudioMute_ValueKey, 0);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAudioVoice_ValueKey, 0);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetCharacterAnimation_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetEnemyAnimation_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetDamageIndicatorA_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey, 1);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetFrameRateLimit_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPeformanceOptimize_ValueKey, 10);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetUnitHealthOnCharacter_ValueKey, 0);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetUnitHealthOnEnemy_ValueKey, 0);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetSpeedMeter_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetFacnyMovement_ValueKey, 0);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSaveProgress_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSaveGameSettings_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSavePlaySettings_ValueKey, 1);
+            }
         }
 
-        public bool LoadGameplaySettings()
+        public void LoadGameplaySettings()
         {
             if (File.Exists(directory + combinePath))
             {
@@ -1736,7 +2276,8 @@ namespace MeloMelo_Local
 
                 PlayerPrefs.SetString("MVOption", data.mvOption ? "T" : "F");
                 PlayerPrefs.SetInt("NoteSpeed", data.noteSpeed);
-                PlayerPrefs.SetString("AutoSkillOption", data.autoSkill ? "T" : "F");
+                PlayerPrefs.SetInt("Temp_NoteSpeed", data.noteSpeed);
+                PlayerPrefs.SetString("Character_Active_Skill", data.autoSkill ? "T" : "F");
 
                 PlayerPrefs.SetInt("AutoRetreat", data.AutoRetreat);
                 PlayerPrefs.SetInt("ScoreDisplay", data.ScoreDisplay1);
@@ -1744,12 +2285,13 @@ namespace MeloMelo_Local
                 PlayerPrefs.SetInt("JudgeMeter_Setup", data.JudgeMeterSetup);
                 PlayerPrefs.SetInt("Feedback_Display_Type_B", data.JudgeFeedback_TypeA);
                 PlayerPrefs.SetInt("Feedback_Display_Type", data.JudgeFeedback_TypeB);
-            }
 
-            return true;
+                PlayerPrefs.SetInt("AudioLatency_Id", data.audio_offset);
+                PlayerPrefs.SetInt("InputLatency_Id", data.judge_offset);
+            }
         }
 
-        public bool LoadCharacterSettings()
+        public void LoadCharacterSettings()
         {
             if (File.Exists(directory + combinePath))
             {
@@ -1758,11 +2300,9 @@ namespace MeloMelo_Local
                 for (int i = 0; i < 3; i++) { PlayerPrefs.SetString("Slot" + (i + 1) + "_charName", data.characterSlot[i]); }
                 PlayerPrefs.SetString("CharacterFront", data.mainSlot);
             }
-
-            return true;
         }
 
-        public bool LoadProfileState()
+        public void LoadProfileData()
         {
             if (File.Exists(directory + combinePath))
             {
@@ -1771,17 +2311,26 @@ namespace MeloMelo_Local
                 PlayerPrefs.SetInt(user + "totalRatePoint", data.ratePoint);
                 PlayerPrefs.SetInt(user + "UserRatePointToggle", data.ratePoint);
                 PlayerPrefs.SetInt(user + "PlayedCount_Data", data.playedCount);
-                PlayerPrefs.SetInt(user + "_Credit", data.creditValue);
+                PlayerPrefs.SetInt(user + "_Credits", data.creditValue);
                 PlayerPrefs.SetInt(user + "_Magic Stone", data.magicStoneValue);
+                PlayerPrefs.SetInt("Progress_Fragement", data.submittedMapFragment);
             }
-
-            return true;
+            else
+            {
+                PlayerPrefs.SetInt(user + "totalRatePoint", 0);
+                PlayerPrefs.SetInt(user + "UserRatePointToggle", 0);
+                PlayerPrefs.SetInt(user + "PlayedCount_Data", 0);
+                PlayerPrefs.SetInt(user + "_Credits", 0);
+                PlayerPrefs.SetInt(user + "_Magic Stone", 0);
+                PlayerPrefs.SetInt("Progress_Fragement", 0);
+            }
         }
 
-        public bool LoadBattleProgress()
+        public async Task<List<BattleProgressDatabase>> PreLoading_BattleProgressData()
         {
-            if (File.Exists(directory + combinePath))
+            return await Task.Run(() =>
             {
+                if (!File.Exists(directory + combinePath)) new List<BattleProgressDatabase>();
                 List<BattleProgressDatabase> dataArray = new List<BattleProgressDatabase>();
 
                 foreach (string s in GetFormatToList())
@@ -1790,17 +2339,29 @@ namespace MeloMelo_Local
                         dataArray.Add(new BattleProgressDatabase().GetProgressData(s));
                 }
 
-                foreach (BattleProgressDatabase data in dataArray)
+                return dataArray;
+            });
+        }
+
+        public IEnumerator PostLoading_BattleProgressData(BattleProgressDatabase[] preLoaded_battlePrgoressData)
+        {
+            if (preLoaded_battlePrgoressData != null)
+            {
+                int maxLoadLimit = 50;
+                int currentLoadIndex = 0;
+
+                foreach (BattleProgressDatabase encode_data in preLoaded_battlePrgoressData)
                 {
-                    if (user == data.user)
+                    if (user == encode_data.user)
                     {
-                        PlayerPrefs.SetString(data.title + "_SuccessBattle_" + data.difficulty + data.area_difficulty, data.success ? "T" : "F");
-                        PlayerPrefs.SetInt(data.title + "_techScore" + data.difficulty + data.area_difficulty, data.score);
+                        PlayerPrefs.SetString(encode_data.title + "_SuccessBattle_" + encode_data.difficulty + encode_data.area_difficulty, encode_data.success ? "T" : "F");
+                        PlayerPrefs.SetInt(encode_data.title + "_techScore" + encode_data.difficulty + encode_data.area_difficulty, encode_data.score);
                     }
+
+                    currentLoadIndex++;
+                    if (currentLoadIndex % maxLoadLimit == 0) yield return null;
                 }
             }
-
-            return true;
         }
 
         public int LoadSelectionPickProgress(string area, int option)
@@ -1828,10 +2389,11 @@ namespace MeloMelo_Local
             return 1;
         }
 
-        public bool LoadCharacterStatsProgress()
+        public async Task<List<BattleUnitDatabase>> PreLoading_CharacterStatsData()
         {
-            if (File.Exists(directory + combinePath))
+            return await Task.Run(() =>
             {
+                if (!File.Exists(directory + combinePath)) return new List<BattleUnitDatabase>();
                 List<BattleUnitDatabase> dataArray = new List<BattleUnitDatabase>();
 
                 foreach (string s in GetFormatToList())
@@ -1840,7 +2402,18 @@ namespace MeloMelo_Local
                         dataArray.Add(new BattleUnitDatabase().GetCharacterStatus(s));
                 }
 
-                foreach (BattleUnitDatabase data in dataArray)
+                return dataArray;
+            });
+        }
+
+        public IEnumerator PostLoading_CharacterStatsData(BattleUnitDatabase[] preLoaded_characterstatsData)
+        {
+            if (preLoaded_characterstatsData != null)
+            {
+                int maxLoadLimit = 50;
+                int currentLoadIndex = 0;
+
+                foreach (BattleUnitDatabase data in preLoaded_characterstatsData)
                 {
                     PlayerPrefs.SetInt(data.id + "_LEVEL", data.level);
                     PlayerPrefs.SetInt(data.id + "_EXP", data.experience);
@@ -1854,16 +2427,18 @@ namespace MeloMelo_Local
                     MeloMelo_ExtraStats_Settings.IncreaseStrengthStats(data.id, data.baseStrengthStats);
                     MeloMelo_ExtraStats_Settings.IncreaseVitalityStats(data.id, data.baseVitalityStats);
                     MeloMelo_ExtraStats_Settings.IncreaseMagicStats(data.id, data.baseMagicStats);
+
+                    currentLoadIndex++;
+                    if (currentLoadIndex % maxLoadLimit == 0) yield return null;
                 }
             }
+        }        
 
-            return true;
-        }
-
-        public bool LoadAllSkillsType()
+        public async Task<List<SkillUnitDatabase>> PreLoading_SkillsData()
         {
-            if (File.Exists(directory + combinePath))
+            return await Task.Run(() =>
             {
+                if (!File.Exists(directory + combinePath)) return new List<SkillUnitDatabase>();
                 List<SkillUnitDatabase> dataArray = new List<SkillUnitDatabase>();
 
                 foreach (string s in GetFormatToList())
@@ -1872,7 +2447,18 @@ namespace MeloMelo_Local
                         dataArray.Add(new SkillUnitDatabase().GetSkillDatabase(s));
                 }
 
-                foreach (SkillUnitDatabase data in dataArray)
+                return dataArray;
+            });
+        }
+
+        public IEnumerator PostLoading_SkillsData(SkillUnitDatabase[] preloaded_skillData)
+        {
+            if (preloaded_skillData != null)
+            {
+                int maxLoadLimit = 50;
+                int currentLoadIndex = 0;
+
+                foreach (SkillUnitDatabase data in preloaded_skillData)
                 {
                     if (data.status == 1)
                     {
@@ -1887,16 +2473,75 @@ namespace MeloMelo_Local
                     }
                     else
                         MeloMelo_SkillData_Settings.LockedSkill(data.skillName);
+
+                    currentLoadIndex++;
+                    if (currentLoadIndex % maxLoadLimit == 0) yield return null;
                 }
             }
+        }
+
+        public async Task<List<AdventureStoreData>> Preloading_AdventureModeData()
+        {
+            return await Task.Run(() =>
+            {
+                if (!File.Exists(directory + combinePath)) return new List<AdventureStoreData>();
+                List<AdventureStoreData> dataArray = new List<AdventureStoreData>();
+
+                foreach (string s in GetFormatToList())
+                {
+                    if (s != string.Empty)
+                        dataArray.Add(new AdventureStoreData().GetAdventureEditor(s));
+                }
+
+                return dataArray;
+            });
+        }
+
+        public IEnumerator PostLoading_AdventureModeData(AdventureStoreData[] preLoaded_adventureModeData)
+        {
+            if (preLoaded_adventureModeData != null)
+            {
+                int maxLoadLimit = 50;
+                int currentLoadIndex = 0;
+
+                foreach (AdventureStoreData data in preLoaded_adventureModeData)
+                {
+                    PlayerPrefs.SetInt("RoutePlayableStatus_" + data.adventure_id + data.route_id, data.status_id);
+
+                    currentLoadIndex++;
+                    if (currentLoadIndex % maxLoadLimit == 0) yield return null;
+                }
+            }
+        }
+
+        public async Task<bool> PreLoading_VirtualItemData()
+        {
+            MeloMelo_ItemUsage_Settings.ClearItems();
+            if (!File.Exists(directory + combinePath)) return false;
+
+            List<VirtualItemDatabase> taskForLoadItem = await Task.Run(() =>
+            {
+                taskForLoadItem = new List<VirtualItemDatabase>();
+
+                foreach (string s in GetFormatToList())
+                {
+                    if (s != string.Empty)
+                        taskForLoadItem.Add(new VirtualItemDatabase().GetItemData(s));
+                }
+
+                return taskForLoadItem;
+            });
+
+            foreach (VirtualItemDatabase item in taskForLoadItem)
+                MeloMelo_ItemUsage_Settings.ImportItems(item);
 
             return true;
         }
 
-        public bool LoadVirtualItemToPlayer()
+        public IEnumerator PostLoading_VirtualItemData()
         {
-            if (File.Exists(directory + combinePath)) MeloMelo_GameSettings.StoreAllItemToLocal(GetProgressFile());
-            return true;
+            Task<bool> isReloadedAllItem = PreLoading_VirtualItemData();
+            yield return new WaitUntil(() => isReloadedAllItem.IsCompleted);
         }
 
         #region RAW
@@ -1982,16 +2627,24 @@ namespace MeloMelo_Local
             data.isRetreatUsed = PlayerPrefs.HasKey("RetreatRoute");
             data.isCollectionVisited = PlayerPrefs.HasKey("CollectionAlbum_Visited");
 
-            data.bgm_audio_data = PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetBGM_ValueKey, 0.5f);
-            data.se_audio_data = PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetSE_ValueKey, 0.5f);
-            data.audio_mute_data = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAudioMute_ValueKey, 1) == 1 ? true : false;
-            data.audio_voice_data = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAudioVoice_ValueKey, 1) == 1 ? true : false;
+            data.bgm_audio_data = PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetBGM_ValueKey);
+            data.se_audio_data = PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetSE_ValueKey);
+            data.audio_mute_data = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAudioMute_ValueKey) == 1 ? true : false;
+            data.audio_voice_data = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAudioVoice_ValueKey) == 1 ? true : false;
 
-            data.allowIntefaceAnimation = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, 1) == 1 ? true : false;
-            data.allowCharacterAnimation = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetCharacterAnimation_ValueKey, 1) == 1 ? true : false;
+            data.allowIntefaceAnimation = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey) == 1 ? true : false;
+            data.allowCharacterAnimation = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetCharacterAnimation_ValueKey) == 1 ? true : false;
             data.allowEnemyAnimation = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetEnemyAnimation_ValueKey, 1) == 1 ? true : false;
             data.allowDamageIndicatorOnAlly = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorA_ValueKey, 1) == 1 ? true : false;
             data.allowDamageIndicatorOnEnemy = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey, 1) == 1 ? true : false;
+
+            data.maxFrameLimit = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetFrameRateLimit_ValueKey);
+            data.performanceOptimize = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetPeformanceOptimize_ValueKey);
+            data.unitDisplayHealthOnCharacter = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetUnitHealthOnCharacter_ValueKey, 0);
+            data.unitDisplayHealthOnEnemy = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetUnitHealthOnEnemy_ValueKey, 0);
+            
+            data.sppedMeterOption = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetSpeedMeter_ValueKey) == 0 ? true : false;
+            data.fancyMovementOption = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetFacnyMovement_ValueKey) == 0 ? true : false;
 
             data.autoSaveGameProgress = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAutoSaveProgress_ValueKey, 1) == 1 ? true : false;
             data.autoSaveGameSettings = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAutoSaveGameSettings_ValueKey, 1) == 1 ? true : false;
@@ -2001,7 +2654,7 @@ namespace MeloMelo_Local
             WriteToFile(JsonFormat);
         }
 
-        public void SaveGameplaySettings(bool mvOption, int noteSpeed, bool autoSkill, int ratePoint)
+        public void SaveGameplaySettings(bool mvOption, int noteSpeed)
         {
             if (File.Exists(directory + combinePath)) 
             { File.Delete(directory + combinePath); }
@@ -2010,7 +2663,7 @@ namespace MeloMelo_Local
             PlayerGameplaySettings data = new PlayerGameplaySettings();
             data.mvOption = mvOption;
             data.noteSpeed = noteSpeed;
-            data.autoSkill = autoSkill;
+            data.autoSkill = PlayerPrefs.GetString("Character_Active_Skill", "F") == "T" ? true : false;
 
             data.ScoreDisplay1 = PlayerPrefs.GetInt("ScoreDisplay", 0);
             data.ScoreDisplay2 = PlayerPrefs.GetInt("ScoreDisplay2", 0);
@@ -2018,6 +2671,9 @@ namespace MeloMelo_Local
 
             data.JudgeFeedback_TypeA = PlayerPrefs.GetInt("Feedback_Display_Type_B", 0);
             data.JudgeFeedback_TypeB = PlayerPrefs.GetInt("Feedback_Display_Type", 1);
+
+            data.audio_offset = PlayerPrefs.GetInt("AudioLatency_Id", 0);
+            data.judge_offset = PlayerPrefs.GetInt("InputLatency_Id", 0);
 
             JsonFormat += JsonUtility.ToJson(data);
             WriteToFile(JsonFormat);
@@ -2070,6 +2726,7 @@ namespace MeloMelo_Local
             data.playedCount = PlayerPrefs.GetInt(user + "PlayedCount_Data", 0) + 1;
             data.creditValue = PlayerPrefs.GetInt(user + "_Credits", 0);
             data.magicStoneValue = PlayerPrefs.GetInt(user + "_Magic Stone", 0);
+            data.submittedMapFragment = PlayerPrefs.GetInt("Progress_Fragement", 0);
 
             JsonFormat += JsonUtility.ToJson(data);
             WriteToFile(JsonFormat);
@@ -2240,6 +2897,34 @@ namespace MeloMelo_Local
 
             WriteToFile(currentTranscation);
         }
+
+        public void SaveAdventureRoutePlay()
+        {
+            if (File.Exists(directory + combinePath))
+            { File.Delete(directory + combinePath); }
+
+            string jsonFormat = string.Empty;
+            int routeCount = 0;
+
+            for (int story_type_id = 0; story_type_id < 2; story_type_id++)
+            {
+                routeCount = 1;
+
+                while (PlayerPrefs.HasKey("RoutePlayableStatus_" + story_type_id + routeCount))
+                {
+                    AdventureStoreData newStoryAdd = new AdventureStoreData();
+                    newStoryAdd.adventure_id = story_type_id;
+                    newStoryAdd.route_id = routeCount;
+                    newStoryAdd.status_id = PlayerPrefs.GetInt("RoutePlayableStatus_" + story_type_id + routeCount);
+
+                    jsonFormat += JsonUtility.ToJson(newStoryAdd) + "/";
+                    Debug.Log("Saved Adventure: " + story_type_id + "_id_" + routeCount);
+                    routeCount++;
+                }
+            }
+
+            WriteToFile(jsonFormat);
+        }
     }
 
     public class CloudDatabase_Local_DataManagement : LocalData
@@ -2275,6 +2960,23 @@ namespace MeloMelo_Local
 // MeloMelo: Networking
 namespace MeloMelo_Network
 {
+    [System.Serializable]
+    public struct TrackEventStorage
+    {
+        public string title;
+        public string cover;
+        public int difficulty;
+        public string level;
+        public float score;
+        public int point;
+
+        public TrackEventStorage GetTrack(string format)
+        {
+            Debug.Log(format);
+            return JsonUtility.FromJson<TrackEventStorage>(format);
+        }
+    }
+
     public class ServerIP_Settings
     {
         protected string portId = string.Empty;
@@ -2363,12 +3065,13 @@ namespace MeloMelo_Network
             GetAlternativeServer(serverAPI, progress);
         }
 
-        public void SaveProgressProfile(int totalRatePoint, int playedCount)
+        public void SaveProgressProfile(int totalRatePoint, int playedCount, int credit)
         {
             WWWForm profile = new WWWForm();
             profile.AddField("User", portId);
             profile.AddField("RatePoint", totalRatePoint);
             profile.AddField("Count", playedCount);
+            profile.AddField("Credit", credit);
 
             const string serverAPI = "MeloMelo_ProfileCapture_2024.php";
             GetAlternativeServer(serverAPI, profile);
@@ -2445,7 +3148,7 @@ namespace MeloMelo_Network
             GetAlternativeServer(serverAPI, info);
         }
 
-        public void SaveCharacterStatusData(string name, int level, int experience)
+        public void SaveCharacterStatusData(string name, int level, int experience, int mastery, int rebirth, int str_stats, int vit_stats, int mag_stats)
         {
             WWWForm stats = new WWWForm();
             stats.AddField("User", portId);
@@ -2453,24 +3156,73 @@ namespace MeloMelo_Network
             stats.AddField("Level", level);
             stats.AddField("Exp", experience);
 
+            stats.AddField("Mastery_Point", mastery);
+            stats.AddField("Rebirth_Count", rebirth);
+            stats.AddField("Base_STR", str_stats);
+            stats.AddField("Base_VIT", vit_stats);
+            stats.AddField("Base_MAG", mag_stats);
+
             const string serverAPI = "MeloMelo_Save_CharacterStatusData_2024.php";
             GetAlternativeServer(serverAPI, stats);
         }
 
-        public void SaveChartDistributionData(string title, string coverImage, int difficulty, string level, int score, int point, int chartType)
+        public void SaveChartDistributionData(int index, string jsonData)
         {
-            WWWForm info = new WWWForm();
-            info.AddField("User", portId);
-            info.AddField("Title", title);
-            info.AddField("CoverImage", coverImage);
-            info.AddField("Difficulty", difficulty);
-            info.AddField("Level", level);
-            info.AddField("Score", score);
-            info.AddField("Point", point);
-            info.AddField("Type", chartType);
+            List<TrackEventStorage> listing = new List<TrackEventStorage>();
+            string[] dataS = jsonData.Split("/t");
 
-            const string serverAPI = "MeloMelo_Save_TrackDistributionList_2024.php";
-            GetAlternativeServer(serverAPI, info);
+            if (!string.IsNullOrEmpty(jsonData))
+            {
+                foreach (string data in dataS)
+                {
+                    try
+                    {
+                        TrackEventStorage temp = new TrackEventStorage().GetTrack(data);
+                        if (data != string.Empty) listing.Add(temp);
+                    } catch { }
+                }
+            }
+
+            foreach (TrackEventStorage entry in listing)
+            {
+                WWWForm info = new WWWForm();
+                info.AddField("User", portId);
+                info.AddField("Title", entry.title);
+                info.AddField("CoverImage", entry.cover);
+                info.AddField("Difficulty", entry.difficulty);
+                info.AddField("Level", entry.level);
+                info.AddField("Score", (int)entry.score);
+                info.AddField("Point", entry.point);
+                info.AddField("Type", index);
+
+                const string serverAPI = "MeloMelo_Save_TrackDistributionList_2024.php";
+                GetAlternativeServer(serverAPI, info);
+            }
+        }
+
+        public void ClearCacheDistributionData(int index)
+        {
+            WWWForm user = new WWWForm();
+            user.AddField("User", portId);
+            user.AddField("clearIndex", index);
+            const string serverAPI = "MeloMelo_Clear_TrackDistributionList_2024.php";
+            GetAlternativeServer(serverAPI, user);
+        }
+
+        public void SaveItemDataToServer(VirtualItemDatabase[] items)
+        {
+            WWWForm userClearId = new WWWForm();
+            userClearId.AddField("User", portId);
+
+            foreach (VirtualItemDatabase item in items)
+            {
+                WWWForm item_form = new WWWForm();
+                item_form.AddField("User", portId);
+                item_form.AddField("Item", item.itemName);
+                item_form.AddField("Amount", item.amount);
+                string serverAPI = "MeloMelo_Save_VirtualItemData_2025.php";
+                GetAlternativeServer(serverAPI, item_form);
+            }
         }
         #endregion
 
@@ -2489,7 +3241,7 @@ namespace MeloMelo_Network
         private void GetAlternativeServer(string url, WWWForm info)
         {
             Debug.Log("Redirect to result menu...");
-            ResultMenu_Script.thisRes.ConnectionEstablish(info, url_directory + url);
+            ResultMenu_Script.thisRes.gameObject.GetComponent<ServerCloud_Save_Script>().ConnectionEstablish(info, url_directory + url);
         }
         #endregion
     }
@@ -2502,7 +3254,7 @@ namespace MeloMelo_Network
 
         private enum CloudLoad_TrackField { UserID, Title, Difficulty, TotalField };
         private enum CloudLoad_TrackField_TypeOfResult { Individual = 1, Main };
-        private enum CloudLoad_ProfileField { UserID, RatePoint, PlayedCount, TotalField };
+        private enum CloudLoad_ProfileField { UserID, RatePoint, PlayedCount, Credit, TotalField };
         private enum CloudLoad_SettingConfiguration 
         { 
             UserID, MV, NoteSpeed, AutoRetreat, 
@@ -2516,6 +3268,8 @@ namespace MeloMelo_Network
         private enum CloudLoad_BattleFormationData { Slot1, Slot2, Slot3, MainSlot, TotalField };
 
         private enum CloudLoad_TrackList { Title, CoverImage, Difficulty_ID, Difficulty, Score, Point, ChartType, TotalField };
+        private enum CloudLoad_CharacterData { Name, Level, Experience, TotalMastery, TotalRebirth, TotalStrStats, TotalVitStats, TotalMagStats, TotalField };
+        private enum CloudLoad_MarathonProgress { Title, ClearedStatus, PlayedCount, Score, TotalField };
 
         public CloudLoad_DataManagement(string user, string url)
         {
@@ -2671,6 +3425,13 @@ namespace MeloMelo_Network
                             profileData[id + (int)CloudLoad_ProfileField.UserID] + "PlayedCount_Data",
                             int.Parse(profileData[id + (int)CloudLoad_ProfileField.PlayedCount])
                         );
+
+                    // Load playedCount data
+                    PlayerPrefs.SetInt
+                        (
+                            profileData[id + (int)CloudLoad_ProfileField.UserID] + "_Credits",
+                            int.Parse(profileData[id + (int)CloudLoad_ProfileField.Credit])
+                        );
                 }
             }
 
@@ -2752,7 +3513,7 @@ namespace MeloMelo_Network
                     PlayerPrefs.SetString("Control_notice", configurationData[id + (int)CloudLoad_PlayerSettingData.Control]);
 
                     // Load background game music data
-                    PlayerPrefs.SetFloat("BGM_VolumeGET", float.Parse(configurationData[id + (int)CloudLoad_PlayerSettingData.BGM]));
+                    PlayerPrefs.SetFloat(MeloMelo_PlayerSettings.GetBGM_ValueKey, float.Parse(configurationData[id + (int)CloudLoad_PlayerSettingData.BGM]));
 
                     // Load sound effect data
                     PlayerPrefs.SetFloat("SE_VolumeGET", float.Parse(configurationData[id + (int)CloudLoad_PlayerSettingData.SE]));
@@ -2835,10 +3596,24 @@ namespace MeloMelo_Network
             {
                 string[] characterStatus = load.downloadHandler.text.Split("\t");
 
-                for (int status = 0; status < characterStatus.Length / 3; status++)
+                for (int status = 0; status < characterStatus.Length / (int)CloudLoad_CharacterData.TotalField; status++)
                 {
-                    PlayerPrefs.SetInt(characterStatus[status * 3] + "_LEVEL", int.Parse(characterStatus[status * 3 + 1]));
-                    PlayerPrefs.SetInt(characterStatus[status * 3] + "_EXP", int.Parse(characterStatus[status * 3 + 2]));
+                    int id = status * (int)CloudLoad_LastSelectionVisited.TotalField;
+                    string className = characterStatus[id + (int)CloudLoad_CharacterData.Name];
+
+                    // Load progress to game application
+                    MeloMelo_CharacterInfo_Settings.UnlockCharacter(className);
+                    PlayerPrefs.SetInt(className + "_LEVEL", int.Parse(characterStatus[id + (int)CloudLoad_CharacterData.Level]));
+                    PlayerPrefs.SetInt(className + "_EXP", int.Parse(characterStatus[id + (int)CloudLoad_CharacterData.Experience]));
+
+                    // Extra: Character Stats
+                    MeloMelo_ExtraStats_Settings.IncreaseStrengthStats(className, int.Parse(characterStatus[id + (int)CloudLoad_CharacterData.TotalStrStats]));
+                    MeloMelo_ExtraStats_Settings.IncreaseVitalityStats(className, int.Parse(characterStatus[id + (int)CloudLoad_CharacterData.TotalVitStats]));
+                    MeloMelo_ExtraStats_Settings.IncreaseMagicStats(className, int.Parse(characterStatus[id + (int)CloudLoad_CharacterData.TotalMagStats]));
+
+                    // Extra: Attribute Point
+                    MeloMelo_ExtraStats_Settings.SetMasteryPoint(className, int.Parse(characterStatus[id + (int)CloudLoad_CharacterData.TotalMastery]));
+                    MeloMelo_ExtraStats_Settings.SetRebirthPoint(className, int.Parse(characterStatus[id + (int)CloudLoad_CharacterData.TotalRebirth]));
                 }
             }
 
@@ -2867,6 +3642,7 @@ namespace MeloMelo_Network
                     string fileDirectory = channel_Build + "StreamingAssets/LocalData/MeloMelo_LocalSave_ChartList/TempPass_ChartData_" + (chart + 1) + ".json";
 
                     // Write server database into local written files
+                    if (File.Exists(fileDirectory)) File.Delete(fileDirectory);
                     StreamWriter writeToLocal = new StreamWriter(fileDirectory);
 
                     for (int data = 0; data < allChartData.Length / (int)CloudLoad_TrackList.TotalField; data++)
@@ -2888,11 +3664,95 @@ namespace MeloMelo_Network
                     }
 
                     writeToLocal.Close();
+                    writeToLocal.Dispose();
+                }
+            }
+            else
+            {
+                string channel_Build = Application.isEditor ? "Assets/" : "MeloMelo_Data/";
+                for (int chart = 0; chart < 3; chart++)
+                {
+                    string fileDirectory = channel_Build + "StreamingAssets/LocalData/MeloMelo_LocalSave_ChartList/TempPass_ChartData_" + (chart + 1) + ".json";
+                    if (File.Exists(fileDirectory)) File.Delete(fileDirectory);
                 }
             }
 
             cloudLogging.Add(load.downloadHandler.text != "Empty");
             Debug.Log("Server: Load Chart Distribution Successful! [" + load.downloadHandler.text + "]");
+            load.Dispose();
+        }
+
+        public IEnumerator LoadItemFromServer()
+        {
+            WWWForm info = new WWWForm();
+            info.AddField("User", portId);
+            counter++;
+
+            const string serverAPI = "MeloMelo_Load_VirtualItemData_2025.php";
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + serverAPI, info);
+            yield return load.SendWebRequest();
+
+            if (load.downloadHandler.text != "Empty")
+            {
+                string creatorText = string.Empty;
+                string[] allItemRetrieve = load.downloadHandler.text.Split("\n");
+                foreach (string itemData in allItemRetrieve) creatorText += itemData + "/";
+                if (allItemRetrieve.Length > 0) MeloMelo_ItemUsage_Settings.ImportItems(new VirtualItemDatabase().GetItemData(creatorText));
+            }
+
+            cloudLogging.Add(load.downloadHandler.text != "Empty");
+            Debug.Log("Server: Load Item Data Successful! [" + load.downloadHandler.text + "]");
+            load.Dispose();
+        }
+
+        public IEnumerator LoadMarathonContentListing()
+        {
+            WWWForm info = new WWWForm();
+            counter++;
+
+            const string serverAPI = "MeloMelo_LoadExtensionMarathonContent_2025.php";
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + serverAPI, info);
+            yield return load.SendWebRequest();
+
+            if (load.downloadHandler.text != "Empty")
+            {
+                MeloMelo_ExtensionContent_Settings.LoadMarathonContent(load.downloadHandler.text);
+                Debug.Log("Server: Load Extension Marathon Content Successful! [ COMPLETED! ]");
+            }
+            else
+                Debug.Log("Server: Load Extension Marathon Content Successful! [ FAILED! ]");
+
+            cloudLogging.Add(load.downloadHandler.text != "Empty");
+            load.Dispose();
+        }
+
+        public IEnumerator LoadMarathonProgress()
+        {
+            WWWForm info = new WWWForm();
+            info.AddField("User", portId);
+            counter++;
+
+            const string serverAPI = "MeloMelo_Load_MarathonProgress_2025.php";
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + serverAPI, info);
+            yield return load.SendWebRequest();
+
+            if (load.downloadHandler.text != "Empty")
+            {
+                string[] context = load.downloadHandler.text.Split("\t");
+
+                for (int id = 0; id < context.Length / (int)CloudLoad_MarathonProgress.TotalField; id++)
+                {
+                    int current = id * (int)CloudLoad_MarathonProgress.TotalField;
+
+                    PlayerPrefs.SetInt("MarathonProgress_Title_" + context[current + (int)CloudLoad_MarathonProgress.Title], 1);
+                    PlayerPrefs.SetInt("MarathonProgress_PlayedCount_" + context[current + (int)CloudLoad_MarathonProgress.Title], int.Parse(context[current + (int)CloudLoad_MarathonProgress.PlayedCount]));
+                    PlayerPrefs.SetString("MarathonProgress_Cleared_" + context[current + (int)CloudLoad_MarathonProgress.Title], context[current + (int)CloudLoad_MarathonProgress.ClearedStatus] == "1" ? "T" : "F");
+                    PlayerPrefs.SetInt("MarathonProgress_Score_" + context[current + (int)CloudLoad_MarathonProgress.Title], int.Parse(context[current + (int)CloudLoad_MarathonProgress.Score]));
+                }
+            }
+
+            cloudLogging.Add(load.downloadHandler.text != "Empty");
+            Debug.Log("Server: Load Marathon Data Successful! [" + load.downloadHandler.text + "]");
             load.Dispose();
         }
         #endregion
@@ -2947,44 +3807,40 @@ namespace MeloMelo_Network
     }
 
     public class Authenticate_DataManagement : ServerIP_Settings
-    {
+    { 
         private bool LogOnSucess;
         public bool get_success { get { return LogOnSucess; } }
 
-        public Authenticate_DataManagement(string user, string url)
+        public Authenticate_DataManagement(string url)
         {
             LogOnSucess = false;
-            portId = user; 
+            portId = string.Empty;
             urlWeb = url + url_directory;
         }
 
-        public IEnumerator GetAuthenticationFromServer(string key)
+        public IEnumerator AuthenticateUser(string user, string key)
         {
             WWWForm login = new WWWForm();
-            login.AddField("User", portId);
+            login.AddField("User", user);
             login.AddField("Pass", key);
 
             UnityWebRequest authenticate = UnityWebRequest.Post(urlWeb + "MeloMelo_TempPassB.php", login);
             yield return authenticate.SendWebRequest();
 
             LogOnSucess = authenticate.downloadHandler.text.Split("\n")[0] == "Transfer Successful!";
-            LoginTemp_Script.thisTemp.LoadEntryPass(authenticate.downloadHandler.text.Split("\n")[0], authenticate.downloadHandler.text.Split("\n")[1]);
+            if (LogOnSucess)
+            {
+                portId = user;
+                PlayerPrefs.SetString("Authentication_Login_PlayerName", authenticate.downloadHandler.text.Split("\n")[1]);
+            }
+
             authenticate.Dispose();
         }
 
-        public IEnumerator CreateNewEntryOnServer(string key, string playerName)
+        public string GetUserPlayerName()
         {
-            WWWForm login = new WWWForm();
-            login.AddField("User", portId);
-            login.AddField("Pass", key);
-            login.AddField("Player", playerName);
-
-            UnityWebRequest authenticate = UnityWebRequest.Post(urlWeb + "MeloMelo_TempPass.php", login);
-            yield return authenticate.SendWebRequest();
-
-            LogOnSucess = true;
-            LoginTemp_Script.thisTemp.SaveEntryPass(authenticate.downloadHandler.text);
-            authenticate.Dispose();
+            const string defaultName = "GUEST";
+            return PlayerPrefs.GetString("Authentication_Login_PlayerName", defaultName);
         }
     }
 
@@ -3754,64 +4610,105 @@ namespace MeloMelo_RatingMeter
 
     public class RatePointIndicator
     {
-        private int[] ratingCaterogy = { 18500, 18000, 16000, 13000, 10000, 6000, 3000, 1, 0 };
-        private string[] ratingTitle = { "Rhodonite", "Gold", "Amethyst", "Topaz", "Red", "Blue", "Green", "White", "UnRated" };
-        private Color[] BorderColor = { Color.magenta, Color.yellow, new Color32(66, 0, 255, 255), new Color32(255, 128, 0, 255), Color.red, Color.blue, Color.green, Color.white, Color.black };
-        private string profileFinder = "Profile";
+        struct RatingCaterogyData
+        {
+            public string title;
+            public int value;
+            public Color border;
 
+            public RatingCaterogyData(string title, int value, Color border)
+            {
+                this.title = title;
+                this.value = value;
+                this.border = border;
+            }
+        }
+
+        private List<RatingCaterogyData> arrayData;
+        private GameObject profile;
+
+        public RatePointIndicator(string profilerName)
+        {
+            profile = GameObject.Find(profilerName) != null ? GameObject.Find(profilerName) : null;
+            GetRateContentData();
+        }
+
+        #region SETUP
+        private void GetRateContentData()
+        {
+            arrayData = new List<RatingCaterogyData>();
+
+            arrayData.Add(new RatingCaterogyData("Rhodonite", 18500, Color.magenta));
+            arrayData.Add(new RatingCaterogyData("Gold", 18000, Color.yellow));
+            arrayData.Add(new RatingCaterogyData("Amethyst", 16000, new Color32(66, 0, 255, 255)));
+            arrayData.Add(new RatingCaterogyData("Topaz", 13000, new Color32(255, 128, 0, 255)));
+            arrayData.Add(new RatingCaterogyData("Red", 10000, Color.red));
+            arrayData.Add(new RatingCaterogyData("Blue", 6000, Color.blue));
+            arrayData.Add(new RatingCaterogyData("Green", 3000, Color.green));
+            arrayData.Add(new RatingCaterogyData("White", 1, Color.white));
+            arrayData.Add(new RatingCaterogyData("UnRated", 0, Color.black));
+        }
+        #endregion
+
+        #region MAIN
+        public void ProfileUpdate(string user, string label_1, string label_2)
+        {
+            if (profile != null)
+            {
+                profile.transform.GetChild(0).GetComponent<Text>().text = user;
+                profile.transform.GetChild(2).GetComponent<Text>().text = label_1 + PlayerPrefs.GetInt(user + "PlayedCount_Data", 0);
+                profile.transform.GetChild(4).GetComponent<Text>().text = label_2 + PlayerPrefs.GetInt(user + "totalRatePoint", 0);
+            }
+
+            UpdateRatePointMeter(PlayerPrefs.GetInt(user + "totalRatePoint", 0));
+            UpdateColor_Border(user);
+        }
+
+        public void UpdateColor_Border(string user)
+        {
+            if (profile != null)
+            {
+                // Update Border Color
+                for (int i = 0; i < arrayData.ToArray().Length; i++)
+                {
+                    if (PlayerPrefs.GetInt(user + "totalRatePoint", 0) >= arrayData[i].value)
+                    {
+                        profile.GetComponent<RawImage>().color = arrayData[i].border;
+                        break;
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region COMPONENT
         private void UpdateRatePointMeter(int current)
         {
-            for (int maxRate = 0; maxRate < ratingCaterogy.Length; maxRate++)
+            if (profile != null)
             {
-                if (current >= ratingCaterogy[maxRate])
+                for (int maxRate = 0; maxRate < arrayData.ToArray().Length; maxRate++)
                 {
-                    GameObject.Find(profileFinder).transform.GetChild(3).GetComponent<Slider>().minValue = (maxRate != ratingCaterogy.Length - 1) ? ratingCaterogy[maxRate] : ratingCaterogy[ratingCaterogy.Length - 1];
-                    GameObject.Find(profileFinder).transform.GetChild(3).GetComponent<Slider>().maxValue = (maxRate - 1 > -1) ? ratingCaterogy[maxRate - 1] : ratingCaterogy[ratingCaterogy.Length - 1];
-                    GameObject.Find(profileFinder).transform.GetChild(3).GetComponent<Slider>().value = current;
-                    GameObject.Find(profileFinder).transform.GetChild(6).GetComponent<Text>().text = ratingTitle[maxRate];
-                    GameObject.Find(profileFinder).transform.GetChild(7).GetComponent<Text>().text = FindMaxOutRatePoint(current);
-                    break;
+                    if (current >= arrayData[maxRate].value)
+                    {
+                        profile.transform.GetChild(3).GetComponent<Slider>().minValue = (maxRate != arrayData.ToArray().Length - 1) ? arrayData[maxRate].value : arrayData[arrayData.ToArray().Length - 1].value;
+                        profile.transform.GetChild(3).GetComponent<Slider>().maxValue = (maxRate - 1 > -1) ? arrayData[maxRate - 1].value : arrayData[arrayData.ToArray().Length - 1].value;
+                        profile.transform.GetChild(3).GetComponent<Slider>().value = current;
+                        profile.transform.GetChild(6).GetComponent<Text>().text = arrayData[maxRate].title;
+                        profile.transform.GetChild(7).GetComponent<Text>().text = FindMaxOutRatePoint(current);
+                        break;
+                    }
                 }
             }
         }
 
         private string FindMaxOutRatePoint(int current)
         {
-            if (current >= ratingCaterogy[0]) 
+            if (current >= arrayData[0].value) 
                 return "- MAX OUT -";
             else
-                return GameObject.Find(profileFinder).transform.GetChild(3).GetComponent<Slider>().maxValue - current + " more point" + ((current > 1) ? "s" : "");
+                return profile.transform.GetChild(3).GetComponent<Slider>().maxValue - current + " more point" + ((current > 1) ? "s" : "");
         }
-
-        public void ProfileUpdate(string user, bool exp, string label_1, string label_2)
-        {
-            GameObject.Find(profileFinder).transform.GetChild(0).GetComponent<Text>().text = user;
-            GameObject.Find(profileFinder).transform.GetChild(2).GetComponent<Text>().text = label_1 + PlayerPrefs.GetInt(user + "PlayedCount_Data", 0);
-            GameObject.Find(profileFinder).transform.GetChild(4).GetComponent<Text>().text = label_2 + PlayerPrefs.GetInt(user + "totalRatePoint", 0);
-
-            UpdateRatePointMeter(PlayerPrefs.GetInt(user + "totalRatePoint", 0));
-
-            UpdateColor_Border(user);
-        }
-
-        public void UpdateColor_Border(string user, string profileFinder)
-        {
-            this.profileFinder = profileFinder;
-            UpdateColor_Border(user);
-        }
-
-        public void UpdateColor_Border(string user)
-        {
-            // Update Border Color
-            for (int i = 0; i < ratingCaterogy.Length; i++)
-            {
-                if (PlayerPrefs.GetInt(user + "totalRatePoint", 0) >= ratingCaterogy[i])
-                {
-                    GameObject.Find(profileFinder).GetComponent<RawImage>().color = BorderColor[i];
-                    break;
-                }
-            }
-        }
+        #endregion
     }
 }
 
@@ -3929,14 +4826,14 @@ namespace MeloMelo_RPGEditor
             for (int i = 0; i < 3; i++)
             {
                 slot_Stats[i].UpdateStatsCache(false);
-                ElemetStartingStats baseStats = MeloMelo_GameSettings.GetStatsWithElementBonus(
+                ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
                     slot_Stats[i].elementType == ClassBase.ElementStats.Light ? "Light" :
                     slot_Stats[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
                     slot_Stats[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
 
                 UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy
                     [PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i];
-                ElemetStartingStats basicStats = MeloMelo_GameSettings.GetStatsWithElementBonus("None");
+                ElemetStartingStats basicStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus("None");
 
                 switch (index)
                 {
@@ -3979,7 +4876,7 @@ namespace MeloMelo_RPGEditor
                 {
                     case "Character":
                         slot_Stats[i].UpdateStatsCache(false);
-                        ElemetStartingStats baseStats = MeloMelo_GameSettings.GetStatsWithElementBonus(
+                        ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
                             slot_Stats[i].elementType == ClassBase.ElementStats.Light ? "Light" :
                             slot_Stats[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
                             slot_Stats[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
@@ -3991,7 +4888,7 @@ namespace MeloMelo_RPGEditor
                     case "Enemy":
                         UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy
                             [PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i];
-                        ElemetStartingStats basicStats = MeloMelo_GameSettings.GetStatsWithElementBonus("None");
+                        ElemetStartingStats basicStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus("None");
 
                         resistance += currentUnit.mag - currentUnit.vit * basicStats.multipler;
                         if (resistance <= 0) resistance = 0;
@@ -4011,9 +4908,9 @@ namespace MeloMelo_RPGEditor
                 {
                     case "Enemy":
                         UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i];
-                        ElemetStartingStats basicStats = MeloMelo_GameSettings.GetStatsWithElementBonus("None");
+                        ElemetStartingStats basicStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus("None");
 
-                        HP += PreSelection_Script.thisPre.get_AreaData.EnemyBaseHealth[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1]
+                        HP += (PlayerPrefs.HasKey("Mission_Played") ? 0 : PreSelection_Script.thisPre.get_AreaData.EnemyBaseHealth[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1])
                             + currentUnit.HP + (int)(baseHealth * basicStats.multipler * currentUnit.vit);
                         break;
 
@@ -4021,7 +4918,7 @@ namespace MeloMelo_RPGEditor
                         if (slot_Stats[i].icon != null)
                         {
                             slot_Stats[i].UpdateStatsCache(false);
-                            ElemetStartingStats baseStats = MeloMelo_GameSettings.GetStatsWithElementBonus(
+                            ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
                                 slot_Stats[i].elementType == ClassBase.ElementStats.Light ? "Light" :
                                 slot_Stats[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
                                 slot_Stats[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
@@ -4050,7 +4947,7 @@ namespace MeloMelo_RPGEditor
                 if (classType == slot_Stats[id].name)
                 {
                     slot_Stats[id].UpdateStatsCache(false);
-                    ElemetStartingStats baseStats = MeloMelo_GameSettings.GetStatsWithElementBonus(
+                    ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
                         slot_Stats[id].elementType == ClassBase.ElementStats.Light ? "Light" :
                         slot_Stats[id].elementType == ClassBase.ElementStats.Dark ? "Dark" :
                         slot_Stats[id].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
@@ -4070,7 +4967,7 @@ namespace MeloMelo_RPGEditor
                     case "Enemy":
                         UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy
                             [PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[unit];
-                        ElemetStartingStats basicStats = MeloMelo_GameSettings.GetStatsWithElementBonus("None");
+                        ElemetStartingStats basicStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus("None");
 
                         power += currentUnit.str * basicStats.strength;
                         power += currentUnit.mag * basicStats.magic;
@@ -4082,7 +4979,7 @@ namespace MeloMelo_RPGEditor
                         if (slot_Stats[unit].icon != null)
                         {
                             slot_Stats[unit].UpdateStatsCache(false);
-                            ElemetStartingStats baseStats = MeloMelo_GameSettings.GetStatsWithElementBonus(
+                            ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
                                 slot_Stats[unit].elementType == ClassBase.ElementStats.Light ? "Light" :
                                 slot_Stats[unit].elementType == ClassBase.ElementStats.Dark ? "Dark" :
                                 slot_Stats[unit].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");

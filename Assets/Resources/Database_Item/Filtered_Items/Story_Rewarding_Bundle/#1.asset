@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4177df903b9ab8a48b39e8089ba02970, type: 3}
+  m_Name: '#1'
+  m_EditorClassIdentifier: 
+  itemName: 'Present Case: Story Reward from Kingdom of Tiles'
+  useTypeDetail: 1
+  dataArray: '{"itemName":"Progression Gift","amount":1}/
+
+    {"itemName":"Title
+    Deed: Kingdom of Tiles Story Play","amount":1}/'

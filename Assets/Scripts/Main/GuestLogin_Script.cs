@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using MeloMelo_Local;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
+using System.Threading;
 
 public class GuestLogin_Script : MonoBehaviour
 {
@@ -20,6 +22,7 @@ public class GuestLogin_Script : MonoBehaviour
 
     public GameObject entryFormDisplay;
     public GameObject profileList;
+    [SerializeField] private GameObject LoadingUI;
 
     private Authenticate_LocalData localPlayer = null;
     public Authenticate_LocalData get_localPlayer { get { return localPlayer; } }
@@ -118,7 +121,7 @@ public class GuestLogin_Script : MonoBehaviour
             localPlayer.SelectFileForAction("localplayer_guest_list.txt");
 
             // Cache
-            if (!PlayerPrefs.HasKey("AccountSync"))
+            if (!MeloMelo_PlayerSettings.GetLocalUserAccount())
             {
                 PlayerPrefs.SetString("AccountSync_PlayerID", localPlayer.GetUserLocalByPlayerId());
                 PlayerPrefs.SetString("AccountSync_UniqueID", localPlayer.GetUserLocalByUniqueId());
@@ -139,26 +142,44 @@ public class GuestLogin_Script : MonoBehaviour
         // Save
         string reportUpdate = PlayerPrefs.GetString("MeloMelo_NewsReport_Daily", string.Empty);
         string latestUpdate = PlayerPrefs.GetString("GameLatest_Update", string.Empty);
+        string customMarathonPlay = PlayerPrefs.GetString("JSON_Custom_Marathon_Challenge", string.Empty);
 
         PlayerPrefs.DeleteAll();
 
         if (playerid != string.Empty) PlayerPrefs.SetString("TempPass_PlayerId", playerid);
-        PlayerPrefs.SetInt("AccountSync", 1);
+        MeloMelo_PlayerSettings.GetLocalUserAccount(1);
         PlayerPrefs.SetString("AccountSync_PlayerID", user);
         PlayerPrefs.SetString("AccountSync_UniqueID", pass);
 
         // Transfer
         PlayerPrefs.SetString("MeloMelo_NewsReport_Daily", reportUpdate);
         PlayerPrefs.SetString("GameLatest_Update", latestUpdate);
+        PlayerPrefs.SetString("JSON_Custom_Marathon_Challenge", customMarathonPlay);
 
-        LoadAllProgress(button);
+        StartCoroutine(CheckingForProgress(button));
     }
     #endregion
 
     #region COMPONENT (Login)
-    private void LoadAllProgress(Button button)
+    private IEnumerator CheckingForProgress(Button button)
     {
-        LocalLoad_DataManagement data = new LocalLoad_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+        yield return StartCoroutine(LoadAllProgress());
+
+        // Finialize setup config
+        button.interactable = true;
+
+        AsyncOperation loadScene = SceneManager.LoadSceneAsync("Menu");
+        while (!loadScene.isDone)
+        {
+            LoginPage_Script.thisPage.Icon.transform.GetChild(1).GetComponent<Text>().text = "[Game Local]\nGame Loading...";
+            yield return null;
+        }
+    }
+
+    private IEnumerator LoadAllProgress()
+    {
+        LoadingUI.SetActive(true);
+
         string[] paths =
         {
             MeloMelo_GameSettings.GetLocalFileMainProgress,
@@ -170,65 +191,96 @@ public class GuestLogin_Script : MonoBehaviour
             MeloMelo_GameSettings.GetLocalFileProfileData,
             MeloMelo_GameSettings.GetLocalFileCharacterStats,
             MeloMelo_GameSettings.GetLocalFileSkillDatabase,
-            MeloMelo_GameSettings.GetLocalFileVirtualItemData
+            MeloMelo_GameSettings.GetLocalFileVirtualItemData,
+            MeloMelo_GameSettings.GetLocalFileAdventureMode
         };
 
         LoginPage_Script.thisPage.Icon.SetActive(true);
         LoginPage_Script.thisPage.Icon.transform.GetChild(1).GetComponent<Text>().text = "[Game Local]\nChecking Data...";
+        int currentProgressId = 0;
 
-        for (int path = 0; path < paths.Length; path++)
+        while (currentProgressId < paths.Length)
         {
-            data.SelectFileForActionWithUserTag(paths[path]);
-            LoginPage_Script.thisPage.Icon.transform.GetChild(1).GetComponent<Text>().text = "[Game Local]\nData Transfer " + (path + 1) + "/" + paths.Length + "...";
+            yield return StartCoroutine(CheckingProgressLoaded(paths[currentProgressId], currentProgressId));
 
-            switch (path)
-            {
-                case 1:
-                    data.LoadPointProgress();
-                    break;
+            LoginPage_Script.thisPage.Icon.transform.GetChild(1).GetComponent<Text>().text =
+                "[Game Local]\nData Transfer " + currentProgressId + " / " + paths.Length + "...";
 
-                case 2:
-                    data.LoadBattleProgress();
-                    break;
-
-                case 3:
-                    data.LoadAccountSettings();
-                    break;
-
-                case 4:
-                    data.LoadGameplaySettings();
-                    break;
-
-                case 5:
-                    data.LoadCharacterSettings();
-                    break;
-
-                case 6:
-                    data.LoadProfileState();
-                    break;
-
-                case 7:
-                    data.LoadCharacterStatsProgress();
-                    break;
-
-                case 8:
-                    data.LoadAllSkillsType();
-                    break;
-
-                case 9:
-                    data.LoadVirtualItemToPlayer();
-                    break;
-
-                default:
-                    data.LoadProgress();
-                    break;
-            }
+            currentProgressId++;
         }
 
-        // Finialize setup config
-        button.interactable = true;
-        MeloMelo_GameSettings.UpdateCharacterProfile();
-        SceneManager.LoadScene("Menu");
+        yield return new WaitForSeconds(0.5f);
+        LoadingUI.SetActive(false);
+    }
+
+    private IEnumerator CheckingProgressLoaded(string path, int id)
+    {
+        LocalLoad_DataManagement data = new LocalLoad_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+        data.SelectFileForActionWithUserTag(path);
+
+        switch (id)
+        {
+            case 0:
+                Task<List<ScoreDatabase>> isProgressScore = data.PreLoading_ScoreData();
+                yield return new WaitUntil(() => isProgressScore.IsCompleted);
+                yield return StartCoroutine(data.PostLoading_ScoreData(isProgressScore.Result.ToArray()));
+                break;
+
+            case 1:
+                Task<List<PointDatabase>> isProgressPoint = data.PreLoading_PointData();
+                yield return new WaitUntil(() => isProgressPoint.IsCompleted);
+                yield return StartCoroutine(data.PostLoading_PointData(isProgressPoint.Result.ToArray()));
+                break;
+
+            case 2:
+                Task<List<BattleProgressDatabase>> isProgressBattleData = data.PreLoading_BattleProgressData();
+                yield return new WaitUntil(() => isProgressBattleData.IsCompleted);
+                yield return StartCoroutine(data.PostLoading_BattleProgressData(isProgressBattleData.Result.ToArray()));
+                break;
+
+            case 3:
+                data.LoadAccountSettings();
+                break;
+
+            case 4: 
+                data.LoadGameplaySettings();
+                break;
+
+            case 5:               
+                data.LoadCharacterSettings();
+                break;
+
+            case 6:
+                data.LoadProfileData();
+                break;
+
+            case 7:
+                Task<List<BattleUnitDatabase>> isCharacterStatsReady = data.PreLoading_CharacterStatsData();
+                yield return new WaitUntil(() => isCharacterStatsReady.IsCompleted);
+                yield return StartCoroutine(data.PostLoading_CharacterStatsData(isCharacterStatsReady.Result.ToArray()));
+                break;
+
+            case 8:
+                Task<List<SkillUnitDatabase>> isSkillsLoaded = data.PreLoading_SkillsData();
+                yield return new WaitUntil(() => isSkillsLoaded.IsCompleted);
+                yield return StartCoroutine(data.PostLoading_SkillsData(isSkillsLoaded.Result.ToArray()));
+                break;
+
+            case 9:
+                Task<bool> isVirtualItemLoaded = data.PreLoading_VirtualItemData();
+                yield return new WaitUntil(() => isVirtualItemLoaded.IsCompleted);
+                Debug.Log("Total Item Stored: " + MeloMelo_ItemUsage_Settings.GetActiveItems().Length);
+                break;
+
+            case 10:
+                Task<List<AdventureStoreData>> isAdventureDataLoaded = data.Preloading_AdventureModeData();
+                yield return new WaitUntil(() => isAdventureDataLoaded.IsCompleted);
+                yield return StartCoroutine(data.PostLoading_AdventureModeData(isAdventureDataLoaded.Result.ToArray()));
+                break;
+
+            default:
+                break;
+        }
     }
     #endregion
 
@@ -238,9 +290,9 @@ public class GuestLogin_Script : MonoBehaviour
 
     private void LoadExistingPlayerProfile()
     {
-        PlayerMenu[PlayerPrefs.HasKey("AccountSync") ? 1 : 0].SetActive(true);
+        PlayerMenu[MeloMelo_PlayerSettings.GetLocalUserAccount() ? 1 : 0].SetActive(true);
 
-        if (PlayerPrefs.HasKey("AccountSync"))
+        if (MeloMelo_PlayerSettings.GetLocalUserAccount())
         {
             Player_Name.text = PlayerPrefs.GetString("AccountSync_PlayerID");
             UpdateGuestEntryName(PlayerPrefs.GetString("AccountSync_PlayerID"));
@@ -257,8 +309,8 @@ public class GuestLogin_Script : MonoBehaviour
     #region MAIN (NEW FEATURES!)
     public void RejectUsingExistingPlayer()
     {
-        PlayerPrefs.DeleteKey("AccountSync");
-        UnityEngine.SceneManagement.SceneManager.LoadScene("LoginPage3");
+        MeloMelo_PlayerSettings.GetLocalUserAccount(2);
+        SceneManager.LoadScene("LoginPage3");
     }
     #endregion
 

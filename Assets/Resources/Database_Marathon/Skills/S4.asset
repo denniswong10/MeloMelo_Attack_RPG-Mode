@@ -13,11 +13,24 @@ MonoBehaviour:
   m_Name: S4
   m_EditorClassIdentifier: 
   title: Low Class Course
+  trackList:
+  - title: M1
+    areaName: Witch Woods
+    DifficultyType: 2
+  - title: M45
+    areaName: Lime Forestry
+    DifficultyType: 2
+  - title: M4
+    areaName: Nothern Ruins
+    DifficultyType: 2
+  - title: M17
+    areaName: Lakeside Village
+    DifficultyType: 2
   Difficultylevel:
   - 12
   - 12
   - 13
   - 13
-  DifficultyType: 02000000020000000200000002000000
   clearingType: 2
   clearingValue: 4/10
+  conditionAddons: []

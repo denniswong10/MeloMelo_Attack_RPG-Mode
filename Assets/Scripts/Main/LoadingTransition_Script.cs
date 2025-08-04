@@ -37,13 +37,23 @@ public class LoadingTransition_Script : MonoBehaviour
 
         // Filling in of all track information to dash
         GameObject.Find("BG").GetComponent<RawImage>().texture =
-                !PlayerPrefs.HasKey("MarathonPermit") ? PreSelection_Script.thisPre.get_AreaData.BG :
-                Resources.Load<Texture>("Background/BG11");
+                !PlayerPrefs.HasKey("MarathonPermit") && !PlayerPrefs.HasKey("Mission_Played") ? PreSelection_Script.thisPre.get_AreaData.BG : PlayerPrefs.HasKey("Mission_Played") ?
+                Resources.Load<Texture>("Background/BG1C") : Resources.Load<Texture>("Background/BG11");
 
-        GameObject.Find("Artist").GetComponent<Text>().text = "[ " + SelectionMenu_Script.thisSelect.get_selection.get_form.ArtistName + " ]";
-        GameObject.Find("Title").GetComponent<Text>().text = SelectionMenu_Script.thisSelect.get_selection.get_form.Title;
-        GameObject.Find("CoverImage").GetComponent<RawImage>().texture = SelectionMenu_Script.thisSelect.get_selection.get_form.Background_Cover;
-        GameObject.Find("Designer").GetComponent<Text>().text = "Played as " + userInput;
+        if (PlayerPrefs.HasKey("Mission_Played"))
+        {
+            GameObject.Find("Artist").GetComponent<Text>().text = "[ " + StoryMode_Scripts.thisStory.missionTrack.ArtistName + " ]";
+            GameObject.Find("Title").GetComponent<Text>().text = StoryMode_Scripts.thisStory.missionTrack.Title;
+            GameObject.Find("CoverImage").GetComponent<RawImage>().texture = StoryMode_Scripts.thisStory.missionTrack.Background_Cover;
+            GameObject.Find("Designer").GetComponent<Text>().text = "Played as " + userInput;
+        }
+        else
+        {
+            GameObject.Find("Artist").GetComponent<Text>().text = "[ " + SelectionMenu_Script.thisSelect.get_selection.get_form.ArtistName + " ]";
+            GameObject.Find("Title").GetComponent<Text>().text = SelectionMenu_Script.thisSelect.get_selection.get_form.Title;
+            GameObject.Find("CoverImage").GetComponent<RawImage>().texture = SelectionMenu_Script.thisSelect.get_selection.get_form.Background_Cover;
+            GameObject.Find("Designer").GetComponent<Text>().text = "Played as " + userInput;
+        }
 
         // Identify level difficulty and level value
         switch (PlayerPrefs.GetInt("DifficultyLevel_valve", 1))

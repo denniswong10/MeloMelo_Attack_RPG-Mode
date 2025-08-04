@@ -13,11 +13,24 @@ MonoBehaviour:
   m_Name: S13
   m_EditorClassIdentifier: 
   title: Legend Class Course
+  trackList:
+  - title: M1
+    areaName: Winter Haunted House
+    DifficultyType: 2
+  - title: M12
+    areaName: Journey Through Cold
+    DifficultyType: 2
+  - title: M3
+    areaName: Frost Kingdom
+    DifficultyType: 3
+  - title: M15
+    areaName: Journey Through Cold
+    DifficultyType: 3
   Difficultylevel:
   - 15
   - 15
   - 15
   - 15
-  DifficultyType: 02000000020000000200000002000000
   clearingType: 0
   clearingValue: SS
+  conditionAddons: []

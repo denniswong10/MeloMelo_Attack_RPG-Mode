@@ -35395,7 +35395,9 @@ GameObject:
   - component: {fileID: 4226965774294473643}
   - component: {fileID: 4559445486149952783}
   - component: {fileID: 5581128561629818845}
+  - component: {fileID: 1116381550355773852}
   - component: {fileID: 6759164266255574845}
+  - component: {fileID: 5403374995898651052}
   m_Layer: 0
   m_Name: Note3
   m_TagString: note
@@ -35460,11 +35462,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e761b3c6e3cab534886ac07f19373698, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isJudged: 0
   note_index: 1
   note_define_index: 4
   NotePos: 0
   hit_cycle: 0
+--- !u!114 &1116381550355773852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5132167530891926794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b0215705ee3b3d449555cdf3f369d4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   judgeline: {fileID: 0}
 --- !u!114 &6759164266255574845
 MonoBehaviour:
@@ -35476,5 +35489,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3687bc7f30773c44280d9cb4766c32ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5403374995898651052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5132167530891926794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d973162db72d4204c838dc864a1c9865, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

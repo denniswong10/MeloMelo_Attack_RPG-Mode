@@ -30,6 +30,7 @@ public class BeatConductor : MonoBehaviour
     private decimal NextTickTime = 0.000m;
 
     private GameObject note;
+    private GameObject previousNote;
     public GameObject spawner;
     private bool startNote = false;
     public bool get_startNote { get { return startNote; } }
@@ -83,6 +84,9 @@ public class BeatConductor : MonoBehaviour
     public int speedIndex;
     public bool autoPlayField;
 
+    private double dspStartTime = 0;
+    private float preRollSpawnBuffer = 1.0f;
+
     // Loading up all component through the game
     void Start()
     {
@@ -90,17 +94,18 @@ public class BeatConductor : MonoBehaviour
 
         try
         {
-            Music_Database = ((PlayerPrefs.HasKey("Mission_Played")) ? BlackBoard_Scene.myBoard.get_musicData :
-            SelectionMenu_Script.thisSelect.get_selection.get_form);
+            Music_Database = PlayerPrefs.HasKey("Mission_Played") ? StoryMode_Scripts.thisStory.missionTrack : SelectionMenu_Script.thisSelect.get_selection.get_form;
         }
         catch { }
          
         GetComponent<AudioSource>().clip = Music_Database.Music;
         BPM_Calcuate = 60 / Music_Database.BPM;
         NextTickTime = (decimal)Time.time + ((decimal)Music_Database.offset / 1000);
+        currentDuration = 0f;
 
         // Gerenate score for playing
         Instantiate(Music_Database.ScoreObject, transform.position, Quaternion.identity);
+        PlayerPrefs.DeleteKey("TrackCompleted");
 
         musicPerformaceScore = PlayerPrefs.GetInt(Music_Database.Title + "_score" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0);
         Invoke("UpdateMusicInfo", 0.05f);
@@ -108,6 +113,7 @@ public class BeatConductor : MonoBehaviour
 
         // New Chart Content
         noteModding = Music_Database.addons3b;
+        //StartMusic();
     }
 
     void StartEncode()
@@ -140,7 +146,7 @@ public class BeatConductor : MonoBehaviour
         if (!GameManager.thisManager.DeveloperMode)
         {
             // Enable animator for music info
-            SideUI_MusicInfo.GetComponent<Animator>().enabled = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, 1) == 1;
+            SideUI_MusicInfo.GetComponent<Animator>().enabled = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey) == 1;
 
             // Get music info for modification upon play
             SideUI_MusicInfo.transform.GetChild(0).GetComponent<RawImage>().texture = Music_Database.Background_Cover;
@@ -165,43 +171,162 @@ public class BeatConductor : MonoBehaviour
 
         // Get battle progress ux alerting
         if (!GameManager.thisManager.DeveloperMode) TriggerWarningMeter();
+
+        if (Application.isEditor && Input.GetKeyDown(KeyCode.Y))
+        {
+            if (GetComponent<AudioSource>().isPlaying) GetComponent<AudioSource>().Pause();
+            else GetComponent<AudioSource>().Play();
+        }
     }
 
     // Warning! High Memory Capacity: Update Function
     void FixedUpdate()
     {
-        if (GetComponent<AudioSource>().isPlaying) { Music_Conductor(); }
+        if (NewTimingOnPlay() && dspStartTime > 0 && (float)AudioSettings.dspTime >= dspStartTime - preRollSpawnBuffer) Music_Conductor();
+        else if (GetComponent<AudioSource>().isPlaying) Music_Conductor_Old();
+
         else if (!GetComponent<AudioSource>().isPlaying && startNote && !printScore && GameManager.thisManager.DeveloperMode)
         {
             printScore = true;
-            myPrint.ScoringWriter();            
+            myPrint.ScoringWriter();
         }
     }
 
     #region MAIN
+    private bool NewTimingOnPlay()
+    {
+        int difficulty = PlayerPrefs.GetInt("DifficultyLevel_valve", 1);
+        if (Music_Database.timingAddons != null) foreach(NewTimingAddons addons in Music_Database.timingAddons) if (difficulty == addons.difficulty_index && addons.active) return true;
+        return false;
+    }
+
     // Music PlayThrough: Starting Point
+    //public void StartMusicButton()
+    //{
+    //    if (!GameManager.thisManager.DeveloperMode) { GameObject.Find("MidAlert").GetComponent<Animator>().SetTrigger("Close"); GameObject.Find("MidAlert").gameObject.SetActive(false); }
+
+    //    if (GameManager.thisManager.DeveloperMode) { myPrint.SongTitle(Music_Database.name); }
+    //    NextTickTime = (NewTimingOnPlay() ? (decimal)RunTimeWithLatency(true) : (decimal)RunTimeWithLatency(false)) + ((decimal)Music_Database.offset / 1000);
+
+    //    // Setup Video Background
+    //    VideoPlayerInstance();
+
+    //    // Begin Meter Indicator
+    //    SpawnMeterIndicatorInstance();
+
+    //    // Setup scoring format
+    //    ScoreInstanceFormat();
+
+    //    // Auto Gerenate Level Difficulty
+    //    LevelComplexityProgram(CreateScoringInstance());
+    //}
+
     public void StartMusicButton()
     {
-        if (!GameManager.thisManager.DeveloperMode) { GameObject.Find("MidAlert").GetComponent<Animator>().SetTrigger("Close"); GameObject.Find("MidAlert").gameObject.SetActive(false); }
+        if (!GameManager.thisManager.DeveloperMode)
+        {
+            Animator midAlert = GameObject.Find("MidAlert").GetComponent<Animator>();
+            midAlert.SetTrigger("Close");
+            midAlert.gameObject.SetActive(false);
+        }
+        else 
+            myPrint.SongTitle(Music_Database.name);
 
-        if (GameManager.thisManager.DeveloperMode) { myPrint.SongTitle(Music_Database.name); }
-        NextTickTime = (decimal)Time.time + ((decimal)Music_Database.offset / 1000);
+        if (NewTimingOnPlay())
+        {
+            float travelTime = CalculateNoteTravelTime();
+            float audioLatencyFinalValue = travelTime + PlayerPrefs.GetInt("AudioLatency_Id", 0) * 0.001f;
+            dspStartTime = AudioSettings.dspTime + audioLatencyFinalValue;
 
-        // Setup Video Background
-        VideoPlayerInstance();
+            GetComponent<AudioSource>().PlayScheduled(dspStartTime);
+            StartCoroutine(PlayWithDelayVideoBackground());
+            NextTickTime = (decimal)(Music_Database.offset / 1000.0);
+        }
+        else
+        {
+            NextTickTime = (decimal)Time.time + ((decimal)Music_Database.offset / 1000);
+            VideoPlayerInstance();
+        }
 
-        // Begin Meter Indicator
         SpawnMeterIndicatorInstance();
-
-        // Setup scoring format
         ScoreInstanceFormat();
-
-        // Auto Gerenate Level Difficulty
         LevelComplexityProgram(CreateScoringInstance());
     }
 
+
     // Score Reader: High Memory Capacity
     void Music_Conductor()
+    {
+        if (!startNote)
+        {
+            bool isNotationStarted = (decimal)RunTimeWithLatency() >= NextTickTime - (decimal)BPM_Calcuate;
+
+            if (isNotationStarted)
+            {
+                if (myData_Note2[0] != 0) { SpawnTargetAsNote(note, spawner.transform.position, true); }
+                if (whiteTick) GetTimingMarker(whiteTick);
+                startNote = true;
+            }
+        }
+
+        else if ((decimal)RunTimeWithLatency() >= NextTickTime)
+        {
+            if (!GameManager.thisManager.DeveloperMode && totalTickCounter < myData_Note2.Length)
+            {
+                bool check = false;
+
+                NextTickTime += (decimal)BPM_Calcuate;
+                totalTickCounter++;
+
+                if (Music_Database.UseBPMDisplay) Tick2_millseconds(4);
+                else Tick2_millseconds(4);
+
+                // Primary Note
+                if (ChartReader())
+                {
+                    GetLastMarker();
+                    check = true;
+                }
+
+                // Secondary Note
+                if (Music_Database.NewChartSystem)
+                {
+                    // Pattern Chart, Custom Properties Pattern
+                    if (NewChartPatternCreation() || NewChartPatternModded())
+                    {
+                        GetLastMarker();
+                        check = true;
+                    }
+                }
+
+                else if (Music_Database.UltimateAddons)
+                {
+                    // MultiCharting
+                    if (NewChartMultiplePattern())
+                    {
+                        GetLastMarker();
+                        check = true;
+                    }
+                }
+
+                // Get blank line
+                if (!check) GetTimingMarker(blankTick);
+            }
+            else if (GameManager.thisManager.DeveloperMode)
+            {
+                NextTickTime += (decimal)BPM_Calcuate;
+                totalTickCounter++;
+
+                if (myData_Note2[totalTickCounter] != 0) { SpawnTargetAsNote(note, new Vector3(Random.Range(-GameManager.thisManager.get_playField.get_limitBorder, GameManager.thisManager.get_playField.get_limitBorder), spawner.transform.position.y, spawner.transform.position.z), true); }
+                GameObject.Find("Ticker").GetComponent<Text>().text = "Total Tick: " + totalTickCounter;
+
+                Tick2_millseconds(4);
+                GameObject.Find("Tick2").GetComponent<Text>().text = seconds_H + " : " + milseconds_H;
+            }
+        }       
+    }
+
+    void Music_Conductor_Old()
     {
         if (!startNote && (decimal)Time.time >= NextTickTime - (decimal)BPM_Calcuate)
         {
@@ -212,7 +337,7 @@ public class BeatConductor : MonoBehaviour
 
         if ((decimal)Time.time >= NextTickTime)
         {
-            if (!GameManager.thisManager.DeveloperMode)
+            if (!GameManager.thisManager.DeveloperMode && totalTickCounter < myData_Note2.Length)
             {
                 bool check = false;
 
@@ -232,8 +357,18 @@ public class BeatConductor : MonoBehaviour
                 // Secondary Note
                 if (Music_Database.NewChartSystem)
                 {
-                    // MultiCharting, Pattern Chart, Custom Properties Pattern
-                    if (NewChartMultiplePattern() || NewChartPatternCreation() || NewChartPatternModded())
+                    // Pattern Chart, Custom Properties Pattern
+                    if (NewChartPatternCreation() || NewChartPatternModded())
+                    {
+                        GetLastMarker();
+                        check = true;
+                    }
+                }
+
+                else if (Music_Database.UltimateAddons)
+                {
+                    // MultiCharting
+                    if (NewChartMultiplePattern())
                     {
                         GetLastMarker();
                         check = true;
@@ -243,7 +378,7 @@ public class BeatConductor : MonoBehaviour
                 // Get blank line
                 if (!check) GetTimingMarker(blankTick);
             }
-            else
+            else if (GameManager.thisManager.DeveloperMode)
             {
                 NextTickTime = (decimal)Time.time + (decimal)BPM_Calcuate;
                 totalTickCounter++;
@@ -256,76 +391,81 @@ public class BeatConductor : MonoBehaviour
             }
         }
     }
+
+    private float RunTimeWithLatency()
+    {
+        float latency = PlayerPrefs.GetInt("InputLatency_Id", 0) * 0.001f;
+        return (float)(AudioSettings.dspTime - dspStartTime + latency);
+    }
+
+    private float CalculateNoteTravelTime()
+    {
+        float distance = Mathf.Abs(spawner.transform.position.z - GameObject.Find("Judgement Line").transform.position.z);
+        float noteSpeedPerSecond = noteSpeed * get_BPM_Calcuate;
+
+        return distance / noteSpeedPerSecond;
+    }
     #endregion
 
     #region COMPONENT
-    private void PlayAudioClip() { GetComponent<AudioSource>().Play(); }
-
     // Level Builder: Complexity Program
     private void LevelComplexityProgram(ScoringMeter indicator)
     {
         if (!GameManager.thisManager.DeveloperMode)
         {
-            if (PlayerPrefs.HasKey("Mission_Played"))
+            if (SelectionMenu_Script.thisSelect == null)
             {
-                SideUI_MusicInfo.transform.GetChild(3).GetChild(0).GetComponent<Text>().text = "SPECIAL";
+                print("Difficulty: ???");
 
-                Color32 myC = new Color32(193, 0, 255, 255);
-                SideUI_MusicInfo.transform.GetChild(3).GetComponent<RawImage>().color = myC;
+                switch (PlayerPrefs.GetInt("DifficultyLevel_valve", 1))
+                {
+                    case 1:
+                        PlayerPrefs.SetString("Difficulty_Normal_selectionTxt",
+                            ((indicator.get_difficultyLevel - ((int)indicator.get_difficultyLevel + 0.5f) > 0f &&
+                            indicator.get_difficultyLevel > 5) ? (int)indicator.get_difficultyLevel + "+" : (int)indicator.get_difficultyLevel + "")
+                            );
+                        break;
+
+                    case 2:
+                        PlayerPrefs.SetString("Difficulty_Hard_selectionTxt",
+                            ((indicator.get_difficultyLevel - ((int)indicator.get_difficultyLevel + 0.5f) > 0f &&
+                            indicator.get_difficultyLevel > 10) ? (int)indicator.get_difficultyLevel + "+" : (int)indicator.get_difficultyLevel + "")
+                            );
+                        break;
+                }
             }
-            else
+
+            if (PlayerPrefs.GetInt("DifficultyLevel_valve", 1) == 1)
             {
-                if (SelectionMenu_Script.thisSelect == null)
-                {
-                    print("Difficulty: ???");
+                SideUI_MusicInfo.transform.GetChild(3).GetChild(0).GetComponent<Text>().text = "Normal [LV. " + PlayerPrefs.GetString("Difficulty_Normal_selectionTxt", "?") + "]";
+                SideUI_MusicInfo.transform.GetChild(3).GetComponent<RawImage>().color = Color.blue;
 
-                    switch (PlayerPrefs.GetInt("DifficultyLevel_valve", 1))
-                    {
-                        case 1:
-                            PlayerPrefs.SetString("Difficulty_Normal_selectionTxt",
-                                ((indicator.get_difficultyLevel - ((int)indicator.get_difficultyLevel + 0.5f) > 0f &&
-                                indicator.get_difficultyLevel > 5) ? (int)indicator.get_difficultyLevel + "+" : (int)indicator.get_difficultyLevel + "")
-                                );
-                            break;
-
-                        case 2:
-                            PlayerPrefs.SetString("Difficulty_Hard_selectionTxt",
-                                ((indicator.get_difficultyLevel - ((int)indicator.get_difficultyLevel + 0.5f) > 0f &&
-                                indicator.get_difficultyLevel > 10) ? (int)indicator.get_difficultyLevel + "+" : (int)indicator.get_difficultyLevel + "")
-                                );
-                            break;
-                    }
-                }
-
-                if (PlayerPrefs.GetInt("DifficultyLevel_valve", 1) == 1)
-                {
-                    SideUI_MusicInfo.transform.GetChild(3).GetChild(0).GetComponent<Text>().text = "Normal [LV. " + PlayerPrefs.GetString("Difficulty_Normal_selectionTxt", "?") + "]";
-                    SideUI_MusicInfo.transform.GetChild(3).GetComponent<RawImage>().color = Color.blue;
-
-                }
-                else if (PlayerPrefs.GetInt("DifficultyLevel_valve", 1) == 2)
-                {
-                    SideUI_MusicInfo.transform.GetChild(3).GetChild(0).GetComponent<Text>().text = (indicator.get_difficultyLevel >= 16 ? "Expert [LV. " : "Hard [LV. ") + PlayerPrefs.GetString("Difficulty_Hard_selectionTxt", "?") + "]";
-                    SideUI_MusicInfo.transform.GetChild(3).GetComponent<RawImage>().color = (indicator.get_difficultyLevel >= 16 ? new Color(1, 0.09f, 0.87f) : indicator.get_difficultyLevel >= 11 ? new Color(0.47f, 0, 1) : Color.red);
-                }
-                else if (PlayerPrefs.GetInt("DifficultyLevel_valve", 1) == 3)
-                {
-                    SideUI_MusicInfo.transform.GetChild(3).GetChild(0).GetComponent<Text>().text = "Ulimate [LV. " + PlayerPrefs.GetString("Difficulty_Ultimate_selectionTxt", "?") + "]";
-                    SideUI_MusicInfo.transform.GetChild(3).GetComponent<RawImage>().color = new Color(1, 0.4f, 0);
-                }
-
-                print("Difficulty Level: " + indicator.get_difficultyLevel);
-                PlayerPrefs.SetFloat("difficultyLevel_play2", indicator.get_difficultyLevel);
             }
+            else if (PlayerPrefs.GetInt("DifficultyLevel_valve", 1) == 2)
+            {
+                SideUI_MusicInfo.transform.GetChild(3).GetChild(0).GetComponent<Text>().text = (indicator.get_difficultyLevel >= 16 ? "Expert [LV. " : "Hard [LV. ") + PlayerPrefs.GetString("Difficulty_Hard_selectionTxt", "?") + "]";
+                SideUI_MusicInfo.transform.GetChild(3).GetComponent<RawImage>().color = (indicator.get_difficultyLevel >= 16 ? new Color(1, 0.09f, 0.87f) : indicator.get_difficultyLevel >= 11 ? new Color(0.47f, 0, 1) : Color.red);
+            }
+            else if (PlayerPrefs.GetInt("DifficultyLevel_valve", 1) == 3)
+            {
+                SideUI_MusicInfo.transform.GetChild(3).GetChild(0).GetComponent<Text>().text = "Ulimate [LV. " + PlayerPrefs.GetString("Difficulty_Ultimate_selectionTxt", "?") + "]";
+                SideUI_MusicInfo.transform.GetChild(3).GetComponent<RawImage>().color = new Color(1, 0.4f, 0);
+            }
+
+            print("Difficulty Level: " + indicator.get_difficultyLevel);
+            PlayerPrefs.SetFloat("difficultyLevel_play2", indicator.get_difficultyLevel);
         }
     }
 
     // Duration Function
     private void TrackDuration()
     {
-        currentDuration = (float)(AudioSettings.dspTime - dspSongTime);
-        if (currentDuration <= SongDuration)
+        if (currentDuration < SongDuration)
+        {
+            currentDuration = GetComponent<AudioSource>().time;
             GameObject.Find("Duration").GetComponent<Slider>().value = currentDuration;
+        }
+        //else if (PlayerPrefs.GetInt("TrackCompleted", 0) != 1) PlayerPrefs.SetInt("TrackCompleted", 1);
     }
 
     // Warning Alert: Battle Progress Meter
@@ -346,6 +486,36 @@ public class BeatConductor : MonoBehaviour
                 player.Play();
             }
         }
+    }
+
+    private IEnumerator PlayWithDelayVideoBackground()
+    {
+        // Wait until audio is scheduled to start (DSP-accurate)
+        while (AudioSettings.dspTime < dspStartTime)
+            yield return null;
+
+        if (!GameManager.thisManager.DeveloperMode &&
+            PlayerPrefs.GetString("MVOption", "T") == "T" &&
+            Music_Database.videoImport != null)
+        {
+            foreach (VideoPlayer player in GameObject.Find("MV").transform.GetComponentsInChildren<VideoPlayer>())
+            {
+                player.clip = Music_Database.videoImport;
+
+                player.errorReceived += (vp, msg) => Debug.LogError("Video Error: " + msg);
+                player.prepareCompleted += (vp) => Debug.Log("Video prepared.");
+
+                // Prepare and wait before playing
+                player.Prepare();
+
+                while (!player.isPrepared)
+                    yield return null;
+
+                player.Play(); // This now starts as close as possible to the audio
+            }
+        }
+        else
+            Debug.Log("Video Playing: Not Sucessful");
     }
 
     // Chart Modification: Component
@@ -411,7 +581,7 @@ public class BeatConductor : MonoBehaviour
             }
             else
             {
-                PlayAudioClip();
+                GetComponent<AudioSource>().Play();
                 Invoke("PlayVideoBackground", Music_Database.videoOffset);
             }
         }
@@ -436,22 +606,24 @@ public class BeatConductor : MonoBehaviour
 
     private ScoringMeter CreateScoringInstance()
     {
-        ScoringMeter indicator = new ScoringMeter
-            (0,
-            GameManager.thisManager.getGameplayComponent.getTotalEnemy,
-            GameManager.thisManager.getGameplayComponent.getTotalTraps,
-            GameManager.thisManager.getJudgeWindow.getOverallCombo,
-            myData_Note2
-            );
+        string allNoteString = string.Empty;
+        foreach (int note in myData_Note2) { allNoteString += note + ","; }
+        Debug.Log("Score Instance: " + allNoteString);
 
+        ScoringMeter indicator = new ScoringMeter(PlayerPrefs.GetInt("DifficultyLevel_valve", 1), myData_Note2);
         return indicator;
     }
 
     private void GetTimingMarker(GameObject obj)
     {
-        GameObject line = Instantiate(obj);
-        line.transform.position = new Vector3(spawner.transform.position.x, 0.05f, spawner.transform.position.z);
-        line.transform.localScale = new Vector3(spawner.transform.localScale.x, line.transform.localScale.y, line.transform.localScale.z);
+        if (PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetSpeedMeter_ValueKey) == 0)
+        {
+            GameObject line = Instantiate(obj);
+            GetComponent<NotationManager>().AddMargin(line);
+
+            line.transform.position = new Vector3(spawner.transform.position.x, 0.05f, spawner.transform.position.z);
+            line.transform.localScale = new Vector3(spawner.transform.localScale.x, line.transform.localScale.y, line.transform.localScale.z);
+        }    
     }
 
     private void GetLastMarker()
@@ -471,14 +643,23 @@ public class BeatConductor : MonoBehaviour
             switch (myData_Note2[totalTickCounter])
             {
                 case 1:
+                case 5:
+                case 9:
+                    previousNote = note;
+                    note = noteDataArray[myData_Note2[totalTickCounter] - 1];
+                    SpawnTargetAsNote(note, new Vector3(GameObject.Find("Boss").transform.position.x, spawner.transform.position.y, spawner.transform.position.z), true);
+
+                    spawnCounter++;
+                    isSpawn = true;
+                    break;
+
                 case 2:
                 case 3:
                 case 4:
-                case 5:
                 case 6:
                 case 7:
                 case 8:
-                case 9:
+                    previousNote = null;
                     note = noteDataArray[myData_Note2[totalTickCounter] - 1];
                     SpawnTargetAsNote(note, new Vector3(GameObject.Find("Boss").transform.position.x, spawner.transform.position.y, spawner.transform.position.z), true);
                     
@@ -487,6 +668,7 @@ public class BeatConductor : MonoBehaviour
                     break;
 
                 case 93: // Item 3
+                    previousNote = null;
                     note = noteDataArray[noteDataArray.ToArray().Length - 1];
                     SpawnTargetAsNote(note, new Vector3(GameObject.Find("Boss").transform.position.x, spawner.transform.position.y, spawner.transform.position.z), true);
 
@@ -524,6 +706,9 @@ public class BeatConductor : MonoBehaviour
                 {
                     if (chart.FirstLane != 0)
                     {
+                        if (chart.FirstLane == 1 || chart.FirstLane == 5 || chart.FirstLane == 9) previousNote = note;
+                        else previousNote = null;
+
                         note = Resources.Load<GameObject>("Prefabs/Note/Note" + chart.FirstLane);
                         SpawnTargetAsNote(note, new Vector3(-0.2f * chart.LaneSpacing, spawner.transform.position.y, spawner.transform.position.z), true);
                         spawnCounter++;
@@ -531,6 +716,9 @@ public class BeatConductor : MonoBehaviour
 
                     if (chart.SecondLane != 0)
                     {
+                        if (chart.SecondLane == 1 || chart.SecondLane == 5 || chart.SecondLane == 9) previousNote = note;
+                        else previousNote = null;
+
                         note = Resources.Load<GameObject>("Prefabs/Note/Note" + chart.SecondLane);
                         SpawnTargetAsNote(note, new Vector3(-0.1f * chart.LaneSpacing, spawner.transform.position.y, spawner.transform.position.z), true);
                         spawnCounter++;
@@ -538,6 +726,9 @@ public class BeatConductor : MonoBehaviour
 
                     if (chart.ThirdLane != 0)
                     {
+                        if (chart.ThirdLane == 1 || chart.ThirdLane == 5 || chart.ThirdLane == 9) previousNote = note;
+                        else previousNote = null;
+
                         note = Resources.Load<GameObject>("Prefabs/Note/Note" + chart.ThirdLane);
                         SpawnTargetAsNote(note, new Vector3(0, spawner.transform.position.y, spawner.transform.position.z + chart.zOffset), true);
                         spawnCounter++;
@@ -545,6 +736,9 @@ public class BeatConductor : MonoBehaviour
 
                     if (chart.FourthLane != 0)
                     {
+                        if (chart.FourthLane == 1 || chart.FourthLane == 5 || chart.FourthLane == 9) previousNote = note;
+                        else previousNote = null;
+
                         note = Resources.Load<GameObject>("Prefabs/Note/Note" + chart.FourthLane);
                         SpawnTargetAsNote(note, new Vector3(0.1f * chart.LaneSpacing, spawner.transform.position.y, spawner.transform.position.z), true);
                         spawnCounter++;
@@ -552,6 +746,9 @@ public class BeatConductor : MonoBehaviour
 
                     if (chart.FifthLane != 0)
                     {
+                        if (chart.FifthLane == 1 || chart.FifthLane == 5 || chart.FifthLane == 9) previousNote = note;
+                        else previousNote = null;
+
                         note = Resources.Load<GameObject>("Prefabs/Note/Note" + chart.FifthLane);
                         SpawnTargetAsNote(note, new Vector3(0.2f * chart.LaneSpacing, spawner.transform.position.y, spawner.transform.position.z), true);
                         spawnCounter++;
@@ -582,6 +779,9 @@ public class BeatConductor : MonoBehaviour
                         {
                             if (col.PrimaryNote != 0)
                             {
+                                if (col.PrimaryNote == 1 || col.PrimaryNote == 5 || col.PrimaryNote == 9) previousNote = note;
+                                else previousNote = null;
+
                                 note = col.PrimaryNote == 93 ? noteDataArray[noteDataArray.ToArray().Length - 1] : noteDataArray[col.PrimaryNote - 1];
                                 note.GetComponent<Note_Script>().hit_cycle = col.hitDelay;
 
@@ -626,6 +826,10 @@ public class BeatConductor : MonoBehaviour
                             {
                                 foreach (PatternLane col in row.noteOutput)
                                 {
+                                    if (GetChartModificationPrimaryNote(mod, col.PrimaryNote) == 1 || GetChartModificationPrimaryNote(mod, col.PrimaryNote) == 5 ||
+                                        GetChartModificationPrimaryNote(mod, col.PrimaryNote) == 9) previousNote = note;
+                                    else previousNote = null;
+
                                     note = GetChartModificationPrimaryNote(mod, col.PrimaryNote) == 93 ? 
                                         noteDataArray[noteDataArray.ToArray().Length - 1] : noteDataArray[GetChartModificationPrimaryNote(mod, col.PrimaryNote) - 1];
                                     Vector3 position = new Vector3(
@@ -654,7 +858,10 @@ public class BeatConductor : MonoBehaviour
     private void SpawnTargetAsNote(GameObject target, Vector3 plotPoint, bool condition)
     {
         GameObject note = Instantiate(target, plotPoint, Quaternion.identity);
-        if (condition) note.GetComponent<Note_Script>().JudgeLineToggle();
+        note.GetComponent<Notation_Motion_Script>().SetNoteHitOnPrevious(previousNote);
+        GetComponent<NotationManager>().AddNote(note);
+
+        if (condition) note.GetComponent<Notation_Visual_Script>().JudgeLineToggle();
     }
     #endregion
 

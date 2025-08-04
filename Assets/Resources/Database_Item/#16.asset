@@ -16,8 +16,8 @@ MonoBehaviour:
   Icon: {fileID: 2800000, guid: a6a09ce5e2210b84dbcdade71ad57165, type: 3}
   stackable: 1
   thisItemType: 1
-  description: "Allow a character to learn a skill or upgrade of their grade by 1.
-    \nThis ticket only valid for used on secondary skill."
+  description: Allow a character to learn a skill or upgrade of their grade by 1.
+    This ticket only valid for used on secondary skill.
   itemValue: 20
   NoQuantityLimit: 0
   CreditSet: 0

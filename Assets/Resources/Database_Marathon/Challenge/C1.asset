@@ -13,11 +13,28 @@ MonoBehaviour:
   m_Name: C1
   m_EditorClassIdentifier: 
   title: Basic 1
+  trackList:
+  - title: M11
+    areaName: Kingdom of Tiles
+    DifficultyType: 1
+  - title: M74
+    areaName: MeloLand
+    DifficultyType: 1
+  - title: M54
+    areaName: MeloLand
+    DifficultyType: 1
+  - title: M3
+    areaName: MeloLand
+    DifficultyType: 1
   Difficultylevel:
   - 1
   - 1
   - 2
   - 3
-  DifficultyType: 01000000010000000100000001000000
   clearingType: 1
   clearingValue: 100
+  conditionAddons:
+  - judgeTitle: 3
+    judgeCount: 2
+  - judgeTitle: 4
+    judgeCount: 5

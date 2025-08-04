@@ -1,35 +1,26 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using MeloMelo_RatingMeter;
 
 public class Menu : MonoBehaviour
 {
-    public static Menu thisMenu;
     private GameObject[] BGM;
-
-    private RatePointIndicator Profile = new RatePointIndicator();
-    public Text[] menuContentTxt;
+    [SerializeField] private Text CurrentVersion;
+    [SerializeField] private Text LatestVersion;
 
     [Header("NewsUpdate Component")]
     public RawImage Display_ReportError;
     public GameObject NewsBoard;
     public Text NewsBlockElement;
 
-    private string userInput;
-
     void Start()
     {
-        thisMenu = this;
-        userInput = LoginPage_Script.thisPage.GetUserPortOutput();
-
         BGM_Setup();
         CallUpOptionTask();
     }
 
-    #region SETUP 
+    #region SETUP
     private void BGM_Setup()
     {
         BGM = GameObject.FindGameObjectsWithTag("BGM");
@@ -39,7 +30,8 @@ public class Menu : MonoBehaviour
     private void CallUpOptionTask()
     {
         // Top Section: Profile, Version
-        Profile.ProfileUpdate(userInput, true, "Played Count: ", "Rate Point: ");
+        RatePointIndicator profile = new RatePointIndicator("Profile");
+        profile.ProfileUpdate(LoginPage_Script.thisPage.GetUserPortOutput(), "Played Count: ", "Rate Point: ");
         VersionUpdate();
 
         // Right Section: News Report
@@ -57,19 +49,12 @@ public class Menu : MonoBehaviour
     #endregion
 
     #region COMPONENT
-    private bool CheckingNetworkReachable()
-    {
-        if (PlayerPrefs.GetInt("serverEnable", 0) == 1) return true;
-        else return false;
-    }
-
     private void VersionUpdate()
     {
         string latestBuild = PlayerPrefs.GetString("GameLatest_Update", string.Empty);
 
-        menuContentTxt[0].text = "CURRENT VERSION: " + StartMenu_Script.thisMenu.get_version;
-        if (latestBuild != string.Empty) { menuContentTxt[2].text = "LATEST VERSION: " + latestBuild; }
-        else { menuContentTxt[2].text = string.Empty; }
+        if (CurrentVersion != null) CurrentVersion.text = "CURRENT VERSION: " + StartMenu_Script.thisMenu.version;
+        if (LatestVersion != null) LatestVersion.text = latestBuild != string.Empty ? ("LATEST VERSION: " + latestBuild) : string.Empty;
     }
     #endregion
 
@@ -106,7 +91,7 @@ public class Menu : MonoBehaviour
     {
         if (Application.internetReachability != NetworkReachability.NotReachable)
         {
-            if (PlayerPrefs.HasKey("AccountSync") && PlayerPrefs.HasKey("MeloMelo_NewsReport_Daily"))
+            if (MeloMelo_PlayerSettings.GetLocalUserAccount() && PlayerPrefs.HasKey("MeloMelo_NewsReport_Daily"))
             {
                 string reportFormat = PlayerPrefs.GetString("MeloMelo_NewsReport_Daily");
                 NewsReportList reportListing = new NewsReportList().GetReportArray(reportFormat);

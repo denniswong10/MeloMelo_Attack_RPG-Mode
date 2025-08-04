@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: C3
   m_EditorClassIdentifier: 
   title: Intermidate 1
+  trackList: []
   Difficultylevel:
   - 9
   - 10
   - 11
   - 12
-  DifficultyType: 02000000020000000200000002000000
   clearingType: 0
   clearingValue: B
+  conditionAddons: []

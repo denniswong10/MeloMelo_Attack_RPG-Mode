@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Scroll Of Wisdom
   useTypeDetail: 3
-  dataArray: "{\"title\":\"Select stats to be reset\",\"choice\":\"STR*VIT*MAG\"}@\r{\"title\":\"Select
-    stats need to be re-assign\",\"choice\":\"STR*VIT*MAG\"}@{\"title\":\"Confirm
-    use for this item\",\"choice\":\"YES*NO\"}@^\r1"
+  dataArray: "{\"title\":\"Select stats need to be reset\",\"choice\":\"STR*VIT*MAG\"}@\r{\"title\":\"Select
+    stats need to be assign\",\"choice\":\"STR*VIT*MAG\"}@{\"title\":\"Confirm use
+    for this item\",\"choice\":\"YES*NO\"}@^\r1"

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: '#47'
   m_EditorClassIdentifier: 
   itemName: XP Edition Pack
-  Icon: {fileID: 2800000, guid: b7bc4d08eb8e36f4e825bf23bd2e40b9, type: 3}
+  Icon: {fileID: 2800000, guid: 6f172fef916a6f949b2eacec57e12965, type: 3}
   stackable: 1
   thisItemType: 0
   description: This pack contain different type of exp ticket which open through

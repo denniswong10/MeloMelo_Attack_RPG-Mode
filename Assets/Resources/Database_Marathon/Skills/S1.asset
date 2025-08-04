@@ -13,11 +13,16 @@ MonoBehaviour:
   m_Name: S1
   m_EditorClassIdentifier: 
   title: Basic Trial
+  trackList: []
   Difficultylevel:
   - 2
   - 3
   - 4
   - 5
-  DifficultyType: 01000000010000000100000001000000
   clearingType: 1
   clearingValue: 10
+  conditionAddons:
+  - judgeTitle: 3
+    judgeCount: 1
+  - judgeTitle: 4
+    judgeCount: 2

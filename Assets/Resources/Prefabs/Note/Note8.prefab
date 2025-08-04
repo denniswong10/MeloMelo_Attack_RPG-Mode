@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 1958954942810399288}
   - component: {fileID: 2370382439522812444}
   - component: {fileID: 4728061861135231468}
+  - component: {fileID: 793258668420171416}
+  - component: {fileID: 6295333732144528181}
   m_Layer: 0
   m_Name: Note8
   m_TagString: note
@@ -76,12 +78,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e761b3c6e3cab534886ac07f19373698, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isJudged: 0
   note_index: 2
   note_define_index: 2
   NotePos: 0.1
   hit_cycle: 0
+--- !u!114 &793258668420171416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6254613538997250656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b0215705ee3b3d449555cdf3f369d4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   judgeline: {fileID: 0}
+--- !u!114 &6295333732144528181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6254613538997250656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d973162db72d4204c838dc864a1c9865, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7094036414307787142
 GameObject:
   m_ObjectHideFlags: 0

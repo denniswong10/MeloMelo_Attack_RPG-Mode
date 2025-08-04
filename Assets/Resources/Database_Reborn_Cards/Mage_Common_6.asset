@@ -20,3 +20,4 @@ MonoBehaviour:
     awards_value: 2
   - awards_caterogy: 3
     awards_value: Treasure Hunt
+  masteryCost: 1

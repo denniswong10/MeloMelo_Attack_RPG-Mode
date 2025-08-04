@@ -13,11 +13,24 @@ MonoBehaviour:
   m_Name: S5
   m_EditorClassIdentifier: 
   title: High Class Course
+  trackList:
+  - title: M12
+    areaName: Witch Woods
+    DifficultyType: 2
+  - title: M7
+    areaName: Nothern Ruins
+    DifficultyType: 2
+  - title: M4
+    areaName: Lime Forestry
+    DifficultyType: 2
+  - title: M52
+    areaName: Lime Forestry
+    DifficultyType: 2
   Difficultylevel:
   - 14
   - 14
   - 15
   - 15
-  DifficultyType: 02000000020000000200000002000000
   clearingType: 2
   clearingValue: 4/5
+  conditionAddons: []

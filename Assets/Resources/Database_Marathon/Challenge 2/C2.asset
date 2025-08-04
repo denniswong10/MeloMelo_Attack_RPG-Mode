@@ -13,11 +13,16 @@ MonoBehaviour:
   m_Name: C2
   m_EditorClassIdentifier: 
   title: Basic 2
+  trackList: []
   Difficultylevel:
   - 6
   - 7
   - 7
   - 8
-  DifficultyType: 01000000010000000100000001000000
   clearingType: 1
   clearingValue: 200
+  conditionAddons:
+  - judgeTitle: 3
+    judgeCount: 2
+  - judgeTitle: 4
+    judgeCount: 5

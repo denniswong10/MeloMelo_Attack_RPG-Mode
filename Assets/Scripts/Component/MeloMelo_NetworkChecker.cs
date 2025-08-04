@@ -9,12 +9,13 @@ public class MeloMelo_NetworkChecker : MonoBehaviour
     public Texture[] server_log = new Texture[4];
     private enum ServerStatus { ERROR, OK, OFF };
 
-    private bool serverOpen = false;
-    public bool get_server { get { return serverOpen; } }
+    private bool serverOpen;
+    [SerializeField] private bool refreshConnection;
 
     // Start is called before the first frame update
     void Start()
     {
+        serverOpen = false;
         CheckForNetwork();
     }
 
@@ -28,7 +29,7 @@ public class MeloMelo_NetworkChecker : MonoBehaviour
                 return 0;
 
             default:
-                if (PlayerPrefs.GetString("GameWeb_URL", string.Empty) != string.Empty) GetServerCheckingData();
+                if (MeloMelo_PlayerSettings.GetWebServerUrl() != string.Empty) GetServerCheckingData();
                 else ChangeOfNetworkDisplay((int)ServerStatus.OFF + 1);
                 return 1;
         }
@@ -43,19 +44,22 @@ public class MeloMelo_NetworkChecker : MonoBehaviour
     #region MAIN
     private void CheckForNetwork()
     {
-        serverOpen = GetServerStatus() != 0;
+        if (refreshConnection) serverOpen = GetServerStatus() != 0;
+        else GetServerNetworkLive(PlayerPrefs.GetString("storeCache_Connection", "off"));
     }
     #endregion
 
     #region COMPONENT (NETWORK)
     private void GetServerCheckingData()
     {
-        MeloMelo_Network.CloudServices_ControlPanel services = new MeloMelo_Network.CloudServices_ControlPanel(PlayerPrefs.GetString("GameWeb_URL", string.Empty));
+        MeloMelo_Network.CloudServices_ControlPanel services = new MeloMelo_Network.CloudServices_ControlPanel(MeloMelo_PlayerSettings.GetWebServerUrl());
         StartCoroutine(services.CheckNetwork_GlobalStatus(gameObject, Application.productName));
     }
 
     public void GetServerNetworkLive(string received_status)
     {
+        PlayerPrefs.SetString("storeCache_Connection", received_status);
+
         switch (received_status)
         {
             case "off":

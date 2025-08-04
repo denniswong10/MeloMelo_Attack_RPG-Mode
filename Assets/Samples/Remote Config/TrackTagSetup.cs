@@ -34,7 +34,7 @@ public class TrackTagSetup : MonoBehaviour
 
     async void Start()
     {
-        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_GameSettings.LoginType.GuestLogin && AuthenticationService.Instance.IsSignedIn)
+        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_PlayerSettings.LoginType.GuestLogin && AuthenticationService.Instance.IsSignedIn)
         {
             await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
             JsonConvertTrackAssign();
@@ -58,7 +58,7 @@ public class TrackTagSetup : MonoBehaviour
     private void JsonConvertPlayEvent()
     {
         // Refresh: Every time event is started or ended
-        MeloMelo_GameSettings.LoadPlayEventRewards(RemoteConfigService.Instance.appConfig.GetJson("MeloMelo_PlayEvent_Reward"));
+        MeloMelo_ExtensionContent_Settings.LoadPlayEventRewards(RemoteConfigService.Instance.appConfig.GetJson("MeloMelo_PlayEvent_Reward"));
     }
     #endregion
 }

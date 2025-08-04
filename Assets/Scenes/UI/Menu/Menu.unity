@@ -2674,6 +2674,7 @@ MonoBehaviour:
   - {fileID: 2800000, guid: fab0c3310df655b43a0e7879a0b19427, type: 3}
   - {fileID: 2800000, guid: 68741554ab567c1479ddf1a71cf4d553, type: 3}
   - {fileID: 2800000, guid: df4fc63623060ee4d83875b3219bb03e, type: 3}
+  refreshConnection: 1
 --- !u!114 &366172335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4831,10 +4832,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b2ad3881890660439bed0f64d5be5e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  menuContentTxt:
-  - {fileID: 2071195487}
-  - {fileID: 85547933}
-  - {fileID: 1764181530}
+  CurrentVersion: {fileID: 2071195487}
+  LatestVersion: {fileID: 1764181530}
   Display_ReportError: {fileID: 1550425194}
   NewsBoard: {fileID: 86229883}
   NewsBlockElement: {fileID: 8504296150011716165, guid: 026cca5a9699bfe43b5f5b22271df2aa,

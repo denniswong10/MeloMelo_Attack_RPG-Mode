@@ -11,7 +11,7 @@ public class ItemData : ScriptableObject
     public Texture Icon;
     public bool stackable;
 
-    public enum ItemType { Item, Consumable, None };
+    public enum ItemType { Item, Consumable, Artifact, None };
     public ItemType thisItemType;
     [TextArea] public string description;
     public ushort itemValue;

@@ -24,6 +24,12 @@ public class FPS_Counter : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        bool isFpsOpen = QualitySettings.vSyncCount == 0;
+        gameObject.SetActive(isFpsOpen);
+    }
+
     void Update()
     {
         float current = 0;

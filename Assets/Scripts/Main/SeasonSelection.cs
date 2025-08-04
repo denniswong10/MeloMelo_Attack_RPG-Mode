@@ -49,7 +49,7 @@ public class SeasonSelection : MonoBehaviour
             content.transform.GetChild(0).GetComponent<RawImage>().texture = contentLog.Area_BG;
             content.transform.GetChild(1).GetComponent<Text>().text = contentLog.title;
             content.transform.GetChild(3).GetComponent<Text>().text = contentLog.sub_title;
-            content.transform.GetChild(4).GetChild(0).GetComponent<Text>().text = contentLog.chartType == ContentBundleData.ChartType.Legacy ? "LEGACY" : "NEW CHART";
+            content.transform.GetChild(4).GetChild(0).GetComponent<Text>().text = contentLog.ChartRepresentType();
             content.transform.GetChild(5).gameObject.SetActive(contentLog.newContent);
             content.transform.SetParent(contentLoader.transform);
         }
@@ -59,7 +59,7 @@ public class SeasonSelection : MonoBehaviour
     #region MAIN
     public void GoBackScene()
     {
-        SceneManager.LoadScene("Ref_PreSelection");
+        SceneManager.LoadScene(PlayerPrefs.HasKey("GatheringMode") ? "StoryMode" : "Ref_PreSelection");
     }
 
     public void ContinueTemplateSelection(bool requireEntry, int season_index)

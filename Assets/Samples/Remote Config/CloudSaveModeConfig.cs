@@ -25,7 +25,7 @@ public class CloudSaveModeConfig : MonoBehaviour
 
     private async void GetSetupReady()
     {
-        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_GameSettings.LoginType.GuestLogin)
+        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_PlayerSettings.LoginType.GuestLogin)
         {
             // Refresh the latest cloud data to local data
             await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
@@ -50,7 +50,7 @@ public class CloudSaveModeConfig : MonoBehaviour
     #region COMPONENT
     private bool GetSupportCloudService()
     {
-        string current = StartMenu_Script.thisMenu.get_version;
+        string current = StartMenu_Script.thisMenu.version;
 
         LatestVersionArray versionList = new LatestVersionArray().
             GetLatestVersion(RemoteConfigService.Instance.appConfig.GetJson("CloudSave_Support"));

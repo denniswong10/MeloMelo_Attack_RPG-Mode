@@ -47,33 +47,39 @@ public class MusicSelectionPage : MonoBehaviour
     [Header("Extra Setup: Tag Arrangement")]
     [SerializeField] private GameObject NewReleaseTag;
     [SerializeField] private GameObject AreaBonusTag;
+    [SerializeField] private GameObject ScoreTag;
 
     public void Setup_Page()
     {
         ScrollNagivatorSettings
             (
                 // Total Selection
-                PlayerPrefs.HasKey("MarathonPermit") ?
-                    Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length 
-                            :
-                            PreSelection_Script.thisPre.get_AreaData.totalMusic
+                PlayerPrefs.HasKey("Mission_Played") ? 1 :
+                PlayerPrefs.HasKey("MarathonPermit") && Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)) != null ?
+                        Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length :
+                PlayerPrefs.HasKey("MarathonPermit") ? 
+                        MeloMelo_ExtensionContent_Settings.LoadMarathonDetail(PlayerPrefs.GetInt("MarathonInstanceNumber", 0)).track_difficulty.Length :
+                        PreSelection_Script.thisPre.get_AreaData.totalMusic
                 ,
 
                 // Current Selection
-                PlayerPrefs.HasKey("MarathonPermit") ? PlayerPrefs.GetInt("MarathonChallenge_MCount") : PlayerPrefs.GetInt("LastSelection", 1)
-            ); 
+                PlayerPrefs.HasKey("Mission_Played") ? 1 : 
+                    PlayerPrefs.HasKey("MarathonPermit") ? PlayerPrefs.GetInt("MarathonChallenge_MCount") :
+                        PlayerPrefs.GetInt("LastSelection", 1)
+            );
 
         RefreshMusicInformationPanel
             (
                 // Area Assigned
+                PlayerPrefs.HasKey("Mission_Played") ? string.Empty :
                 PlayerPrefs.HasKey("MarathonPermit") ?
-                        PlayerPrefs.GetString("Marathon_Assigned_Area", string.Empty)
+                        PlayerPrefs.GetString("Marathon_Assigned_Area_" + (PlayerPrefs.GetInt("MarathonChallenge_MCount") - 1), string.Empty)
                         :
                         "Database_Area/" + PreSelection_Script.thisPre.get_AreaData.AreaName
                 ,
 
                 // Is play casual?
-                !PlayerPrefs.HasKey("MarathonPermit")
+                PlayerPrefs.HasKey("Mission_Played") ? true : !PlayerPrefs.HasKey("MarathonPermit")
             );
 
         GetNavAvaialbleToggle();
@@ -106,8 +112,8 @@ public class MusicSelectionPage : MonoBehaviour
     private void RefreshMusicInformationPanel(string areaLocated, bool casualMode)
     {
         // Load music database
-        MusicForm = Resources.Load<MusicScore>(areaLocated + "/M" + (casualMode ? ReservePickMode((int)ScrollNagivator_ProgressBar.value) :
-            PlayerPrefs.GetInt("MarathonChallenge_MCount")));
+        string formFiller = PlayerPrefs.HasKey("Mission_Played") ? string.Empty : (areaLocated + (casualMode ? "/M" + ReservePickMode((int)ScrollNagivator_ProgressBar.value) : string.Empty));
+        MusicForm = PlayerPrefs.HasKey("Mission_Played") ? StoryMode_Scripts.thisStory.missionTrack : Resources.Load<MusicScore>(formFiller);
 
         // Clear existing score sheet
         RemovePreviousScoreSheet();
@@ -128,7 +134,11 @@ public class MusicSelectionPage : MonoBehaviour
         if (SelectionMenu_Script.thisSelect.get_BGM)
         {
             if (SelectionMenu_Script.thisSelect.get_BGM.GetComponent<AudioSource>().volume != 1)
-            { SelectionMenu_Script.thisSelect.get_BGM.GetComponent<AudioSource>().volume = PlayerPrefs.GetFloat("BGM_VolumeGET", 1); }
+            { 
+                SelectionMenu_Script.thisSelect.get_BGM.GetComponent<AudioSource>().volume = 
+                    PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetBGM_ValueKey); 
+            }
+
             SelectionMenu_Script.thisSelect.get_BGM.GetComponent<AudioSource>().clip = MusicForm.Music;
             SelectionMenu_Script.thisSelect.get_BGM.GetComponent<AudioSource>().time = MusicForm.PreviewTime;
             SelectionMenu_Script.thisSelect.get_BGM.GetComponent<AudioSource>().Play();
@@ -143,6 +153,45 @@ public class MusicSelectionPage : MonoBehaviour
 
         // Load new score sheet
         LoadNewScoreSheet();
+    }
+
+    private IEnumerator SwitchChartTagMode()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        // Score Sheet Tag (Legacy, Modern, New)
+        for (int tag_id = 0; tag_id < ScoreTag.transform.childCount; tag_id++)
+            ScoreTag.transform.GetChild(tag_id).gameObject.SetActive(false);
+
+        int difficulty = PlayerPrefs.GetInt("DifficultyLevel_valve", 1);
+
+        if (MusicForm.timingAddons != null && MusicForm.timingAddons.Length > 0)
+        {
+            foreach (NewTimingAddons addons in MusicForm.timingAddons)
+            {
+                if (difficulty == addons.difficulty_index)
+                {
+                    if (addons.active)
+                    {
+                        int setVisibleTag = MusicForm.NewChartSystem ? 2 : 0;
+                        ScoreTag.transform.GetChild(setVisibleTag).gameObject.SetActive(true);
+                        break;
+                    }
+
+                    else
+                    {
+                        int setVisibleTag = MusicForm.NewChartSystem ? 1 : 0;
+                        ScoreTag.transform.GetChild(setVisibleTag).gameObject.SetActive(true);
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            int setVisibleTag = MusicForm.NewChartSystem ? 1 : 0;
+            ScoreTag.transform.GetChild(setVisibleTag).gameObject.SetActive(true);
+        }
     }
     #endregion
 
@@ -303,6 +352,8 @@ public class MusicSelectionPage : MonoBehaviour
         // Update GUI of color border and skill level
         selection.GetComponent<RawImage>().color = thisColor;
         SkillLevelValue.text = MusicForm.ScaleLevel + "/" + templateForm.ScaleLevel;
+
+        StartCoroutine(SwitchChartTagMode());
     }
 
     private void OnCheckEvent_DifficultyChanger(DifficultyValueIndex current)
@@ -328,6 +379,8 @@ public class MusicSelectionPage : MonoBehaviour
         // Update GUI of color border and skill level
         selection.GetComponent<RawImage>().color = thisColor;
         SkillLevelValue.text = MusicForm.ScaleLevel + "/" + templateForm.ScaleLevel;
+
+        StartCoroutine(SwitchChartTagMode());
     }
 
     private string GetDifficultySettings(DifficultyValueIndex setting)
@@ -447,7 +500,7 @@ public class MusicSelectionPage : MonoBehaviour
                 ModifyOfBattleButtonText(BattleBtnPrompt.Process);
 
             // Show Achievement Status
-            CheckForRestrictionTrack(PlayerPrefs.GetInt("DifficultyLevel_valve", 1));
+            CheckForUnlockableTrack(PlayerPrefs.GetInt("DifficultyLevel_valve", 1));
 
             //CancelInvoke("LoadAndWriteBestRecord");
             //Invoke("LoadAndWriteBestRecord", 3);
@@ -470,7 +523,7 @@ public class MusicSelectionPage : MonoBehaviour
         }
     }
 
-    private void CheckForRestrictionTrack(int difficulty)
+    private void CheckForUnlockableTrack(int difficulty)
     {
         if (MusicForm.SetRestriction)
         {
@@ -484,6 +537,25 @@ public class MusicSelectionPage : MonoBehaviour
                 ModifyOfBattleButtonText(BattleBtnPrompt.ContentLocked);
             }
         }
+
+        else if (MusicForm.unlockAbleContent && !PlayerPrefs.HasKey("MarathonPermit"))
+        {
+            string itemRequired = "Title Deed: " + MusicForm.titleDeed_for_Area + " Story Play";
+            VirtualItemDatabase itemForProve = MeloMelo_ItemUsage_Settings.GetActiveItem(itemRequired);
+
+            UserDetailFeedback[(int)UserDetailFeebackOrder.RestrictedContent].transform.GetChild(0).GetChild(1).GetComponent<Text>().text
+                = "Obtain " + itemRequired;
+
+            if (itemForProve.itemName != itemRequired)
+            {
+                // Get user interface to display
+                LoadUserFeedContent(UserDetailFeebackOrder.RestrictedContent);
+                ModifyOfBattleButtonText(BattleBtnPrompt.ContentLocked);
+            }
+            else
+                UpdateContentAchievementStatus(difficulty);
+        }
+
         else
             UpdateContentAchievementStatus(difficulty);
     }

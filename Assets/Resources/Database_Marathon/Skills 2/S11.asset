@@ -13,11 +13,24 @@ MonoBehaviour:
   m_Name: S11
   m_EditorClassIdentifier: 
   title: First Class Course
+  trackList:
+  - title: M4
+    areaName: Mounted City Town
+    DifficultyType: 1
+  - title: M26
+    areaName: Mounted City Town
+    DifficultyType: 2
+  - title: M19
+    areaName: Journey Through Cold
+    DifficultyType: 3
+  - title: M5
+    areaName: Frost Shaft
+    DifficultyType: 2
   Difficultylevel:
   - 14
   - 14
   - 14
   - 15
-  DifficultyType: 01000000020000000300000002000000
   clearingType: 2
   clearingValue: 4/10
+  conditionAddons: []

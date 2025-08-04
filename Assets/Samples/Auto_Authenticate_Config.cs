@@ -13,7 +13,7 @@ public class Auto_Authenticate_Config : MonoBehaviour
 
     void Start()
     {
-        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_GameSettings.LoginType.GuestLogin)
+        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_PlayerSettings.LoginType.GuestLogin)
         {
             if (AuthenticationService.Instance.IsSignedIn) AuthenticationService.Instance.SignOut();
             AuthenticateServerLogin();
@@ -73,7 +73,7 @@ public class Auto_Authenticate_Config : MonoBehaviour
 
     public void LogOff_AccountSync()
     {
-        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_GameSettings.LoginType.GuestLogin && AuthenticationService.Instance.IsSignedIn)
+        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_PlayerSettings.LoginType.GuestLogin && AuthenticationService.Instance.IsSignedIn)
            AuthenticationService.Instance.SignOut();
     }
     #endregion

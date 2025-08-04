@@ -18,3 +18,4 @@ MonoBehaviour:
   awards_settings:
   - awards_caterogy: 3
     awards_value: Divine Shield
+  masteryCost: 1

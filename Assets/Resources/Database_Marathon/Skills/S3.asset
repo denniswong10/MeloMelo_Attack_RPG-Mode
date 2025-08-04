@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: S3
   m_EditorClassIdentifier: 
   title: Advance Trial
+  trackList: []
   Difficultylevel:
   - 10
   - 11
   - 12
   - 13
-  DifficultyType: 02000000020000000200000002000000
   clearingType: 0
   clearingValue: S
+  conditionAddons: []

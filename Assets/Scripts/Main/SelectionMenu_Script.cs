@@ -64,7 +64,7 @@ public class SelectionMenu_Script : MonoBehaviour
     public Text UnitPower;
 
     private StatsDistribution getStats = new StatsDistribution();
-    private RatePointIndicator Profile = new RatePointIndicator();
+    private RatePointIndicator Profile;
     private QuickLook notice = new QuickLook();
 
     [Header("Additional Content")]
@@ -91,6 +91,8 @@ public class SelectionMenu_Script : MonoBehaviour
     void Start()
     {
         thisSelect = this;
+        Profile = new RatePointIndicator("Profile");
+
         local = new LocalLoad_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
             "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
         local.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileSelectionData);
@@ -106,14 +108,15 @@ public class SelectionMenu_Script : MonoBehaviour
     private void PlaySetup(bool casualMode)
     {
         // Attracted script: Init setup
-        int loadDifficultyName;
+        int loadDifficultyName = 1;
         selection = GetComponent<MusicSelectionPage>();
 
         // Load player rate point or played count
         LoadPlayerEconomy();
 
         // Load game background into selection
-        LoadSelectionContent(casualMode ? PreSelection_Script.thisPre.get_AreaData.BG : Resources.Load<Texture>("Background/BG11"));
+        if (!PlayerPrefs.HasKey("Mission_Played")) LoadSelectionContent(casualMode ? PreSelection_Script.thisPre.get_AreaData.BG : Resources.Load<Texture>("Background/BG11"));
+        else LoadSelectionContent(Resources.Load<Texture>("Background/BG1C"));
 
         // Load help guide for new player
         ShowBeginnerNotice();
@@ -123,30 +126,43 @@ public class SelectionMenu_Script : MonoBehaviour
         PlayerProfileQuickChecker.SetActive(!PlayerPrefs.HasKey("MarathonPermit"));
 
         // Load start difficulty selection upon it
-        if (casualMode)
+        if (!PlayerPrefs.HasKey("Mission_Played"))
         {
-            if (!PlayerPrefs.HasKey("LastSelection"))
+            if (casualMode)
             {
-                switch (LoginPage_Script.thisPage.portNumber)
+                if (!PlayerPrefs.HasKey("LastSelection"))
                 {
-                    case (int)MeloMelo_GameSettings.LoginType.TempPass:
-                        PlayerPrefs.SetInt("LastSelection", MeloMelo_GameSettings.GetLocalTrackSelectionLastVisited(PreSelection_Script.thisPre.get_AreaData.AreaName, 1));
-                        loadDifficultyName = MeloMelo_GameSettings.GetLocalTrackSelectionLastVisited(PreSelection_Script.thisPre.get_AreaData.AreaName, 2);
-                        break;
+                    switch (LoginPage_Script.thisPage.portNumber)
+                    {
+                        case (int)MeloMelo_PlayerSettings.LoginType.TempPass:
+                            PlayerPrefs.SetInt("LastSelection", MeloMelo_GameSettings.GetLocalTrackSelectionLastVisited(PreSelection_Script.thisPre.get_AreaData.AreaName, 1));
+                            loadDifficultyName = MeloMelo_GameSettings.GetLocalTrackSelectionLastVisited(PreSelection_Script.thisPre.get_AreaData.AreaName, 2);
+                            break;
 
-                    default:
-                        PlayerPrefs.SetInt("LastSelection", local.LoadSelectionPickProgress(PreSelection_Script.thisPre.get_AreaData.AreaName, 2));
-                        loadDifficultyName = local.LoadSelectionPickProgress(PreSelection_Script.thisPre.get_AreaData.AreaName, 1);
-                        break;
+                        default:
+                            PlayerPrefs.SetInt("LastSelection", local.LoadSelectionPickProgress(PreSelection_Script.thisPre.get_AreaData.AreaName, 2));
+                            loadDifficultyName = local.LoadSelectionPickProgress(PreSelection_Script.thisPre.get_AreaData.AreaName, 1);
+                            break;
+                    }
                 }
+                else
+                    loadDifficultyName = PlayerPrefs.GetInt("DifficultyLevel_valve", 1);
             }
             else
-                loadDifficultyName = PlayerPrefs.GetInt("DifficultyLevel_valve", 1);
-        }
-        else
-            loadDifficultyName = (int)Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).DifficultyType[
-                PlayerPrefs.GetInt("MarathonChallenge_MCount") - 1];
-  
+            {
+                if (PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty) != "CustomList")
+                {
+                    loadDifficultyName = (int)Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).trackList[
+                        PlayerPrefs.GetInt("MarathonChallenge_MCount") - 1].DifficultyType;
+                }
+                else
+                {
+                    BuildInChallengeInfo custom = new BuildInChallengeInfo();
+                    custom = MeloMelo_ExtensionContent_Settings.LoadMarathonDetail(PlayerPrefs.GetInt("MarathonInstanceNumber", 0));
+                    loadDifficultyName = custom.track_difficulty_mode[PlayerPrefs.GetInt("MarathonChallenge_MCount") - 1];
+                }
+            }
+        }          
 
         // Continue animate the selection panel for further setup
         StartCoroutine(OpeningSelection(casualMode, loadDifficultyName));
@@ -171,11 +187,23 @@ public class SelectionMenu_Script : MonoBehaviour
         // Final-Phase: Display
         if (!enableSelection)
         {
-            if (PlayerPrefs.GetInt("MarathonChallenge_MCount") >
-                Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length - 1)
+            try
             {
-                FinalPhaseDisplay.SetActive(true);
-                FinalPhaseDisplay.GetComponent<Animator>().SetBool("FinalPhase", true);
+                if (PlayerPrefs.GetInt("MarathonChallenge_MCount") >
+                Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length - 1)
+                {
+                    FinalPhaseDisplay.SetActive(true);
+                    FinalPhaseDisplay.GetComponent<Animator>().SetBool("FinalPhase", true);
+                }
+            }
+            catch
+            {
+                if (PlayerPrefs.GetInt("MarathonChallenge_MCount") >
+                MeloMelo_ExtensionContent_Settings.LoadMarathonDetail(PlayerPrefs.GetInt("MarathonInstanceNumber", 0)).track_difficulty.Length - 1)
+                {
+                    FinalPhaseDisplay.SetActive(true);
+                    FinalPhaseDisplay.GetComponent<Animator>().SetBool("FinalPhase", true);
+                }
             }
 
             // Display Stage Counter
@@ -189,7 +217,7 @@ public class SelectionMenu_Script : MonoBehaviour
 
         loadBGM = true;
         selection.Invoke("Setup_Page", 0.1f);
-        if (MeloMelo_GameSettings.GetEventRewardArray() != null) Invoke("PlayEventAlertBox", 0.5f);
+        if (MeloMelo_ExtensionContent_Settings.GetEventRewardArray() != null && !PlayerPrefs.HasKey("MarathonPermit")) Invoke("PlayEventAlertBox", 0.5f);
 
         // Cursor
         if (!Cursor.visible) Cursor.visible = true;
@@ -237,7 +265,7 @@ public class SelectionMenu_Script : MonoBehaviour
     private void LoadPlayerEconomy()
     {
         getStats.load_Stats();
-        Profile.ProfileUpdate(LoginPage_Script.thisPage.GetUserPortOutput(), false, string.Empty, string.Empty);
+        Profile.ProfileUpdate(LoginPage_Script.thisPage.GetUserPortOutput(), string.Empty, string.Empty);
     }
 
     private void ShowBeginnerNotice()
@@ -270,7 +298,9 @@ public class SelectionMenu_Script : MonoBehaviour
     private void CheckCounterDisplay()
     {
         // Init supporting content
-        int checkPoint_init = Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length;
+        int checkPoint_init = 0;
+        try { checkPoint_init = Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length; }
+        catch { checkPoint_init = MeloMelo_ExtensionContent_Settings.LoadMarathonDetail(PlayerPrefs.GetInt("MarathonInstanceNumber", 0)).track_difficulty.Length; }
         Debug.Log("Current Stage: " + PlayerPrefs.GetInt("MarathonChallenge_MCount"));
 
         // Display checkpoint view
@@ -351,7 +381,7 @@ public class SelectionMenu_Script : MonoBehaviour
 
     private bool GetLeaderBoardNetwork()
     {
-        bool condition = NetworkCofig.GetComponent<MeloMelo_NetworkChecker>().get_server;
+        bool condition = false;// NetworkCofig.GetComponent<MeloMelo_NetworkChecker>().get_server;
         LeaderBoard_rankingMode.text = condition ? "GLOBAL RANKING" : "LOCAL RANKING";
         return condition;
     }
@@ -406,7 +436,8 @@ public class SelectionMenu_Script : MonoBehaviour
         if (GameObject.Find("BGM").activeInHierarchy && BGM != null) { Destroy(BGM); }
         PlayerPrefs.DeleteKey("LastSelection");
 
-        if (PlayerPrefs.GetInt("Marathon_Challenge", 0) == 0) SceneManager.LoadScene("AreaSelection" + ResMelo);
+        if (PlayerPrefs.HasKey("Mission_Played")) SceneManager.LoadScene("StoryMode");
+        else if (PlayerPrefs.GetInt("Marathon_Challenge", 0) == 0) SceneManager.LoadScene("AreaSelection" + ResMelo);
         else { SceneManager.LoadScene("MarathonSelection"); }
     }
 
@@ -450,10 +481,10 @@ public class SelectionMenu_Script : MonoBehaviour
         PlayEventNotice.SetActive(true);
         bool isUpdateRequire = false;
 
-        foreach (PlayEventRewardData data in MeloMelo_GameSettings.GetEventRewardArray())
+        foreach (PlayEventRewardData data in MeloMelo_ExtensionContent_Settings.GetEventRewardArray())
         {
-            if (MeloMelo_GameSettings.GetVersionNumber(StartMenu_Script.thisMenu.get_version) <
-                MeloMelo_GameSettings.GetVersionNumber(data.version))
+            if (MeloMelo_ExtensionContent_Settings.GetVersionNumber(StartMenu_Script.thisMenu.version) <
+                MeloMelo_ExtensionContent_Settings.GetVersionNumber(data.version))
             {
                 isUpdateRequire = true;
                 break;
@@ -461,7 +492,7 @@ public class SelectionMenu_Script : MonoBehaviour
         }
 
         PlayEventNotice.transform.GetChild(0).GetChild(0).GetComponent<Text>().text =
-            GetPlayEventMessage(false, isUpdateRequire ? 
+            GetPlayEventMessage(MeloMelo_ExtensionContent_Settings.GetEventRewardArray().Length < 1, isUpdateRequire ? 
             "Game isn't up-to-date for this event" : 
             "Keep playing track to obtain reward");
 

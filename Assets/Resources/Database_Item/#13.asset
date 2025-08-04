@@ -16,8 +16,8 @@ MonoBehaviour:
   Icon: {fileID: 2800000, guid: 451978fe62486e5429ee96c4aa0602f8, type: 3}
   stackable: 1
   thisItemType: 0
-  description: "Can be exchange for in-game currency. \nThis coupon worth 10 credits
-    after reedem it. \nClick on this item again to reedem this coupon."
+  description: Can be exchange for in-game currency. This coupon worth 10 credits
+    after reedem it. Click on this item again to reedem this coupon.
   itemValue: 0
   NoQuantityLimit: 0
   CreditSet: 0

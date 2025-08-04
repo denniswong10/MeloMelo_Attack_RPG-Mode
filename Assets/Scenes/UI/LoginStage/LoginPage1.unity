@@ -734,8 +734,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 182713133}
-        m_TargetAssemblyTypeName: LoginAccount_Script, Scripts
-        m_MethodName: RegisterAccount
+        m_TargetAssemblyTypeName: OpenLogin_Script, Scripts
+        m_MethodName: Register
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -794,6 +794,7 @@ GameObject:
   - component: {fileID: 182713129}
   - component: {fileID: 182713128}
   - component: {fileID: 182713133}
+  - component: {fileID: 182713134}
   m_Layer: 5
   m_Name: GameInterface
   m_TagString: Untagged
@@ -915,13 +916,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 182713127}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 056e4bf274e1e994cb62ff8ee7421663, type: 3}
+  m_Script: {fileID: 11500000, guid: d5f68c4a72db76c4790a4ebd633a0125, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   userName: {fileID: 1432408303}
   passWord: {fileID: 2128297874}
-  LoginBtn: {fileID: 1420355627}
-  ServerID_Tag: {fileID: 1510889912}
+  loginBtn: {fileID: 1420355627}
+  serverID_Tag: {fileID: 1510889912}
+--- !u!114 &182713134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182713127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d54b924828aa3e49954bf77272b5435, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Icon: {fileID: 93175664}
 --- !u!1 &225324493
 GameObject:
   m_ObjectHideFlags: 0
@@ -1509,7 +1523,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 25
     m_FontStyle: 2
     m_BestFit: 0
     m_MinSize: 1
@@ -2659,9 +2673,9 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 30
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 3
-    m_MaxSize: 40
+    m_MaxSize: 30
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -3303,8 +3317,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 182713133}
-        m_TargetAssemblyTypeName: LoginAccount_Script, Scripts
-        m_MethodName: LoginAccount
+        m_TargetAssemblyTypeName: OpenLogin_Script, Scripts
+        m_MethodName: Login
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3455,8 +3469,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 182713133}
-        m_TargetAssemblyTypeName: LoginAccount_Script, Scripts
-        m_MethodName: UpdateInformationFiller
+        m_TargetAssemblyTypeName: OpenLogin_Script, Scripts
+        m_MethodName: CheckInformationFilter
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3774,6 +3788,7 @@ MonoBehaviour:
   - {fileID: 2800000, guid: fab0c3310df655b43a0e7879a0b19427, type: 3}
   - {fileID: 2800000, guid: 68741554ab567c1479ddf1a71cf4d553, type: 3}
   - {fileID: 2800000, guid: df4fc63623060ee4d83875b3219bb03e, type: 3}
+  refreshConnection: 0
 --- !u!114 &1682996592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4897,8 +4912,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 182713133}
-        m_TargetAssemblyTypeName: LoginAccount_Script, Scripts
-        m_MethodName: UpdateInformationFiller
+        m_TargetAssemblyTypeName: OpenLogin_Script, Scripts
+        m_MethodName: CheckInformationFilter
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

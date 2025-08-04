@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Maintaining over the weapon
   description: 
-  awardsTitle: 'STR: +1, Learn Sprinkle Dust'
+  awardsTitle: 'STR: +1, Learn Piercing Shots'
   awards_settings:
   - awards_caterogy: 0
     awards_value: 1
   - awards_caterogy: 3
-    awards_value: Sprinkle Dust
+    awards_value: Piercing Shots
+  masteryCost: 1

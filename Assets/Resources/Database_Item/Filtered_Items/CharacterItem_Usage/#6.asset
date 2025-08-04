@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Intensive Training Voucher
   useTypeDetail: 3
-  dataArray: "{\"title\":\"Your character will receive 70% experience of their current
+  dataArray: "{\"title\":\"This character will receive 70% experience of their current
     level.\",\"choice\":\"Use*Don't use\"}@^\r6"

@@ -378,7 +378,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 261059386}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LoginTemp_Script, Scripts
         m_MethodName: LoginPass
         m_Mode: 1
@@ -629,7 +629,8 @@ GameObject:
   - component: {fileID: 261059383}
   - component: {fileID: 261059382}
   - component: {fileID: 261059381}
-  - component: {fileID: 261059386}
+  - component: {fileID: 261059387}
+  - component: {fileID: 261059388}
   m_Layer: 5
   m_Name: GameInterface
   m_TagString: Untagged
@@ -741,7 +742,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &261059386
+--- !u!114 &261059387
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -750,18 +751,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 261059380}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05feb9c2ea6b36e479503d6519cf4d9c, type: 3}
+  m_Script: {fileID: 11500000, guid: bca70243fab5903418df3f5b0e99ce51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SecureKey: {fileID: 703566061}
-  PlayerID: {fileID: 663697188}
-  LoginBtn: {fileID: 58967943}
-  AlertBox:
+  playerID: {fileID: 663697188}
+  secureKey: {fileID: 703566061}
+  loginBtn: {fileID: 58967943}
+  entryCreator: {fileID: 1324956402}
+  alertNoticeS:
   - {fileID: 1072471229}
   - {fileID: 1247567841}
   - {fileID: 760448996}
   - {fileID: 1618794973}
-  entryField: {fileID: 1324956402}
+--- !u!114 &261059388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 261059380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d54b924828aa3e49954bf77272b5435, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Icon: {fileID: 1001463321}
 --- !u!1 &278293338
 GameObject:
   m_ObjectHideFlags: 0
@@ -1233,7 +1247,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 261059386}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LoginTemp_Script, Scripts
         m_MethodName: CancelCreateProcess
         m_Mode: 1
@@ -1835,7 +1849,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 261059386}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LoginTemp_Script, Scripts
         m_MethodName: CheckSecureKeyValid
         m_Mode: 1
@@ -2148,7 +2162,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 261059386}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LoginTemp_Script, Scripts
         m_MethodName: ProcessForCreating
         m_Mode: 1
@@ -3463,7 +3477,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 261059386}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: LoginTemp_Script, Scripts
         m_MethodName: ConfirmPlayerNameEntry
         m_Mode: 1

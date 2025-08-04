@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Awarding an new weapon
   description: 
-  awardsTitle: Learn Sprinkle Dust
+  awardsTitle: Learn Piercing Shots
   awards_settings:
   - awards_caterogy: 3
-    awards_value: Sprinkle Dust
+    awards_value: Piercing Shots
+  masteryCost: 1

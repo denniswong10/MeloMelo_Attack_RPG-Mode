@@ -100,7 +100,7 @@ public class CharacterLite : MonoBehaviour
             { TutorialManager.thisManager.UpdateBattle_Progress(0); }
 
             if (other.GetComponent<Note_Script>().note_index != 5) { Destroy(other.gameObject); }
-            else { other.GetComponent<Note_Script>().Reflect_MoveEffect(); }
+            else { other.GetComponent<Notation_Motion_Script>().Reflect_MoveEffect(); }
         }
         else
         {
@@ -109,7 +109,7 @@ public class CharacterLite : MonoBehaviour
             { TutorialManager.thisManager.UpdateBattle_Progress(0); }
 
             if (other.GetComponent<Note_Script>().note_index != 5) { Destroy(other.gameObject); }
-            else { other.GetComponent<Note_Script>().Reflect_MoveEffect(); }
+            else { other.GetComponent<Notation_Motion_Script>().Reflect_MoveEffect(); }
         }
 
         QuickActiveCancel();

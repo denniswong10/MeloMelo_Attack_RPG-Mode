@@ -79,9 +79,19 @@ public class GameManager : MonoBehaviour, IGameManager
 
         //PreSet_BattleSetup();
         //PlayerPrefs.SetInt("NoteSpeed", 4);
+        //PlayerPrefs.SetInt("InputLatency_Id", 0);
+        //PlayerPrefs.SetInt("AudioLatency_Id", 0);
+        //PlayerPrefs.SetString("CharacterFront", "Warrior");
 
-        if (JudgeCounter && PlayerPrefs.GetInt("JudgeMeter_Setup", 0) != 2) IntiJudgeCounterContent();
-        else JudgeCounter.SetActive(false);
+        //PlayerPrefs.DeleteKey("MarathonPermit");
+        //PlayerPrefs.SetInt("DifficultyLevel_valve", 2);
+        //PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetSpeedMeter_ValueKey, 0);
+
+        if (!DeveloperMode)
+        {
+            if (JudgeCounter && PlayerPrefs.GetInt("JudgeMeter_Setup", 0) != 2) IntiJudgeCounterContent();
+            else JudgeCounter.SetActive(false);
+        }
 
         // Setup components
         progressMeter = new BattleProgressMeter();
@@ -97,13 +107,15 @@ public class GameManager : MonoBehaviour, IGameManager
         ResMelo = PlayerPrefs.GetString("Resoultion_Melo", string.Empty);
         try { GameObject.Find("SideUI_MusicInfo").GetComponent<Animator>().SetBool("Open" + ResMelo, true); } catch { }
 
-        try { GameObject.Find("RetreatBG").GetComponent<RawImage>().texture = 
+        try 
+        { 
+            GameObject.Find("RetreatBG").GetComponent<RawImage>().texture = 
                 PlayerPrefs.HasKey("MarathonPermit") ? Resources.Load<Texture>("Background/BG11") : PreSelection_Script.thisPre.get_AreaData.BG; 
-            } 
+        } 
         catch { }
 
-        Invoke("Calcuate_Combo", 0.1f);
-        Invoke("CheckForPlayAreaDesicion", 3);
+        StartCoroutine(SetGameSettingsAsset());
+        StartCoroutine(CheckForPlayAreaDesicion());
 
         // Remove Point
         PlayerPrefs.DeleteKey("Point_Scoring");
@@ -114,7 +126,7 @@ public class GameManager : MonoBehaviour, IGameManager
         {
             MeloMelo_GameSettings.GetScoreStructureSetup();
             MeloMelo_GameSettings.GetStatusRemarkStructureSetup();
-            MeloMelo_GameSettings.LoadStartingStats();
+            MeloMelo_ExtensionContent_Settings.LoadStartingStats();
             PlayerPrefs.SetString("Character_Active_Skill", "F");
         }
 
@@ -132,7 +144,7 @@ public class GameManager : MonoBehaviour, IGameManager
 
     #region Setup Stats (Checking and setting up display)
     // Extra: Score Opening
-    void OpeningScore()
+    private void OpeningScore()
     {
         try { Score = GameObject.FindGameObjectWithTag("PerformanceScore").GetComponent<Text>(); } catch { Score = null; }
         try { Score2 = GameObject.FindGameObjectWithTag("TechScore").GetComponent<Text>(); } catch { Score2 = null; }
@@ -157,102 +169,17 @@ public class GameManager : MonoBehaviour, IGameManager
     }
 
     // Combo Searcher: Calcuate maxCombo
-    void Calcuate_Combo()
+    private IEnumerator SetGameSettingsAsset()
     {
-        foreach (int i in BeatConductor.thisBeat.get_myData_Note2)
+        yield return new WaitForSeconds(0.1f);
+
+        if (judgeWindow != null) 
+            judgeWindow.AddTotalCombo(PlayerPrefs.GetInt("Total_Notation_Count" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1)));
+
+        if (gameplayWindow != null)
         {
-            if (i != 0 && i < 10) { judgeWindow.AddTotalCombo(); }
-            if (i == 93) { judgeWindow.AddTotalCombo(); }
-            if (i == 1 || i == 6) { gameplayWindow.AddEnemyCount(); }
-            if (i == 3 || i == 7) { gameplayWindow.AddTrapsCount(); }
-
-            // New Chart System
-            if (BeatConductor.thisBeat.Music_Database.UltimateAddons)
-            {
-                foreach (MultipleCharting specialChart in BeatConductor.thisBeat.Music_Database.addons1)
-                {
-                    if (i == specialChart.SecondaryIndex)
-                    {
-                        // All Notes
-                        if (specialChart.FirstLane != 0) judgeWindow.AddTotalCombo();
-                        if (specialChart.SecondLane != 0) judgeWindow.AddTotalCombo();
-                        if (specialChart.ThirdLane != 0) judgeWindow.AddTotalCombo();
-                        if (specialChart.FourthLane != 0) judgeWindow.AddTotalCombo();
-                        if (specialChart.FifthLane != 0) judgeWindow.AddTotalCombo();
-
-                        // Enemys
-                        if (specialChart.FirstLane == 1 || specialChart.FirstLane == 6) gameplayWindow.AddEnemyCount();
-                        if (specialChart.SecondLane == 1 || specialChart.SecondLane == 6) gameplayWindow.AddEnemyCount();
-                        if (specialChart.ThirdLane == 1 || specialChart.ThirdLane == 6) gameplayWindow.AddEnemyCount();
-                        if (specialChart.FourthLane == 1 || specialChart.FourthLane == 6) gameplayWindow.AddEnemyCount();
-                        if (specialChart.FifthLane == 1 || specialChart.FifthLane == 6) gameplayWindow.AddEnemyCount();
-
-                        // Traps
-                        if (specialChart.FirstLane == 3 || specialChart.FirstLane == 7) gameplayWindow.AddTrapsCount();
-                        if (specialChart.SecondLane == 3 || specialChart.SecondLane == 7) gameplayWindow.AddTrapsCount();
-                        if (specialChart.ThirdLane == 3 || specialChart.ThirdLane == 7) gameplayWindow.AddTrapsCount();
-                        if (specialChart.FourthLane == 3 || specialChart.FourthLane == 7) gameplayWindow.AddTrapsCount();
-                        if (specialChart.FifthLane == 3 || specialChart.FifthLane == 7) gameplayWindow.AddTrapsCount();
-                    }
-                }
-            }
-
-            if (BeatConductor.thisBeat.Music_Database.NewChartSystem)
-            {
-                // Pattern Charting
-                if (BeatConductor.thisBeat.Music_Database.addons3 != null)
-                {
-                    foreach (PatternCharting chart in BeatConductor.thisBeat.Music_Database.addons3)
-                    {
-                        if (i == chart.SecondaryIndex)
-                        {
-                            foreach (PaterrnDefine row in chart.noteArray)
-                            {
-                                foreach (PatternLane col in row.noteOutput)
-                                {
-                                    if (col.PrimaryNote != 0)
-                                    {
-                                        judgeWindow.AddTotalCombo();
-
-                                        if (col.PrimaryNote == 1 || col.PrimaryNote == 6) { gameplayWindow.AddEnemyCount(); }
-                                        if (col.PrimaryNote == 3 || col.PrimaryNote == 7) { gameplayWindow.AddTrapsCount(); }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Chart Modification
-                if (BeatConductor.thisBeat.Music_Database.addons3b != null)
-                {
-                    foreach (ChartModification mod in BeatConductor.thisBeat.Music_Database.addons3b)
-                    {
-                        if (i == mod.newIndex)
-                        {
-                            foreach (PatternCharting chart in BeatConductor.thisBeat.Music_Database.addons3)
-                            {
-                                if (chart.SecondaryIndex == mod.SecondaryNote)
-                                {
-                                    foreach (PaterrnDefine row in chart.noteArray)
-                                    {
-                                        foreach (PatternLane col in row.noteOutput)
-                                        {
-                                            if (col.PrimaryNote != 0)
-                                            {
-                                                judgeWindow.AddTotalCombo();
-
-                                                if (col.PrimaryNote == 1 || col.PrimaryNote == 6) { gameplayWindow.AddEnemyCount(); }
-                                                if (col.PrimaryNote == 3 || col.PrimaryNote == 7) { gameplayWindow.AddTrapsCount(); }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            gameplayWindow.AddEnemyCount(PlayerPrefs.GetInt("EnemyTakeCounter_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1)));
+            gameplayWindow.AddTrapsCount(PlayerPrefs.GetInt("TrapsTakeCounter_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1)));
         }
 
         // Set HP
@@ -269,8 +196,10 @@ public class GameManager : MonoBehaviour, IGameManager
     }
 
     // PlayArea Management: Control Update
-    private void CheckForPlayAreaDesicion()
+    private IEnumerator CheckForPlayAreaDesicion()
     {
+        yield return new WaitForSeconds(3);
+
         if (!DeveloperMode)
         {
             if (playField.IsDrawAreaPossible()) DrawOutPlayArea();
@@ -324,6 +253,10 @@ public class GameManager : MonoBehaviour, IGameManager
         // Overall judge status of the overall combo
         if (judgeWindow.LevelPlayCleared() & BeatConductor.thisBeat.get_startNote && bonus_enable)
         {
+            // Audio Voice
+            float voiceVolume = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAudioVoice_ValueKey) == 0 ? 
+                PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetSE_ValueKey) : 0;
+
             // Remove defeated play status and replace a new play status: Otherwise skip remove
             int status = (AutoPlayText.activeInHierarchy ? 6 : PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 6));
             progressMeter.SetProgressRemark(status);
@@ -348,7 +281,7 @@ public class GameManager : MonoBehaviour, IGameManager
 
                     MeloMelo_GameSettings.GetRecentStatusRemark = 1;
                     Bonus_sign.transform.GetChild(0).GetComponent<Text>().text = progressMeter.GetProgressSpecialStatus(1);
-                    AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/Perfect"), new Vector3(0, 1.8f, -10.8f));
+                    AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/Perfect"), new Vector3(0, 1.8f, -10.8f), voiceVolume);
                 }
 
                 else if (judgeWindow.FullComboPlay())
@@ -360,7 +293,7 @@ public class GameManager : MonoBehaviour, IGameManager
 
                     MeloMelo_GameSettings.GetRecentStatusRemark = 2;
                     Bonus_sign.transform.GetChild(0).GetComponent<Text>().text = progressMeter.GetProgressSpecialStatus(2);
-                    AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/Eliminate"), new Vector3(0, 1.8f, -10.8f));
+                    AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/Eliminate"), new Vector3(0, 1.8f, -10.8f), voiceVolume);
                 }
 
                 else
@@ -372,7 +305,7 @@ public class GameManager : MonoBehaviour, IGameManager
 
                     MeloMelo_GameSettings.GetRecentStatusRemark = 3;
                     Bonus_sign.transform.GetChild(0).GetComponent<Text>().text = progressMeter.GetProgressSpecialStatus(3);
-                    AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/Missless"), new Vector3(0, 1.8f, -10.8f));
+                    AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/Missless"), new Vector3(0, 1.8f, -10.8f), voiceVolume);
                 }
 
                 if (LoadingTransition_Script.thisLoader != null)
@@ -511,13 +444,16 @@ public class GameManager : MonoBehaviour, IGameManager
         // Load all skills are available in the moment
         for (int skillLoader = 0; skillLoader < allSkillOnActive.Length; skillLoader++)
         {
-            SkillContainer loadedSkill = Resources.Load<SkillContainer>("Database_Skills/" + PlayerPrefs.GetString("CharacterFront", "None") +
+            ResourceRequest loadedSkill = Resources.LoadAsync<SkillContainer>("Database_Skills/" + PlayerPrefs.GetString("CharacterFront", "None") +
                 allSkillOnActive[skillLoader]);
 
-            if (loadedSkill)
+            yield return loadedSkill;
+            SkillContainer IsSkillReady = loadedSkill.asset as SkillContainer;
+
+            if (IsSkillReady)
             {
                 // Display information about skill effect
-                UpdateSkillInformation(loadedSkill);
+                UpdateSkillInformation(IsSkillReady);
                 yield return new WaitForSeconds(2);
 
                 foreach (ClassBase skillCaster in characterStats.slot_Stats)
@@ -526,8 +462,8 @@ public class GameManager : MonoBehaviour, IGameManager
                     if (PlayerPrefs.GetString("CharacterFront", "None") == skillCaster.name)
                     {
                         // Get character skill ready for use
-                        GetComponent<SkillManager>().ExtractSkill(loadedSkill, skillCaster);
-                        GetComponent<SkillManager>().RegisterForSkillUsage(loadedSkill, skillIsOnPrimary[skillLoader]);
+                        GetComponent<SkillManager>().ExtractSkill(IsSkillReady, skillCaster);
+                        GetComponent<SkillManager>().RegisterForSkillUsage(IsSkillReady, skillIsOnPrimary[skillLoader]);
                         break;
                     }
                 }
@@ -565,8 +501,12 @@ public class GameManager : MonoBehaviour, IGameManager
 
     private void EndOfPlay()
     {
-        if (!GameObject.Find("PlayArea").GetComponent<AudioSource>().isPlaying && BeatConductor.thisBeat.get_startNote)
-            StartCoroutine(EndOfBattle());
+        if (!DeveloperMode)
+        {
+            bool isTrackCompleted = BeatConductor.thisBeat.get_startNote && !GameObject.Find("PlayArea").GetComponent<AudioSource>().isPlaying;
+            bool isTrackEnded = (judgeWindow.get_perfect2 + judgeWindow.get_perfect + judgeWindow.get_bad + judgeWindow.get_miss) >= PlayerPrefs.GetInt("Total_Notation_Count" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1));
+            if (isTrackCompleted && isTrackEnded) StartCoroutine(EndOfBattle());
+        }
     }
     #endregion
 
@@ -657,11 +597,14 @@ public class GameManager : MonoBehaviour, IGameManager
         if (DeveloperMode) GameObject.Find(judge_string).GetComponent<Text>().text = judge_string + ": " + Update_Counter(judge_string, false);
         else
         {
-            Vector3 position = new Vector3(GameObject.Find("Character").transform.position.x, GameObject.Find("Judgement Line").transform.position.y, GameObject.Find("Judgement Line").transform.position.z);
+            if (GameObject.Find("Character") != null)
+            {
+                Vector3 position = new Vector3(GameObject.Find("Character").transform.position.x, GameObject.Find("Judgement Line").transform.position.y, GameObject.Find("Judgement Line").transform.position.z);
 
-            // Extra: Judgement only shown determine on settings
-            if ((PlayerPrefs.GetInt("Feedback_Display_Type_B") == 1 && judge_string != "Perfect_2") || PlayerPrefs.GetInt("Feedback_Display_Type_B") == 0)
-                Instantiate(Resources.Load<GameObject>("Prefabs/PopUp/" + judge_string), position, Quaternion.identity);
+                // Extra: Judgement only shown determine on settings
+                if ((PlayerPrefs.GetInt("Feedback_Display_Type_B") == 1 && judge_string != "Perfect_2") || PlayerPrefs.GetInt("Feedback_Display_Type_B") == 0)
+                    Instantiate(Resources.Load<GameObject>("Prefabs/PopUp/" + judge_string), position, Quaternion.identity);
+            }
         }
     }
 
@@ -712,7 +655,7 @@ public class GameManager : MonoBehaviour, IGameManager
             {
                 if (slotStatus.GetComponent<Animator>() != null)
                 {
-                    if (PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, 1) == 1)
+                    if (PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey) == 1)
                     {
                         if (amount < 0 && !slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.activeInHierarchy)
                             slotStatus.GetComponent<Animator>().SetTrigger("Damage" + ResMelo);
@@ -734,8 +677,9 @@ public class GameManager : MonoBehaviour, IGameManager
 
             if (characterHealth != null)
             {
-                characterHealth.GetComponent<Text>().text = ((characterStatus.get_maxHealth == 1) ? "0/0" : 
-                    characterStatus.get_health + "/" + characterStatus.get_maxHealth);
+                characterHealth.GetComponent<Text>().text = ((characterStatus.get_maxHealth == 1) ? "0/0" :
+                   MeloMelo_GameSettings.GetUnitDisplayHealth(characterStatus.get_health, characterStatus.get_maxHealth,
+                        MeloMelo_PlayerSettings.GetUnitHealthOnCharacter_ValueKey));
 
                 if (characterStatus.get_health <= 0 && GameObject.Find("Character").GetComponent<Character>().stats.get_name != "NA" && !RetreatSuccess)
                     { slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.SetActive(true); Game_over(); }
@@ -762,7 +706,7 @@ public class GameManager : MonoBehaviour, IGameManager
             }
             else
             {
-                if (PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, 1) == 1 &&
+                if (PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey) == 1 &&
                     amount < 0 && !slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.activeInHierarchy) 
                         { slotStatus.GetComponent<Animator>().SetTrigger("Damage" + ResMelo); }
                 enemyStatus.ModifyHealth(amount);
@@ -770,7 +714,9 @@ public class GameManager : MonoBehaviour, IGameManager
 
             if (enemyHealth != null)
             {
-                enemyHealth.GetComponent<Text>().text = enemyStatus.get_health + "/" + enemyStatus.get_maxHealth;
+                enemyHealth.GetComponent<Text>().text = MeloMelo_GameSettings.GetUnitDisplayHealth(
+                    enemyStatus.get_health, enemyStatus.get_maxHealth, MeloMelo_PlayerSettings.GetUnitHealthOnEnemy_ValueKey);
+
                 if (enemyStatus.get_health <= 0)
                 {
                     slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.SetActive(true);
@@ -787,11 +733,18 @@ public class GameManager : MonoBehaviour, IGameManager
 
     public void SpawnDamageIndicator(Vector3 target, int typeOfTarget, int damage)
     {
-        if ((typeOfTarget == 1 && PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorA_ValueKey, 1) == 1) ||
-            (typeOfTarget == 2 && PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey, 1) == 1))
+        bool characterIndicator = typeOfTarget == 1 && PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorA_ValueKey, 1) == 1;
+        bool enemyIndicator = typeOfTarget == 2 && PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey, 1) == 1;
+
+        if (characterIndicator || enemyIndicator)
         {
-            if ((typeOfTarget == 1 && characterStatus.get_health > 0 && characterStatus.get_health + damage <= characterStatus.get_maxHealth)
-            || (typeOfTarget == 2 && enemyStatus.get_health > 0 && enemyStatus.get_health + damage <= enemyStatus.get_maxHealth))
+            bool characterVisibleValue = typeOfTarget == 1 && characterStatus.get_health > 0
+                && characterStatus.get_health + damage <= characterStatus.get_maxHealth;
+
+            bool enemyVisibleValue = typeOfTarget == 2 && enemyStatus.get_health > 0 
+                && enemyStatus.get_health + damage <= enemyStatus.get_maxHealth;
+
+            if (characterVisibleValue || enemyVisibleValue)
             {
                 GameObject damageIndicator = Instantiate(Resources.Load<GameObject>("Prefabs/Floating Damage/DamageIndicator"));
                 damageIndicator.GetComponent<TextMesh>().color = damage == 0 ? Color.grey : damage < 0 ? new Color32(125, 36, 5, 255) : new Color32(50, 137, 50, 255);
@@ -806,7 +759,7 @@ public class GameManager : MonoBehaviour, IGameManager
     private void OverkillBonus_Display(int overkill_value, int enemyHP_MAXvalue)
     {
         if (!OverKill_Bar.activeInHierarchy) { OverKill_Bar.SetActive(true); }
-        else if (PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, 1) == 1) 
+        else if (PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey) == 1) 
         { OverKill_Bar.GetComponent<Animator>().SetTrigger("Hit"); }
 
         if (enemyHP_MAXvalue != 0)

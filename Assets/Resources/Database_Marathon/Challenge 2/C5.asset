@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: C5
   m_EditorClassIdentifier: 
   title: Advance 1
+  trackList: []
   Difficultylevel:
   - 13
   - 13
   - 13
   - 14
-  DifficultyType: 02000000020000000200000002000000
   clearingType: 0
   clearingValue: A
+  conditionAddons: []

@@ -14,7 +14,7 @@ public class ReviewMenu : MonoBehaviour
 
     void Start()
     {
-        data = new ServerData(LoginPage_Script.thisPage.GetUserPortOutput(), PlayerPrefs.GetString("GameWeb_URL"));
+        data = new ServerData(LoginPage_Script.thisPage.GetUserPortOutput(), MeloMelo_PlayerSettings.GetWebServerUrl());
         UpdateUserInput();
     }
 

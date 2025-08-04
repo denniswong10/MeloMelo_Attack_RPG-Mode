@@ -1,23 +1,19 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using MeloMelo_ExtraComponent;
 using MeloMelo_PlayerManagement;
 
 public class Note_Script : MonoBehaviour
 {
-    private float note_speed;
     private bool isHit = false;
+    public bool isNotationHit { get { return isHit; } }
 
     public int note_index;
     public CharacterSettings.PICKUP_TYPE note_define_index;
 
     [SerializeField] private float NotePos;
-    public int hit_cycle = 0;
+    public float get_NotePos { get { return NotePos; } }
 
-    private enum Direction { Forward, Backward, None };
-    private Direction direction_type = Direction.Forward;
+    public int hit_cycle = 0;
 
     private int preJudgedNote = -1;
     public int get_preJudgeNote { get { return preJudgedNote; } }
@@ -25,56 +21,18 @@ public class Note_Script : MonoBehaviour
     private int preOffBeat = -1;
     public int get_preOffBeat { get { return preOffBeat; } }
 
-    private ScoreFixedValue scoreF = new ScoreFixedValue();
-    public ParticleSystem judgeline;
+    private bool notationTimeOut = false;
+    private bool notationExpired = false;
+    private float noteTimeToNextHit;
 
     void Start()
     {
-        // Interact this object
-        ReadyForInteract();
-
-        // Set note position from start
-        ReadyToRollOut();
-
-        // Check For Option
-        ChannelOutGuideAnimator();
+        // Options:
+        GetComponent<Notation_Visual_Script>().enabled = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAirGuide_ValueKey) == 0;
+        GetComponent<Notation_Motion_Script>().UpdateMotionBehaviour(PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetFacnyMovement_ValueKey) == 1);
     }
-
-    void Update()
-    {
-        StartActionRolling();
-    }
-
-    #region SETUP (Basic)
-    private void ReadyForInteract()
-    {
-        switch (note_define_index)
-        {
-            case CharacterSettings.PICKUP_TYPE.NONE:
-            case CharacterSettings.PICKUP_TYPE.JUMP:
-            case CharacterSettings.PICKUP_TYPE.ITEM:
-                GetComponent<BoxCollider>().enabled = false;
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    private void ReadyToRollOut()
-    {
-        transform.position = new Vector3(transform.position.x, NotePos, transform.position.z);
-        note_speed = BeatConductor.thisBeat.get_noteSpeed;
-    }
-    #endregion
 
     #region SETUP (Advance)
-    private void StartActionRolling()
-    {
-        if (direction_type == Direction.Forward) { Perform_Forward_Movement(); }
-        else if (direction_type == Direction.Backward) { Perform_Reflect_Movement(); }
-    }
-
     private void ClearOfCompletedCycle()
     {
         switch (note_define_index)
@@ -93,46 +51,8 @@ public class Note_Script : MonoBehaviour
     }
     #endregion
 
-    #region COMPONENT (MAIN: CHECKER)
-    private void ObstacleEnd_Check(float offset)
-    {
-        if (transform.position.z <= GameObject.Find("Judgement Line").transform.position.z + offset)
-        {
-            GetComponent<BoxCollider>().enabled = true;
-
-            direction_type = Direction.None;
-            transform.position = new Vector3(transform.position.x, transform.position.y, GameObject.Find("Judgement Line").transform.position.z + offset);
-            StartCoroutine(CheckingPerfect_Hit());
-        }
-        else
-        {
-            try { transform.Translate(Vector3.back * BeatConductor.thisBeat.get_BPM_Calcuate * note_speed * Time.deltaTime); }
-            catch { transform.Translate(Vector3.back * note_speed * Time.deltaTime); }
-        }
-    }
-
-    private void SpecialNote_Check(float offset)
-    {
-        if (transform.position.z <= GameObject.Find("Judgement Line").transform.position.z + offset)
-        {
-            direction_type = Direction.None;
-            transform.position = new Vector3(transform.position.x, transform.position.y, GameObject.Find("Judgement Line").transform.position.z + offset);
-            Obstacle_NoteDodge(false);
-        }
-        else
-        {
-            try { transform.Translate(Vector3.back * BeatConductor.thisBeat.get_BPM_Calcuate * note_speed * Time.deltaTime); }
-            catch { transform.Translate(Vector3.back * note_speed * Time.deltaTime); }
-        }
-    }
-    #endregion
-
     #region MAIN
     // Note Function: Reserve Mode
-    public void Reflect_MoveEffect() { direction_type = Direction.Backward; }
-
-    public void JudgeLineToggle() { if (judgeline) judgeline.Stop(); }
-
     public bool TriggerAsHits()
     {
         bool checkForHit = isHit;
@@ -150,35 +70,10 @@ public class Note_Script : MonoBehaviour
     #endregion
 
     #region COMPONENT (MAIN: Action List)
-    private void Perform_Forward_Movement()
+    public void Obstacle_NoteDodge(bool audio)
     {
-        switch (note_define_index)
-        {
-            case CharacterSettings.PICKUP_TYPE.TRAP:
-                ObstacleEnd_Check(-0.5f);
-                break;
+        notationExpired = true;
 
-            case CharacterSettings.PICKUP_TYPE.ITEM3:
-                SpecialNote_Check(-0.2f);
-                break;
-
-            default:
-                ObstacleEnd_Check(0.2f);
-                break;
-        }
-    }
-
-    private void Perform_Reflect_Movement()
-    {
-        if (transform.position.z >= 1)
-            Destroy(gameObject);
-
-        else
-            transform.Translate(Vector3.forward * BeatConductor.thisBeat.get_BPM_Calcuate * note_speed * Time.deltaTime);
-    }
-
-    private void Obstacle_NoteDodge(bool audio)
-    {
         GameManager.thisManager.UpdateNoteStatus("Perfect_2");
         GameManager.thisManager.ModifyFastNLateJudge(1, 1);
 
@@ -186,115 +81,209 @@ public class Note_Script : MonoBehaviour
         GameManager.thisManager.FinalScoreMultipler(BeatConductor.thisBeat.get_scorePerfect2);
 
         if (!GameManager.thisManager.DeveloperMode && audio)
-            AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/EnemyAttack"), new Vector3(0, 0, -10f));
+        {
+            float volume = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAudioMute_ValueKey) == 1 ?
+                0 : PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetSE_ValueKey);
+
+            AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/EnemyAttack"), new Vector3(0, 0, -10f), volume);
+        }
 
         ClearOfCompletedCycle();
     }
     #endregion
 
     #region COMPONENT (TIMING WINDOW)
-    IEnumerator CheckingPerfect_Hit()
+    public void BeginNotationTimeOut()
     {
-        float time_beforePerfect = 2 * (BeatConductor.thisBeat.get_BPM_Calcuate / 4);
-        yield return new WaitForSeconds(time_beforePerfect);
+        float aboutPerfect = 2 * (BeatConductor.thisBeat.get_BPM_Calcuate * 0.25f);
+        float aboutMiss = 2 * (BeatConductor.thisBeat.get_BPM_Calcuate * 0.25f);
+        float closingBeforeMiss = BeatConductor.thisBeat.get_BPM_Calcuate;
 
-        if (note_define_index == CharacterSettings.PICKUP_TYPE.TRAP)
+        noteTimeToNextHit = Time.time + (aboutPerfect + aboutMiss + closingBeforeMiss);
+        notationTimeOut = true;
+    }
+
+    public void GetTimeOutNotation()
+    {
+        if (notationTimeOut && !notationExpired)
         {
-            // Traps (Ground) Traps (Air)
-            Obstacle_NoteDodge(true);
+            if (Time.time >= noteTimeToNextHit) NotationHitExpired();
+
+            else if (note_define_index == CharacterSettings.PICKUP_TYPE.TRAP)
+            {
+                // Traps (Ground) Traps (Air)
+                Obstacle_NoteDodge(true);
+            }
         }
-
-        StartCoroutine(CheckTiming_NoteHit());
     }
 
-    // Note Check: Hit Timing
-    IEnumerator CheckTiming_NoteHit()
+    private void NotationHitExpired()
     {
-        float time_beforeMiss = 2 * (BeatConductor.thisBeat.get_BPM_Calcuate / 4);
-        yield return new WaitForSeconds(time_beforeMiss);
-
-        StartCoroutine(CheckTiming_AboutMiss_NoteHit());
-    }
-
-    IEnumerator CheckTiming_AboutMiss_NoteHit()
-    {
-        float time_finalelsape = BeatConductor.thisBeat.get_BPM_Calcuate;
-        yield return new WaitForSeconds(time_finalelsape);
+        notationExpired = true;
 
         if (!isHit)
         {
             GetComponent<BoxCollider>().enabled = false;
+            if (preJudgedNote < 0) GameManager.thisManager.UpdateNoteStatus("Miss");
+            MeloMelo_ScoreSystem.thisSystem.UpdateScoreDisplay();
 
             switch (note_define_index)
             {
                 case CharacterSettings.PICKUP_TYPE.NONE:
-                    RegularNote_HitCheck();
-                    break;
-
-                default:
-                    if (preJudgedNote < 0) GameManager.thisManager.UpdateNoteStatus("Miss");
-                    MeloMelo_ScoreSystem.thisSystem.UpdateScoreDisplay();
-                    break;
-            }
-        }
-
-        if (direction_type == Direction.None) Destroy(gameObject);
-    }
-
-    private void RegularNote_HitCheck()
-    {
-        if (direction_type != Direction.Backward)
-        {
-            if (hit_cycle != 0)
-            {
-                hit_cycle--;
-                GetComponent<BoxCollider>().enabled = true;
-                StartCoroutine(CheckingPerfect_Hit());
-            }
-            else
-            {
-                if (!isHit)
-                {
-                    GameManager.thisManager.UpdateNoteStatus("Miss");
-                    MeloMelo_ScoreSystem.thisSystem.UpdateScoreDisplay();
-
                     if (GameObject.Find("Character").GetComponent<Character>().stats.get_name != "NA")
                         GameManager.thisManager.UpdateCharacter_Health(-(PlayerPrefs.GetInt("Enemy_OverallDamage", 0) * 2), false);
 
                     GameManager.thisManager.SpawnDamageIndicator(transform.position, 1, -PlayerPrefs.GetInt("Enemy_OverallDamage", 0) * 2);
-                }
+                    break;
+
+                default:
+                    break;
             }
         }
+
+        GetComponent<Notation_Motion_Script>().CheckLogicOnMiss();
     }
     #endregion
 
-    #region COMPONENT (GUIDELINE ANIMTAOR)
-    private void ChannelOutGuideAnimator()
-    {
-        if (PlayerPrefs.GetInt("AirGuide_valve", 0) == 0 && ChannelAnimatorValve())
-            if (judgeline != null) judgeline.Play();
-    }
+    #region NOT IN USE
+    //public IEnumerator CheckingPerfect_Hit()
+    //{
+    //    float time_beforePerfect = 2 * (BeatConductor.thisBeat.get_BPM_Calcuate / 4);
+    //    yield return new WaitForSeconds(time_beforePerfect);
 
-    private bool ChannelAnimatorValve()
-    {
-        if (note_define_index == CharacterSettings.PICKUP_TYPE.JUMP)
-        {
-            return true;
-        }
+    //    if (note_define_index == CharacterSettings.PICKUP_TYPE.TRAP)
+    //    {
+    //        // Traps (Ground) Traps (Air)
+    //        Obstacle_NoteDodge(true);
+    //    }
 
-        else if (note_define_index == CharacterSettings.PICKUP_TYPE.NONE)
-        {
-            switch (note_index)
-            {
-                case 2:
-                    return true;
+    //    StartCoroutine(CheckTiming_NoteHit());
+    //}
 
-                default:
-                    return false;
-            }
-        }
+    //// Note Check: Hit Timing
+    //IEnumerator CheckTiming_NoteHit()
+    //{
+    //    float time_beforeMiss = 2 * (BeatConductor.thisBeat.get_BPM_Calcuate / 4);
+    //    yield return new WaitForSeconds(time_beforeMiss);
 
-        return false;
-    }
+    //    StartCoroutine(CheckTiming_AboutMiss_NoteHit());
+    //}
+
+    //IEnumerator CheckTiming_AboutMiss_NoteHit()
+    //{
+    //    float time_finalelsape = BeatConductor.thisBeat.get_BPM_Calcuate;
+    //    yield return new WaitForSeconds(time_finalelsape);
+
+    //    if (!isHit)
+    //    {
+    //        GetComponent<BoxCollider>().enabled = false;
+    //        if (preJudgedNote < 0) GameManager.thisManager.UpdateNoteStatus("Miss");
+    //        MeloMelo_ScoreSystem.thisSystem.UpdateScoreDisplay();
+
+    //        switch (note_define_index)
+    //        {
+    //            case CharacterSettings.PICKUP_TYPE.NONE:
+    //                if (GameObject.Find("Character").GetComponent<Character>().stats.get_name != "NA")
+    //                    GameManager.thisManager.UpdateCharacter_Health(-(PlayerPrefs.GetInt("Enemy_OverallDamage", 0) * 2), false);
+
+    //                GameManager.thisManager.SpawnDamageIndicator(transform.position, 1, -PlayerPrefs.GetInt("Enemy_OverallDamage", 0) * 2);
+    //                break;
+
+    //            default:
+    //                break;
+    //        }
+    //    }
+
+    //    GetComponent<Notation_Motion_Script>().CheckLogicOnMiss();
+    //}
+
+    //private IEnumerator NewChartJudgeTracker(float offset, int index)
+    //{
+    //    Vector3 startPos = transform.position;
+    //    float zTarget = destinationDesired.z + offset;
+
+    //    float travelDistance = Mathf.Abs(startPos.z - zTarget);
+    //    float finalSpeed = Mathf.Max(note_speed * BeatConductor.thisBeat.get_BPM_Calcuate, 0.001f);
+    //    float duration = travelDistance / finalSpeed;
+
+    //    double startDSPTime = AudioSettings.dspTime;
+
+    //    while (true)
+    //    {
+    //        double currentDSPTime = AudioSettings.dspTime;
+    //        float t = (float)((currentDSPTime - startDSPTime) / duration);
+    //        t = Mathf.Clamp01(t);
+
+    //        // Optional: Add easing here
+    //        float easedT = Mathf.SmoothStep(0f, 1f, t);
+
+    //        float z = Mathf.Lerp(startPos.z, zTarget, isMotionSmoothen ? easedT : t);
+    //        transform.position = new Vector3(transform.position.x, transform.position.y, z);
+
+    //        if (t >= 1f)
+    //            break;
+
+    //        yield return null;
+    //    }
+
+    //    // Snap to target to avoid drift
+    //    transform.position = new Vector3(transform.position.x, transform.position.y, zTarget);
+    //    ProcessJudgeThroughInput(index);
+    //}
+
+    //private void RegularNote_HitCheck()
+    //{
+    //    if (direction_type != Direction.Backward)
+    //    {
+    //        if (hit_cycle > 0)
+    //        {
+    //            hit_cycle--;
+    //            Debug.Log("E");
+    //            GetComponent<BoxCollider>().enabled = hit_cycle < 2;
+    //            StartCoroutine(CheckingPerfect_Hit());
+    //        }
+    //        else
+    //        {
+    //            if (!isHit)
+    //            {
+    //                GameManager.thisManager.UpdateNoteStatus("Miss");
+    //                MeloMelo_ScoreSystem.thisSystem.UpdateScoreDisplay();
+
+    //                if (GameObject.Find("Character").GetComponent<Character>().stats.get_name != "NA")
+    //                    GameManager.thisManager.UpdateCharacter_Health(-(PlayerPrefs.GetInt("Enemy_OverallDamage", 0) * 2), false);
+
+    //                GameManager.thisManager.SpawnDamageIndicator(transform.position, 1, -PlayerPrefs.GetInt("Enemy_OverallDamage", 0) * 2);
+    //            }
+    //        }
+    //    }
+    //}
+
+    //private void OldJudgementLine(float offset, int index)
+    //{
+    //    if (transform.position.z <= GameObject.Find("Judgement Line").transform.position.z + offset)
+    //    {
+    //        switch (index)
+    //        {
+    //            case 1:
+    //                GetComponent<BoxCollider>().enabled = previousNote == null || !previousNote.activeInHierarchy;// && hit_cycle < 1;
+
+    //                direction_type = Direction.None;
+    //                transform.position = new Vector3(transform.position.x, transform.position.y, GameObject.Find("Judgement Line").transform.position.z + offset);
+    //                StartCoroutine(CheckingPerfect_Hit());
+    //                break;
+
+    //            case 2:
+    //                direction_type = Direction.None;
+    //                transform.position = new Vector3(transform.position.x, transform.position.y, GameObject.Find("Judgement Line").transform.position.z + offset);
+    //                Obstacle_NoteDodge(false);
+    //                break;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        try { transform.Translate(Vector3.back * BeatConductor.thisBeat.get_BPM_Calcuate * note_speed * Time.deltaTime); }
+    //        catch { transform.Translate(Vector3.back * note_speed * Time.deltaTime); }
+    //    }
+    //}
     #endregion
 }

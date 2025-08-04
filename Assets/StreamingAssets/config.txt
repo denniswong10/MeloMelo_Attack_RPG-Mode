@@ -1,6 +1,6 @@
-APPLICATION_NAME=MeloMelo v1.4.4_Build_D
+APPLICATION_NAME=MeloMelo v1.4.6_Build_D
 DOWNLOAD_URL=https://download1078.mediafire.com/n06194h304vgTv9-sl3tZzjobmogSy6MKjPzHEOMADOq70KTSadzLKu71bqdWgoG0u6fjMnkPekXiHepIWOQcCr0Cnp9Oc8IlKxi1dtZXvMTXV9Sq2Gc0dR4ZEJfLflFZl05wzoZj4pIhZGrImCiLZeIN1PnVPHFWPQ4PAp5W9dWuCw/6840vmcq9ewajpt/MeloMelo+v1.4.4_Build_A.zip
 VERSION_URL=https://drive.google.com/uc?export=download&id=1_cJeR8e__gZ_tdrURmsuBhA2dzMzJbDt
-FILE_TO_RUN=MeloMelo v1.4.4_Build_D/MeloMelo.exe
+FILE_TO_RUN=MeloMelo v1.4.6_Build_D/MeloMelo.exe
 DOWNLOAD_VERSION_FILE=true
 FORCE_UPDATE=false

@@ -39,11 +39,7 @@ public class Character : MonoBehaviour
         // Detect all objects are clickable at the same time of interactable
         if (other.tag == "note" && other.GetComponent<Note_Script>().note_define_index == CharacterSettings.PICKUP_TYPE.NONE)
         {
-            if (character.get_AutoFieldDetect)
-            {
-                float delayHit = BeatConductor.thisBeat.get_BPM_Calcuate * 0.5f;
-                Invoke("SimulateHitTarget", delayHit);
-            }
+            if (character.get_AutoFieldDetect) SimulateHitTarget();
 
             if (IsAttackInputReceived())
             {
@@ -72,8 +68,13 @@ public class Character : MonoBehaviour
 
     void Start()
     {
-        LoadSettings();
-        LoadCharacterStats();
+        if (!GameManager.thisManager.DeveloperMode)
+        {
+            GetComponent<Animator>().enabled = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetCharacterAnimation_ValueKey) == 1 ? true : false;
+
+            LoadSettings();
+            LoadCharacterStats();
+        }
     }
 
     void Update()
@@ -93,8 +94,6 @@ public class Character : MonoBehaviour
             }
 
             GameManager.thisManager.AutoPlayDisplay(character.get_AutoFieldDetect);
-            //GameObject.Find("Counter").GetComponent<Text>().text = "Total Collide: \n" + (GameManager.thisManager.getJudgeWindow.TotalJudgeCounted() - GameManager.thisManager.getJudgeWindow.get_miss) + 
-            //  " / " + GameManager.thisManager.getJudgeWindow.getOverallCombo;
         }
     }
 
@@ -127,7 +126,7 @@ public class Character : MonoBehaviour
     {
         // Move Control: Implemented for user playing
         character.Move();
-        transform.Translate(character.getPosition * (isJumping ? 1.3f : 1));
+        transform.Translate(character.getPosition * (isJumping ? 1.5f : 1));
         transform.position = character.BoundarySettings(-GameManager.thisManager.get_playField.get_limitBorder, GameManager.thisManager.get_playField.get_limitBorder, transform.position);
 
         // Attack Control: Implemented for user playing
@@ -149,13 +148,16 @@ public class Character : MonoBehaviour
             else
                 character.LiveMotionSettings(CharacterSettings.STATE.Idle);
 
-            // Main Action Caller: Move
-            GetComponent<Animator>().SetBool(character.LiveMotionGetState(CharacterSettings.STATE.Move), character.LiveMotionPlayBack(CharacterSettings.STATE.Move));
-
-            // Sub Action Caller: Attack
-            if (character.LiveMotionPlayBack(CharacterSettings.STATE.Attack))
+            if (GetComponent<Animator>().enabled)
             {
-                GetComponent<Animator>().SetTrigger(character.LiveMotionGetState(CharacterSettings.STATE.Attack));
+                // Main Action Caller: Move
+                GetComponent<Animator>().SetBool(character.LiveMotionGetState(CharacterSettings.STATE.Move), character.LiveMotionPlayBack(CharacterSettings.STATE.Move));
+
+                // Sub Action Caller: Attack
+                if (character.LiveMotionPlayBack(CharacterSettings.STATE.Attack))
+                {
+                    GetComponent<Animator>().SetTrigger(character.LiveMotionGetState(CharacterSettings.STATE.Attack));
+                }
             }
         }
     }
@@ -329,13 +331,13 @@ public class Character : MonoBehaviour
         switch (note_action.note_define_index)
         {
             case CharacterSettings.PICKUP_TYPE.JUMP:
-                if (character.get_AutoFieldDetect)
-                {
-                    float delayJump = BeatConductor.thisBeat.get_BPM_Calcuate * 0.15f;
-                    Invoke("SimulateJump", delayJump);
-                }
+                //if (character.get_AutoFieldDetect)
+                //{
+                //    float delayJump = BeatConductor.thisBeat.get_BPM_Calcuate * 0.15f;
+                //    Invoke("SimulateJump", delayJump);
+                //}
 
-                if (character.get_jumpActive)
+                if (character.get_jumpActive || character.get_AutoFieldDetect)
                 {
                     IncludeCharacterHealing();
                     TimingSequenceForJump(note_action);
@@ -423,8 +425,11 @@ public class Character : MonoBehaviour
 
     private void PlaySoundEffect(string audio)
     {
-        if (audio != string.Empty)
-            AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/" + audio), new Vector3(0, 0, -10f), 0.5f);
+        if (audio != string.Empty && PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAudioMute_ValueKey) == 0)
+        {
+            float soundeffect_volume = PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetSE_ValueKey);
+            AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/" + audio), new Vector3(0, 0, -10f), soundeffect_volume);
+        }
     }
     #endregion
 
@@ -489,7 +494,7 @@ public class Character : MonoBehaviour
         int bonusScoring = isAttackAreReflectable ? 2 : 1;
 
         GameManager.thisManager.UpdateScore_Tech((PlayerPrefs.GetInt("Character_OverallPower", 0) / 3) * bonusScoring);
-        if (isAttackAreReflectable) target.Reflect_MoveEffect();
+        if (isAttackAreReflectable) target.GetComponent<Notation_Motion_Script>().Reflect_MoveEffect();
     }
 
     private void DamagingEnemyProgress(float multiple, bool condition)

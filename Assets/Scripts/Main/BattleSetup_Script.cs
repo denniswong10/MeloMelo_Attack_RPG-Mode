@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using MeloMelo_RPGEditor;
 using MeloMelo_ExtraComponent;
 using UnityEngine.Video;
+using System.Threading.Tasks;
 
 public class BattleSetup_Script : MonoBehaviour
 {
@@ -43,8 +44,9 @@ public class BattleSetup_Script : MonoBehaviour
 
     [Header("NoteSpeed: Component Setup")]
     [SerializeField] private Text NoteSpeed_current;
-    [SerializeField] private Slider NoteSpeed_currentSwitch;
-    [SerializeField] private Text NoteSpeed_Status;
+    [SerializeField] private Text Offset_AudioValue;
+    [SerializeField] private Text Offset_JudgeValue;
+    [SerializeField] private GameObject[] NoteSettings_Panel;
 
     [Header("ScoreDisplay: Component Setup")]
     [SerializeField] private Text ScoreDisplay_Front;
@@ -70,6 +72,7 @@ public class BattleSetup_Script : MonoBehaviour
     [SerializeField] private GameObject[] BoostPanel;
     [SerializeField] private GameObject BoostPanelTemplate;
     [SerializeField] private GameObject MessagePrompt;
+    [SerializeField] private GameObject LoadingUI;
 
     // Load All Database
     void Start()
@@ -91,8 +94,8 @@ public class BattleSetup_Script : MonoBehaviour
         }
 
         GameObject.Find("BG").GetComponent<RawImage>().texture =
-            !PlayerPrefs.HasKey("MarathonPermit") ? PreSelection_Script.thisPre.get_AreaData.BG :
-                Resources.Load<Texture>("Background/BG11");
+            !PlayerPrefs.HasKey("MarathonPermit") && !PlayerPrefs.HasKey("Mission_Played") ? PreSelection_Script.thisPre.get_AreaData.BG : PlayerPrefs.HasKey("Mission_Played") ?
+                Resources.Load<Texture>("Background/BG1C") : Resources.Load<Texture>("Background/BG11");
 
         LoadGameplaySetup();
     }
@@ -106,7 +109,7 @@ public class BattleSetup_Script : MonoBehaviour
     #region SETUP
     private void ReturnScene()
     {
-        StartCoroutine(ClosingBattleSetup(((PlayerPrefs.HasKey("Mission_Played")) ? "BlackBoard" : "Music Selection Stage" + ResMelo)));
+        StartCoroutine(ClosingBattleSetup(((PlayerPrefs.HasKey("Mission_Played")) ? "StoryMode" : "Music Selection Stage" + ResMelo)));
     }
 
     private void StartScene()
@@ -125,7 +128,7 @@ public class BattleSetup_Script : MonoBehaviour
         OpeningTransitionSetup(GameplaySetup_GUI, string.Empty);
 
         MV_Option(false);
-        IntiNoteSpeed();
+        IntiNoteSettings();
         IntiAutoRetreat();
         IntiScoreDisplay();
         IntiBottomDisplay();
@@ -182,7 +185,7 @@ public class BattleSetup_Script : MonoBehaviour
     // MV Option
     public void MV_Option(bool click)
     {
-        bool condition = SelectionMenu_Script.thisSelect.get_selection.get_form.videoImport != null;
+        bool condition = !PlayerPrefs.HasKey("Mission_Played") ? SelectionMenu_Script.thisSelect.get_selection.get_form.videoImport != null : false;
         MV_imported.text = condition ? "YES" : "NO";
         MV_Status.text = condition ? "Ready" : "N/A";
         MV_currentSwitch.interactable = condition;
@@ -212,52 +215,93 @@ public class BattleSetup_Script : MonoBehaviour
     }
 
     // Note Speed
-    public void NoteSpeed_Option()
+    public void NoteSettings_Option()
     {
-        int speed = (int)NoteSpeed_currentSwitch.value;
-        PlayerPrefs.SetInt("NoteSpeed", GetSpeedValueSet(speed));
-        NoteSpeed_current.text = speed_label[GetSpeedValueSet(speed)];
+        foreach (GameObject main in MainSetupOfGameplayGUI) main.SetActive(false);
+        foreach (GameObject panel in NoteSettings_Panel) panel.SetActive(true);
+
+        Slider option_noteSpeed = NoteSettings_Panel[0].transform.GetChild(4).GetComponent<Slider>();
+        option_noteSpeed.maxValue = speed_label.Length;
+        option_noteSpeed.value = PlayerPrefs.GetInt("NoteSpeed", 0);
+        option_noteSpeed.interactable = GetSpeedEnableAdjust();
+        NoteSettings_Panel[0].transform.GetChild(2).GetComponent<Text>().text = speed_label[GetSpeedValueSet((int)option_noteSpeed.value)];
+
+        Slider option_offsetA = NoteSettings_Panel[1].transform.GetChild(4).GetComponent<Slider>();
+        option_offsetA.minValue = MeloMelo_GameSettings.GetAudioOffsetValueRange[0];
+        option_offsetA.maxValue = MeloMelo_GameSettings.GetAudioOffsetValueRange[1];
+        option_offsetA.value = PlayerPrefs.GetInt("AudioLatency_Id", 0);
+        NoteSettings_Panel[1].transform.GetChild(2).GetComponent<Text>().text = option_offsetA.value.ToString();
+
+        Slider option_offsetB = NoteSettings_Panel[2].transform.GetChild(4).GetComponent<Slider>();
+        option_offsetB.minValue = MeloMelo_GameSettings.GetInputOffsetValueRange[0];
+        option_offsetB.maxValue = MeloMelo_GameSettings.GetInputOffsetValueRange[1];
+        option_offsetB.value = PlayerPrefs.GetInt("InputLatency_Id", 0);
+        NoteSettings_Panel[2].transform.GetChild(2).GetComponent<Text>().text = option_offsetB.value.ToString();
     }
 
-    private void IntiNoteSpeed()
+    private void IntiNoteSettings()
     {
-        NoteSpeed_currentSwitch.maxValue = speed_label.Length - 1;
-        NoteSpeed_currentSwitch.value = PlayerPrefs.GetInt("NoteSpeed", 0);
-        NoteSpeed_Status.text = GetNoteSpeedStatus();
-        NoteSpeed_Option();
-    }
+        PlayerPrefs.SetInt("NoteSpeed", GetSpeedValueSet(PlayerPrefs.GetInt("NoteSpeed", 0)));
+        NoteSpeed_current.text = speed_label[GetSpeedValueSet(PlayerPrefs.GetInt("NoteSpeed", 0))];
 
-    private string GetNoteSpeedStatus()
-    {
-        switch (SelectionMenu_Script.thisSelect.get_selection.get_form.seasonNo)
-        {
-            case 0:
-            case 1:
-                return "Fixed (Basic)";
-
-            case 2:
-                return "Fixed v2 (Normal)";
-
-            default:
-                NoteSpeed_currentSwitch.interactable = true;
-                return "Custom (Details)";
-        }
+        Offset_AudioValue.text = "Audio: " + PlayerPrefs.GetInt("AudioLatency_Id", 0);
+        Offset_JudgeValue.text = "Judge: " + PlayerPrefs.GetInt("InputLatency_Id", 0);
     }
 
     private int GetSpeedValueSet(int speed)
     {
+        if (!PlayerPrefs.HasKey("Mission_Played"))
+        {
+            switch (SelectionMenu_Script.thisSelect.get_selection.get_form.seasonNo)
+            {
+                case 0:
+                case 1:
+                    return PlayerPrefs.GetInt("NoteSpeed_Legacy", 0);
+
+                case 2:
+                    return PlayerPrefs.GetInt("NoteSpeed_Legacy_v2", 1);
+
+                default:
+                    return speed;
+            }
+        }
+        else
+            return speed;
+    }
+
+    private bool GetSpeedEnableAdjust()
+    {
         switch (SelectionMenu_Script.thisSelect.get_selection.get_form.seasonNo)
         {
             case 0:
             case 1:
-                return PlayerPrefs.GetInt("NoteSpeed_Legacy", 0);
-
             case 2:
-                return PlayerPrefs.GetInt("NoteSpeed_Legacy_v2", 1);
+                return false;
 
             default:
-                return speed;
+                return true;
         }
+    }
+
+    public void NoteSpeed_Customize(Slider option)
+    {
+        PlayerPrefs.SetInt("NoteSpeed", (int)option.value);
+        PlayerPrefs.SetInt("Temp_NoteSpeed", (int)option.value);
+        NoteSettings_Panel[0].transform.GetChild(2).GetComponent<Text>().text = speed_label[GetSpeedValueSet(PlayerPrefs.GetInt("NoteSpeed", 0))];
+    }
+
+    public void NoteOffset_Audio_Customize(Slider option)
+    {
+        // Audio Offset
+        PlayerPrefs.SetInt("AudioLatency_Id", (int)option.value);
+        NoteSettings_Panel[1].transform.GetChild(2).GetComponent<Text>().text = PlayerPrefs.GetInt("AudioLatency_Id", 0).ToString();
+    }
+
+    public void NoteOffset_Judge_Customize(Slider option)
+    {
+        // Visual Offset
+        PlayerPrefs.SetInt("InputLatency_Id", (int)option.value);
+        NoteSettings_Panel[2].transform.GetChild(2).GetComponent<Text>().text = PlayerPrefs.GetInt("InputLatency_Id", 0).ToString();
     }
 
     // Score Display
@@ -306,6 +350,11 @@ public class BattleSetup_Script : MonoBehaviour
             case 3:
                 foreach (GameObject panel in FeedbackDisplay_Panel) panel.SetActive(false);
                 IntiFeedbackDisplay();
+                break;
+
+            case 4:
+                foreach (GameObject panel in NoteSettings_Panel) panel.SetActive(false);
+                IntiNoteSettings();
                 break;
         }
 
@@ -453,41 +502,80 @@ public class BattleSetup_Script : MonoBehaviour
     public void GetInstancePanel(string parameterData)
     {
         string[] option = parameterData.Split(",");
+        StartCoroutine(LoadingInstancePanel(option[0], option[1]));
+    }
 
-        if (GameObject.Find(option[0]) == null)
+    private IEnumerator LoadingInstancePanel(string nameOfPanel, string smallDetails)
+    {
+        if (GameObject.Find(nameOfPanel) == null)
         {
+            LoadingUI.SetActive(true);
+
+            Task<List<UsageOfItemDetail>> isItemUsageReady = PreLoadingFilteredItem(nameOfPanel);
+            yield return new WaitUntil(() => isItemUsageReady.IsCompleted);
+
+            Task<List<VirtualItemDatabase>> isItemReadyForUse = PerformFilteredItem(isItemUsageReady.Result.ToArray());
+            yield return new WaitUntil(() => isItemReadyForUse.IsCompleted);
+
             GameObject instance_panel = Instantiate(BoostPanelTemplate, CharacterSetup_GUI.transform);
-            instance_panel.name = option[0];
+            instance_panel.name = nameOfPanel;
 
             instance_panel.GetComponent<VirtualStorageBag>().SetAlertPopReference(MessagePrompt);
-            instance_panel.GetComponent<VirtualStorageBag>().SetDefaultDescription(option[1]);
-            instance_panel.GetComponent<VirtualStorageBag>().SetItemForDisplay(GetItemArray(option[0]));
+            instance_panel.GetComponent<VirtualStorageBag>().SetDefaultDescription(smallDetails);
+            instance_panel.GetComponent<VirtualStorageBag>().SetItemForDisplay(isItemReadyForUse.Result.ToArray());
             instance_panel.GetComponent<VirtualStorageBag>().SetLimitedUsageTime(true);
             PlayerPrefs.SetString(VirtualStorageBag.VirtualStorage_UsableKey, PlayerPrefs.GetString("CharacterFront", "None") + ",0,1");
+
+            LoadingUI.SetActive(false);
         }
     }
 
-    private VirtualItemDatabase[] GetItemArray(string panelType)
+    private async Task<List<UsageOfItemDetail>> PreLoadingFilteredItem(string panelType)
     {
-        List<VirtualItemDatabase> listOfItem;
-        string filterName = 
-            panelType == "EXP_Boost_Panel" ? "EXP_POTION" : 
-            panelType == "Power_Boost_Panel" ? "POWER_POTION" : 
-            string.Empty;
-        
         if (panelType != string.Empty)
         {
-            listOfItem = new List<VirtualItemDatabase>();
-            foreach (UsageOfItemDetail item in Resources.LoadAll<UsageOfItemDetail>("Database_Item/Filtered_Items/" + filterName))
-            {
-                VirtualItemDatabase itemFound = MeloMelo_GameSettings.GetAllItemFromLocal(item.itemName);
-                if (itemFound.amount > 0) listOfItem.Add(itemFound);
-            }
+            string filtered_item = panelType == "EXP_Boost_Panel" ? "EXP_POTION" : "POWER_POTION";
+            List<UsageOfItemDetail> loadedItem = new List<UsageOfItemDetail>();
+            ResourceRequest isItemFound;
+            UsageOfItemDetail itemReadReady;
+            int currentLoadedIndex = 1;
 
-            return listOfItem.ToArray();
+            do
+            {
+                isItemFound = Resources.LoadAsync("Database_Item/Filtered_Items/" + filtered_item + "/#" + currentLoadedIndex);
+                while (!isItemFound.isDone) await Task.Yield();
+                itemReadReady = isItemFound.asset as UsageOfItemDetail;
+
+                if (itemReadReady != null) loadedItem.Add(itemReadReady);
+                currentLoadedIndex++;
+            }
+            while (itemReadReady != null);
+
+            return loadedItem;
         }
 
         return null;
+    }
+
+    private async Task<List<VirtualItemDatabase>> PerformFilteredItem(UsageOfItemDetail[] readyItemList)
+    {
+        return await Task.Run(() =>
+        {
+            if (readyItemList != null && readyItemList.Length > 0)
+            {
+                List<VirtualItemDatabase> listOfItem = new List<VirtualItemDatabase>();
+
+                foreach (UsageOfItemDetail item in readyItemList)
+                {
+                    VirtualItemDatabase itemFound = MeloMelo_ItemUsage_Settings.GetActiveItem(item.itemName);
+                    if (itemFound.amount > 0) listOfItem.Add(itemFound);
+                }
+
+                return listOfItem;
+            }
+
+            return null;
+        });
     }
     #endregion
     #endregion
@@ -594,8 +682,7 @@ public class BattleSetup_Script : MonoBehaviour
 
         saveSetting.SaveGameplaySettings(
             PlayerPrefs.GetString("MVOption", "T") == "T" ? true : false,
-            PlayerPrefs.GetInt("NoteSpeed", 20), false,
-            PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "totalRatePoint", 0)
+            PlayerPrefs.GetInt("NoteSpeed", 20)
             );
     }
 

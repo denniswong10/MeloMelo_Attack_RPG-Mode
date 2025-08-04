@@ -5,6 +5,7 @@ using UnityEngine;
 public class BGM_MusicPlayer : MonoBehaviour
 {
     private bool musicFading = false;
+    private readonly float musicFadeTime = 30;
 
     void Start()
     {
@@ -17,7 +18,7 @@ public class BGM_MusicPlayer : MonoBehaviour
         {
             if (SelectionMenu_Script.thisSelect.get_loadBGM)
             {
-                if (!musicFading && GetComponent<AudioSource>().time >= SelectionMenu_Script.thisSelect.get_selection.get_form.PreviewTime + 10 && GetComponent<AudioSource>().isPlaying)
+                if (!musicFading && GetComponent<AudioSource>().time >= SelectionMenu_Script.thisSelect.get_selection.get_form.PreviewTime + musicFadeTime && GetComponent<AudioSource>().isPlaying)
                 {
                     musicFading = true;
                     StartCoroutine(FadeMusic((int)SelectionMenu_Script.thisSelect.get_selection.get_ScrollNagivator_ProgressBar.value));
@@ -38,7 +39,7 @@ public class BGM_MusicPlayer : MonoBehaviour
             {
                 if (ArenaSelection_Script.thisArena.get_loadBGM)
                 {
-                    if (!musicFading && GetComponent<AudioSource>().time >= ArenaSelection_Script.thisArena.MusicList[ArenaSelection_Script.thisArena.get_selector - 1].PreviewTime + 10 && GetComponent<AudioSource>().isPlaying)
+                    if (!musicFading && GetComponent<AudioSource>().time >= ArenaSelection_Script.thisArena.MusicList[ArenaSelection_Script.thisArena.get_selector - 1].PreviewTime + musicFadeTime && GetComponent<AudioSource>().isPlaying)
                     {
                         musicFading = true;
                         StartCoroutine(FadeMusic(ArenaSelection_Script.thisArena.get_selector));
@@ -65,5 +66,9 @@ public class BGM_MusicPlayer : MonoBehaviour
         catch { if (GetComponent<AudioSource>().volume <= 0 || ArenaSelection_Script.thisArena.get_selector != current) { GetComponent<AudioSource>().Stop(); } else { StartCoroutine(FadeMusic(current)); } }
     }
 
-    protected void GetVolume_Setting() { GetComponent<AudioSource>().volume = PlayerPrefs.GetFloat("BGM_VolumeGET", 1); }
+    private void GetVolume_Setting() 
+    {
+        GetComponent<AudioSource>().volume = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAudioMute_ValueKey) == 1 ?
+            0 : PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetBGM_ValueKey); 
+    }
 }

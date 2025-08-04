@@ -27,7 +27,7 @@ public class RemoteConfigSettings : MonoBehaviour
         await UnityServices.InitializeAsync();
 
         // remote config requires authentication for managing environment information
-        if (PlayerPrefs.HasKey("AccountSync") && !AuthenticationService.Instance.IsSignedIn)
+        if (MeloMelo_PlayerSettings.GetLocalUserAccount() && !AuthenticationService.Instance.IsSignedIn)
         {
             await AuthenticationService.Instance.SignInWithUsernamePasswordAsync
                     (
@@ -49,9 +49,9 @@ public class RemoteConfigSettings : MonoBehaviour
         if (Utilities.CheckForInternetConnection()) await InitializeRemoteConfigAsync();
         else AccountID_Text.GetComponentInChildren<Text>().text = "Not Connected";
 
-        if (PlayerPrefs.HasKey("AccountSync"))
+        if (MeloMelo_PlayerSettings.GetLocalUserAccount())
         {
-            PlayerPrefs.DeleteKey("GameWeb_URL");
+            MeloMelo_PlayerSettings.DisableWebServerCache();
             RemoteConfigService.Instance.FetchCompleted += ApplyRemoteConfig;
             await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
         }
@@ -95,12 +95,14 @@ public class RemoteConfigSettings : MonoBehaviour
 
         // Game BackEnd: Event Mode
         PlayerPrefs.SetString("VersionControl_PlayEvent", RemoteConfigService.Instance.appConfig.GetJson("CloudSave_Support"));
+        PlayerPrefs.SetString("JSON_Custom_Marathon_Challenge", RemoteConfigService.Instance.appConfig.GetJson("MeloMelo_Marathon_CustomPlay"));
+        PlayerPrefs.SetString("JSON_Custom_Marathon_Exchange", RemoteConfigService.Instance.appConfig.GetJson("MeloMelo_Marathon_Exchange"));
     }
 
     private void ResetGameApplicationValue()
     {
         PlayerPrefs.DeleteKey("GameLatest_Update");
-        PlayerPrefs.DeleteKey("GameUpdate_URL");
+        MeloMelo_PlayerSettings.DisableWebServerCache();
         PlayerPrefs.DeleteKey("MeloMelo_NewsReport_Daily");
     }
     #endregion

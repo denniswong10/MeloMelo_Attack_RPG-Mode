@@ -13,6 +13,13 @@ public class RestrictedZoneTemplate
     public int score;
 }
 
+[System.Serializable]
+public class NewTimingAddons
+{
+    public int difficulty_index;
+    public bool active;
+}
+
 [CreateAssetMenu(fileName = "MuiscScore", menuName = "Music_Database")]
 public class MusicScore : ScriptableObject
 {
@@ -55,8 +62,13 @@ public class MusicScore : ScriptableObject
 
     [Header("Additional Difficulty Content")]
     public bool UltimateAddons;
+    public NewTimingAddons[] timingAddons;
 
     [Header("Restricted Content: Requirement")]
     public bool SetRestriction;
     public RestrictedZoneTemplate[] RestrictRequirement;
+
+    [Header("Unlockable Content: Title Deed")]
+    public bool unlockAbleContent;
+    public string titleDeed_for_Area;
 }

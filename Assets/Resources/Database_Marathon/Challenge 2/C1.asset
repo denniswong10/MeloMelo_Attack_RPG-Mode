@@ -13,11 +13,28 @@ MonoBehaviour:
   m_Name: C1
   m_EditorClassIdentifier: 
   title: Basic 1
+  trackList:
+  - title: M40
+    areaName: Mounted City Town
+    DifficultyType: 1
+  - title: M21
+    areaName: Frost Kingdom
+    DifficultyType: 1
+  - title: M16
+    areaName: Journey Through Cold
+    DifficultyType: 1
+  - title: M53
+    areaName: Mounted City Town
+    DifficultyType: 1
   Difficultylevel:
   - 4
   - 5
   - 5
   - 6
-  DifficultyType: 01000000010000000100000001000000
   clearingType: 1
   clearingValue: 100
+  conditionAddons:
+  - judgeTitle: 3
+    judgeCount: 2
+  - judgeTitle: 4
+    judgeCount: 5

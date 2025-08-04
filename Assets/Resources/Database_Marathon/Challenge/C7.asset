@@ -13,11 +13,28 @@ MonoBehaviour:
   m_Name: C7
   m_EditorClassIdentifier: 
   title: Advance 1
+  trackList:
+  - title: M42
+    areaName: Lime Forestry
+    DifficultyType: 2
+  - title: M8
+    areaName: Witch Woods
+    DifficultyType: 2
+  - title: M21
+    areaName: Lakeside Village
+    DifficultyType: 2
+  - title: M18
+    areaName: Lime Forestry
+    DifficultyType: 2
   Difficultylevel:
   - 10
   - 11
   - 12
   - 13
-  DifficultyType: 02000000020000000200000002000000
   clearingType: 1
   clearingValue: 300
+  conditionAddons:
+  - judgeTitle: 3
+    judgeCount: 3
+  - judgeTitle: 4
+    judgeCount: 5

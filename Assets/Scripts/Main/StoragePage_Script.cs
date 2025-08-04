@@ -22,9 +22,14 @@ public class StoragePage_Script : MonoBehaviour
     [SerializeField] private GameObject[] CurrencyPanel;
     [SerializeField] private GameObject OpenChoiceTemplate;
 
+    private Queue<string> batchList;
+    private bool isBatchPromptRunning;
+
     void Start()
     {
         BGM_Loader();
+        isBatchPromptRunning = false;
+        batchList = new Queue<string>();
 
         Selection.GetComponent<Animator>().SetTrigger("Opening");
         Invoke("RefreshStorageLoader", 2);
@@ -34,8 +39,8 @@ public class StoragePage_Script : MonoBehaviour
     #region SETUP
     private void GetStorageOnCurrency()
     {
-        PlayerPrefs.SetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_Active Items", MeloMelo_GameSettings.GetAllActiveItem() != null
-            ? MeloMelo_GameSettings.GetAllActiveItem().Length : 0);
+        PlayerPrefs.SetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_Active Items", MeloMelo_ItemUsage_Settings.GetActiveItems() != null
+            ? MeloMelo_ItemUsage_Settings.GetActiveItems().Length : 0);
         for (int instance = 0; instance < CurrencyPanel.Length; instance++)
             CurrencyPanel[instance].GetComponent<CurrencyInTag_Scripts>().UpdateCurrencyValue();
     }
@@ -60,9 +65,9 @@ public class StoragePage_Script : MonoBehaviour
     {
         int currentPage = PlayerPrefs.GetInt("StorageBag_PageIndex", 0);
         ClearSlotData();
-        PerformItemFileLoader();
+        //PerformItemFileLoader();
 
-        VirtualItemDatabase[] allItems = MeloMelo_GameSettings.GetAllActiveItem();
+        VirtualItemDatabase[] allItems = MeloMelo_ItemUsage_Settings.GetActiveItems();
         GetStorageOnCurrency();
 
         if (allItems != null)
@@ -115,7 +120,7 @@ public class StoragePage_Script : MonoBehaviour
         if (PlayerPrefs.HasKey(slot_index + "_Slot_ItemName"))
         {
             ItemData currentData = RetrieveItemData(PlayerPrefs.GetString(slot_index + "_Slot_ItemName", string.Empty));
-            string[] typeOfItems = { "Item", "Consumable", "Non-Item" };
+            string[] typeOfItems = { "Item", "Consumable", "Artifact", "Non-Item" };
             ItemDesPanel.transform.GetChild(0).GetComponent<Text>().text = currentData.itemName == string.Empty ? "???" :
                 currentData.itemName;
 
@@ -153,6 +158,10 @@ public class StoragePage_Script : MonoBehaviour
 
                     case ItemData.ItemType.Consumable:
                         StartCoroutine(PromptMessageBox("Item cannot be used this way"));
+                        break;
+
+                    case ItemData.ItemType.Artifact:
+                        StartCoroutine(PromptMessageBox("This item cannot be used"));
                         break;
 
                     default:
@@ -223,7 +232,7 @@ public class StoragePage_Script : MonoBehaviour
 
     private int GetTotalPageAvailable()
     {
-        int total = MeloMelo_GameSettings.GetAllActiveItem() != null ? MeloMelo_GameSettings.GetAllActiveItem().Length : 0;
+        int total = MeloMelo_ItemUsage_Settings.GetActiveItems() != null ? MeloMelo_ItemUsage_Settings.GetActiveItems().Length : 0;
         return total / slots.Length;
     }
 
@@ -238,7 +247,23 @@ public class StoragePage_Script : MonoBehaviour
         AlertPop.SetActive(true);
         AlertPop.transform.GetChild(0).GetComponent<Text>().text = message;
         yield return new WaitForSeconds(3);
-        AlertPop.SetActive(false); 
+        AlertPop.SetActive(isBatchPromptRunning); 
+    }
+
+    private IEnumerator BatchPromptBox()
+    {
+        isBatchPromptRunning = true;
+        AlertPop.SetActive(true);
+
+        while (batchList.Count > 0)
+        {
+            string message = batchList.Dequeue();
+            AlertPop.transform.GetChild(0).GetComponent<Text>().text = message;
+            yield return new WaitForSeconds(2);
+        }
+
+        AlertPop.SetActive(false);
+        isBatchPromptRunning = false;
     }
 
     private void LeaveStoragePage_2() { SceneManager.LoadScene("Collections"); }
@@ -270,6 +295,7 @@ public class StoragePage_Script : MonoBehaviour
         GetStorageOnCurrency();
     }
 
+    [System.Serializable]
     struct ItemRateContainer
     {
         public string itemName;
@@ -336,19 +362,40 @@ public class StoragePage_Script : MonoBehaviour
     #region MISC (System File)
     private void PerformItemUpdateFile(string itemName, int updateAmount)
     {
-        MeloMelo_Local.LocalSave_DataManagement itemLoader = new MeloMelo_Local.LocalSave_DataManagement(
+        switch (LoginPage_Script.thisPage.portNumber)
+        {
+            case (int)MeloMelo_PlayerSettings.LoginType.GuestLogin:
+                MeloMelo_Local.LocalSave_DataManagement itemLoader = new MeloMelo_Local.LocalSave_DataManagement(
                             LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
-        itemLoader.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
-        itemLoader.SaveVirtualItemFromPlayer(itemName, updateAmount, MeloMelo_GameSettings.GetItemIsStackable(itemName));
+                itemLoader.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
+                itemLoader.SaveVirtualItemFromPlayer(itemName, updateAmount, MeloMelo_ExtensionContent_Settings.GetItemIsStackable(itemName));
+                break;
+
+            case (int)MeloMelo_PlayerSettings.LoginType.TempPass:
+                break;
+
+            default:
+                break;
+        }
+
+        MeloMelo_ItemUsage_Settings.OverwriteActiveItem(itemName, updateAmount);
         PlayerPrefs.DeleteKey(itemName + "_VirtualItem_Unsaved_Used");
     }
 
     private void PerformItemFileLoader()
     {
-        MeloMelo_Local.LocalLoad_DataManagement itemLoader = new MeloMelo_Local.LocalLoad_DataManagement(
-           LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
-        itemLoader.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
-        itemLoader.LoadVirtualItemToPlayer();
+        switch (LoginPage_Script.thisPage.portNumber)
+        {
+            case (int)MeloMelo_PlayerSettings.LoginType.GuestLogin:
+                MeloMelo_Local.LocalLoad_DataManagement itemLoader = new MeloMelo_Local.LocalLoad_DataManagement(
+                    LoginPage_Script.thisPage.GetUserPortOutput(), "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+                itemLoader.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
+                //StartCoroutine(itemLoader.PostLoading_VirtualItemData());
+                break;
+
+            default:
+                break;
+        }
     }
 
     private void PerformForceUpdateFile()
@@ -363,7 +410,9 @@ public class StoragePage_Script : MonoBehaviour
     {
         MeloMelo_ItemUsage_Settings.SetItemUsed(itemName);
         PerformItemUpdateFile(itemName, -MeloMelo_ItemUsage_Settings.GetItemUsed(itemName));
-        StartCoroutine(PromptMessageBox("Successfully Used: " + itemName));
+
+        batchList.Enqueue("Successfully Used: " + itemName);
+        if (!isBatchPromptRunning) StartCoroutine(BatchPromptBox());
         RefreshStorageLoader();
     }
     #endregion
@@ -375,7 +424,8 @@ public class StoragePage_Script : MonoBehaviour
         if (itemInDatabase != null)
         {
             PerformItemUpdateFile(itemName, amount);
-            StartCoroutine(PromptMessageBox(amount + "X Obtained Item: " + itemName));
+            batchList.Enqueue(amount + "X Obtained Item: " + itemName);
+            if (!isBatchPromptRunning) StartCoroutine(BatchPromptBox());
         }
     }
 
@@ -388,7 +438,8 @@ public class StoragePage_Script : MonoBehaviour
         if (new_balance > 0)
         {
             PerformForceUpdateFile();
-            StartCoroutine(PromptMessageBox("Get " + new_balance + " " + nameOfCurrency));
+            batchList.Enqueue("Get " + new_balance + " " + nameOfCurrency);
+            if (!isBatchPromptRunning) StartCoroutine(BatchPromptBox());
         }
     }
     #endregion

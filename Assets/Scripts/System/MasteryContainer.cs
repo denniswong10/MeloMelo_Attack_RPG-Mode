@@ -20,4 +20,5 @@ public class MasteryContainer : ScriptableObject
 
     [Header("Setup")]
     public AwardsSettings[] awards_settings;
+    public int masteryCost;
 }

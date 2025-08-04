@@ -1,337 +1,340 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using MeloMelo_Story;
 
+class AdventureRouteManagement
+{
+    public int totalStage { get; private set; }
+    public int totalRoute { get; private set; }
+
+    public int currentStage { get; private set; }
+
+    public AdventureRouteManagement()
+    {
+        totalStage = 0;
+        totalRoute = 0;
+        currentStage = 0;
+    }
+
+    #region MAIN
+    public void SetStage(int amount) => totalStage = amount;
+    public void SetRoute(int amount) => totalRoute = amount;
+    public void ChangeStage(int amount) => currentStage = amount;
+    #endregion
+
+    #region MISC
+    public bool IsRouteReachedLimit(int currentRouteIndex) { return currentRouteIndex == totalRoute - 1; }
+    public bool IsPastRouteAvailable(int currentRouteIndex) { return currentRouteIndex == 0 && currentStage > 0; }
+    #endregion
+}
+
 public class StoryMode_Scripts : MonoBehaviour
 {
     public static StoryMode_Scripts thisStory;
+    private GameObject[] BGM;
+    private readonly string[] storyType = { "Main Story", "Event Story" };
 
-    [Header("Database_StoryMode")]
-    private StoryInfo[] myStoryList;
+    [Header("Main UI - Channel")]
+    public GameObject selection_main;
+    public GameObject story_playscreen;
 
-    [Header("Main UI - Channel 1")]
-    public GameObject Menu_Selection;
-    public RawImage StoryBG;
-    public Text StoryTitle;
-    public GameObject ProcessBtn;
+    public enum Menu_Selection_Route
+    {
+        LeftBtn = 1, RightBtn,
+        RouteIcon = 4, StorySwither = 7, Location
+    }
 
-    [Header("Main UI - Channel 2")]
-    public GameObject Menu_Selection2;
-    public RawImage StoryBG2;
-    public Text StoryTitle2;
-    public Text HeadTitle;
-    public Text FragmentAmt;
-    public GameObject BeginBtn;
-    public GameObject[] Slot;
-    public GameObject[] EpsiodeStatus = new GameObject[4];
+    [SerializeField] private GameObject SubMenu_Route_Detail;
+    [SerializeField] private GameObject SubMenu_Route_Description;
+    [SerializeField] private GameObject PromptMessagePop;
+    [SerializeField] private GameObject StoryTransitionPop;
 
-    [Header("Main UI - Channel 3")]
-    public GameObject Menu_Selection3;
-    public Text StoryDes2;
-    public GameObject ContinueBtn;
+    private int currentAreaIndex;
 
-    [Header("Nagivation_Select")]
-    public GameObject Left;
-    public GameObject Right;
-    public Slider NagivatorBar;
-    private int selector = 1;
+    [Header("Content")]
+    private StoryInfo[] storyAssets;
+    private AdventureRouteManagement settings;
+    public MusicScore missionTrack { get; private set; }
 
-    [Header("Nagivation_Select2")]
-    public GameObject Left2;
-    public GameObject Right2;
-    private int selector2 = 1;
+    [Header("Story Material Component")]
+    [SerializeField] private Text storyTxt_writeOn;
+    [SerializeField] private GameObject story_continueBtn;
 
-    [Header("Channel Management")]
-    private bool mainChannel = true;
+    // Alert Box: Component
+    private bool isPropmptOpen;
+    private Queue<string> itemMessages;
 
     // Start is called before the first frame update
     void Start()
     {
         thisStory = this;
+        isPropmptOpen = false;
+        itemMessages = new Queue<string>();
+        BGM_Setup();
 
-        Menu_Selection.GetComponent<Animator>().SetTrigger("Opening");
-        StartCoroutine(Transition_StoryMode(1));
+        settings = new AdventureRouteManagement();
+        PlayerPrefs.DeleteKey("Mission_Played");
+        PlayerPrefs.DeleteKey("GatheringMode");
+
+        selection_main.GetComponent<Animator>().SetTrigger("Opening");
+        StartCoroutine(ReloadStoryAdventureAssets(storyType[PlayerPrefs.GetInt("StoryTypePlayBack", 0)]));
     }
 
-    IEnumerator Transition_StoryMode(int _index)
-    {
-        yield return new WaitForSeconds(0.05f);
-        switch (_index)
-        {
-            case 2:
-                SceneManager.LoadScene("Ref_PreSelection");
-                break;
-
-            case 3:
-                yield return new WaitForSeconds(0.5f);
-                mainChannel = false;
-                Menu_Selection2.GetComponent<Animator>().SetTrigger("OpenStory");
-                CheckNagivator2();
-                break;
-
-            case 4:
-                yield return new WaitForSeconds(0.5f);
-                mainChannel = true;
-                Menu_Selection.GetComponent<Animator>().SetTrigger("Opening");
-                break;
-
-            case 5:
-                StoryTool myTool = new StoryTool();
-                myTool.StoryTxtExtraction(PlayerPrefs.GetString("StoryLine_Index", string.Empty));
-                StartCoroutine(myTool.StoryTxtEffect());
-                StartCoroutine(StoryTellerPlayer());
-                break;
-
-            default:
-                myStoryList = Resources.LoadAll<StoryInfo>("Database_Story");
-                CheckNavigator();
-                break;
-        }
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            switch (mainChannel)
-            {
-                case true:
-                    Menu_Selection.GetComponent<Animator>().SetTrigger("Closing");
-                    StartCoroutine(Transition_StoryMode(2));
-                    break;
+        if (Input.GetKeyDown(KeyCode.Escape)) ReturnToMain();
+    }
 
-                case false:
-                    Menu_Selection2.GetComponent<Animator>().SetTrigger("CloseStory");
-                    StartCoroutine(Transition_StoryMode(4));
-                    break;
+    #region SETUP
+    private void BGM_Setup()
+    {
+        BGM = GameObject.FindGameObjectsWithTag("BGM");
+        if (BGM.Length > 1) { for (int i = 1; i < BGM.Length; i++) { Destroy(BGM[i]); } }
+    }
+
+    private IEnumerator ReloadStoryAdventureAssets(string storyType)
+    {
+        ClearRoute();
+        yield return new WaitForSeconds(2);
+
+        storyAssets = null;
+        storyAssets = Resources.LoadAll<StoryInfo>("Database_Story/" + storyType);
+        
+        currentAreaIndex = GetCurrentAreaProgress();
+        StoryTransitionPop.GetComponentInChildren<Text>().text = storyType;
+        StoryTransitionPop.SetActive(true);
+
+        yield return new WaitForSeconds(1);
+        LoadAdventureInfo();
+        StoryTransitionPop.SetActive(false);
+    }
+
+    private void LoadAdventureInfo()
+    {
+        selection_main.transform.GetChild((int)Menu_Selection_Route.RouteIcon).GetComponent<RawImage>().texture = storyAssets[currentAreaIndex].StoryBG;
+        selection_main.transform.GetChild((int)Menu_Selection_Route.Location).GetComponent<Text>().text = storyAssets[currentAreaIndex].StoryTitle;
+        SubMenu_Route_Description.GetComponent<RoutePanel_DescriptionScript>().UpdateCurrentStage(storyAssets[currentAreaIndex].Stage[settings.currentStage]);
+
+        settings.SetStage(storyAssets[currentAreaIndex].Stage.Length);
+        RouteLoader();       
+    }
+
+    private IEnumerator RefreshAdventureInfo(int routePointerPos)
+    {
+        yield return new WaitUntil(() => SubMenu_Route_Detail.transform.childCount > 0);
+
+        // Refresh context to all available route log
+        for (int id = 0; id < SubMenu_Route_Detail.transform.childCount; id++)
+        {
+            // Toggle current selection point
+            const int checker_id = 4;
+            SubMenu_Route_Detail.transform.GetChild(id).GetChild(checker_id).gameObject.SetActive(id == routePointerPos);
+        }
+
+        // Update context info in description
+        SlotQuestLog currentLog = storyAssets[currentAreaIndex].Stage[settings.currentStage].myQuestLog[routePointerPos];
+
+        SubMenu_Route_Description.GetComponent<RoutePanel_DescriptionScript>().UpdateTitleContext(currentLog.logTitle, 
+            GetIndexForChapter(currentLog), currentLog.mySlotTypte);
+
+        SubMenu_Route_Description.GetComponent<RoutePanel_DescriptionScript>().UpdateDescriptionContext(currentLog);
+
+        RefreshNagivatorButtonIndex((int)Menu_Selection_Route.LeftBtn, routePointerPos > 0 || settings.IsPastRouteAvailable(routePointerPos));
+        RefreshNagivatorButtonIndex((int)Menu_Selection_Route.RightBtn, routePointerPos < settings.totalRoute - 1 || settings.currentStage < settings.totalStage - 1);
+        RefreshNagivatorButtonIndex((int)Menu_Selection_Route.StorySwither, true);
+    }
+
+    private void RouteLoader()
+    {
+        foreach (SlotQuestLog routeRole in storyAssets[currentAreaIndex].Stage[settings.currentStage].myQuestLog)
+            SubMenu_Route_Detail.GetComponent<RoutePanel_VisualScript>().LoadRoute((int)routeRole.mySlotTypte);
+
+        settings.SetRoute(storyAssets[currentAreaIndex].Stage[settings.currentStage].myQuestLog.Length);
+        SubMenu_Route_Detail.GetComponent<RoutePanel_VisualScript>().UpdateRouteDetail(settings.currentStage + 1, settings.totalStage);
+
+        PlayerPrefs.DeleteKey("StoryMode_Route_Selection_Id");
+        StartCoroutine(RefreshAdventureInfo(PlayerPrefs.GetInt("StoryMode_Route_Selection_Id", 0)));
+    }
+
+    private void ClearRoute()
+    {
+        for (int instance = 0; instance < SubMenu_Route_Detail.transform.childCount; instance++)
+            Destroy(SubMenu_Route_Detail.transform.GetChild(instance).gameObject);
+    }
+
+    private void RefreshNagivatorButtonIndex(int button_index, bool condition)
+    {
+        Button buttonInteract = selection_main.transform.GetChild(button_index).GetComponent<Button>();
+        buttonInteract.interactable = condition;
+    }
+    #endregion
+
+    #region MAIN
+    public void NagivatorBtn(bool previous)
+    {
+        int currentSelectedRoute = PlayerPrefs.GetInt("StoryMode_Route_Selection_Id", 0);
+
+        RefreshNagivatorButtonIndex((int)Menu_Selection_Route.LeftBtn, false);
+        RefreshNagivatorButtonIndex((int)Menu_Selection_Route.RightBtn, false);
+
+        if ((!previous && settings.IsRouteReachedLimit(currentSelectedRoute)) || (previous && settings.IsPastRouteAvailable(currentSelectedRoute)))
+        {
+            ClearRoute();
+            settings.ChangeStage(settings.currentStage + (previous ? -1 : 1));
+            LoadAdventureInfo();
+        }
+        else
+        {
+            int isToggling = currentSelectedRoute + (previous ? -1 : 1);
+            StartCoroutine(RefreshAdventureInfo(isToggling));
+            PlayerPrefs.SetInt("StoryMode_Route_Selection_Id", isToggling);
+        }
+    }
+
+    public void SwitchStoryModeBtn()
+    {
+        int currentStoryType = PlayerPrefs.GetInt("StoryTypePlayBack") == 0 ? 1 : 0;
+        settings.ChangeStage(0);
+
+        RefreshNagivatorButtonIndex((int)Menu_Selection_Route.LeftBtn, false);
+        RefreshNagivatorButtonIndex((int)Menu_Selection_Route.RightBtn, false);
+        RefreshNagivatorButtonIndex((int)Menu_Selection_Route.StorySwither, false);
+
+        StartCoroutine(ReloadStoryAdventureAssets(storyType[currentStoryType]));
+        PlayerPrefs.SetInt("StoryTypePlayBack", currentStoryType);
+    }
+
+    public void RegisterMissionTrack(MusicScore track)
+    {
+        missionTrack = track;
+    }
+
+    public void ReturnToMain()
+    {
+        SceneManager.LoadScene("Ref_PreSelection");
+    }
+    #endregion
+
+    #region MISC
+    private int GetIndexForChapter(SlotQuestLog referenceFrom)
+    {
+        int chapterIndex = 1;
+
+        foreach (FragmentInfo currentStage in storyAssets[currentAreaIndex].Stage)
+        {
+            foreach (SlotQuestLog currentLog in currentStage.myQuestLog)
+            {
+                if (referenceFrom == currentLog) return chapterIndex;
+                else if (currentLog.mySlotTypte == referenceFrom.mySlotTypte) chapterIndex++;
             }
         }
+
+        return -1;
     }
 
-    // Main Channel: Nagivator
-    void CheckNavigator()
+    private int GetCurrentAreaProgress()
     {
-        NagivatorBar.maxValue = myStoryList.Length;
-        NagivatorBar.value = selector;
+        int current = 0;
 
-        if (selector <= 1) { Left.GetComponent<Button>().interactable = false; }
-        else { Left.GetComponent<Button>().interactable = true; }
-
-        if (selector >= myStoryList.Length) { Right.GetComponent<Button>().interactable = false; }
-        else { Right.GetComponent<Button>().interactable = true; }
-
-        // Change Story Scene
-        StoryBG.texture = myStoryList[selector - 1].StoryBG;
-        StoryTitle.text = myStoryList[selector - 1].StoryTitle + "\n [ " + myStoryList[selector - 1].S_Type.ToString() + " Story ]";
-        NagivatorBar.transform.GetChild(0).GetComponent<Text>().text = selector + "/" + myStoryList.Length;
-
-        // Check Selection Button
-        if (myStoryList[selector - 1].Stage.Length == 0) { ProcessBtn.GetComponent<Button>().interactable = false; }
-        else { ProcessBtn.GetComponent<Button>().interactable = true; }
-    }
-
-    // Channel 2: Nagivator 
-    void CheckNagivator2()
-    {
-        StoryBG2.texture = myStoryList[selector - 1].StoryBG;
-        StoryTitle2.text = myStoryList[selector - 1].StoryTitle + "\n [ " + myStoryList[selector - 1].S_Type.ToString() + " Story ]";
-
-        if (selector2 <= 1) { Left2.GetComponent<Button>().interactable = false; }
-        else { Left2.GetComponent<Button>().interactable = true; }
-
-        if (selector2 >= myStoryList[selector - 1].Stage.Length) { Right2.GetComponent<Button>().interactable = false; }
-        else { Right2.GetComponent<Button>().interactable = true; }
-
-        // Change Scenerio
-        HeadTitle.text = "Episode " + selector2 + " : " + myStoryList[selector - 1].Stage[selector2 - 1].HeadTitle;
-        FragmentAmt.text = "Fragment Gathered: " + "0 / " + myStoryList[selector - 1].Stage[selector2 - 1].numberOfSteps;
-
-        // Check for Story Detail
-        if (myStoryList[selector - 1].Stage[selector2 - 1].StoryDetail == "--") { BeginBtn.GetComponent<Button>().interactable = false; }
-        else { BeginBtn.GetComponent<Button>().interactable = true; }
-
-        CheckSlotOpening();
-        CheckEpisodeStatus();
-    }
-
-    // Channel 2: Slot
-    void CheckSlotOpening()
-    {
-        // Reset Visible
-        for (int i = 0; i < 3; i++)
+        foreach (StoryInfo story in storyAssets)
         {
-            Slot[i].transform.GetChild(0).gameObject.SetActive(false);
-            Slot[i].transform.GetChild(1).gameObject.SetActive(false);
-            Slot[i].transform.GetChild(2).gameObject.SetActive(false);
+            string searchFormat = "Title Deed: " + story.StoryTitle + " Story Play";
+            VirtualItemDatabase item = MeloMelo_ItemUsage_Settings.GetActiveItem(searchFormat);
+
+            if (item.itemName != searchFormat) return current;
+            else current++;
         }
 
-        for (int i = 0; i < 3; i++)
+        return storyAssets.Length - 1;
+    }
+
+    public StoryInfo GetStoryArea()
+    {
+        return storyAssets[currentAreaIndex]; 
+    }
+
+    public bool IsTitleDeedPresented()
+    {
+        string searchFormat = "Title Deed: " + storyAssets[currentAreaIndex].StoryTitle + " Story Play";
+        VirtualItemDatabase item = MeloMelo_ItemUsage_Settings.GetActiveItem(searchFormat);
+        return storyAssets[currentAreaIndex].StoryTitle == item.itemName;
+    }
+    #endregion
+
+    #region MISC (Old Story Builder)
+    public void BeginStoryMode(string storyTitle)
+    {
+        StoryTool myTool = new StoryTool();
+        myTool.StoryTxtExtraction(storyTitle);
+
+        if (PlayerPrefs.HasKey("Display_Story"))
         {
-            // Checking Open Slot: Display
-            if (myStoryList[selector - 1].Stage[selector2 - 1].myQuestLog[i].slotOpen)
-            {
-                Slot[i].transform.GetChild(3).gameObject.SetActive(false);
-
-                // Checking Slot Type: Display
-                if (myStoryList[selector - 1].Stage[selector2 - 1].myQuestLog[i].clearSlot)
-                {
-                    Slot[i].transform.GetChild(2).gameObject.SetActive(true);
-                }
-                else
-                {
-                    switch (myStoryList[selector - 1].Stage[selector2 - 1].myQuestLog[i].mySlotTypte)
-                    {
-                        case SlotQuestLog.SlotType.Quest:
-                            Slot[i].transform.GetChild(0).gameObject.SetActive(true);
-                            break;
-
-                        case SlotQuestLog.SlotType.Battle:
-                            Slot[i].transform.GetChild(1).gameObject.SetActive(true);
-                            break;
-                    }
-                }
-            }
-            else { Slot[i].transform.GetChild(3).gameObject.SetActive(true); }
+            story_playscreen.GetComponent<Animator>().SetTrigger("Opening");
+            StartCoroutine(myTool.StoryTxtEffect());
+            StartCoroutine(StoryTellerPlayer());
         }
-    }
-
-    // Channel 2: Checking Status
-    void CheckEpisodeStatus()
-    {
-        foreach (GameObject i in EpsiodeStatus) { i.SetActive(false); }
-        BeginBtn.GetComponent<Button>().interactable = true;
-
-        switch (myStoryList[selector - 1].Stage[selector2 - 1].myEpi_Manage)
-        {
-            case FragmentInfo.EpisodeManagement.Lock:
-                EpsiodeStatus[0].SetActive(true);
-                BeginBtn.GetComponent<Button>().interactable = false;
-                break;
-
-            case FragmentInfo.EpisodeManagement.Unlock:
-                EpsiodeStatus[1].SetActive(true);
-                break;
-
-            case FragmentInfo.EpisodeManagement.Clear:
-                EpsiodeStatus[2].SetActive(true);
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    public void ClickedNaviator(int index)
-    {
-        switch (index)
-        {
-            case 1:
-                selector++;
-                break;
-            case 2:
-                selector--;
-                break;
-        }
-
-        CheckNavigator();
-    }
-
-    public void ClickedNaviator2(int index)
-    {
-        switch (index)
-        {
-            case 1:
-                selector2++;
-                break;
-            case 2:
-                selector2--;
-                break;
-        }
-
-        CheckNagivator2();
-    }
-
-    public void Selected_StoryTransition()
-    {
-        Menu_Selection.GetComponent<Animator>().SetTrigger("Closing");
-        StartCoroutine(Transition_StoryMode(3));
-    }
-
-    // Channel 2: Begin Button Interactive
-    public void BeginStoryMode()
-    {
-        BeginBtn.GetComponent<Button>().interactable = false;
-        Menu_Selection3.GetComponent<Animator>().SetTrigger("Opening");
-
-        PlayerPrefs.SetString("StoryLine_Index", myStoryList[selector - 1].Stage[selector2 - 1].StoryDetail);
-        StartCoroutine(Transition_StoryMode(5));
     }
 
     // Channel 3: Continue Button Interactive
     public void ContinueBtn_StoryMode()
     {
-        ContinueBtn.SetActive(false);
-        Menu_Selection3.GetComponent<Animator>().SetTrigger("Closing");
+        story_continueBtn.SetActive(false);
+        story_playscreen.GetComponent<Animator>().SetTrigger("Closing");
 
-        StoryDes2.GetComponent<Text>().text = string.Empty;
-        Menu_Selection3.GetComponent<AudioSource>().clip = null;
-        CheckNagivator2();
-
-        // Unlock Episode
-        myStoryList[selector - 1].Stage[selector2 - 1].myEpi_Manage = FragmentInfo.EpisodeManagement.NoStatus;
-        CheckEpisodeStatus();
+        storyTxt_writeOn.text = string.Empty;
+        story_playscreen.GetComponent<AudioSource>().clip = null;
     }
 
-    // Channel 3: PlugIn-Effect
-    public void StoryDisplayTxt(char print) { StoryDes2.GetComponent<Text>().text += print; }
-    public void StoryDisplayContinue() { ContinueBtn.SetActive(true); }
+    protected IEnumerator StoryTellerPlayer()
+    {
+        yield return new WaitForSeconds(1);
+        if (GameObject.Find("BGM")) { GameObject.Find("BGM").GetComponent<AudioSource>().volume = 0.2f; }
+        if (story_playscreen.GetComponent<AudioSource>().clip != null) { story_playscreen.GetComponent<AudioSource>().Play(); }
 
-    // Channel 3: Story Teller
+        yield return new WaitUntil(() => !story_playscreen.GetComponent<AudioSource>().isPlaying);
+        if (GameObject.Find("BGM")) { GameObject.Find("BGM").GetComponent<AudioSource>().volume = 1; }
+    }
+
     public void StoryLoaderPlayer(string storyRef)
     {
         try
         {
             AudioClip StoryTeller = Resources.Load<AudioClip>("Story/" + storyRef);
-            Menu_Selection3.GetComponent<AudioSource>().clip = StoryTeller;
+            story_playscreen.GetComponent<AudioSource>().clip = StoryTeller;
         }
         catch { }
     }
 
-    protected IEnumerator StoryTellerPlayer() 
-    {
-        yield return new WaitForSeconds(1);
-        if (GameObject.Find("BGM")) { GameObject.Find("BGM").GetComponent<AudioSource>().volume = 0.2f; }
-        if (Menu_Selection3.GetComponent<AudioSource>().clip != null) { Menu_Selection3.GetComponent<AudioSource>().Play(); }
-       
-        yield return new WaitUntil(() => !Menu_Selection3.GetComponent<AudioSource>().isPlaying);
-        if (GameObject.Find("BGM")) { GameObject.Find("BGM").GetComponent<AudioSource>().volume = 1; }
-    }
+    public void StoryDisplayTxt(char print) { storyTxt_writeOn.text += print; }
+    public void StoryDisplayContinue() { story_continueBtn.SetActive(true); }
+    #endregion
 
-    // Channel 2: StoryMode Slot Interact
-    public void StoryMode_SlotInteractive(int _ref)
+    #region MISC (Rewarding System)
+    public void ItemMessageAlert(string message)
     {
-        if (!EpsiodeStatus[3].activeInHierarchy)
+        itemMessages.Enqueue(message);
+
+        if (!isPropmptOpen)
         {
-            if (myStoryList[selector - 1].Stage[selector2 - 1].myQuestLog[_ref - 1].slotOpen)
-            {
-                switch (myStoryList[selector - 1].Stage[selector2 - 1].myQuestLog[_ref - 1].mySlotTypte)
-                {
-                    case SlotQuestLog.SlotType.Quest:
-                        break;
-
-                    case SlotQuestLog.SlotType.Battle:
-                        break;
-                }
-            }
-            else
-            {
-                EpsiodeStatus[3].SetActive(true);
-            }
-        }      
+            isPropmptOpen = true;
+            StartCoroutine(GetItemDisplayPrompt());
+        }
     }
 
-    public void ContinueButton_SlotInteract() { EpsiodeStatus[3].SetActive(false); }
+    private IEnumerator GetItemDisplayPrompt()
+    {
+        while (itemMessages.Count > 0)
+        {
+            PromptMessagePop.SetActive(true);
+            PromptMessagePop.GetComponentInChildren<Text>().text = itemMessages.Dequeue();
+            yield return new WaitForSeconds(2);
+        }
+
+        PromptMessagePop.SetActive(false);
+        isPropmptOpen = false;
+    }
+    #endregion 
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ public class VirtualStorageBag : MonoBehaviour
     public static readonly string VirtualStorage_UsableKey = "Character_VirtualItem_UsageOfItem";
 
     [SerializeField] private GameObject storagePanel;
+    [SerializeField] private RawImage itemSlot_Template;
     [SerializeField] private GameObject openChoiceSet;
     private bool limitedUseTime;
     private GameObject AlertPop;
@@ -22,9 +24,9 @@ public class VirtualStorageBag : MonoBehaviour
     private void ReAlignOfPanelPosition()
     {
         if (PlayerPrefs.HasKey(name + "_PositionStand"))
-            GetComponent<RectTransform>().position = JsonUtility.FromJson<Vector3>(PlayerPrefs.GetString(name + "_PositionStand", string.Empty));
+            GetComponent<RectTransform>().position = JsonUtility.FromJson<Vector2>(PlayerPrefs.GetString(name + "_PositionStand", string.Empty));
         else
-            GetComponent<RectTransform>().position = Input.mousePosition;
+            GetComponent<RectTransform>().anchoredPosition = new Vector2(0,0);
     }
 
     public void SetDefaultDescription(string description)
@@ -48,34 +50,30 @@ public class VirtualStorageBag : MonoBehaviour
         {
             for (int itemId = 0; itemId < itemList.Length; itemId++)
             {
-                for (int slot = 0; slot < storagePanel.transform.childCount - 1; slot++)
-                {
-                    if (itemList[itemId].amount > 0 && !PlayerPrefs.HasKey(slot + "_" + name + "_Slot_ItemBound"))
-                    {
-                        storagePanel.transform.GetChild(slot).gameObject.SetActive(true);
-                        storagePanel.transform.GetChild(slot).GetComponent<RawImage>().texture = FindItemToPlot(itemList[itemId].itemName).Icon;
-                        PlayerPrefs.SetString(slot + "_" + name + "_Slot_ItemBound", itemList[itemId].itemName);
-                        break;
-                    }
+                if (itemList[itemId].amount > 0)
+                {                   
+                    RawImage itemSlot = Instantiate(itemSlot_Template, storagePanel.transform);
+                    itemSlot.texture = FindItemToPlot(itemList[itemId].itemName).Icon;
+                    itemSlot.gameObject.GetComponent<ItemSlot_Nagivator_Script>().UpdateItemSlot(this, itemList[itemId]);
+                    itemSlot.gameObject.SetActive(true);
                 }
             }
         }
         else
-            storagePanel.transform.GetChild(storagePanel.transform.childCount - 1).gameObject.SetActive(true);
+            storagePanel.transform.GetChild(0).gameObject.SetActive(true);
     }
     #endregion
 
     #region MAIN
     // Toggle: IN
-    public void ToggleItemInfo(int index)
+    public void ToggleItemInfo(string nameOfItem)
     {
         if (AlertPop)
         {
-            string itemFound = PlayerPrefs.GetString(index + "_" + name + "_Slot_ItemBound", string.Empty);
             AlertPop.SetActive(true);
 
-            AlertPop.transform.GetChild(0).GetComponent<Text>().text = itemFound + 
-                " ( x " + Mathf.Clamp(GetTotalCountItem(itemFound), 0, 9999) + " )";
+            AlertPop.transform.GetChild(0).GetComponent<Text>().text = nameOfItem + 
+                " ( x " + Mathf.Clamp(GetTotalCountItem(nameOfItem), 0, 9999) + " )";
         }
     }
 
@@ -86,12 +84,9 @@ public class VirtualStorageBag : MonoBehaviour
     }
 
     // Clickable: Content
-    public void UseStorageItem(int index)
+    public void UseStorageItem(string itemUsing)
     {
-        if (PlayerPrefs.GetInt(name + "_ItemUsingBound", -1) == index)
-            ActivationOfItemUsage(PlayerPrefs.GetString(index + "_" + name + "_Slot_ItemBound", string.Empty));       
-        else
-            PlayerPrefs.SetInt(name + "_ItemUsingBound", index);
+        ActivationOfItemUsage(itemUsing);
     }
 
     // Dragable: Object
@@ -109,10 +104,10 @@ public class VirtualStorageBag : MonoBehaviour
     // Object: Clear from scene
     public void ClosePanel()
     {
-        for (int slot = 0; slot < storagePanel.transform.childCount; slot++)
-            PlayerPrefs.DeleteKey(slot + "_" + name + "_Slot_ItemBound");
+        //for (int slot = 0; slot < storagePanel.transform.childCount; slot++)
+        //    PlayerPrefs.DeleteKey(slot + "_" + name + "_Slot_ItemBound");
 
-        AlertPop.SetActive(false);
+        if (AlertPop) AlertPop.SetActive(false);
         Destroy(gameObject);
     }
     #endregion
@@ -127,7 +122,7 @@ public class VirtualStorageBag : MonoBehaviour
     private int GetTotalCountItem(string itemName)
     {
         // Item counted in storage bag and current used items
-        int itemAmount = MeloMelo_GameSettings.GetAllItemFromLocal(itemName).amount -
+        int itemAmount = MeloMelo_ItemUsage_Settings.GetActiveItem(itemName).amount -
             MeloMelo_ItemUsage_Settings.GetItemUsed(itemName);
 
         return itemAmount;
@@ -146,17 +141,68 @@ public class VirtualStorageBag : MonoBehaviour
     #endregion
 
     #region COMPONENT (Activation Command)
+    //private IEnumerator ActivationOfItemUsage2(string itemToUsed)
+    //{
+    //    VirtualItemDatabase getItem = MeloMelo_ItemUsage_Settings.GetActiveItem(itemToUsed);
+    //    List<UsageOfItemDetail> itemListing;
+
+    //    if (getItem.itemName == itemToUsed && GetTotalCountItem(itemToUsed) > 0)
+    //    {
+
+    //        if (itemListing != null)
+    //        {
+    //            foreach (UsageOfItemDetail item in itemListing.ToArray())
+    //            {
+    //                if (item.itemName == itemFound.itemName)
+    //                {
+    //                    switch (PlayerPrefs.GetString(VirtualStorage_UsableKey, "None"))
+    //                    {
+    //                        case "TRUE":
+    //                        case "FALSE":
+    //                            if (PlayerPrefs.GetString(VirtualStorage_UsableKey, "None") == "TRUE")
+    //                                PlayerItemUsage(item);
+    //                            else
+    //                            {
+    //                                ItemNotAbleForUse("Item refuse to used this way");
+    //                                return;
+    //                            }
+    //                            break;
+
+    //                        default:
+    //                            if (MeloMelo_CharacterInfo_Settings.GetCharacterStatus(
+    //                                PlayerPrefs.GetString(VirtualStorage_UsableKey, "None").Split(",")[0])
+    //                                )
+    //                            {
+    //                                if (PlayerPrefs.GetString(VirtualStorage_UsableKey, "None").Split(",")[2] == "0")
+    //                                {
+    //                                    ItemNotAbleForUse("Character had reached the max level");
+    //                                    return;
+    //                                }
+    //                                else
+    //                                    CharacterItemUsage(item);
+    //                            }
+    //                            else
+    //                            {
+    //                                ItemNotAbleForUse("Item cannot be used for this character");
+    //                                return;
+    //                            }
+    //                            break;
+    //                    }
+
+    //                    if (limitedUseTime) ClosePanel();
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
+
     private void ActivationOfItemUsage(string itemToUsed)
     {
-        VirtualItemDatabase itemFound = MeloMelo_GameSettings.GetAllItemFromLocal(itemToUsed);
+        VirtualItemDatabase itemFound = MeloMelo_ItemUsage_Settings.GetActiveItem(itemToUsed);
         if (itemFound.itemName == itemToUsed && GetTotalCountItem(itemToUsed) > 0)
         {
-            PlayerPrefs.DeleteKey(name + "_ItemUsingBound");
-            string usedItemInDirectory = PlayerPrefs.GetString("ItemDirectoryToUsed", string.Empty);
-
             // Use of item and activation
-            foreach (UsageOfItemDetail item in Resources.LoadAll<UsageOfItemDetail>
-                ("Database_Item/" + usedItemInDirectory))
+            foreach (UsageOfItemDetail item in Resources.LoadAll<UsageOfItemDetail>("Database_Item"))
             {
                 if (item.itemName == itemFound.itemName)
                 {

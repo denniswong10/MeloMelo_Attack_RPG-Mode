@@ -58,9 +58,7 @@ public class TrackListingDistribution : MonoBehaviour
     private void GetTrackEntryObject(TrackEventEntry entry)
     {
         GameObject entryObject = Instantiate(Resources.Load<GameObject>("Database_Server/TrackEntry"), contentBoard.transform);
-        Texture coverImage = null;
-
-        try { coverImage = Resources.Load<Texture>("Database_CoverImage/CoverImage_" + entry.cover); } catch { coverImage = null; }
+        Texture coverImage = Resources.Load<Texture>("Database_CoverImage/CoverImage_" + entry.cover);
         if (coverImage) entryObject.transform.GetChild(0).GetComponent<RawImage>().texture = coverImage;
 
         entryObject.transform.GetChild(1).GetComponent<Text>().text = entry.title + "\n" + GetDifficulty(entry.difficulty) + " Lv. " + entry.level;
@@ -239,7 +237,7 @@ public class TrackListingDistribution : MonoBehaviour
     {
         string directory = (Application.isEditor ? "Assets/" : "MeloMelo_Data/");
         string path = directory + "StreamingAssets/LocalData/MeloMelo_LocalSave_ChartList/" +
-            GetDestinationFile(LoginPage_Script.thisPage.portNumber == (int)MeloMelo_GameSettings.LoginType.TempPass, index);
+            GetDestinationFile(LoginPage_Script.thisPage.portNumber == (int)MeloMelo_PlayerSettings.LoginType.TempPass, index);
 
         if (File.Exists(path))
         {
@@ -256,16 +254,14 @@ public class TrackListingDistribution : MonoBehaviour
 
     private void SaveJsonFile(int index, string data)
     {
-        if (LoginPage_Script.thisPage.portNumber == (int)MeloMelo_GameSettings.LoginType.GuestLogin)
-        {
-            string directory = (Application.isEditor ? "Assets/" : "MeloMelo_Data/");
-            string path = directory + "StreamingAssets/LocalData/MeloMelo_LocalSave_ChartList/" + LoginPage_Script.thisPage.GetUserPortOutput() + "_" + ChartNameArray[index - 1] + ".json";
+        string directory = (Application.isEditor ? "Assets/" : "MeloMelo_Data/");
+        string path = directory + "StreamingAssets/LocalData/MeloMelo_LocalSave_ChartList/" +
+            GetDestinationFile(LoginPage_Script.thisPage.portNumber == (int)MeloMelo_PlayerSettings.LoginType.TempPass, index);
 
-            StreamWriter writer = new StreamWriter(path);
-            writer.WriteLine(data);
+        StreamWriter writer = new StreamWriter(path);
+        writer.WriteLine(data);
 
-            writer.Close();
-        }
+        writer.Close();
     }
     #endregion
 

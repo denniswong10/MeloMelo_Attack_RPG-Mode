@@ -17,8 +17,8 @@ MonoBehaviour:
   stackable: 1
   thisItemType: 0
   description: "A small gift from the developer who is \rmaintaining this game for
-    years now. \nThis gift contain random consumable\r to keep the player active
-    while waiting\r for the next update. \nClick them to open it."
+    years now. This gift contain random consumable\r to keep the player active while
+    waiting\r for the next update. Click them to open it."
   itemValue: 0
   NoQuantityLimit: 0
   CreditSet: 0

@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf93b958aa3623a4da8365170344febc, type: 3}
+  m_Name: Main_Area_2
+  m_EditorClassIdentifier: 
+  StoryTitle: MeloLand
+  StoryBG: {fileID: 2800000, guid: 8b0b03055ca3ae64a89186a1f3e28681, type: 3}
+  storyEndRewards: []
+  Stage:
+  - numberOfSteps: 05000000
+    Quest_Stage:
+    - {fileID: 11400000, guid: 645623bdd1392314ba7566efe44d030d, type: 2}
+    myQuestLog:
+    - logTitle: Entering into the wild
+      id: 11
+      mySlotTypte: 0
+      isOpen: 1
+    - logTitle: Light Path through destiny
+      id: 12
+      mySlotTypte: 2
+      isOpen: 0
+    - logTitle: Monster on the Run
+      id: 13
+      mySlotTypte: 1
+      isOpen: 0
+  - numberOfSteps: 
+    Quest_Stage:
+    - {fileID: 11400000, guid: aaf05bd2decaf49408757219da592160, type: 2}
+    myQuestLog:
+    - logTitle: Lost Sight of Path
+      id: 14
+      mySlotTypte: 0
+      isOpen: 0
+    - logTitle: Honor by Other Party Team
+      id: 15
+      mySlotTypte: 1
+      isOpen: 0
+  - numberOfSteps: 0a000000
+    Quest_Stage: []
+    myQuestLog:
+    - logTitle: Journey Through North
+      id: 16
+      mySlotTypte: 0
+      isOpen: 0
+    - logTitle: Quick Peak from Exhaustion
+      id: 17
+      mySlotTypte: 2
+      isOpen: 0
+    - logTitle: Journey Continue Tills The End
+      id: 18
+      mySlotTypte: 0
+      isOpen: 0
+    - logTitle: End Of Story
+      id: 19
+      mySlotTypte: 3
+      isOpen: 0

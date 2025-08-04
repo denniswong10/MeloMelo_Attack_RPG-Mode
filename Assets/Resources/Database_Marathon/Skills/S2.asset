@@ -13,11 +13,16 @@ MonoBehaviour:
   m_Name: S2
   m_EditorClassIdentifier: 
   title: Intermidate Trial
+  trackList: []
   Difficultylevel:
   - 6
   - 7
   - 8
   - 9
-  DifficultyType: 02000000020000000200000002000000
   clearingType: 1
   clearingValue: 20
+  conditionAddons:
+  - judgeTitle: 3
+    judgeCount: 1
+  - judgeTitle: 4
+    judgeCount: 2

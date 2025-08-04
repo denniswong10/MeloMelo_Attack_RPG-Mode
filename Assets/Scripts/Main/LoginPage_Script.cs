@@ -43,7 +43,7 @@ public class LoginPage_Script : MonoBehaviour
     #region SETUP
     string CheckingForVersionIndex()
     {
-        try { return StartMenu_Script.thisMenu.get_version; } catch { return "---"; }
+        try { return StartMenu_Script.thisMenu.version; } catch { return "---"; }
     }
 
     IEnumerator GetRebootProcessing()
@@ -55,7 +55,7 @@ public class LoginPage_Script : MonoBehaviour
     #endregion
 
     #region MAIN
-    public void LinkSite() { Application.OpenURL(PlayerPrefs.GetString("GameWeb_URL", string.Empty) + "/database/transcripts/site7"); }
+    public void LinkSite() { Application.OpenURL(MeloMelo_PlayerSettings.GetWebServerUrl() + "/database/transcripts/site7"); }
 
     public void BackButton() { SceneManager.LoadScene("ServerGateway"); }
     #endregion

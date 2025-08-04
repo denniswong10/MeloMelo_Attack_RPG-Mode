@@ -29,7 +29,7 @@ public class ExchangeZoneSetup : MonoBehaviour
     private async void GetSetupReady()
     {
         // Only active to guest loign
-        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_GameSettings.LoginType.GuestLogin)
+        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_PlayerSettings.LoginType.GuestLogin)
         {
             // Refresh the latest cloud data to local data
             await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());

@@ -164,6 +164,22 @@ public class OpenChoiceSetupScript : MonoBehaviour
                 CharacterLevelingTraining(1);
                 break;
 
+            case 8:
+                CharacterInstantUpgrade("STR,MAG,VIT", 5);
+                break;
+
+            case 9:
+                CharacterInstantUpgrade("MAG", 5);
+                break;
+
+            case 10:
+                CharacterInstantUpgrade("VIT", 5);
+                break;
+
+            case 11:
+                CharacterInstantUpgrade("STR", 5);
+                break;
+
             default:
                 StartCoroutine(MessagePopUp("Item is not available at this moment"));
                 Invoke("ClosePanel", 3.1f);
@@ -196,6 +212,7 @@ public class OpenChoiceSetupScript : MonoBehaviour
                         break;
 
                     default:
+                        Invoke("ClosePanel", 3.1f);
                         break;
                 }
             }
@@ -203,7 +220,8 @@ public class OpenChoiceSetupScript : MonoBehaviour
                 StartCoroutine(MessagePopUp("Character need to be unlock before using any consumable"));
 
             ConfirmItemUsage();
-            StartCoroutine(MessagePopUp("Character just learned " + Resources.Load<SkillContainer>("Database_Skills/" + chosenCharacter + "_Priamry_Skill").skillName));
+            try { StartCoroutine(MessagePopUp("Character just learned " + Resources.Load<SkillContainer>("Database_Skills/" + chosenCharacter + "_Priamry_Skill").skillName)); }
+            catch { StartCoroutine(MessagePopUp("Character just learned " + Resources.Load<SkillContainer>("Database_Skills/" + chosenCharacter + "_Secondary_Skill_" + skill_index).skillName)); }
         }
         else
             StartCoroutine(MessagePopUp("Ticket hasn't been used after rejecting"));
@@ -269,7 +287,10 @@ public class OpenChoiceSetupScript : MonoBehaviour
          */
         if (choiceOptionListing[2] == 1)
         {
-            if (ModifyCharacterStats(GetStatsFromIndex(choiceOptionListing[0]), true, 1))
+            if (choiceOptionListing[0] == choiceOptionListing[1])
+                StartCoroutine(MessagePopUp("Stats modified repeated"));
+
+            else if (ModifyCharacterStats(GetStatsFromIndex(choiceOptionListing[0]), true, 1))
             {
                 ModifyCharacterStats(GetStatsFromIndex(choiceOptionListing[1]), false, 1);
                 ConfirmItemUsage();
@@ -282,6 +303,39 @@ public class OpenChoiceSetupScript : MonoBehaviour
             StartCoroutine(MessagePopUp("Item hasn't been used after rejecting"));
 
         Invoke("ClosePanel", 3.1f);
+    }
+
+    private void CharacterInstantUpgrade(string allStatsArray, int amount)
+    {
+        if (choiceOptionListing[2] == 1)
+        {
+            string[] assignStats = allStatsArray.Split(",");
+            foreach (string stats in assignStats)
+            {
+                switch (stats)
+                {
+                    case "STR":
+                        ModifyCharacterStats("STR", false, amount);
+                        break;
+
+                    case "VIT":
+                        ModifyCharacterStats("VIT", false, amount);
+                        break;
+
+                    case "MAG":
+                        ModifyCharacterStats("MAG", false, amount);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            if (assignStats.Length > 0) { StartCoroutine(MessagePopUp("Succesful of used book")); }
+            else { StartCoroutine(MessagePopUp("Book attribute empty")); }
+        }
+        else
+            StartCoroutine(MessagePopUp("Cancel used of book"));
     }
 
     private bool ModifyCharacterStats(string typeOfStats, bool reset, int amount)

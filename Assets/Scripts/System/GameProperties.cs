@@ -877,9 +877,9 @@ namespace MeloMelo_GameProperties
         }
 
         #region BASIC
-        public void AddTotalCombo()
+        public void AddTotalCombo(int amount = 1)
         {
-            overallCombo++;
+            overallCombo += amount;
         }
 
         private void AddCombo()
@@ -954,14 +954,14 @@ namespace MeloMelo_GameProperties
         public int getTotalTraps { get { return totalTraps; } }
         public int getTotalItems { get { return totalItems; } }
 
-        public void AddEnemyCount()
+        public void AddEnemyCount(int amount = 1)
         {
-            totalEnemy++;
+            totalEnemy += amount;
         }
 
-        public void AddTrapsCount()
+        public void AddTrapsCount(int amount = 1)
         {
-            totalTraps++;
+            totalTraps += amount;
         }
 
         public void AddItemCount()

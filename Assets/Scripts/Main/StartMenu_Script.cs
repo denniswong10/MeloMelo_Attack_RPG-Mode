@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Threading.Tasks;
 
 public class StartMenu_Script : MonoBehaviour
 {
@@ -17,8 +18,7 @@ public class StartMenu_Script : MonoBehaviour
     [SerializeField] private int seasonOutput;
     [SerializeField] private int versionIndex;
     [SerializeField] private string buildLabel;
-    private string version = string.Empty;
-    public string get_version { get { return version; } }
+    public string version { get; private set; }
 
     [Header("Web Application: URL")]
     private string serverURL;
@@ -34,6 +34,9 @@ public class StartMenu_Script : MonoBehaviour
     public GameObject ConnectionAlert;
 
     private Coroutine rebootingProgram;
+    private float inputCooldown = 0.2f;
+    private float inputTimer = 0f;
+    private bool isStartEnable = false;
 
     // Program: Start Scene
     void Start()
@@ -41,25 +44,51 @@ public class StartMenu_Script : MonoBehaviour
         thisMenu = this;
         rebootingProgram = null;
 
-        serverURL = PlayerPrefs.GetString("GameWeb_URL", string.Empty);
-        PlayerPrefs.DeleteKey("GameLatest_Update");
-        Invoke("BootGameTitleScreen", 3);
+        Setup();
     }
 
     // Transition --> From StartMenu_Transition
     void Update()
     {
-        if (ReadyToLaunch())
+        if (isStartEnable) 
+            return;
+
+        inputTimer += Time.deltaTime;
+
+        if (ReadyToLaunch() && inputTimer >= inputCooldown)
         {
-            if (Input.GetKeyDown(KeyCode.Escape) && rebootingProgram == null) { rebootingProgram = StartCoroutine(Reboot_Application()); }
-            else if (Input.anyKeyDown) { LoadGameApplication(); }
+            if (Input.GetKeyDown(KeyCode.Escape) && rebootingProgram == null)
+            {
+                isStartEnable = true;
+                inputTimer = 0f;
+                rebootingProgram = StartCoroutine(Reboot_Application());
+            }
+            else if (Input.anyKeyDown)
+            {
+                isStartEnable = true;
+                inputTimer = 0f;
+                LoadGameApplication();
+            }
         }
     }
 
     #region SETUP
+    private void Setup()
+    {
+        serverURL = MeloMelo_PlayerSettings.GetWebServerUrl();
+        PlayerPrefs.DeleteKey("GameLatest_Update");
+        StartCoroutine(DelayedBootScreen());
+    }
+
     private bool ReadyToLaunch()
     {
         return startEnable.color.a == 1;
+    }
+
+    private IEnumerator DelayedBootScreen()
+    {
+        yield return new WaitForSeconds(3f);
+        BootGameTitleScreen();
     }
 
     private void BootGameTitleScreen()
@@ -72,16 +101,16 @@ public class StartMenu_Script : MonoBehaviour
     {
         LoadAllInGameAsset();
 
-        if (PlayerPrefs.GetString("GameLatest_Update", string.Empty) != version && PlayerPrefs.HasKey("AccountSync"))
+        if (PlayerPrefs.GetString("GameLatest_Update", string.Empty) != version && MeloMelo_PlayerSettings.GetLocalUserAccount())
         {
             UpdateAlert.SetActive(true);
             UpdateAlert.transform.GetChild(3).GetComponent<Text>().text = GetUpdateInfo();
-            GerenateUpdateConfig();
+            GetComponent<UpdateConfigPatcher>().enabled = true;
         }
         else
         {
             ReloadDisplay("[Game Loading]\n Completed!");
-            Invoke("GetServerGateway_Scene", 3);
+            StartCoroutine(GetGateWayScene());
         }
     }
 
@@ -93,6 +122,7 @@ public class StartMenu_Script : MonoBehaviour
     private void LoadGameApplication()
     {
         string loadingText = "[Game Loading]\nInitialize...";
+        MeloMelo_ExtensionContent_Settings.UpdateCharacterProfile();
 
         GetLoaderDisplay(
             loadingText, 3,
@@ -104,7 +134,7 @@ public class StartMenu_Script : MonoBehaviour
     #region MAIN 
     public void SkipUpdateContent()
     {
-        GetServerGateway_Scene();
+        StartCoroutine(GetGateWayScene());
     }
 
     public void GetUpdateContent()
@@ -134,9 +164,16 @@ public class StartMenu_Script : MonoBehaviour
     #endregion
 
     #region COMPONENT (Scene Transition)
-    private void GetServerGateway_Scene()
+    private IEnumerator GetGateWayScene()
     {
-        SceneManager.LoadScene("ServerGateway");
+        yield return StartCoroutine(CheckingForExtensionContent());
+        yield return new WaitForSeconds(1);
+
+        AsyncOperation loadScene = SceneManager.LoadSceneAsync("ServerGateway");
+        while (!loadScene.isDone)
+        {
+            yield return null;
+        }
     }
 
     private IEnumerator Reboot_Application()
@@ -144,67 +181,6 @@ public class StartMenu_Script : MonoBehaviour
         if (GameObject.Find("BGM").activeInHierarchy) Destroy(GameObject.Find("BGM"));
         AsyncOperation operate = SceneManager.LoadSceneAsync("LoadScene");
         yield return new WaitWhile(() => !operate.isDone);
-    }
-    #endregion
-
-    #region COMPONENT (Update Config)
-    private void GerenateUpdateConfig()
-    {
-        string[] infoToConfig =
-        {
-            "APPLICATION_NAME=", // Name of the file zip
-            "DOWNLOAD_URL=", // Download link to the zip
-            "VERSION_URL=", // Version Control to a drive txt
-            "FILE_TO_RUN=", // Name of the folder + executable name
-            "DOWNLOAD_VERSION_FILE=true",
-            "FORCE_UPDATE=false"
-        };
-
-        if (GetFileOnConfig(Application.isEditor))
-        {
-            int toggleInfo = 0;
-            System.IO.StreamWriter config = new System.IO.StreamWriter(Application.isEditor ? "Assets/StreamingAssets/config.txt" : "../../../config.txt");
-            foreach (string writeToConfig in infoToConfig)
-            {
-                config.WriteLine(writeToConfig + GetConfigurationInformation(toggleInfo));
-                toggleInfo++;
-            }
-
-            Debug.Log("New patch config have been modify...");
-            config.Close();
-        }
-
-        Debug.Log("Patch config not found...");
-    }
-
-    private string GetConfigurationInformation(int id)
-    {
-        switch (id)
-        {
-            case 0:
-                return "MeloMelo v" + PlayerPrefs.GetString("GameLatest_Update", string.Empty);
-
-            case 1:
-                return PlayerPrefs.GetString("Application_Direct_Link", string.Empty);
-
-            case 2:
-                return PlayerPrefs.GetString("Application_VersionControl_Log", string.Empty);
-
-            case 3:
-                return "MeloMelo v" + PlayerPrefs.GetString("GameLatest_Update", string.Empty) + "/MeloMelo.exe";
-
-            default:
-                return string.Empty;
-        }
-    }
-
-    private bool GetFileOnConfig(bool platformMode)
-    {
-        if ((!platformMode && System.IO.File.Exists("../../../config.txt")) || 
-            (platformMode && System.IO.File.Exists("Assets/StreamingAssets/config.txt")))
-            return true;
-        else
-            return false;
     }
     #endregion
 
@@ -220,7 +196,52 @@ public class StartMenu_Script : MonoBehaviour
     {
         MeloMelo_GameSettings.GetScoreStructureSetup();
         MeloMelo_GameSettings.GetStatusRemarkStructureSetup();
-        MeloMelo_GameSettings.LoadStartingStats();
+        MeloMelo_ExtensionContent_Settings.LoadStartingStats();
+    }
+
+    private IEnumerator CheckingForExtensionContent()
+    {
+        GameObject preLoaded_loadingUI = Resources.Load<GameObject>("Prefabs/LoadingUI");
+        GameObject loadingUI = Instantiate(preLoaded_loadingUI, transform);
+        loadingUI.GetComponent<LoadingContent_Script>().NowLoading("Checking for content been loaded.\n Stay connected through the internet.This \n will take a while.");
+
+        // Load: Marathon Content
+        string jsonMarathonContent = PlayerPrefs.GetString("JSON_Custom_Marathon_Challenge", string.Empty);
+
+        Task runMarathonContent = Task.Run(() =>
+        {
+            if (jsonMarathonContent != string.Empty)
+            {
+                MeloMelo_ExtensionContent_Settings.marathonListing = new CustomMarathonInfo().GetArrays(jsonMarathonContent);
+                MeloMelo_ExtensionContent_Settings.totalMarathonCount = MeloMelo_ExtensionContent_Settings.marathonListing.data.Length;
+            }
+            else
+                Debug.Log("This is empty (1st run)");
+        });
+
+        yield return new WaitUntil(() => runMarathonContent.IsCompleted);
+        Debug.Log("Total Marathon Content: " + MeloMelo_ExtensionContent_Settings.totalMarathonCount + " Loaded!");
+
+        // Load: Marathon Exchange
+        string jsonMarathonExchange = PlayerPrefs.GetString("JSON_Custom_Marathon_Exchange", string.Empty);
+
+        Task runMarathonExchange = Task.Run(() =>
+        {
+            if (jsonMarathonExchange != string.Empty)
+            {
+                MarathonExchangeArray exchangeArray = new MarathonExchangeArray().GetExchangeList(jsonMarathonExchange);
+                MeloMelo_Economy.exchangeContentOfMarathon = new List<MarathonExchangeContent>();
+                MeloMelo_Economy.exchangeContentOfMarathon.AddRange(exchangeArray.marathonContent);
+            }
+            else
+                Debug.Log("This is empty (2nd run)");
+        });
+
+        yield return new WaitUntil(() => runMarathonExchange.IsCompleted);
+        Debug.Log("Total Exchange Content (Marathon) : " + MeloMelo_Economy.exchangeContentOfMarathon.ToArray().Length + " Loaded!");
+
+        yield return new WaitForSeconds(1);
+        loadingUI.GetComponent<LoadingContent_Script>().DoneLoading();
     }
     #endregion
 }

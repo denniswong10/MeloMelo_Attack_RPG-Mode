@@ -20,3 +20,4 @@ MonoBehaviour:
     awards_value: 1
   - awards_caterogy: 2
     awards_value: 1
+  masteryCost: 1

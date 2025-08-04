@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using MeloMelo_ExtraComponent;
 using MeloMelo_RPGEditor;
+using System.Threading.Tasks;
 
 public class CollectionNew_Script : MonoBehaviour
 {
@@ -36,6 +37,8 @@ public class CollectionNew_Script : MonoBehaviour
 
     [SerializeField] private CharacterAlbum_Base collection_characterAlbum;
     [SerializeField] private CharacterFormation_Base collection_formation;
+
+    [SerializeField] private GameObject LoadingItemUsage_Content;
 
     void Update()
     {
@@ -294,46 +297,104 @@ public class CollectionNew_Script : MonoBehaviour
 
     public void OpenVirtualStorageUsage(string typeOfStorage)
     {
-        GameObject instance_panel = Instantiate(BoostPanelTemplate);
-        instance_panel.GetComponent<VirtualStorageBag>().SetAlertPopReference(collection_characterAlbum.CharacterTab_MessageTab);
-        instance_panel.GetComponent<VirtualStorageBag>().SetLimitedUsageTime(false);
-        instance_panel.transform.SetParent(collection_characterAlbum.selectionPanel.transform);
-
         switch (typeOfStorage)
         {
             case "ExperienceBoost":
-                if (GameObject.Find("EXP_Boost_Panel") == null)
+                const string experienceBoost_standardName = "EXP_Boost_Panel";
+
+                if (GameObject.Find(experienceBoost_standardName) == null)
                 {
-                    instance_panel.name = "EXP_Boost_Panel";
-                    instance_panel.GetComponent<VirtualStorageBag>().SetDefaultDescription("No ticket has been used");
-                    PlayerPrefs.SetString("ItemDirectoryToUsed", "Filtered_Items/EXP_TICKET");                   
+                    StartCoroutine(Loading_VirtualStorageUsage
+                        (
+                        experienceBoost_standardName, 
+                        "No ticket has been used", 
+                        "Filtered_Items/EXP_TICKET"
+                        ));                   
                 }
                 break;
 
             case "ItemUsage":
-                if (GameObject.Find("ItemUsage_CharacterPanel") == null)
+                const string itemUsage_standardName = "ItemUsage_CharacterPanel";
+
+                if (GameObject.Find(itemUsage_standardName) == null)
                 {
-                    instance_panel.name = "ItemUsage_CharacterPanel";
-                    instance_panel.GetComponent<VirtualStorageBag>().SetDefaultDescription("Select an item to use for this character");
-                    PlayerPrefs.SetString("ItemDirectoryToUsed", "Filtered_Items/CharacterItem_Usage");
+                    StartCoroutine(Loading_VirtualStorageUsage
+                        (
+                        itemUsage_standardName,
+                        "Select an item to use for this character",
+                        "Filtered_Items/CharacterItem_Usage"
+                        ));
                 }
                 break;
         }
-
-        instance_panel.GetComponent<VirtualStorageBag>().SetItemForDisplay(GetItemArray(PlayerPrefs.GetString("ItemDirectoryToUsed", string.Empty)));
     }
 
-    private VirtualItemDatabase[] GetItemArray(string itemFinder)
+    private IEnumerator Loading_VirtualStorageUsage(string nameOfPanel, string describePanelDoing, string itemFiltered_directory)
     {
-        List<VirtualItemDatabase> listOfItem; 
-        listOfItem = new List<VirtualItemDatabase>();
-        foreach (UsageOfItemDetail item in Resources.LoadAll<UsageOfItemDetail>("Database_Item/" + itemFinder))
+        LoadingItemUsage_Content.SetActive(true);
+        Task<List<UsageOfItemDetail>> isLoadedItemDetails = PreLoadingFilteredItem(itemFiltered_directory);
+        yield return new WaitUntil(() => isLoadedItemDetails.IsCompleted);
+
+        Task<List<VirtualItemDatabase>> isLoadedItemData = PerformFilteredItem(isLoadedItemDetails.Result.ToArray());
+        yield return new WaitUntil(() => isLoadedItemData.IsCompleted);
+
+        GameObject instance_panel = Instantiate(BoostPanelTemplate);
+        instance_panel.name = nameOfPanel;
+        instance_panel.GetComponent<VirtualStorageBag>().SetDefaultDescription(describePanelDoing);
+
+        instance_panel.GetComponent<VirtualStorageBag>().SetAlertPopReference(collection_characterAlbum.CharacterTab_MessageTab);
+        instance_panel.GetComponent<VirtualStorageBag>().SetLimitedUsageTime(false);
+        instance_panel.transform.SetParent(collection_characterAlbum.selectionPanel.transform);
+        instance_panel.GetComponent<VirtualStorageBag>().SetItemForDisplay(isLoadedItemData.Result.ToArray());
+
+        LoadingItemUsage_Content.SetActive(false);
+    }
+
+    private async Task<List<UsageOfItemDetail>> PreLoadingFilteredItem(string panelType)
+    {
+        if (panelType != string.Empty)
         {
-            VirtualItemDatabase itemFound = MeloMelo_GameSettings.GetAllItemFromLocal(item.itemName);
-            if (itemFound.amount > 0) listOfItem.Add(itemFound);
+            List<UsageOfItemDetail> loadedItem = new List<UsageOfItemDetail>();
+            ResourceRequest isItemFound;
+            UsageOfItemDetail itemReadReady;
+            int currentLoadedIndex = 1;
+
+            do
+            {
+                isItemFound = Resources.LoadAsync("Database_Item/" + panelType + "/#" + currentLoadedIndex);
+                while (!isItemFound.isDone) await Task.Yield();
+                itemReadReady = isItemFound.asset as UsageOfItemDetail;
+
+                if (itemReadReady != null) loadedItem.Add(itemReadReady);
+                currentLoadedIndex++;
+            }
+            while (itemReadReady != null);
+
+            return loadedItem;
         }
 
-        return listOfItem.ToArray();
+        return null;
+    }
+
+    private async Task<List<VirtualItemDatabase>> PerformFilteredItem(UsageOfItemDetail[] readyItemList)
+    {
+        return await Task.Run(() =>
+        {
+            if (readyItemList != null && readyItemList.Length > 0)
+            {
+                List<VirtualItemDatabase> listOfItem = new List<VirtualItemDatabase>();
+
+                foreach (UsageOfItemDetail item in readyItemList)
+                {
+                    VirtualItemDatabase itemFound = MeloMelo_ItemUsage_Settings.GetActiveItem(item.itemName);
+                    if (itemFound.amount > 0) listOfItem.Add(itemFound);
+                }
+
+                return listOfItem;
+            }
+
+            return null;
+        });
     }
     #endregion
 
@@ -394,13 +455,18 @@ public class CollectionNew_Script : MonoBehaviour
         {
             if (index == 2 && !MeloMelo_CharacterInfo_Settings.GetCharacterStatus(Character_Database[characterToggleIndex - 1].name))
             {
-                thisCollect.StartCoroutine(PromptLockedFeatures());
+                thisCollect.StartCoroutine(PromptLockedFeatures(10));
                 thisCollect.StartCoroutine(GetPromptMessage("Unlock this character first"));
+            }
+            else if (index == 3)
+            {
+                thisCollect.StartCoroutine(PromptLockedFeatures(11));
+                thisCollect.StartCoroutine(GetPromptMessage("Doesn't have equipment at the moment"));
             }
             else
             {
                 // Restart content information and continue for below
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     selectionPanel.transform.GetChild(2).GetChild(5 + i).gameObject.SetActive(false);
                     selectionPanel.transform.GetChild(8 + i).GetComponent<RawImage>().color = Color.white;
@@ -445,18 +511,20 @@ public class CollectionNew_Script : MonoBehaviour
         {
             MasteryInfoTab.SetActive(false);
             string[] breakData = MasteryInfoTab.transform.GetChild(5).name.Split("_");
-            ProcessToAddonsMastery(GetMasteryInfo(int.Parse(breakData[1])));
+            MasteryContainer tempContainer = GetMasteryInfo(int.Parse(breakData[1]));
+            ProcessToAddonsMastery(tempContainer);
 
             int currentMasteryPoint = MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name);
             MeloMelo_ExtraStats_Settings.SetMasteryPoint(Character_Database[characterToggleIndex - 1].name, 
-                currentMasteryPoint - GetMasteryPointCost());
+                currentMasteryPoint - GetMasteryPointCost(tempContainer));
 
             if (GetMasteryInfo(int.Parse(breakData[1])).name.Split("_")[1] == "Ultimate")
             {
+                int currentLeveling = Character_Database[characterToggleIndex - 1].level;
                 int currentRebirthPoint = MeloMelo_ExtraStats_Settings.GetRebirthPoint(Character_Database[characterToggleIndex - 1].name);
-                MeloMelo_ExtraStats_Settings.IncreaseStrengthStats(Character_Database[characterToggleIndex - 1].name, Character_Database[characterToggleIndex - 1].strength);
-                MeloMelo_ExtraStats_Settings.IncreaseVitalityStats(Character_Database[characterToggleIndex - 1].name, Character_Database[characterToggleIndex - 1].vitality);
-                MeloMelo_ExtraStats_Settings.IncreaseMagicStats(Character_Database[characterToggleIndex - 1].name, Character_Database[characterToggleIndex - 1].magic);
+                MeloMelo_ExtraStats_Settings.IncreaseStrengthStats(Character_Database[characterToggleIndex - 1].name, characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLeveling).GetStrength);
+                MeloMelo_ExtraStats_Settings.IncreaseVitalityStats(Character_Database[characterToggleIndex - 1].name, characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLeveling).GetVitality);
+                MeloMelo_ExtraStats_Settings.IncreaseMagicStats(Character_Database[characterToggleIndex - 1].name, characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLeveling).GetMagic);
                 
                 MeloMelo_ExtraStats_Settings.SetRebirthPoint(Character_Database[characterToggleIndex - 1].name, currentRebirthPoint + 1);
                 Character_Database[characterToggleIndex - 1].ResetLevel();
@@ -561,7 +629,7 @@ public class CollectionNew_Script : MonoBehaviour
                 "0" : "1"));
 
             Character_Database[characterToggleIndex - 1].UpdateStatsCache(false);
-            CharacterInfoTemplate.GetComponent<CharacterInfo_DataBuild>().GetCharacterBase(Character_Database[characterToggleIndex - 1]);
+            CharacterInfoTemplate.GetComponent<CharacterInfo_DataBuild>().GetCharacterBase(Character_Database[characterToggleIndex - 1], characterStatus[characterToggleIndex - 1]);
 
             UpdateSkillTab();
         }
@@ -599,11 +667,11 @@ public class CollectionNew_Script : MonoBehaviour
             UpdateRebornCardContent();
         }
 
-        private IEnumerator PromptLockedFeatures()
+        private IEnumerator PromptLockedFeatures(int index)
         {
-            selectionPanel.transform.GetChild(10).GetChild(1).gameObject.SetActive(true);
+            selectionPanel.transform.GetChild(index).GetChild(1).gameObject.SetActive(true);
             yield return new WaitForSeconds(1.5f);
-            selectionPanel.transform.GetChild(10).GetChild(1).gameObject.SetActive(false);
+            selectionPanel.transform.GetChild(index).GetChild(1).gameObject.SetActive(false);
         }
         #endregion
 
@@ -733,16 +801,18 @@ public class CollectionNew_Script : MonoBehaviour
             if (!MasteryInfoTab.activeInHierarchy)
             {
                 MasteryInfoTab.SetActive(true);
-                MasteryInfoTab.transform.GetChild(1).GetComponent<Text>().text = GetMasteryInfo(index - 1).title;
-                MasteryInfoTab.transform.GetChild(2).GetComponent<Text>().text = GetMasteryInfo(index - 1).description;
+                MasteryContainer currentMastery = GetMasteryInfo(index - 1);
+
+                MasteryInfoTab.transform.GetChild(1).GetComponent<Text>().text = currentMastery.title;
+                MasteryInfoTab.transform.GetChild(2).GetComponent<Text>().text = currentMastery.description;
                 MasteryInfoTab.transform.GetChild(3).GetComponent<Text>().text = "Required Point: " +
                     MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) + " >> " +
-                    (MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) - GetMasteryPointCost());
+                    (MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) - GetMasteryPointCost(currentMastery));
 
                 // Check condition on confirm mastery
                 MasteryInfoTab.transform.GetChild(5).name = "Confirm_" + (index - 1) + "_Btn";
                 MasteryInfoTab.transform.GetChild(5).GetComponent<Button>().interactable = 
-                    MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) >= GetMasteryPointCost();
+                    MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) >= GetMasteryPointCost(currentMastery);
             }
         }
 
@@ -788,10 +858,10 @@ public class CollectionNew_Script : MonoBehaviour
             thisCollect.StartCoroutine(GetPromptMessage(messagePrinter));
         }
 
-        private int GetMasteryPointCost()
+        private int GetMasteryPointCost(MasteryContainer container)
         {
             int level = Character_Database[characterToggleIndex - 1].level;
-            return level > 99 ? 0 : 1;
+            return level > 99 ? 0 : container.masteryCost;
         }
 
         private IEnumerator GetPromptMessage(string long_message)

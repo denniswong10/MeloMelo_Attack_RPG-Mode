@@ -13,11 +13,28 @@ MonoBehaviour:
   m_Name: S12
   m_EditorClassIdentifier: 
   title: Master Class Course
+  trackList:
+  - title: M10
+    areaName: Mounted City Town
+    DifficultyType: 2
+  - title: M10
+    areaName: Frost Kingdom
+    DifficultyType: 2
+  - title: M8
+    areaName: Journey Through Cold
+    DifficultyType: 3
+  - title: M14
+    areaName: Journey Through Cold
+    DifficultyType: 2
   Difficultylevel:
   - 14
   - 14
   - 15
   - 15
-  DifficultyType: 02000000020000000300000003000000
   clearingType: 1
   clearingValue: 100
+  conditionAddons:
+  - judgeTitle: 3
+    judgeCount: 3
+  - judgeTitle: 4
+    judgeCount: 10

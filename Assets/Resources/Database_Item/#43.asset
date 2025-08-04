@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: '#43'
   m_EditorClassIdentifier: 
   itemName: Ticket Mystery Pack
-  Icon: {fileID: 2800000, guid: b7bc4d08eb8e36f4e825bf23bd2e40b9, type: 3}
+  Icon: {fileID: 2800000, guid: 21cdafb97928c2042a651fe49906fea8, type: 3}
   stackable: 1
   thisItemType: 0
   description: 'A pack where all tickets come together and find them

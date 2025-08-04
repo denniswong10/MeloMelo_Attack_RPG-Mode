@@ -108,7 +108,7 @@ public class ArenaSelection_Script : MonoBehaviour
 
                 if (BGM[0] != null)
                 {
-                    if (BGM[0].GetComponent<AudioSource>().volume != 1) { BGM[0].GetComponent<AudioSource>().volume = PlayerPrefs.GetFloat("BGM_VolumeGET", 1); }
+                    if (BGM[0].GetComponent<AudioSource>().volume != 1) { BGM[0].GetComponent<AudioSource>().volume = PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetBGM_ValueKey, 1); }
                     BGM[0].GetComponent<AudioSource>().clip = MusicList[i].Music;
                     BGM[0].GetComponent<AudioSource>().time = MusicList[i].PreviewTime;
                     BGM[0].GetComponent<AudioSource>().Play();

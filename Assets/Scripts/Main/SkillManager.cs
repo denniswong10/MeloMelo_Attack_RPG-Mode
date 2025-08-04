@@ -144,7 +144,7 @@ public class SkillManager : MonoBehaviour
                         foreach (EffectActionData actionData in skill.customEffectData[unloadAndModify].effectOnAction)
                         {
                             EffectTypeBundle effectBundle_onAction = new EffectTypeBundle();
-                            ElemetStartingStats baseStats = MeloMelo_GameSettings.GetStatsWithElementBonus(
+                            ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
                                 caster.elementType == ClassBase.ElementStats.Earth ? "Earth" :
                                 caster.elementType == ClassBase.ElementStats.Light ? "Light" :
                                 caster.elementType == ClassBase.ElementStats.Dark ? "Dark" : "None");

@@ -48,16 +48,6 @@ public class ServerGateway_Script : MonoBehaviour
         ServerCounter.text = "Total Server: " + totalserverCount;
     }
 
-    // Transition --> From StartMenu_Transition
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape)) 
-        {
-            GameObject.Find("ReturnBtn").GetComponent<Button>().interactable = false;
-            Invoke("Reboot_Application", 0.5f); 
-        }
-    }
-
     #region SETUP
     private void BGM_Loader()
     {
@@ -67,7 +57,7 @@ public class ServerGateway_Script : MonoBehaviour
 
     private string InstalledVerisionDisplay()
     {
-        return "Installed Version: " + StartMenu_Script.thisMenu.get_version;
+        return "Installed Version: " + StartMenu_Script.thisMenu.version;
     }
 
     private string CheckServerStatus(string status, int index)
@@ -103,17 +93,32 @@ public class ServerGateway_Script : MonoBehaviour
     {
         string fileDirectory = (Application.isEditor ? "Assets/" : "MeloMelo_Data/") + "StreamingAssets/SERVER.ini";
 
-        if (System.IO.File.Exists(fileDirectory))
+        if (!System.IO.File.Exists(fileDirectory))
         {
-            System.IO.StreamReader socket = new System.IO.StreamReader(fileDirectory);
-            string[] socket_dat = socket.ReadToEnd().Split("*");
+            Debug.LogWarning("SERVER.ini not imported at: " + fileDirectory);
+            return;
+        }
+
+        using (System.IO.StreamReader socket = new System.IO.StreamReader(fileDirectory))
+        {
+            string[] socket_dat = socket.ReadToEnd().Split('*');
+
+            if (socket_dat.Length % 3 != 0)
+            {
+                Debug.LogError("SERVER.ini is improperly formatted. Expected groups of 3 (name, IP, port).");
+                return;
+            }
 
             for (int data = 0; data < socket_dat.Length / 3; data++)
             {
                 RawImage template = Instantiate(SeverListTemplate);
                 template.transform.GetChild(0).GetComponent<Text>().text = socket_dat[data * 3];
-                template.transform.SetParent(GatewayList.transform);
-                ServerCreatorHub(template, data + 1, int.Parse(socket_dat[data * 3 + 2]), socket_dat[data * 3 + 1]);
+                template.transform.SetParent(GatewayList.transform, false);
+
+                string ip = socket_dat[data * 3 + 1];
+                int port = int.Parse(socket_dat[data * 3 + 2]);
+
+                ServerCreatorHub(template, data + 1, port, ip);
             }
 
             // Count server instance

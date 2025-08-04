@@ -13,11 +13,28 @@ MonoBehaviour:
   m_Name: C4
   m_EditorClassIdentifier: 
   title: Intermidate 1
+  trackList:
+  - title: M14
+    areaName: Lakeside Village
+    DifficultyType: 1
+  - title: M30
+    areaName: Lime Forestry
+    DifficultyType: 1
+  - title: M1
+    areaName: Lime Forestry
+    DifficultyType: 1
+  - title: M31
+    areaName: Lime Forestry
+    DifficultyType: 2
   Difficultylevel:
   - 5
   - 6
   - 6
   - 7
-  DifficultyType: 01000000010000000100000002000000
   clearingType: 1
   clearingValue: 90
+  conditionAddons:
+  - judgeTitle: 3
+    judgeCount: 1
+  - judgeTitle: 4
+    judgeCount: 2

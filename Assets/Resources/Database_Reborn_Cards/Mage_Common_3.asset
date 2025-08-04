@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Practice Black Magic
   description: "Taking away some of your life to learn greatly magic\r"
-  awardsTitle: 'VIT: -2, MAG: +5'
+  awardsTitle: 'VIT: -2, MAG: +6'
   awards_settings:
   - awards_caterogy: 1
     awards_value: -2
   - awards_caterogy: 2
-    awards_value: 5
+    awards_value: 6
+  masteryCost: 2

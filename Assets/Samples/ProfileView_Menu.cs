@@ -112,7 +112,7 @@ public class ProfileView_Menu : MonoBehaviour
 
     private void GetVersionDetail()
     {
-        Version.text = "Installed Version: " + StartMenu_Script.thisMenu.get_version;
+        Version.text = "Installed Version: " + StartMenu_Script.thisMenu.version;
     }
 
     private IEnumerator GetAllAreaOfLength()

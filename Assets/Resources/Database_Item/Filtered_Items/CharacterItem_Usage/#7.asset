@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Leveling Ticket Voucher
   useTypeDetail: 3
-  dataArray: "{\"title\":\"Your character will gain one level\",\"choice\":\"Use*Don't
+  dataArray: "{\"title\":\"This character will gain one level\",\"choice\":\"Use*Don't
     use\"}@^\r7"

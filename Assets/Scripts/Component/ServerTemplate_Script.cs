@@ -36,7 +36,7 @@ public class ServerTemplate_Script : MonoBehaviour
     {
         if (transform.GetChild(1).GetComponent<Text>().text == "Status: OK")
         {
-            PlayerPrefs.SetString("GameWeb_URL", serverURL);
+            MeloMelo_PlayerSettings.UpdateWebServerUrl(serverURL);
             PlayerPrefs.SetString("ServerTag", transform.GetChild(0).GetComponent<Text>().text);
 
             GameObject.Find("GameInterface").GetComponent<ServerGateway_Script>().UpdateLoginType(port);

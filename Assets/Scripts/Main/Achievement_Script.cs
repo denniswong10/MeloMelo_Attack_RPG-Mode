@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.IO;
+using System.Linq;
 
 public class Achievement_Script : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class Achievement_Script : MonoBehaviour
     public Slider progressBar;
     public Text progressText;
     public Text TrackCounter;
+    [SerializeField] private GameObject TitleBadgePanel;
 
     void Start()
     {
@@ -137,6 +139,11 @@ public class Achievement_Script : MonoBehaviour
     #endregion
 
     #region MAIN
+    public void EditTitleBadge()
+    {
+        TitleBadgePanel.SetActive(true);
+    }
+
     public void ReturnToMain()
     {
         SceneManager.LoadScene("Menu");
@@ -222,12 +229,12 @@ public class Achievement_Script : MonoBehaviour
 
     private bool IsTierRegularCompleted()
     {
-        int totalCount = 0;
+        int totalCount = CollectAchievementInfo().Count(achievement => achievement.Tier != AchievementTab.Title_Tier.Rhondonite);
         int currentCount = 0;
 
-        foreach (AchievementTab achievement in CollectAchievementInfo())
-            if (achievement.Tier != AchievementTab.Title_Tier.Rhondonite)
-                totalCount++;
+        //foreach (AchievementTab achievement in CollectAchievementInfo())
+        //    if (achievement.Tier != AchievementTab.Title_Tier.Rhondonite)
+        //        totalCount++;
 
         foreach (AchievementTab achievement in CollectAchievementInfo())
         {
@@ -431,13 +438,7 @@ public class Achievement_Script : MonoBehaviour
     private IEnumerator AwaitForRankAchieverCount(string rank)
     {
         yield return new WaitUntil(() => isFinishedCount[0]);
-        int count = 0;
-
-        foreach (BundleSeasonChecker list in buildchecks)
-        {
-            if (list.GetTotalScoreAchiever(false, rank))
-                count++;
-        }
+        int count = buildchecks.Count(list => list.GetTotalScoreAchiever(false, rank));
 
         AchievementMarker("E_Extra_A2", count == buildchecks.ToArray().Length);
     }

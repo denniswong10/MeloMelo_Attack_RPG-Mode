@@ -24,7 +24,8 @@ public class ResultMenu_Script : MonoBehaviour
     [Header("Output: Result")]
     [SerializeField] private GameObject ScoreResult;
     [SerializeField] private GameObject PointResult;
-    [SerializeField] private GameObject PromptMessage;
+    [SerializeField] private GameObject TrackListResult;
+    public GameObject PromptMessage;
 
     // Allocate: Stats Database
     private StatsDistribution stats = new StatsDistribution();
@@ -42,7 +43,6 @@ public class ResultMenu_Script : MonoBehaviour
 
     private string userInput;
     private RatePointToggleZone rateZone;
-    private CloudSave_DataManagement cloudDataServices;
 
     void Start()
     {
@@ -57,10 +57,10 @@ public class ResultMenu_Script : MonoBehaviour
         // Transfer score data for result 
         highscore = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_score" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0);
         techScore = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_techScore" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + PlayerPrefs.GetInt("BattleDifficulty_Mode", 1), 0);
-        cloudDataServices = new CloudSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(), PlayerPrefs.GetString("GameWeb_URL"));
 
         LoadAllResult();
         UpdateMusicInfo();
+        RevertNoteSpeedCheck();
 
         // Cursor
         if (!Cursor.visible) Cursor.visible = true;
@@ -72,6 +72,12 @@ public class ResultMenu_Script : MonoBehaviour
     }
 
     #region MAIN
+    void RevertNoteSpeedCheck()
+    {
+        int previousSpeed = PlayerPrefs.GetInt("Temp_NoteSpeed", 0);
+        PlayerPrefs.SetInt("NoteSpeed", previousSpeed);
+    }
+
     // Load Result Information
     void UpdateMusicInfo()
     {
@@ -80,8 +86,9 @@ public class ResultMenu_Script : MonoBehaviour
 
         if (!GameManager.thisManager.DeveloperMode)
         {
-            BG.texture = PlayerPrefs.HasKey("MarathonPermit") ? Resources.Load<Texture>("Background/BG11") :
-                PreSelection_Script.thisPre.get_AreaData.BG;
+            BG.texture = PlayerPrefs.HasKey("Mission_Played") ? Resources.Load<Texture>("Background/BG1C") : 
+                PlayerPrefs.HasKey("MarathonPermit") ? Resources.Load<Texture>("Background/BG11") :
+                    PreSelection_Script.thisPre.get_AreaData.BG;
 
             // Gerenal Information
             Result_CoverImage.texture = BeatConductor.thisBeat.Music_Database.Background_Cover;
@@ -113,11 +120,11 @@ public class ResultMenu_Script : MonoBehaviour
             }
 
             // Rate and Score Information
-            RatePointIndicator border = new RatePointIndicator();
-            border.UpdateColor_Border(userInput, "RateStatus");
+            RatePointIndicator border = new RatePointIndicator("RateStatus");
+            border.UpdateColor_Border(userInput);
 
             ScoreResult.transform.GetChild(1).GetComponent<Text>().text = Result_GetCurrentScore();
-            ScoreResult.transform.GetChild(2).GetComponent<Text>().text = "[ " + Result_GetPreviousScore() + " ]";
+            ScoreResult.transform.GetChild(2).GetComponent<Text>().text = "[ " + highscore + " ]";
             ScoreResult.transform.GetChild(3).GetComponent<Text>().text = "( " + Result_GetScoreImprove() + " )";
 
             PointResult.transform.GetChild(1).GetComponent<Text>().text = Result_GetCurrentPoint(false) + "/" + Result_GetMaxPoint();
@@ -147,13 +154,13 @@ public class ResultMenu_Script : MonoBehaviour
                     MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(stats.slot_Stats[i].name) * PlayerPrefs.GetInt("Temp_Experience", 0) :
                         PlayerPrefs.GetInt("Temp_Experience", 0));
 
-            stats.slot_Stats[i].experience += PlayerPrefs.HasKey("MarathonPermit") || 
-                database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience < 0 
-                ? 0 : experienceAfterBoost;
-            stats.slot_Stats[i].UpdateCurrentStats(true);
-
             if (stats.slot_Stats[i].name != "None")
             {
+                stats.slot_Stats[i].experience += PlayerPrefs.HasKey("MarathonPermit") ||
+                database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience < 0
+                ? 0 : experienceAfterBoost;
+                stats.slot_Stats[i].UpdateCurrentStats(true);
+
                 int checkLevel;
                 if (database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience > 0)
                 {
@@ -193,11 +200,11 @@ public class ResultMenu_Script : MonoBehaviour
 
         // Load Result 
         GameObject.Find("Perfect2").GetComponent<Text>().text = "Critical Perfect: " + GameManager.thisManager.getJudgeWindow.get_perfect2;
-        GameObject.Find("Perfect").GetComponent<Text>().text = "Perfect: " + GameManager.thisManager.getJudgeWindow.get_perfect; 
+        GameObject.Find("Perfect").GetComponent<Text>().text = "Perfect: " + GameManager.thisManager.getJudgeWindow.get_perfect;
         GameObject.Find("Bad").GetComponent<Text>().text = "Bad: " + GameManager.thisManager.getJudgeWindow.get_bad;
         GameObject.Find("Miss").GetComponent<Text>().text = "Miss: " + PlayerPrefs.GetInt("Miss_count", 0);
 
-        GameObject.Find("MaxCombo_Value").GetComponent<Text>().text = GameManager.thisManager.getJudgeWindow.getMaxCombo + " / " + 
+        GameObject.Find("MaxCombo_Value").GetComponent<Text>().text = GameManager.thisManager.getJudgeWindow.getMaxCombo + " / " +
             GameManager.thisManager.getJudgeWindow.getOverallCombo;
 
         // Second Hand Judge
@@ -257,7 +264,18 @@ public class ResultMenu_Script : MonoBehaviour
 
     private string Result_GetCurrentPoint(bool highscore)
     {
-        if (highscore) return PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_point" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0).ToString();
+        string pointTitleName = BeatConductor.thisBeat.Music_Database.Title + "_point" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1);
+        int highscoreInPoint = PlayerPrefs.GetInt(pointTitleName, 0);
+
+        if (highscore && highscoreInPoint < GameManager.thisManager.getJudgeWindow.getOverallCombo * 3)
+            return PlayerPrefs.GetInt(pointTitleName, 0).ToString();
+
+        else if (highscoreInPoint > GameManager.thisManager.getJudgeWindow.getOverallCombo * 3)
+        {
+            PlayerPrefs.SetInt(pointTitleName, (int)GameManager.thisManager.get_point.get_score);
+            return PlayerPrefs.GetInt(pointTitleName, 0).ToString();
+        }
+
         return ((int)GameManager.thisManager.get_point.get_score).ToString();
     }
 
@@ -288,7 +306,7 @@ public class ResultMenu_Script : MonoBehaviour
     #region MISC
     private string Result_GetScoreImprove()
     {
-        float i = GameManager.thisManager.get_score1.get_score - PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_score" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0);
+        float i = GameManager.thisManager.get_score1.get_score - highscore;
         PlayerPrefs.SetInt("Temp_ScoreResult", (int)i);
 
         if (i == 0) { return "+0"; }
@@ -380,7 +398,7 @@ public class ResultMenu_Script : MonoBehaviour
         TrackListingDistribution.thisList.ClearCacheRate(FindTrackChartCateogry(BeatConductor.thisBeat.Music_Database.seasonNo), entry);
     }
 
-    private int FindTrackChartCateogry(int season)
+    public int FindTrackChartCateogry(int season)
     {
         switch (season)
         {
@@ -402,15 +420,6 @@ public class ResultMenu_Script : MonoBehaviour
     #endregion
     #endregion
 
-    string TechScore_Ref()
-    {
-        int i = 0;
-        i = techScore - (int)GameManager.thisManager.get_score2.get_score;
-
-        if (i < 0) { i = -i; return "+" + i; }
-        else { return "-" + i; }
-    }
-
     float BattleRate_Ref()
     {
         float i = 0;
@@ -431,6 +440,7 @@ public class ResultMenu_Script : MonoBehaviour
         switch (index)
         {
             case 1:
+                unlock_ProcessingBtn[0].interactable = false;
                 GameObject.Find("Menu_Main").GetComponent<Animator>().SetTrigger("Closing");
                 Invoke("GoSelection2", 1.5f);
                 break;
@@ -457,325 +467,45 @@ public class ResultMenu_Script : MonoBehaviour
     private void GoReturn_Result()
     {
         GameObject.Find("Menu_Main").GetComponent<Animator>().SetTrigger("Opening");
+        unlock_ProcessingBtn[0].interactable = true;
     }
 
     private void GoSelection2()
     {
         // Data: Overlay score with the latest one
         if (PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 5) != 5
-            && (int)GameManager.thisManager.get_score1.get_score > PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_score" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1))
-            )
+            && (int)GameManager.thisManager.get_score1.get_score > highscore)
         {
             Debug.Log("Local Score Achievement: OK!");
-            PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_score" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), (int)GameManager.thisManager.get_score1.get_score);
+            PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_score" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1),
+                (int)GameManager.thisManager.get_score1.get_score);
         }
 
-        // Data: Saving progress
-        SaveContentProgress(LoginPage_Script.thisPage.portNumber == (int)MeloMelo_GameSettings.LoginType.TempPass &&
-            LoginTemp_Script.thisTemp.get_login.get_success);
-    }
-
-    #region DATA MANAGEMENT (Main Properties)
-    private IEnumerator NetworkSaveProgress(string serverTitle)
-    {
-        yield return new WaitForSeconds(1.5f);
-        Debug.Log("[TempPass->SaveProgress] ID: " + LoginPage_Script.thisPage.GetUserPortOutput());
-
-        // Save 1
-        cloudDataServices.SaveProgressTrack(
-                BeatConductor.thisBeat.Music_Database.Title,
-                PlayerPrefs.GetInt("DifficultyLevel_valve", 1),
-                (int)GameManager.thisManager.get_score1.get_score,
-                GameManager.thisManager.getJudgeWindow.getMaxCombo
-                );
-
-        // Save 2
-        cloudDataServices.SaveProgressTrackByRemark(
-            BeatConductor.thisBeat.Music_Database.Title,
-            PlayerPrefs.GetInt("DifficultyLevel_valve", 1),
-            PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 5)
-            );
-
-        // Save 3
-        cloudDataServices.SaveProgressTrackByPoint(
-                BeatConductor.thisBeat.Music_Database.Title,
-                PlayerPrefs.GetInt("DifficultyLevel_valve", 1),
-                (int)GameManager.thisManager.get_point.get_score
-                );
-
-        // Save Track Chart Listing
-        RateMeter rate = new RateMeter(LoginPage_Script.thisPage.GetUserPortOutput(), (int)GameManager.thisManager.get_score1.get_score);
-
-        cloudDataServices.SaveChartDistributionData(
-            BeatConductor.thisBeat.Music_Database.Title,
-            BeatConductor.thisBeat.Music_Database.seasonNo + "/" + BeatConductor.thisBeat.Music_Database.Background_Cover.name,
-            PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 
-            PlayerPrefs.GetInt("DifficultyLevel_valve", 1) == 1 ? PlayerPrefs.GetString("Difficulty_Normal_selectionTxt", "?") : (PlayerPrefs.GetInt("DifficultyLevel_valve", 1) == 2 ? PlayerPrefs.GetString("Difficulty_Hard_selectionTxt", "?") : PlayerPrefs.GetString("Difficulty_Ultimate_selectionTxt", "?")),
-            (int)GameManager.thisManager.get_score1.get_score,
-            rate.CheckFor_IncreaseRate(PlayerPrefs.GetFloat("difficultyLevel_play2", 0)),
-            FindTrackChartCateogry(BeatConductor.thisBeat.Music_Database.seasonNo)
-            );
-
-        yield return new WaitUntil(() => cloudDataServices.get_process.ToArray().Length == cloudDataServices.get_counter);
-        ContentSavedCompleted(serverTitle, GetProcessCloudSuccessful(cloudDataServices.get_process.ToArray()));
-
-        yield return new WaitForSeconds(1.5f);
-
-        // Checking other component settings
-        StartCoroutine(NetworkFinalProgressSaved(serverTitle));
-    }
-
-    private IEnumerator LocalSaveProgress(string serverTitle)
-    {
-        bool isInvaild = GameManager.thisManager.getJudgeWindow.TotalJudgeCounted() == GameManager.thisManager.getJudgeWindow.getOverallCombo;
-        bool isItemGetsRefreshed = false;
-
-        if (isInvaild)
-        {
-            LocalSave_DataManagement data = new LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(), 
-                "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
-
-            // Save: Achievement
-            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileMainProgress);
-            data.SaveProgress(BeatConductor.thisBeat.Music_Database.Title,
-                PlayerPrefs.GetInt("DifficultyLevel_valve", 1),
-                GameManager.thisManager.get_score1.get_score,
-                MeloMelo_GameSettings.GetScoreRankStructure(GameManager.thisManager.get_score1.get_score.ToString()).rank);
-
-            // Save: Points
-            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFilePointData);
-            data.SavePointProgress(BeatConductor.thisBeat.Music_Database.Title,
-                PlayerPrefs.GetInt("DifficultyLevel_valve", 1),
-                (int)GameManager.thisManager.get_point.get_score,
-                PlayerPrefs.GetInt("OverallCombo", 0) * 3);
-
-            // Save: Battle
-            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileBattleProgress);
-            data.SaveBattleProgress(
-                BeatConductor.thisBeat.Music_Database.Title,
-                PlayerPrefs.GetInt("DifficultyLevel_valve", 1),
-                PlayerPrefs.GetInt("BattleDifficulty_Mode", 1),
-                PlayerPrefs.GetString(BeatConductor.thisBeat.Music_Database.Title + "_SuccessBattle_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + PlayerPrefs.GetInt("BattleDifficulty_Mode", 1), "F") == "T" ? true : false,
-                (int)GameManager.thisManager.get_score2.get_score);
-
-            // Save: Profile
-            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileProfileData);
-            data.SaveProfileState();
-
-            // Save: Account
-            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileAccountSettings);
-            data.SaveAccountSettings();
-
-            // Save: Last Selection Point
-            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileSelectionData);
-            if (!PlayerPrefs.HasKey("MarathonPermit"))
-                data.SaveLatestSelectionPoint(PreSelection_Script.thisPre.get_AreaData.AreaName, PlayerPrefs.GetInt("LastSelection", 1));
-            else
-                CheckMarathonContent();
-
-            StatsDistribution allStats = new StatsDistribution();
-            allStats.load_Stats();
-
-            foreach (ClassBase character in allStats.slot_Stats)
-            {
-                if (character.characterName != "None")
-                {
-                    // Save: Character Progress
-                    data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileCharacterStats);
-                    data.SaveCharacterStatsProgress(character.name, character.level, character.experience);
-
-                    // Clear effect buff: After used
-                    if (MeloMelo_ItemUsage_Settings.GetExpBoost(character.name) > 0) 
-                        PlayerPrefs.SetInt(character.name + "_EXP_BOOST", 0);
-                    if (MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(character.name) > 0) 
-                        PlayerPrefs.SetInt(character.name + "_EXP_BOOST_2", 0);
-                    if (MeloMelo_ItemUsage_Settings.GetPowerBoost(character.name) > 0) 
-                        PlayerPrefs.SetInt(character.name + "_POWER_BOOST", 0);
-                    if (MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(character.name) > 0) 
-                        PlayerPrefs.SetInt(character.name + "_POWER_BOOST_2", 0);
-                }
-            }
-
-            // BonusPlay: Reset
-            if (PlayerPrefs.GetInt("BonusTrackPlay", 0) > 0)
-            {
-                int currentUsed = PlayerPrefs.GetInt("BonusTrackPlay", 0);
-                PlayerPrefs.SetInt("BonusTrackPlay", currentUsed - 1);
-            }
-
-            // Save: Skills
-            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileSkillDatabase);
-            data.SaveAllSkillsType();
-
-            // Save: Used Items
-            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
-            string[] listOfUsedItem = MeloMelo_ItemUsage_Settings.GetAllItemUsed();
-
-            if (listOfUsedItem != null)
-            {
-                foreach (string itemName in listOfUsedItem)
-                {
-                    PromptMessage.SetActive(true);
-                    PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Successful Used: " + 
-                        itemName + " ( x" + MeloMelo_ItemUsage_Settings.GetItemUsed(itemName) + " )";
-
-                    data.SaveVirtualItemFromPlayer(itemName, -MeloMelo_ItemUsage_Settings.GetItemUsed(itemName), true);
-                    PlayerPrefs.DeleteKey(itemName + "_VirtualItem_Unsaved_Used");
-                    yield return new WaitForSeconds(2);
-                    PromptMessage.SetActive(false);
-                }
-
-                isItemGetsRefreshed = true;
-            }
-
-            // Save: Reward Items
-            int eventPlayedCount = PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_playedCount_EventReward", 0);
-            PlayerPrefs.SetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_playedCount_EventReward", eventPlayedCount + 1);
-            int eventPlayId = 1;
-
-            if (MeloMelo_GameSettings.GetEventRewardArray() != null)
-            {
-                foreach (PlayEventRewardData item in MeloMelo_GameSettings.GetEventRewardArray())
-                {
-                    if (PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_playedCount_EventReward", 0) >= item.playRequirement *
-                        PlayerPrefs.GetInt(eventPlayId + "_RepeatableRewarding", 1) &&
-
-                        MeloMelo_GameSettings.GetVersionNumber(StartMenu_Script.thisMenu.get_version) >= 
-                        MeloMelo_GameSettings.GetVersionNumber(item.version)
-                        )
-                    {
-                        PromptMessage.SetActive(true);
-                        PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Item Obtain: " +
-                            item.itemName + " ( x" + item.maxObtain + " )";
-
-                        data.SaveVirtualItemFromPlayer(item.itemName, item.maxObtain, true);
-                        int currentObtain = PlayerPrefs.GetInt(eventPlayId + "_RepeatableRewarding", 1);
-                        PlayerPrefs.SetInt(eventPlayId + "_RepeatableRewarding", currentObtain + 1);
-
-                        yield return new WaitForSeconds(2);
-                        PromptMessage.SetActive(false);
-                    }
-
-                    eventPlayId++;
-                }
-
-                isItemGetsRefreshed = true;
-            }
-
-            // Load: Items
-            if (isItemGetsRefreshed)
-            {
-                LocalLoad_DataManagement loadData = new LocalLoad_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
-                   "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
-                loadData.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
-                loadData.LoadVirtualItemToPlayer();
-            }
-        }
-
-        yield return new WaitForSeconds(!isInvaild ? 5 : isItemGetsRefreshed ? 2.5f : 0.5f);
-        ContentSavedCompleted(serverTitle, isInvaild);
-
-        yield return new WaitForSeconds(1);
-        SaveIcon.transform.GetChild(1).GetComponent<Text>().text = serverTitle + "\nGame Loading...";
-
-        // Process to encode
-        StartCoroutine(Encode_DataCheck());
-    }
-
-    private IEnumerator NetworkFinalProgressSaved(string serverTitle)
-    {
-        if (!PlayerPrefs.HasKey("MarathonPermit")) CheckTechScore();
-        SaveIcon.transform.GetChild(1).GetComponent<Text>().text = "[Game Network]\nChecking Data...";
-        yield return new WaitForSeconds(1);
-
-        // Save Configuartion (Gameplay Setup)
-        cloudDataServices.SaveSettingConfiguration(
-                PlayerPrefs.GetString("MVOption", "T"),
-                PlayerPrefs.GetInt("NoteSpeed", 20),
-                PlayerPrefs.GetInt("AutoRetreat", 0),
-                PlayerPrefs.GetInt("ScoreDisplay", 0),
-                PlayerPrefs.GetInt("ScoreDisplay2", 0),
-                PlayerPrefs.GetInt("JudgeMeter_Setup", 0)
-                );
-
-        // Save Profile
-        cloudDataServices.SaveProgressProfile(
-            PlayerPrefs.GetInt(LoginPage_Script.thisPage.get_user + "totalRatePoint", 0),
-            PlayerPrefs.GetInt(LoginPage_Script.thisPage.get_user + "PlayedCount_Data") + 1
-            );
-
-        // Save Last Visited Area
-        cloudDataServices.SaveMusicSelectionLastVisited(
-            PreSelection_Script.thisPre.get_AreaData.AreaName,
-            PlayerPrefs.GetInt("LastSelection", 1),
-            PlayerPrefs.GetInt("DifficultyLevel_valve", 1)
-            );
-
-        // Save Configuration (First-Time Visit)
-        cloudDataServices.SavePlayerData(
-            PlayerPrefs.GetString("HowToPlay_Notice", "T"),
-            PlayerPrefs.GetString("BattleSetup_Guide", "T"),
-            PlayerPrefs.GetString("Control_notice", "T"),
-            PlayerPrefs.GetFloat("BGM_VolumeGET", 1),
-            PlayerPrefs.GetFloat("SE_VolumeGET", 1)
-            );
-
-        // Save Configuration (Character Formation)
-        cloudDataServices.SaveBattleFormation(
-            PlayerPrefs.GetString("Slot1_charName", "None"),
-            PlayerPrefs.GetString("Slot2_charName", "None"),
-            PlayerPrefs.GetString("Slot3_charName", "None"),
-            PlayerPrefs.GetString("CharacterFront", "None")
-            );
-
-        // Marathon Content
-        CheckMarathonContent();
-
-        // Save Character Progression (Individual Status)
-        StatsDistribution allStats = new StatsDistribution();
-        allStats.load_Stats();
-
-        foreach (ClassBase character in allStats.slot_Stats)
-            if (character.characterName != "None")
-                cloudDataServices.SaveCharacterStatusData(character.name, character.level, character.experience);
-
-        // Load Track Chart Listing
-        CloudLoad_DataManagement misc = new CloudLoad_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(), PlayerPrefs.GetString("GameWeb_URL"));
-        StartCoroutine(misc.LoadTrackDistributionChart());
-
-        yield return new WaitUntil(() => cloudDataServices.get_process.ToArray().Length == cloudDataServices.get_counter &&
-            misc.cloudLogging.ToArray().Length == misc.get_counter);
-
-        ContentCheckingData(serverTitle, GetProcessCloudSuccessful(cloudDataServices.get_process.ToArray()));
-        ContentCheckingData(serverTitle, GetProcessCloudSuccessful(misc.cloudLogging.ToArray()));
-
-        // Process to encode
-        StartCoroutine(Encode_DataCheck());
+        // Data: Checking to preview track list
+        if (PlayerPrefs.HasKey("MarathonPermit")) TrackListResult.SetActive(true);
+        else ProcessToSaveMode(false);
     }
 
     #region DATA (Extra Component)
-    private void CheckTechScore()
+    public void CheckTechScore()
     {
-        CloudSave_DataManagement data = new CloudSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(), PlayerPrefs.GetString("GameWeb_URL"));
-        int currentScore = PlayerPrefs.GetInt("TechScore");
+        CloudSave_DataManagement data = new CloudSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(), MeloMelo_PlayerSettings.GetWebServerUrl());
+        int currentScore = (int)GameManager.thisManager.get_score2.get_score;
 
-        if (currentScore > techScore)
-        {
-            PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_techScore" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + PlayerPrefs.GetInt("BattleDifficulty_Mode", 1), currentScore);
-
-            data.SaveBattleProgress(
+        data.SaveBattleProgress(
                 PlayerPrefs.GetInt("BattleDifficulty_Mode", 1),
                 PlayerPrefs.GetInt("DifficultyLevel_valve", 1),
                 BeatConductor.thisBeat.Music_Database.Title,
                 PlayerPrefs.GetString(BeatConductor.thisBeat.Music_Database.Title + "_SuccessBattle_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + PlayerPrefs.GetInt("BattleDifficulty_Mode", 1), "F"),
-                PlayerPrefs.GetInt("temp_techScore", 0),
+                techScore,
                 currentScore
                 );
-        }
-        else { PlayerPrefs.SetInt("temp_techScore", techScore); }
+
+        if (currentScore > techScore)
+            PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_techScore" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + PlayerPrefs.GetInt("BattleDifficulty_Mode", 1), currentScore);
     }
 
-    private void CheckMarathonContent()
+    public void CheckMarathonContent()
     {
         if (PlayerPrefs.HasKey("MarathonPermit"))
         {
@@ -809,80 +539,72 @@ public class ResultMenu_Script : MonoBehaviour
         PlayerPrefs.SetInt(userInput + "PlayedCount_Data", PlayerPrefs.GetInt(userInput + "PlayedCount_Data", 0) + 1);
 
         // Go Scene to Music Selection / BlackBoard
-        if (PlayerPrefs.HasKey("Mission_Played")) { PlayerPrefs.DeleteKey("Mission_Title"); }
+        if (PlayerPrefs.HasKey("Mission_Played")) 
+        {
+            int playedStatus = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 5) != 5 ? 1 : 2;
+            PlayerPrefs.SetInt(PlayerPrefs.GetString("Mission_Title"), playedStatus); 
+            PlayerPrefs.DeleteKey("Mission_Title"); 
+        }
 
         // Transition: Return to ogrin
-        SceneManager.LoadScene
+        try
+        {
+            SceneManager.LoadScene
             (
+                PlayerPrefs.HasKey("Mission_Played") ? "StoryMode" :
                 PlayerPrefs.HasKey("MarathonPermit") && PlayerPrefs.GetInt("MarathonChallenge_MCount") >
                     Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length
                         ? "MarathonSelection" : "Music Selection Stage"
             );
+        }
+        catch
+        {
+            SceneManager.LoadScene
+            (
+                PlayerPrefs.HasKey("MarathonPermit") && PlayerPrefs.GetInt("MarathonChallenge_MCount") >
+                    MeloMelo_ExtensionContent_Settings.LoadMarathonDetail(PlayerPrefs.GetInt("MarathonInstanceNumber", 0)).track_difficulty.Length
+                        ? "MarathonSelection" : "Music Selection Stage"
+            );
+        }
     }
     #endregion
 
     #region DATA (System Prompt)
-    private void SaveContentProgress(bool isNetworkAvailable)
+    public void ProcessToSaveMode(bool skipTrackList)
     {
-        string saveOnStatus = isNetworkAvailable ? "[Game Network]" : "[Game Local]";
-        SaveIcon.SetActive(true);
+        // Special Condition: Using of track list
+        if (!skipTrackList || skipTrackList && PlayerPrefs.HasKey("TrackList_End_List"))
+        {
+            if (skipTrackList) PlayerPrefs.SetInt("MarathonChallenge_MCount", 5);
 
-        // Perform action on interface
-        if (isNetworkAvailable) StartCoroutine(NetworkSaveProgress(saveOnStatus));
-        else StartCoroutine(LocalSaveProgress(saveOnStatus));
-
-        // Prompt message to user
-        saveOnStatus += "\nChecking Progress...";
-        SaveIcon.transform.GetChild(1).GetComponent<Text>().text = saveOnStatus;
+            // Data: Saving progress
+            if (TrackListResult.activeInHierarchy) TrackListResult.SetActive(false);
+            SaveContentProgress(LoginPage_Script.thisPage.portNumber == (int)MeloMelo_PlayerSettings.LoginType.TempPass);
+        }
     }
 
-    private void ContentSavedCompleted(string title, bool isComplete)
+    private void SaveContentProgress(bool isNetworkAvailable)
+    {
+        // Perform action on interface
+        if (isNetworkAvailable) GetComponent<ServerCloud_Save_Script>().StartSavingProcess();
+        else GetComponent<Local_Save_Script>().StartSavingProcess();
+    }
+
+    public void ContentSavedCompleted(string title, bool isComplete)
     {
         if (isComplete)
             SaveIcon.transform.GetChild(1).GetComponent<Text>().text = title + "\nSave Successful";
         else
             SaveIcon.transform.GetChild(1).GetComponent<Text>().text = title + "\nSave Failed!";
     }
-
-    private void ContentCheckingData(string title, bool isComplete)
-    {
-        if (isComplete)
-            SaveIcon.transform.GetChild(1).GetComponent<Text>().text = title + "\nServer OK!";
-        else
-            SaveIcon.transform.GetChild(1).GetComponent<Text>().text = title + "\nServer Error!";
-    }
     #endregion
 
-    #region DATA (Redirect from Network)
-    public void ConnectionEstablish(WWWForm info, string url)
-    {
-        SaveIcon.transform.GetChild(1).GetComponent<Text>().text = "[Game Network]\nSaving Data...";
-        StartCoroutine(cloudDataServices.GetServerToSave(url, info));
-    }
-    #endregion
-
-    #region MISC (Condition of Success)
-    private bool GetProcessCloudSuccessful(bool[] condition)
-    {
-        foreach (bool check in condition)
-            if (!check) return false;
-
-        return true;
-    }
-
-    private IEnumerator Encode_DataCheck()
+    #region MISC (Condition of Success) 
+    public IEnumerator Encode_DataCheck()
     {
         yield return new WaitForSeconds(1);
         SaveIcon.GetComponent<Animator>().SetTrigger("Close");
         Invoke("ProcessReSelection", 2);
-    }
-    #endregion
-    #endregion
-
-    #region MISC (Other Component)
-    private int GetRankById(string rankOutput)
-    {
-        return MeloMelo_GameSettings.GetScoreRankStructureOrder(rankOutput);
     }
     #endregion
 }

@@ -21,7 +21,7 @@ public class FreeAccessTrack_Script : MonoBehaviour
             else
             {
                 const int usedTicket = 1;
-                int totalAvailableTicket = MeloMelo_GameSettings.GetAllItemFromLocal(defaultTicketUsage.itemName).amount -
+                int totalAvailableTicket = MeloMelo_ItemUsage_Settings.GetActiveItem(defaultTicketUsage.itemName).amount -
                 MeloMelo_ItemUsage_Settings.GetItemUsed(defaultTicketUsage.itemName);
                 UpdateTicketRequireStatus(defaultTicketUsage.itemName, totalAvailableTicket, usedTicket);
             }
@@ -92,7 +92,7 @@ public class FreeAccessTrack_Script : MonoBehaviour
     private void CheckUsedOfFreeTicket()
     {
         if (MeloMelo_ItemUsage_Settings.GetItemUsed(defaultTicketUsage.itemName) < 1 &&
-            MeloMelo_GameSettings.GetAllItemFromLocal(defaultTicketUsage.itemName).amount > 0)
+            MeloMelo_ItemUsage_Settings.GetActiveItem(defaultTicketUsage.itemName).amount > 0)
                 MeloMelo_ItemUsage_Settings.SetItemUsed(defaultTicketUsage.itemName);
     }
 
@@ -142,7 +142,7 @@ public class FreeAccessTrack_Script : MonoBehaviour
             listOfItem = new List<VirtualItemDatabase>();
             foreach (UsageOfItemDetail item in Resources.LoadAll<UsageOfItemDetail>("Database_Item/Filtered_Items/" + panelType))
             {
-                VirtualItemDatabase itemFound = MeloMelo_GameSettings.GetAllItemFromLocal(item.itemName);
+                VirtualItemDatabase itemFound = MeloMelo_ItemUsage_Settings.GetActiveItem(item.itemName);
                 if (itemFound.amount > 0) listOfItem.Add(itemFound);
             }
 

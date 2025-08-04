@@ -1297,7 +1297,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Highlighted
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 313139269}
   m_OnClick:
     m_PersistentCalls:
@@ -1385,7 +1385,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Espace
+  m_Text: Key_ESCAPE
 --- !u!222 &347071402
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1676,7 +1676,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Not Mapped
+  m_Text: Key_A
 --- !u!222 &383574987
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1954,7 +1954,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: JoyPad
+  m_text: GamePad
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c38775ed2822a6c41b2292744b1e92a2, type: 2}
   m_sharedMaterial: {fileID: 21243777319734966, guid: c38775ed2822a6c41b2292744b1e92a2,
@@ -2746,7 +2746,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Not Mapped
+  m_Text: Key_P
 --- !u!222 &662586261
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2826,7 +2826,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Not Mapped
+  m_Text: Key_D
 --- !u!222 &683329260
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3414,7 +3414,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Not Mapped
+  m_Text: Key_Arrow_Left
 --- !u!222 &941025859
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3456,7 +3456,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56fd4a9d04ce7e346b7b3830f4655811, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Res: {fileID: 0}
+  AuidoDataArray: []
+  AuidoMasterDataArray: []
+  GraphicsCheckBoxArray: []
+  AutoSaveConfigArray: []
+  AlertPop: {fileID: 0}
+  ChangePanel: {fileID: 0}
+  MessageChangePanel: {fileID: 0}
   Icon: {fileID: 0}
 --- !u!114 &959201621
 MonoBehaviour:
@@ -3559,7 +3565,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 959201619}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 272d176eb7436254c99b93d2dee6547a, type: 3}
   m_Name: 
@@ -3661,7 +3667,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Not Mapped
+  m_Text: Key_Arrow_Right
 --- !u!222 &1049479600
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4032,7 +4038,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Attention! - All mapping is not associated to the gameplay.
+  m_Text: Attention! - All key mapping are pre-assgined. Use whatever key is available
+    as its stated.
 --- !u!222 &1265493415
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5095,7 +5102,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Espace
+  m_text: 'Retreat
+
+    (During Battle)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b2ffe09c7c86bbe4aafb64c43adfdcc3, type: 2}
   m_sharedMaterial: {fileID: 21960655749452914, guid: b2ffe09c7c86bbe4aafb64c43adfdcc3,
@@ -5123,8 +5132,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 25
+  m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -5244,7 +5253,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Not Mapped
+  m_Text: Key_O
 --- !u!222 &1653483547
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5711,7 +5720,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Highlighted
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 1805228228}
   m_OnClick:
     m_PersistentCalls:
@@ -5973,7 +5982,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Highlighted
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1846291866}
   m_OnClick:
     m_PersistentCalls:
@@ -6371,7 +6380,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Highlighted
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 2008764690}
   m_OnClick:
     m_PersistentCalls:

@@ -14,13 +14,19 @@ public class MeloMelo_UnitSlot_Editor : MonoBehaviour
 
     [Header("Setup: Marathon Quest Condition")]
     private MarathonInfo info;
-
-    private int mainSet = 0;
+    private BuildInChallengeInfo info2;
 
     // Start is called before the first frame update
     void Start()
     {
-        info = Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty));
+        if (PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty) != "CustomList") info = Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty));
+        else
+        { 
+            info = null;
+            info2 = new BuildInChallengeInfo();
+            info2 = MeloMelo_ExtensionContent_Settings.LoadMarathonDetail(PlayerPrefs.GetInt("MarathonInstanceNumber", 0)); 
+        }
+
         if (PlayerPrefs.HasKey("MarathonPermit")) UpdateQuestCondition();
         Invoke("StandingBy", 0.5f);
     }
@@ -44,22 +50,26 @@ public class MeloMelo_UnitSlot_Editor : MonoBehaviour
     #region MAIN (Quest Updater)
     public void UpdateQuestCondition()
     {
-        switch (info.clearingType)
+        int clearingType = info != null ? (int)info.clearingType : info2.conditionType - 1;
+
+        switch (clearingType)
         {
-            case MarathonInfo.ClearedMethod.ScoreAchiever:
+            case 0:
                 WriteQuestScore(ReadTotalQuestScore(true) + (GameManager.thisManager.get_score1 != null ?
                     (int)GameManager.thisManager.get_score1.get_score : 0));
                 break;
 
-            case MarathonInfo.ClearedMethod.Life:
-                int life = GameManager.thisManager.getJudgeWindow.TotalJudgeCounted() -
-                    (GameManager.thisManager.getJudgeWindow.get_perfect2 + GameManager.thisManager.getJudgeWindow.get_perfect -
-                    GameManager.thisManager.getJudgeWindow.get_bad - (GameManager.thisManager.getJudgeWindow.get_miss * 2));
+            case 1:
+                int life = GameManager.thisManager.getJudgeWindow.get_perfect2 * PlayerPrefs.GetInt("Critical_Perfect_Deduct", 0) +
+                    GameManager.thisManager.getJudgeWindow.get_perfect * PlayerPrefs.GetInt("Perfect_Deduct", 0) +
+                    GameManager.thisManager.getJudgeWindow.get_bad * PlayerPrefs.GetInt("Bad_Deduct", 0) +
+                    GameManager.thisManager.getJudgeWindow.get_miss * PlayerPrefs.GetInt("Miss_Deduct", 0);
+
                 WriteQuestScore(ReadTotalQuestScore(true) + life);
                 break;
 
-            case MarathonInfo.ClearedMethod.Judgement:
-                string[] splitValue = info.clearingValue.Split('/');
+            case 2:
+                string[] splitValue = info != null ? info.clearingValue.Split('/') : info2.condition_data.Split(",");
                 int previousScore = ReadTotalQuestScore(true);
 
                 switch (int.Parse(splitValue[0]))
@@ -109,28 +119,54 @@ public class MeloMelo_UnitSlot_Editor : MonoBehaviour
         {
             case 1:
                 int currentScore = PlayerPrefs.GetInt("Marathon_Quest_Score", 0);
-                switch (info.clearingType)
+
+                if (info != null)
                 {
-                    case MarathonInfo.ClearedMethod.ScoreAchiever:
-                        int totalStage = info.Difficultylevel.Length;
-                        return ScoreAchieverCondition(totalStage);
+                    switch (info.clearingType)
+                    {
+                        case MarathonInfo.ClearedMethod.ScoreAchiever:
+                            int totalStage = info.Difficultylevel.Length;
+                            return ScoreAchieverCondition(totalStage);
 
-                    case MarathonInfo.ClearedMethod.Life:
-                        return LifeChallengeCondition(int.Parse(info.clearingValue) - currentScore, 
-                            int.Parse(info.clearingValue) - currentScore > 0);
+                        case MarathonInfo.ClearedMethod.Life:
+                            return LifeChallengeCondition(int.Parse(info.clearingValue) - currentScore,
+                                int.Parse(info.clearingValue) - currentScore > 0);
 
-                    case MarathonInfo.ClearedMethod.Judgement:
-                        string[] splitvalue = info.clearingValue.Split('/');
-                        int totalCount = int.Parse(splitvalue[1]);
-                        return JudgementCondition(int.Parse(splitvalue[0]), totalCount);    
-                        
-                    default:
-                        return "No Condition";
+                        case MarathonInfo.ClearedMethod.Judgement:
+                            string[] splitvalue = info.clearingValue.Split('/');
+                            int totalCount = int.Parse(splitvalue[1]);
+                            return JudgementCondition(int.Parse(splitvalue[0]), totalCount);
+
+                        default:
+                            return "No Condition";
+                    }
+                }
+                else
+                {
+                    switch (info2.conditionType)
+                    {
+                        case 1:
+                            int totalStage = info2.track_difficulty.Length;
+                            return ScoreAchieverCondition(totalStage);
+
+                        case 2:
+                            return LifeChallengeCondition(int.Parse(info2.condition_data.Split(",")[4]) - currentScore,
+                                int.Parse(info2.condition_data.Split(",")[4]) - currentScore > 0);
+
+                        case 3:
+                            string[] splitvalue = info2.condition_data.Split(',');
+                            int totalCount = int.Parse(splitvalue[1]);
+                            return JudgementCondition(int.Parse(splitvalue[0]), totalCount);
+
+                        default:
+                            return "No Condition";
+                    }
                 }
 
             default:
                 return "Marathon Mode\n\nStage " + PlayerPrefs.GetInt("MarathonChallenge_MCount", 1) + " / " +
-                    Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length;
+                    (info != null ? info.Difficultylevel.Length : info2.track_difficulty.Length);
+                        //Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length;
         }
     }
 
@@ -151,7 +187,7 @@ public class MeloMelo_UnitSlot_Editor : MonoBehaviour
     private string ScoreAchieverCondition(int totalStage)
     {
         int currentScore = ReadTotalQuestScore(false);
-        int result = MeloMelo_GameSettings.GetScoreRankStructure(info.clearingValue).score;
+        int result = MeloMelo_GameSettings.GetScoreRankStructure(info != null ? info.clearingValue : info2.condition_data).score;
         FinalRecordForQuestCondition(currentScore >= (totalStage * result));
 
         if (currentScore >= (totalStage * result)) return "Score Reached:\n\nCLEARED!";
