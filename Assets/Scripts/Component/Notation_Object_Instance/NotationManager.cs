@@ -63,7 +63,7 @@ public class NotationManager : MonoBehaviour
             {
                 var note = note_listing[i];
 
-                if (note == null || note.mainScript == null)
+                if (!note.mainScript.gameObject.activeInHierarchy) //if (note == null || note.mainScript == null)
                 {
                     note_listing.RemoveAt(i);
                     continue;
@@ -83,7 +83,7 @@ public class NotationManager : MonoBehaviour
             {
                 var margin = note_margin_listing[i];
 
-                if (margin == null)
+                if (!margin.gameObject.activeInHierarchy)
                 {
                     note_margin_listing.RemoveAt(i);
                     continue;

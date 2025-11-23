@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e8b0e0e05ea2e4dbb347c649c3fe92, type: 3}
+  m_Name: Marksman2_Primary_Skill
+  m_EditorClassIdentifier: 
+  skillName: Falling Arrow
+  skillIcon: {fileID: 2800000, guid: 896b2dcf6e0921d448f1fc28f22312f9, type: 3}
+  description: 'Countless arrow falling towards the enemy side. For every 150 combo,
+    dealing enemy health by (ATK x 25% + Grade x 50%).
+
+    For every combo break,
+    character health will reduce by (ATK x 50%).'
+  target_caterogy: 2
+  customEffectData: []
+  isUnlockReady: 1

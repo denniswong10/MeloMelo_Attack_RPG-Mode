@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using MeloMelo_GameProperties;
 using UnityEngine.UI;
 using System;
 using System.IO;
@@ -483,16 +484,20 @@ namespace MeloMelo_ExtraComponent
         public void UpdateSelectMusic(int index)
         {
             // Filling content information
-            SetTrackInformation(0).text = "[ " + CurrentArea_Data(index, currentAreaText).ArtistName + " ]";
-            SetTrackInformation(1).text = CurrentArea_Data(index, currentAreaText).Title;
-            SetTrackInformation(2).text = "Imported by " + CurrentArea_Data(index, currentAreaText).DesignerName;
-            CollectionNew_Script.thisCollect.ContentTrackDashBoard.transform.GetChild(3).GetComponent<RawImage>().texture = CurrentArea_Data(index, currentAreaText).Background_Cover;
+            MusicScore trackInfo = CurrentArea_Data(index, currentAreaText);
 
-            SetTrackInformation(5).text = CurrentArea_Data(index, currentAreaText).creditPoint != "--" ? SetTrackInformation(5).text = "© " + CurrentArea_Data(index, currentAreaText).creditPoint :
-                SetTrackInformation(5).text = "";
+            SetTrackInformation(0).text = "[ " + trackInfo.ArtistName + " ]";
+            SetTrackInformation(1).text = trackInfo.Title;
+            SetTrackInformation(2).text = "Imported by " + trackInfo.DesignerName;
+            SetTrackInformation(4).text = "Track Released: " + trackInfo.ReleasedDate;
+
+            CollectionNew_Script.thisCollect.ContentTrackDashBoard.transform.GetChild(3).GetComponent<RawImage>().texture = trackInfo.Background_Cover;
+
+            if (trackInfo.creditPoint != "--") SetTrackInformation(5).text = "© " + trackInfo.creditPoint;
+            else SetTrackInformation(5).text = "";
 
             // Track Locked
-            CollectionNew_Script.thisCollect.ContentTrackDashBoard.transform.GetChild(3).GetChild(0).gameObject.SetActive(CurrentArea_Data(index, currentAreaText).SetRestriction);
+            CollectionNew_Script.thisCollect.ContentTrackDashBoard.transform.GetChild(3).GetChild(0).gameObject.SetActive(trackInfo.SetRestriction);
         }
 
         public IEnumerator FinishedTransition_SelectMusic()
@@ -964,11 +969,17 @@ namespace MeloMelo_LevelBuilder
                 else { noteCom_all = 0; }
             }
 
-            difficultyLevel = 0.15f * scoringCurrent;
-            Debug.Log("Overall Level (" + difficultyMap + "): " + scoringCurrent + " => " + difficultyLevel);
-
             if (SceneManager.GetActiveScene().name == "Music Selection Stage")
+            {
+                difficultyLevel = 0.15f * (scoringCurrent - SelectionMenu_Script.thisSelect.get_selection.get_form.cappedRate);
+                Debug.Log("Overall Level (" + difficultyMap + "): " + scoringCurrent + " => " + difficultyLevel);
                 SelectionMenu_Script.thisSelect.get_selection.UpdateData_Level(difficultyMap, difficultyLevel);
+            }
+            else
+            {
+                difficultyLevel = 0.15f * (scoringCurrent - BeatConductor.thisBeat.Music_Database.cappedRate);
+                Debug.Log("Overall Level (" + difficultyMap + "): " + scoringCurrent + " => " + difficultyLevel);
+            }
         }
 
         #region SETUP
@@ -1612,6 +1623,22 @@ namespace MeloMelo_LevelBuilder
 namespace MeloMelo_Local
 {
     [System.Serializable]
+    public struct ExtraElementScore
+    {
+        public string title;
+        public int difficulty;
+        public int area_difficulty;
+        public int areaTrackLevel;
+        public int areaTrackExperience;
+
+        public ExtraElementScore GetElementWithRPG(string format)
+        {
+            Debug.Log(format);
+            return JsonUtility.FromJson<ExtraElementScore>(format);
+        }
+    }
+
+    [System.Serializable]
     public struct ScoreDatabase
     {
         public string user;
@@ -1682,6 +1709,10 @@ namespace MeloMelo_Local
         public bool autoSaveGameProgress;
         public bool autoSavePlaySettings;
         public bool autoSaveGameSettings;
+
+        public bool playEventOption_display;
+        public bool playEventOption_reward;
+        public bool playEventOption_skipAhead;
 
         public PlayerSettingsDatabase GetSettingsData(string format)
         {
@@ -1824,6 +1855,58 @@ namespace MeloMelo_Local
         {
             Debug.Log(format);
             return JsonUtility.FromJson<SkillUnitDatabase>(format);
+        }
+    }
+
+    [System.Serializable]
+    public struct PlayerZoneRewardRecord
+    {
+        public string title;
+        public int difficulty;
+        public int area_difficulty;
+        public int level;
+        public bool marked;
+
+        public PlayerZoneRewardRecord CreateRecord(string format)
+        {
+            Debug.Log(format);
+            return JsonUtility.FromJson<PlayerZoneRewardRecord>(format);
+        }
+    }
+
+    [System.Serializable]
+    public struct RPGElementDatabase
+    {
+        public string title;
+        public int area_difficulty;
+        public int track_difficulty;
+        public int totalEnemyKilled;
+        public int totalhealCount;
+        public int totalTrapsAvoid;
+        public int overallenemyKilled;
+        public int overallhealPicked;
+        public int overallTrapsAvoid;
+
+        public RPGElementDatabase GetElementData(string format)
+        {
+            Debug.Log(format);
+            return JsonUtility.FromJson<RPGElementDatabase>(format);
+        }
+    }
+
+    [System.Serializable]
+    public struct TrackComboProgressData
+    {
+        public string title;
+        public int difficulty;
+        public int maxCombo;
+        public int overallCombo;
+        public int maxOutCount;
+
+        public TrackComboProgressData GetTrackData(string format)
+        {
+            Debug.Log(format);
+            return JsonUtility.FromJson<TrackComboProgressData>(format);
         }
     }
 
@@ -2109,11 +2192,12 @@ namespace MeloMelo_Local
             Debug.Log("Registered_User (Load_Database): " + user);
         }
 
+        // Score Data: Data Management
         public async Task<List<ScoreDatabase>> PreLoading_ScoreData()
         {
             return await Task.Run(() =>
             {
-                if (!File.Exists(directory + combinePath)) return new List<ScoreDatabase>();
+                if (!File.Exists(directory + combinePath)) return null;
 
                 List<ScoreDatabase> dataArray = new List<ScoreDatabase>();
 
@@ -2127,7 +2211,7 @@ namespace MeloMelo_Local
             });
         }
 
-        public IEnumerator PostLoading_ScoreData(ScoreDatabase[] preLoaded_scoreData)
+        public IEnumerator PostLoading_ScoreData(List<ScoreDatabase> preLoaded_scoreData)
         {
             if (preLoaded_scoreData != null)
             {
@@ -2136,6 +2220,8 @@ namespace MeloMelo_Local
 
                 foreach (ScoreDatabase encode_data in preLoaded_scoreData)
                 {
+                    if (string.IsNullOrEmpty(encode_data.user)) continue;
+
                     if (user == encode_data.user)
                     {
                         // Score is taken to the highest
@@ -2157,11 +2243,49 @@ namespace MeloMelo_Local
             }
         }
 
+        // Score Element RPG: Data Management
+        public async Task<List<ExtraElementScore>> PreLoading_ScoreElementRPG()
+        {
+            return await Task.Run(() =>
+            {
+                if (!File.Exists(directory + combinePath)) return null;
+
+                List<ExtraElementScore> dataArray = new List<ExtraElementScore>();
+
+                foreach (string s in GetFormatToList())
+                {
+                    if (s != string.Empty)
+                        dataArray.Add(new ExtraElementScore().GetElementWithRPG(s));
+                }
+
+                return dataArray;
+            });
+        }
+
+        public IEnumerator PostLoading_ScoreElementRPG(List<ExtraElementScore> preLoaded_scoreData)
+        {
+            if (preLoaded_scoreData != null)
+            {
+                int maxLoadLimit = 50;
+                int currentLoadIndex = 0;
+
+                foreach (ExtraElementScore encode_data in preLoaded_scoreData)
+                {
+                    PlayerPrefs.SetInt(encode_data.title + "_areaLevel" + encode_data.area_difficulty + encode_data.difficulty, encode_data.areaTrackLevel);
+                    PlayerPrefs.SetInt(encode_data.title + "_areaExperience" + encode_data.area_difficulty + encode_data.difficulty, encode_data.areaTrackExperience);
+
+                    currentLoadIndex++;
+                    if (currentLoadIndex % maxLoadLimit == 0) yield return null;
+                }
+            }
+        }
+
+        // Point Data: Data Management
         public async Task<List<PointDatabase>> PreLoading_PointData()
         {
             return await Task.Run(() =>
             {
-                if (!File.Exists(directory + combinePath)) return new List<PointDatabase>();
+                if (!File.Exists(directory + combinePath)) return null;
                 List<PointDatabase> dataArray = new List<PointDatabase>();
 
                 foreach (string s in GetFormatToList())
@@ -2174,7 +2298,7 @@ namespace MeloMelo_Local
             });
         }
 
-        public IEnumerator PostLoading_PointData(PointDatabase[] preLoaded_pointData)
+        public IEnumerator PostLoading_PointData(List<PointDatabase> preLoaded_pointData)
         {
             if (preLoaded_pointData != null)
             {
@@ -2236,6 +2360,10 @@ namespace MeloMelo_Local
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSaveProgress_ValueKey, data.autoSaveGameProgress ? 1 : 0);
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSaveGameSettings_ValueKey, data.autoSaveGameSettings ? 1 : 0);
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSavePlaySettings_ValueKey, data.autoSavePlaySettings ? 1 : 0);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_DisplayKey, data.playEventOption_display ? 1 : 0);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_RewardKey, data.playEventOption_reward ? 1 : 0);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_SkipKey, data.playEventOption_skipAhead ? 1 : 0);
             }
             else
             {
@@ -2255,7 +2383,7 @@ namespace MeloMelo_Local
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey, 1);
 
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetFrameRateLimit_ValueKey, 1);
-                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPeformanceOptimize_ValueKey, 10);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPeformanceOptimize_ValueKey, 1);
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetUnitHealthOnCharacter_ValueKey, 0);
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetUnitHealthOnEnemy_ValueKey, 0);
 
@@ -2265,6 +2393,10 @@ namespace MeloMelo_Local
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSaveProgress_ValueKey, 1);
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSaveGameSettings_ValueKey, 1);
                 PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSavePlaySettings_ValueKey, 1);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_DisplayKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_RewardKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_SkipKey, 0);
             }
         }
 
@@ -2330,7 +2462,7 @@ namespace MeloMelo_Local
         {
             return await Task.Run(() =>
             {
-                if (!File.Exists(directory + combinePath)) new List<BattleProgressDatabase>();
+                if (!File.Exists(directory + combinePath)) return null;
                 List<BattleProgressDatabase> dataArray = new List<BattleProgressDatabase>();
 
                 foreach (string s in GetFormatToList())
@@ -2343,7 +2475,7 @@ namespace MeloMelo_Local
             });
         }
 
-        public IEnumerator PostLoading_BattleProgressData(BattleProgressDatabase[] preLoaded_battlePrgoressData)
+        public IEnumerator PostLoading_BattleProgressData(List<BattleProgressDatabase> preLoaded_battlePrgoressData)
         {
             if (preLoaded_battlePrgoressData != null)
             {
@@ -2393,7 +2525,7 @@ namespace MeloMelo_Local
         {
             return await Task.Run(() =>
             {
-                if (!File.Exists(directory + combinePath)) return new List<BattleUnitDatabase>();
+                if (!File.Exists(directory + combinePath)) return null;
                 List<BattleUnitDatabase> dataArray = new List<BattleUnitDatabase>();
 
                 foreach (string s in GetFormatToList())
@@ -2406,7 +2538,7 @@ namespace MeloMelo_Local
             });
         }
 
-        public IEnumerator PostLoading_CharacterStatsData(BattleUnitDatabase[] preLoaded_characterstatsData)
+        public IEnumerator PostLoading_CharacterStatsData(List<BattleUnitDatabase> preLoaded_characterstatsData)
         {
             if (preLoaded_characterstatsData != null)
             {
@@ -2415,12 +2547,15 @@ namespace MeloMelo_Local
 
                 foreach (BattleUnitDatabase data in preLoaded_characterstatsData)
                 {
+                    MeloMelo_RPGEditor.StatsManage_Database characterStatsDatabase =
+                        new MeloMelo_RPGEditor.StatsManage_Database(data.id);
+
                     PlayerPrefs.SetInt(data.id + "_LEVEL", data.level);
                     PlayerPrefs.SetInt(data.id + "_EXP", data.experience);
                     MeloMelo_CharacterInfo_Settings.UnlockCharacter(data.id);
 
-                    int unUsedMasteryPoint = data.level * 2 - data.totalMasteryAdded;
-                    int rebirthMasteryPoint = data.totalRebirthPoint * 99 * 2;
+                    int unUsedMasteryPoint = data.level * MeloMelo_ExtraStats_Settings.masteryPointGathered - data.totalMasteryAdded;
+                    int rebirthMasteryPoint = characterStatsDatabase.GetCharacterMaxLevel() * MeloMelo_ExtraStats_Settings.masteryPointGathered * data.totalRebirthPoint;
                     MeloMelo_ExtraStats_Settings.SetMasteryPoint(data.id, unUsedMasteryPoint + rebirthMasteryPoint);
                     MeloMelo_ExtraStats_Settings.SetRebirthPoint(data.id, data.totalRebirthPoint);
 
@@ -2438,7 +2573,7 @@ namespace MeloMelo_Local
         {
             return await Task.Run(() =>
             {
-                if (!File.Exists(directory + combinePath)) return new List<SkillUnitDatabase>();
+                if (!File.Exists(directory + combinePath)) return null;
                 List<SkillUnitDatabase> dataArray = new List<SkillUnitDatabase>();
 
                 foreach (string s in GetFormatToList())
@@ -2451,7 +2586,7 @@ namespace MeloMelo_Local
             });
         }
 
-        public IEnumerator PostLoading_SkillsData(SkillUnitDatabase[] preloaded_skillData)
+        public IEnumerator PostLoading_SkillsData(List<SkillUnitDatabase> preloaded_skillData)
         {
             if (preloaded_skillData != null)
             {
@@ -2484,7 +2619,7 @@ namespace MeloMelo_Local
         {
             return await Task.Run(() =>
             {
-                if (!File.Exists(directory + combinePath)) return new List<AdventureStoreData>();
+                if (!File.Exists(directory + combinePath)) return null;
                 List<AdventureStoreData> dataArray = new List<AdventureStoreData>();
 
                 foreach (string s in GetFormatToList())
@@ -2497,7 +2632,7 @@ namespace MeloMelo_Local
             });
         }
 
-        public IEnumerator PostLoading_AdventureModeData(AdventureStoreData[] preLoaded_adventureModeData)
+        public IEnumerator PostLoading_AdventureModeData(List<AdventureStoreData> preLoaded_adventureModeData)
         {
             if (preLoaded_adventureModeData != null)
             {
@@ -2544,6 +2679,117 @@ namespace MeloMelo_Local
             yield return new WaitUntil(() => isReloadedAllItem.IsCompleted);
         }
 
+        public async Task<List<PlayerZoneRewardRecord>> Preloading_ZoneRewardRecord()
+        {
+            return await Task.Run(() =>
+            {
+                if (!File.Exists(directory + combinePath)) return null;
+                List<PlayerZoneRewardRecord> dataArray = new List<PlayerZoneRewardRecord>();
+
+                foreach (string s in GetFormatToList())
+                {
+                    if (s != string.Empty)
+                        dataArray.Add(new PlayerZoneRewardRecord().CreateRecord(s));
+                }
+
+                return dataArray;
+            });
+        }
+
+        public IEnumerator PostLoading_ZoneRewardRecord(List<PlayerZoneRewardRecord> preLoaded_record)
+        {
+            if (preLoaded_record != null)
+            {
+                int maxLoadLimit = 50;
+                int currentLoadIndex = 0;
+
+                foreach (PlayerZoneRewardRecord data in preLoaded_record)
+                {
+                    PlayerPrefs.SetInt(data.title + "_" + data.area_difficulty + data.difficulty + "_" + data.level + "_rewardObtain", data.marked ? 1 : 0);
+
+                    currentLoadIndex++;
+                    if (currentLoadIndex % maxLoadLimit == 0) yield return null;
+                }
+            }
+        }
+
+        public async Task<List<RPGElementDatabase>> Preloading_RPGElementScoreData()
+        {
+            return await Task.Run(() =>
+            {
+                if (!File.Exists(directory + combinePath)) return null;
+                List<RPGElementDatabase> dataArray = new List<RPGElementDatabase>();
+
+                foreach (string s in GetFormatToList())
+                {
+                    if (s != string.Empty)
+                        dataArray.Add(new RPGElementDatabase().GetElementData(s));
+                }
+
+                return dataArray;
+            });
+        }
+
+        public IEnumerator PostLoading_RPGElementScoreData(List<RPGElementDatabase> preLoaded_record)
+        {
+            if (preLoaded_record != null)
+            {
+                int maxLoadLimit = 50;
+                int currentLoadIndex = 0;
+
+                foreach (RPGElementDatabase data in preLoaded_record)
+                {
+                    PlayerPrefs.SetInt(data.title + "_totalEnemyCountForTrack" + data.track_difficulty + data.area_difficulty, data.totalEnemyKilled);                   
+                    PlayerPrefs.SetInt(data.title + "_OverallEnemyCountForTrack" + data.track_difficulty + data.area_difficulty, data.overallenemyKilled);
+
+                    PlayerPrefs.SetInt(data.title + "_totalTrapsCountForTrack" + data.track_difficulty + data.area_difficulty, data.totalTrapsAvoid);
+                    PlayerPrefs.SetInt(data.title + "_OverallTrapsCountForTrack" + data.track_difficulty + data.area_difficulty, data.overallTrapsAvoid);
+
+                    PlayerPrefs.SetInt(data.title + "_totalHealCountForTrack" + data.track_difficulty + data.area_difficulty, data.totalhealCount);
+                    PlayerPrefs.SetInt(data.title + "_OverallHealCountForTrack" + data.track_difficulty + data.area_difficulty, data.overallhealPicked);
+
+                    currentLoadIndex++;
+                    if (currentLoadIndex % maxLoadLimit == 0) yield return null;
+                }
+            }
+        }
+
+        public async Task<List<TrackComboProgressData>> Preloading_TrackComboProgress()
+        {
+            return await Task.Run(() =>
+            {
+                if (!File.Exists(directory + combinePath)) return null;
+                List<TrackComboProgressData> dataArray = new List<TrackComboProgressData>();
+
+                foreach (string s in GetFormatToList())
+                {
+                    if (s != string.Empty)
+                        dataArray.Add(new TrackComboProgressData().GetTrackData(s));
+                }
+
+                return dataArray;
+            });
+        }
+
+        public IEnumerator PostLoading_TrackComboProgress(List<TrackComboProgressData> preLoaded_data)
+        {
+            if (preLoaded_data != null)
+            {
+                int maxLoadLimit = 50;
+                int currentLoadIndex = 0;
+
+                foreach (TrackComboProgressData data in preLoaded_data)
+                {
+                    PlayerPrefs.SetInt(data.title + "_maxCombo" + data.difficulty, data.maxCombo);
+                    PlayerPrefs.SetInt(data.title + "_overallCombo" + data.difficulty, data.overallCombo);
+                    PlayerPrefs.SetInt(data.title + "_maxScore" + data.difficulty, data.maxOutCount);
+
+                    currentLoadIndex++;
+                    if (currentLoadIndex % maxLoadLimit == 0) yield return null;
+                }
+            }
+        }
+
         #region RAW
         public string GetLocalJsonFile(string fileName, bool getUserId)
         {
@@ -2588,6 +2834,36 @@ namespace MeloMelo_Local
             if (File.Exists(directory + combinePath)) jsonFormat += GetProgressFile();
             jsonFormat += "\n" + JsonUtility.ToJson(data) + "/";
 
+            WriteToFile(jsonFormat);
+        }
+
+        public void SaveElementRPGScore(string title, int difficulty, int area_difficulty)
+        {
+            List<ExtraElementScore> listing = new List<ExtraElementScore>();
+            ExtraElementScore saveProgress = new ExtraElementScore();
+
+            saveProgress.title = title;
+            saveProgress.area_difficulty = area_difficulty;
+            saveProgress.difficulty = difficulty;
+
+            saveProgress.areaTrackLevel = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_areaLevel" + area_difficulty + difficulty, 1);
+            saveProgress.areaTrackExperience = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_areaExperience" + area_difficulty + difficulty, 0);
+
+            if (File.Exists(directory + combinePath))
+            {
+                foreach (string data_decode in GetFormatToList())
+                    if (data_decode != string.Empty) listing.Add(new ExtraElementScore().GetElementWithRPG(data_decode));
+
+                File.Delete(directory + combinePath);
+
+                foreach (ExtraElementScore list in listing)
+                    if (list.title == saveProgress.title && list.difficulty == saveProgress.difficulty) { listing.Remove(list); break; }
+            }
+
+            listing.Add(saveProgress);
+
+            string jsonFormat = string.Empty;
+            foreach (ExtraElementScore list in listing) { jsonFormat += JsonUtility.ToJson(list) + "/"; }
             WriteToFile(jsonFormat);
         }
 
@@ -2649,6 +2925,10 @@ namespace MeloMelo_Local
             data.autoSaveGameProgress = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAutoSaveProgress_ValueKey, 1) == 1 ? true : false;
             data.autoSaveGameSettings = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAutoSaveGameSettings_ValueKey, 1) == 1 ? true : false;
             data.autoSavePlaySettings = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAutoSavePlaySettings_ValueKey, 1) == 1 ? true : false;
+
+            data.playEventOption_display = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_DisplayKey) == 1 ? true : false;
+            data.playEventOption_reward = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_RewardKey) == 1 ? true : false;
+            data.playEventOption_skipAhead = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_SkipKey) == 1 ? true : false;
 
             JsonFormat += JsonUtility.ToJson(data);
             WriteToFile(JsonFormat);
@@ -2861,15 +3141,17 @@ namespace MeloMelo_Local
                             }
                         }
 
-                        if (!isItemEmpty)
+                        if (!isItemEmpty || !isStackable)
                         {
                             // Create new slot of item stack them together. Otherwise make them individually
-                            if (isStackable) listing.Add(itemContain);
-                            else
+                            if (itemContain.amount > 1)
                             {
                                 for (int itemSpawn = 0; itemSpawn < itemContain.amount; itemSpawn++)
                                     listing.Add(new VirtualItemDatabase(itemContain.itemName, 1));
                             }
+
+                            else if (itemContain.amount == 1)
+                                listing.Add(itemContain);
                         }
                     }
                 }
@@ -2924,6 +3206,116 @@ namespace MeloMelo_Local
             }
 
             WriteToFile(jsonFormat);
+        }
+
+        public void SaveAreaWithZoneReward(string title, int area_diff, int difficulty, int level, bool obtainCompleted)
+        {
+            if (obtainCompleted)
+            {
+                string jsonFormat = string.Empty;
+                PlayerZoneRewardRecord data = new PlayerZoneRewardRecord();
+                data.title = title;
+                data.area_difficulty = area_diff;
+                data.difficulty = difficulty;
+                data.level = level;
+                data.marked = obtainCompleted;
+
+                if (File.Exists(directory + combinePath)) jsonFormat += GetProgressFile();
+                jsonFormat += "\n" + JsonUtility.ToJson(data) + "/";
+
+                WriteToFile(jsonFormat);
+            }
+        }
+
+        public void SaveProgressOfRPGElementData(string title, int area_diffi, int track_diffi, GameplayObjectComponent data_send)
+        {          
+            if (data_send.getCurrentEnemy > PlayerPrefs.GetInt(title + "_totalEnemyCountForTrack" + track_diffi + area_diffi, 0) ||
+                data_send.getCurrentHeal > PlayerPrefs.GetInt(title + "_totalHealCountForTrack" + track_diffi + area_diffi, 0) ||
+                data_send.getCurrentTrap > PlayerPrefs.GetInt(title + "_totalTrapsCountForTrack" + track_diffi + area_diffi, 0))
+            {
+                List<RPGElementDatabase> listing = new List<RPGElementDatabase>();
+                RPGElementDatabase data = new RPGElementDatabase();
+
+                data.title = title;
+                data.area_difficulty = area_diffi;
+                data.track_difficulty = track_diffi;
+
+                data.overallenemyKilled = data_send.getTotalEnemy;
+                data.overallhealPicked = data_send.getTotalHeal;
+                data.overallTrapsAvoid = data_send.getTotalTraps;
+
+                data.totalEnemyKilled = data_send.getCurrentEnemy > PlayerPrefs.GetInt(data.title + "_totalEnemyCountForTrack" + data.track_difficulty + data.area_difficulty, 0)
+                    ? data_send.getCurrentEnemy : PlayerPrefs.GetInt(data.title + "_totalEnemyCountForTrack" + data.track_difficulty + data.area_difficulty, 0);
+
+                data.totalhealCount = data_send.getCurrentHeal > PlayerPrefs.GetInt(data.title + "_totalHealCountForTrack" + data.track_difficulty + data.area_difficulty, 0)
+                    ? data_send.getCurrentHeal : PlayerPrefs.GetInt(data.title + "_totalHealCountForTrack" + data.track_difficulty + data.area_difficulty, 0);
+
+                data.totalTrapsAvoid = data_send.getCurrentTrap > PlayerPrefs.GetInt(data.title + "_totalTrapsCountForTrack" + data.track_difficulty + data.area_difficulty, 0)
+                    ? data_send.getCurrentTrap : PlayerPrefs.GetInt(data.title + "_totalTrapsCountForTrack" + data.track_difficulty + data.area_difficulty, 0);
+
+                // Update local score
+                PlayerPrefs.SetInt(data.title + "_totalEnemyCountForTrack" + data.track_difficulty + data.area_difficulty, data.totalEnemyKilled);
+                PlayerPrefs.SetInt(data.title + "_totalHealCountForTrack" + data.track_difficulty + data.area_difficulty, data.totalhealCount);
+                PlayerPrefs.SetInt(data.title + "_totalTrapsCountForTrack" + data.track_difficulty + data.area_difficulty, data.totalTrapsAvoid);
+
+                PlayerPrefs.SetInt(title + "_OverallEnemyCountForTrack" + data.track_difficulty + data.area_difficulty, data.overallenemyKilled);
+                PlayerPrefs.SetInt(title + "_OverallTrapsCountForTrack" + data.track_difficulty + data.area_difficulty, data.overallTrapsAvoid);
+                PlayerPrefs.SetInt(title + "_OverallHealCountForTrack" + data.track_difficulty + data.area_difficulty, data.overallhealPicked);
+
+                if (File.Exists(directory + combinePath))
+                {
+                    foreach (string data_decode in GetFormatToList())
+                        if (data_decode != string.Empty) listing.Add(new RPGElementDatabase().GetElementData(data_decode));
+
+                    File.Delete(directory + combinePath);
+
+                    foreach (RPGElementDatabase list in listing)
+                        if (list.title == data.title && list.area_difficulty == data.area_difficulty && list.track_difficulty == data.track_difficulty) { listing.Remove(list); break; }
+                }
+
+                listing.Add(data);
+
+                string jsonFormat = string.Empty;
+                foreach (RPGElementDatabase list in listing) { jsonFormat += JsonUtility.ToJson(list) + "/"; }
+                WriteToFile(jsonFormat);
+            }        
+        }
+
+        public void SaveProgressComboData(string title, int difficulty, int maxCombo, int overallCombo, bool maxOutScore)
+        {
+            if (maxCombo > PlayerPrefs.GetInt(title + "_maxCombo" + difficulty, 0) || overallCombo != PlayerPrefs.GetInt(title + "_overallCombo" + difficulty, 0) || maxOutScore)
+            {
+                List<TrackComboProgressData> listing = new List<TrackComboProgressData>();
+                TrackComboProgressData progress = new TrackComboProgressData();
+
+                progress.title = title;
+                progress.difficulty = difficulty;
+                progress.maxCombo = maxCombo > PlayerPrefs.GetInt(title + "_maxCombo" + difficulty, 0) ? maxCombo : PlayerPrefs.GetInt(title + "_maxCombo" + difficulty, 0);
+                progress.overallCombo = overallCombo != PlayerPrefs.GetInt(title + "_overallCombo" + difficulty, 0) ? overallCombo : PlayerPrefs.GetInt(title + "_overallCombo" + difficulty, 0);
+                progress.maxOutCount = maxOutScore ? PlayerPrefs.GetInt(title + "_maxScore" + difficulty, 0) + 1 : PlayerPrefs.GetInt(title+ "_maxScore" + difficulty, 0);
+
+                // Update local score
+                PlayerPrefs.SetInt(title + "_maxCombo" + difficulty, progress.maxCombo);
+                PlayerPrefs.SetInt(title + "_overallCombo" + difficulty, progress.overallCombo);
+                PlayerPrefs.SetInt(title + "_maxScore" + difficulty, progress.maxOutCount);
+
+                if (File.Exists(directory + combinePath))
+                {
+                    foreach (string data_decode in GetFormatToList())
+                        if (data_decode != string.Empty) listing.Add(new TrackComboProgressData().GetTrackData(data_decode));
+
+                    File.Delete(directory + combinePath);
+
+                    foreach (TrackComboProgressData list in listing)
+                        if (list.title == progress.title && list.difficulty == progress.difficulty) { listing.Remove(list); break; }
+                }
+
+                listing.Add(progress);
+
+                string jsonFormat = string.Empty;
+                foreach (TrackComboProgressData list in listing) { jsonFormat += JsonUtility.ToJson(list) + "/"; }
+                WriteToFile(jsonFormat);
+            }
         }
     }
 
@@ -3697,7 +4089,18 @@ namespace MeloMelo_Network
                 string creatorText = string.Empty;
                 string[] allItemRetrieve = load.downloadHandler.text.Split("\n");
                 foreach (string itemData in allItemRetrieve) creatorText += itemData + "/";
-                if (allItemRetrieve.Length > 0) MeloMelo_ItemUsage_Settings.ImportItems(new VirtualItemDatabase().GetItemData(creatorText));
+
+                if (creatorText != string.Empty)
+                {
+                    foreach (string itemSingle in creatorText.Split('/'))
+                    {
+                        if (itemSingle != string.Empty)
+                        {
+                            VirtualItemDatabase loadItemData = new VirtualItemDatabase().GetItemData(itemSingle);
+                            try { MeloMelo_ItemUsage_Settings.ImportItems(loadItemData); } catch { }
+                        }
+                    }
+                }
             }
 
             cloudLogging.Add(load.downloadHandler.text != "Empty");
@@ -4803,6 +5206,8 @@ namespace MeloMelo_RPGEditor
             if (level >= statsListing.ToArray().Length) return statsListing[statsListing.ToArray().Length - 1];
             else return statsListing[level < 0 ? 0 : (level - 1)];
         }
+
+        public int GetCharacterMaxLevel() { return statsListing[statsListing.ToArray().Length - 1].GetLevel; }
     }
 
     public class StatsDistribution
@@ -4819,57 +5224,77 @@ namespace MeloMelo_RPGEditor
             }
         }
 
+        public int get_unitSize()
+        {
+            int totalCount = 0;
+
+            foreach (ClassBase character in slot_Stats)
+                if (character.characterName != "None") totalCount++;
+
+            return totalCount;
+        }
+
         // Unit Damage: Get All Types
         public int get_UnitDamage(string index)
         {
             int DMG = 0;
             for (int i = 0; i < 3; i++)
             {
-                slot_Stats[i].UpdateStatsCache(false);
+                slot_Stats[i].UpdateCurrentStats(false);
+                StatsManage_Database unitBase = new StatsManage_Database(slot_Stats[i].name);
+
                 ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
                     slot_Stats[i].elementType == ClassBase.ElementStats.Light ? "Light" :
                     slot_Stats[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
                     slot_Stats[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
 
                 UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy
-                    [PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i];
+                    [MeloMelo_GameSettings.GetAreaDifficultyMode() - 1].myEnemySlot[i];
                 ElemetStartingStats basicStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus("None");
 
                 switch (index)
                 {
                     case "Enemy":
                         float damageAfterStats = currentUnit.str * basicStats.strength;
+                        int damageResistedValue = slot_Stats[i].icon != null ? unitBase.GetCharacterStatus(slot_Stats[i].level).GetVitality : 0;
 
-                        float damageResistedFromCharacter = basicStats.vitality * (slot_Stats[i].vitality +
-                            MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[i].name) + 
-                            MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name));
+                        float damageResistedFromCharacter = damageResistedValue + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[i].name) 
+                            + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name);
 
-                        float damageBonusResistanceFromCharacter = basicStats.vitality *
+                        damageResistedFromCharacter *= MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name) == 0 ? 1 : 
                             MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
 
-                        DMG += currentUnit.DMG + (int)damageAfterStats - ((int)(damageResistedFromCharacter + damageBonusResistanceFromCharacter * 0.01f * 80));
-                        if (DMG <= 0) DMG = 0;
+                        damageResistedFromCharacter *= baseStats.vitality;
+
+                        DMG += currentUnit.DMG + (int)damageAfterStats - (int)(damageResistedFromCharacter * 0.01f * 80);
                         break;
 
                     case "Character":
-                        float originalDamage = baseStats.strength + baseStats.strength * (slot_Stats[i].strength +
-                            MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[i].name));
+                        if (slot_Stats[i].icon != null)
+                        {
+                            float originalDamage = baseStats.strength + baseStats.strength * (unitBase.GetCharacterStatus(slot_Stats[i].level).GetStrength
+                                + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[i].name) + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name));
 
-                        float damageResistedFromEnemy = currentUnit.vit * baseStats.vitality;
+                            originalDamage *= MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name) == 0 ? 1 :
+                                MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
 
-                        DMG += (int)originalDamage + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name) + 
-                            (int)originalDamage * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name) 
-                            - (int)(damageResistedFromEnemy * 0.01f * 80);
-                        if (DMG <= 0) DMG = 0;
+                            float damageResistedFromEnemy = currentUnit.vit * basicStats.vitality;
+
+                            DMG += (int)originalDamage - (int)(damageResistedFromEnemy * 0.01f * 80);
+                        }
                         break;
                 }
             }
+
+            if (DMG <= 0) DMG = 0;
             return DMG;
         }
 
         public int get_UnitSpellResist(string index)
         {
             float resistance = 0;
+            int totalValueIncludeBoost = 0;
+
             for (int i = 0; i < 3; i++)
             {
                 switch (index)
@@ -4881,16 +5306,21 @@ namespace MeloMelo_RPGEditor
                             slot_Stats[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
                             slot_Stats[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
 
-                        resistance += slot_Stats[i].magic - slot_Stats[i].vitality * baseStats.multipler;
+                        totalValueIncludeBoost += (slot_Stats[i].magic + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name) + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(slot_Stats[i].name))
+                            * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name) == 0 ? 1 : MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
+                        totalValueIncludeBoost -= (slot_Stats[i].vitality + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name) + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[i].name))
+                            * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name) == 0 ? 1 : MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
+
+                        resistance += totalValueIncludeBoost * baseStats.multipler;
                         if (resistance <= 0) resistance = 0;
                         break;
 
                     case "Enemy":
                         UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy
-                            [PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i];
+                            [MeloMelo_GameSettings.GetAreaDifficultyMode() - 1].myEnemySlot[i];
                         ElemetStartingStats basicStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus("None");
 
-                        resistance += currentUnit.mag - currentUnit.vit * basicStats.multipler;
+                        resistance += (currentUnit.mag - currentUnit.vit) * basicStats.multipler;
                         if (resistance <= 0) resistance = 0;
                         break;
                 }
@@ -4907,27 +5337,32 @@ namespace MeloMelo_RPGEditor
                 switch (index)
                 {
                     case "Enemy":
-                        UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[i];
+                        UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[MeloMelo_GameSettings.GetAreaDifficultyMode() - 1].myEnemySlot[i];
                         ElemetStartingStats basicStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus("None");
 
-                        HP += (PlayerPrefs.HasKey("Mission_Played") ? 0 : PreSelection_Script.thisPre.get_AreaData.EnemyBaseHealth[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1])
+                        HP += (PlayerPrefs.HasKey("Mission_Played") ? 0 : PreSelection_Script.thisPre.get_AreaData.EnemyBaseHealth[MeloMelo_GameSettings.GetAreaDifficultyMode() - 1])
                             + currentUnit.HP + (int)(baseHealth * basicStats.multipler * currentUnit.vit);
                         break;
 
                     case "Character":
                         if (slot_Stats[i].icon != null)
                         {
-                            slot_Stats[i].UpdateStatsCache(false);
+                            StatsManage_Database statsData = new StatsManage_Database(slot_Stats[i].name);
+                            slot_Stats[i].UpdateCurrentStats(false);
+
                             ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
                                 slot_Stats[i].elementType == ClassBase.ElementStats.Light ? "Light" :
                                 slot_Stats[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
                                 slot_Stats[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
 
-                            float originalValue = slot_Stats[i].health + (baseHealth * baseStats.multipler * 
-                                (slot_Stats[i].vitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[i].name)));
+                            int addonsBoost = MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name);
+                            int powerMultipleBoost = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name) == 0 ? 1 : 
+                                MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
 
-                            HP += (int)originalValue + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name) +
-                            (int)originalValue * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
+                            float originalValue = statsData.GetCharacterStatus(slot_Stats[i].level).GetHealth + (baseHealth * baseStats.multipler * 
+                                ((statsData.GetCharacterStatus(slot_Stats[i].level).GetVitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[i].name) + addonsBoost) * powerMultipleBoost));
+
+                            HP += (int)originalValue;
                         }
                         break;
 
@@ -4944,18 +5379,31 @@ namespace MeloMelo_RPGEditor
             float power = 0;
             for (int id = 0; id < slot_Stats.Length; id++)
             {
-                if (classType == slot_Stats[id].name)
+                if (slot_Stats[id].icon != null && classType == slot_Stats[id].name)
                 {
-                    slot_Stats[id].UpdateStatsCache(false);
+                    StatsManage_Database getStartingStats = new StatsManage_Database(classType);
+                    slot_Stats[id].UpdateCurrentStats(false);
+
                     ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
                         slot_Stats[id].elementType == ClassBase.ElementStats.Light ? "Light" :
                         slot_Stats[id].elementType == ClassBase.ElementStats.Dark ? "Dark" :
                         slot_Stats[id].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
 
-                    power += baseStats.strength * (slot_Stats[id].strength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[id].name));
-                    power += baseStats.magic * (slot_Stats[id].magic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(slot_Stats[id].name));
-                    power += (int)(baseStats.vitality * (slot_Stats[id].vitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[id].name)));
-                    power += baseStats.multipler * baseHealth * slot_Stats[id].health;
+                    int addonsBoost = MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[id].name);
+                    int boostByMultipler = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[id].name) == 0 ? 1 :
+                        MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[id].name);
+
+                    power += baseStats.strength * ((getStartingStats.GetCharacterStatus(slot_Stats[id].level).GetStrength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[id].name) +
+                        addonsBoost) * boostByMultipler);
+
+                    power += baseStats.magic * ((getStartingStats.GetCharacterStatus(slot_Stats[id].level).GetMagic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(slot_Stats[id].name) +
+                        addonsBoost) * boostByMultipler);
+
+
+                    power += baseStats.vitality * ((getStartingStats.GetCharacterStatus(slot_Stats[id].level).GetVitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[id].name) + 
+                        addonsBoost) * boostByMultipler);
+
+                    power += baseStats.multipler * baseHealth * getStartingStats.GetCharacterStatus(slot_Stats[id].level).GetHealth;
                     return (int)power;
                 }
             }
@@ -4966,7 +5414,7 @@ namespace MeloMelo_RPGEditor
                 {
                     case "Enemy":
                         UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy
-                            [PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].myEnemySlot[unit];
+                            [MeloMelo_GameSettings.GetAreaDifficultyMode() - 1].myEnemySlot[unit];
                         ElemetStartingStats basicStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus("None");
 
                         power += currentUnit.str * basicStats.strength;
@@ -4978,16 +5426,27 @@ namespace MeloMelo_RPGEditor
                     case "Character":
                         if (slot_Stats[unit].icon != null)
                         {
-                            slot_Stats[unit].UpdateStatsCache(false);
+                            slot_Stats[unit].UpdateCurrentStats(false);
+                            StatsManage_Database getStartingStats = new StatsManage_Database(slot_Stats[unit].name);
                             ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
                                 slot_Stats[unit].elementType == ClassBase.ElementStats.Light ? "Light" :
                                 slot_Stats[unit].elementType == ClassBase.ElementStats.Dark ? "Dark" :
                                 slot_Stats[unit].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
 
-                            power += baseStats.strength * (slot_Stats[unit].strength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[unit].name));
-                            power += baseStats.magic * (slot_Stats[unit].magic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(slot_Stats[unit].name));
-                            power += (int)(baseStats.vitality * (slot_Stats[unit].vitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[unit].name)));
-                            power += baseStats.multipler * baseHealth * slot_Stats[unit].health;
+                            int addonsBoost = MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[unit].name);
+                            int boostByMultipler = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[unit].name) == 0 ? 1 :
+                                MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[unit].name);
+
+                            power += baseStats.strength * ((getStartingStats.GetCharacterStatus(slot_Stats[unit].level).GetStrength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[unit].name) +
+                                addonsBoost) * boostByMultipler);
+
+                            power += baseStats.magic * ((getStartingStats.GetCharacterStatus(slot_Stats[unit].level).GetMagic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(slot_Stats[unit].name) +
+                                addonsBoost) *  boostByMultipler);
+
+                            power += baseStats.vitality * ((getStartingStats.GetCharacterStatus(slot_Stats[unit].level).GetVitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[unit].name) +
+                                addonsBoost) *  boostByMultipler);
+
+                            power += baseStats.multipler * baseHealth * getStartingStats.GetCharacterStatus(slot_Stats[unit].level).GetHealth;
                             PlayerPrefs.SetInt("Character_OverallPower", (int)power);
                         }
                         break;
@@ -5003,7 +5462,7 @@ namespace MeloMelo_RPGEditor
         // Area Difficulty: Get All Types
         public string get_AreaDifficulty()
         {
-            switch (PlayerPrefs.GetInt("BattleDifficulty_Mode", 1))
+            switch (MeloMelo_GameSettings.GetAreaDifficultyMode())
             {
                 case 1:
                     return "Beginner";
@@ -5027,6 +5486,95 @@ namespace MeloMelo_RPGEditor
         }
     }
 
+    public class AllSkillType_Database
+    {
+        public string skillName { private set; get; }
+        public string effectName { private set; get; }
+        public enum SkillCateorgy { Primary, Secondary };
+        public SkillCateorgy skillCastType { private set; get; }
+        public enum PhaseCateorgy { OnStart, DuringPlay, OnEnd };
+        public PhaseCateorgy phase_id { private set; get; }
+        public enum CountCondition { Combo, Item, Enemy, Target, Time, HitStack, OnJudge, OnRandom, EnemyField, None };
+        public CountCondition onCountCondition { private set; get; }
+
+        private enum OnCountListing { TotalValue, CheckCount }
+        public List<int> onCountValue { private set; get; }
+
+        public AllSkillType_Database(string skillName, string effectName, string skillCateorgy, string phase_id, string onConditionType, string[] onConditionValue)
+        {
+            this.skillName = skillName;
+            this.effectName = effectName;
+            SetSkillType(skillCateorgy);
+
+            SetPhaseActive(phase_id);
+            SetConditionType(onConditionType);
+
+            onCountValue = new List<int>();
+            foreach (string singleValue in onConditionValue) onCountValue.Add(int.Parse(singleValue));
+        }
+
+        #region COMPONENT
+        private void SetSkillType(string id)
+        {
+            switch (id)
+            {
+                case "Primary":
+                    skillCastType = SkillCateorgy.Primary;
+                    break;
+
+                case "Secondary":
+                    skillCastType = SkillCateorgy.Secondary;
+                    break;
+            }
+        }
+
+        private void SetPhaseActive(string id)
+        {
+            switch (id)
+            {
+                case "OnStart":
+                    phase_id = PhaseCateorgy.OnStart;
+                    break;
+
+                case "DuringPlay":
+                    phase_id = PhaseCateorgy.DuringPlay;
+                    break;
+
+                case "OnEnd":
+                    phase_id = PhaseCateorgy.OnEnd;
+                    break;
+            }
+        }
+
+        private void SetConditionType(string id)
+        {
+            switch (id)
+            {
+                case "Combo":
+                    onCountCondition = CountCondition.Combo;
+                    break;
+
+                default:
+                    onCountCondition = CountCondition.None;
+                    break;
+            }
+        }
+        #endregion
+
+        #region MISC
+        public int GetConditionValue(int id)
+        {
+            if (id < onCountValue.ToArray().Length) return onCountValue[id];
+            else return onCountValue[0];
+        }
+        #endregion
+    }
+
+    public class SkillBuilder_Management
+    {
+
+    }
+    
     public class UnitFormation_Management
     {
         public void ClearUnit(int unit_id = -1)
@@ -5090,7 +5638,7 @@ namespace MeloMelo_RPGEditor
 
         public void WEXP_input()
         {
-            WEXP += PlayerPrefs.GetInt("BattleDifficulty_Mode", 1);
+            WEXP += MeloMelo_GameSettings.GetAreaDifficultyMode();
             PlayerPrefs.SetInt("Temp_Experience", (int)WEXP);
         }
 

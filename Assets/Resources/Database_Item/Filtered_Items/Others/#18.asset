@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4177df903b9ab8a48b39e8089ba02970, type: 3}
+  m_Name: '#18'
+  m_EditorClassIdentifier: 
+  itemName: Potential Gift Pack
+  useTypeDetail: 2
+  dataArray: '{"itemName":"2500 EXP TICKET","amount":10,"obtainableRate":21.5}/
+
+    {"itemName":"5000
+    EXP TICKET","amount":5,"obtainableRate":20.5}/
+
+    {"itemName":"2X POWER POTION","amount":5,"obtainableRate":19}/
+
+    {"itemName":"10X
+    EXP POTION","amount":5,"obtainableRate":18}/
+
+    {"itemName":"Book of Strength
+    I","amount":3,"obtainableRate":5}/
+
+    {"itemName":"Book of Power I","amount":1,"obtainableRate":4.5}/
+
+    {"itemName":"Book
+    of Wisdom I","amount":1,"obtainableRate":3.5}/
+
+    {"itemName":"Book of Strength
+    II","amount":1,"obtainableRate":3}/
+
+    {"itemName":"Book of Power II","amount":1,"obtainableRate":2}/
+
+    {"itemName":"Book
+    of Wisdom II","amount":1,"obtainableRate":1.5}/
+
+    {"itemName":"Book of Knowledge
+    I","amount":1,"obtainableRate":1}/
+
+    {"itemName":"Book of Knowledge I","amount":2,"obtainableRate":0.4}/
+
+    {"itemName":"Book
+    of Knowledge II","amount":1,"obtainableRate":0.1}/'

@@ -1,11 +1,25 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
+class MusicPreviewData
+{
+    public AudioClip track;
+    public float previewTime;
+    public int currentSelectionTrack;
+    
+    public MusicPreviewData(AudioClip track, float previewTime, int currentSelection)
+    {
+        this.track = track;
+        this.previewTime = previewTime;
+        currentSelectionTrack = currentSelection;
+    }
+}
 
 public class BGM_MusicPlayer : MonoBehaviour
 {
     private bool musicFading = false;
     private readonly float musicFadeTime = 30;
+    private MusicPreviewData musicPlayerData = null;
 
     void Start()
     {
@@ -14,47 +28,25 @@ public class BGM_MusicPlayer : MonoBehaviour
 
     void Update()
     {
-        try
+        if (musicPlayerData != null)
         {
-            if (SelectionMenu_Script.thisSelect.get_loadBGM)
+            switch (GetComponent<AudioSource>().isPlaying)
             {
-                if (!musicFading && GetComponent<AudioSource>().time >= SelectionMenu_Script.thisSelect.get_selection.get_form.PreviewTime + musicFadeTime && GetComponent<AudioSource>().isPlaying)
-                {
-                    musicFading = true;
-                    StartCoroutine(FadeMusic((int)SelectionMenu_Script.thisSelect.get_selection.get_ScrollNagivator_ProgressBar.value));
-                }
-
-                if (!GetComponent<AudioSource>().isPlaying)
-                {
-                    musicFading = false;
-                    GetComponent<AudioSource>().time = SelectionMenu_Script.thisSelect.get_selection.get_form.PreviewTime;
-                    GetVolume_Setting();
-                    GetComponent<AudioSource>().Play();
-                }
-            }
-        }
-        catch
-        {
-            try
-            {
-                if (ArenaSelection_Script.thisArena.get_loadBGM)
-                {
-                    if (!musicFading && GetComponent<AudioSource>().time >= ArenaSelection_Script.thisArena.MusicList[ArenaSelection_Script.thisArena.get_selector - 1].PreviewTime + musicFadeTime && GetComponent<AudioSource>().isPlaying)
+                case true:
+                    if (!musicFading && GetComponent<AudioSource>().time >= musicPlayerData.previewTime + musicFadeTime)
                     {
                         musicFading = true;
-                        StartCoroutine(FadeMusic(ArenaSelection_Script.thisArena.get_selector));
+                        StartCoroutine(FadeMusic(musicPlayerData.currentSelectionTrack));
                     }
+                    break;
 
-                    if (!GetComponent<AudioSource>().isPlaying)
-                    {
-                        musicFading = false;
-                        GetComponent<AudioSource>().time = ArenaSelection_Script.thisArena.MusicList[ArenaSelection_Script.thisArena.get_selector - 1].PreviewTime;
-                        GetVolume_Setting();
-                        GetComponent<AudioSource>().Play();
-                    }
-                }
+                case false:
+                    musicFading = false;
+                    GetComponent<AudioSource>().time = musicPlayerData.previewTime;
+                    GetVolume_Setting();
+                    GetComponent<AudioSource>().Play();
+                    break;
             }
-            catch { }
         }
     }
 
@@ -62,13 +54,24 @@ public class BGM_MusicPlayer : MonoBehaviour
     {
         yield return new WaitForSeconds(0.1f);
         GetComponent<AudioSource>().volume -= 0.05f;
-        try { if (GetComponent<AudioSource>().volume <= 0 || SelectionMenu_Script.thisSelect.get_selection.get_ScrollNagivator_ProgressBar.value != current) { GetComponent<AudioSource>().Stop(); } else { StartCoroutine(FadeMusic(current)); } }
-        catch { if (GetComponent<AudioSource>().volume <= 0 || ArenaSelection_Script.thisArena.get_selector != current) { GetComponent<AudioSource>().Stop(); } else { StartCoroutine(FadeMusic(current)); } }
+
+        if (GetComponent<AudioSource>().volume <= 0 || SelectionMenu_Script.thisSelect.get_selection.get_ScrollNagivator_ProgressBar.value != current)
+        { GetComponent<AudioSource>().Stop(); }
+        else { StartCoroutine(FadeMusic(current)); }
     }
 
     private void GetVolume_Setting() 
     {
         GetComponent<AudioSource>().volume = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAudioMute_ValueKey) == 1 ?
             0 : PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetBGM_ValueKey); 
+    }
+
+    public void UpdateTrackDetails(AudioClip trackData, float preview, int currentSelect)
+    {
+        GetComponent<AudioSource>().clip = trackData;
+        GetComponent<AudioSource>().time = preview;
+        GetComponent<AudioSource>().Play();
+
+        musicPlayerData = new MusicPreviewData(trackData, preview, currentSelect);
     }
 }

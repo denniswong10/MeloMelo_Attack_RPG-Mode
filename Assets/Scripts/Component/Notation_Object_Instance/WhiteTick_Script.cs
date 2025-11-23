@@ -6,6 +6,7 @@ public class WhiteTick_Script : MonoBehaviour
 {
     private float note_speed = 0;
     private bool isMarginActive = false;
+    private MarginBundlePackage.MarginType marginIndex = MarginBundlePackage.MarginType.M_Blank;
 
     private Vector3 startPos, endPos;
     private float marginOffset;
@@ -15,14 +16,16 @@ public class WhiteTick_Script : MonoBehaviour
     private double dspTime;
     private float dspTimeElpase;
 
-    // Start is called before the first frame update
-    void Start()
+    public void Setup(MarginBundlePackage.MarginType typeMargin)
     {
+        isMarginActive = false;
+        if (marginIndex >= 0) marginIndex = typeMargin;
+
         GetComponent<ParticleSystem>().Play();
         note_speed = BeatConductor.thisBeat.get_noteSpeed;
 
         // Begin tick movement
-       ObstacleEnd_Check(0.1f);
+        ObstacleEnd_Check(0.1f);
     }
 
     private void ObstacleEnd_Check(float offset)
@@ -70,7 +73,9 @@ public class WhiteTick_Script : MonoBehaviour
             {
                 // Snap to final Z position to correct any floating-point drift
                 transform.position = new Vector3(transform.position.x, transform.position.y, endPos.z + marginInitOffset);
-                Destroy(gameObject);
+
+                if (GameManager.thisManager.getInGameObjectWindow != null)
+                    GameManager.thisManager.getInGameObjectWindow.marginBundle.ReturnMagrinAlignment(marginIndex, gameObject);
             }
         }
     }
@@ -104,7 +109,9 @@ public class WhiteTick_Script : MonoBehaviour
             {
                 // Snap to target to avoid drift
                 transform.position = endPos;
-                Destroy(gameObject);
+
+                if (GameManager.thisManager.getInGameObjectWindow != null)
+                    GameManager.thisManager.getInGameObjectWindow.marginBundle.ReturnMagrinAlignment(marginIndex, gameObject);
             }
         }
     }

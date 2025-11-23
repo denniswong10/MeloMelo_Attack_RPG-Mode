@@ -6660,6 +6660,8 @@ MonoBehaviour:
   - {fileID: 3031725048659994511}
   OpenChoiceTemplate: {fileID: 5396015401577856511, guid: 0126aca7931dedc4c88ef68be64e0885,
     type: 3}
+  OpenChoiceResultUsage: {fileID: 3448111012204211273, guid: b6eee11d14f226047a97a4346c26cb27,
+    type: 3}
 --- !u!114 &1818343967
 MonoBehaviour:
   m_ObjectHideFlags: 0

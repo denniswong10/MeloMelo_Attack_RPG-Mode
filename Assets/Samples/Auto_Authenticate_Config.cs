@@ -13,11 +13,15 @@ public class Auto_Authenticate_Config : MonoBehaviour
 
     void Start()
     {
-        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_PlayerSettings.LoginType.GuestLogin)
+        try
         {
-            if (AuthenticationService.Instance.IsSignedIn) AuthenticationService.Instance.SignOut();
-            AuthenticateServerLogin();
+            if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_PlayerSettings.LoginType.GuestLogin)
+            {
+                if (AuthenticationService.Instance.IsSignedIn) AuthenticationService.Instance.SignOut();
+                AuthenticateServerLogin();
+            }
         }
+        catch { Debug.Log("Cloud Unit: Disable"); }
     }
 
     #region MAIN

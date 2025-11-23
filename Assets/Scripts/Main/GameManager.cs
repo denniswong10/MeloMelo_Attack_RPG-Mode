@@ -15,11 +15,14 @@ public class GameManager : MonoBehaviour, IGameManager
     private UnitStatusComponent enemyStatus;
     private JudgeWindowComponent judgeWindow;
     private GameplayObjectComponent gameplayWindow;
+    private InGameObject_Manager inGameObjectWindow;
+    public UnitStatusComponent get_characterStatus { get { return characterStatus; } }
 
     // Component Bundle: Get GameProperties
     public BattleProgressMeter get_progressMeter { get { return progressMeter; } }
     public JudgeWindowComponent getJudgeWindow { get { return judgeWindow; } }
     public GameplayObjectComponent getGameplayComponent { get { return gameplayWindow; } }
+    public InGameObject_Manager getInGameObjectWindow { get { return inGameObjectWindow; } }
 
     // BattleGround PlayField Size: Modify
     private BattleGroundFieldComponent playField;
@@ -53,6 +56,7 @@ public class GameManager : MonoBehaviour, IGameManager
     public GameObject Bonus_sign;
     public GameObject GameOver;
     public GameObject AutoPlayText;
+    public GameObject GamePromptAlert;
     private bool bonus_enable = true;
 
     private float NextRetreatTime = 0;
@@ -70,6 +74,7 @@ public class GameManager : MonoBehaviour, IGameManager
 
     [SerializeField] private GameObject[] characterSlotStatus;
     [SerializeField] private GameObject[] enemySlotStatus;
+    [SerializeField] private Queue<InGameMessage> inGameMessageList;
 
     // Load Gameplay UI and function
     void Start()
@@ -78,7 +83,7 @@ public class GameManager : MonoBehaviour, IGameManager
         Screen.SetResolution(1360, 768, false);
 
         //PreSet_BattleSetup();
-        //PlayerPrefs.SetInt("NoteSpeed", 4);
+        //PlayerPrefs.SetInt("NoteSpeed", 3);
         //PlayerPrefs.SetInt("InputLatency_Id", 0);
         //PlayerPrefs.SetInt("AudioLatency_Id", 0);
         //PlayerPrefs.SetString("CharacterFront", "Warrior");
@@ -91,6 +96,10 @@ public class GameManager : MonoBehaviour, IGameManager
         {
             if (JudgeCounter && PlayerPrefs.GetInt("JudgeMeter_Setup", 0) != 2) IntiJudgeCounterContent();
             else JudgeCounter.SetActive(false);
+
+            PlayerPrefs.DeleteKey("CharacterKnockOutSuccessful");
+            PlayerPrefs.DeleteKey("EnemyKnockOutSuccessful");           
+            PlayerPrefs.DeleteKey("InGameMessage");
         }
 
         // Setup components
@@ -100,6 +109,8 @@ public class GameManager : MonoBehaviour, IGameManager
         judgeWindow = new JudgeWindowComponent();
         gameplayWindow = new GameplayObjectComponent();
         playField = new BattleGroundFieldComponent();
+        inGameObjectWindow = GetComponent<InGameObject_Manager>();
+        inGameMessageList = new Queue<InGameMessage>();
 
         // Extra Setup
         Invoke("UnitStatusSlot", 0.05f);
@@ -168,6 +179,13 @@ public class GameManager : MonoBehaviour, IGameManager
         score1.ModifyScore((int)tempCount);
     }
 
+    private void SetupCharacterEntries()
+    {
+        MeloMelo_PlayEntries_Settings.AddEntriesToGamePlay(GameObject.FindGameObjectWithTag("MainCharacter"), MeloMelo_PlayEntries_Settings.PlayEntries.Character);
+        MeloMelo_PlayEntries_Settings.AddEntriesToGamePlay(GameObject.Find("Judgement Line"), MeloMelo_PlayEntries_Settings.PlayEntries.Judgement_Line);
+        MeloMelo_PlayEntries_Settings.AddEntriesToGamePlay(GameObject.FindGameObjectWithTag("ProgressBar"), MeloMelo_PlayEntries_Settings.PlayEntries.ProgressBar);
+    }
+
     // Combo Searcher: Calcuate maxCombo
     private IEnumerator SetGameSettingsAsset()
     {
@@ -178,19 +196,22 @@ public class GameManager : MonoBehaviour, IGameManager
 
         if (gameplayWindow != null)
         {
-            gameplayWindow.AddEnemyCount(PlayerPrefs.GetInt("EnemyTakeCounter_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1)));
-            gameplayWindow.AddTrapsCount(PlayerPrefs.GetInt("TrapsTakeCounter_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1)));
+            gameplayWindow.AddTotalCount(1, PlayerPrefs.GetInt("EnemyTakeCounter_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1)));
+            gameplayWindow.AddTotalCount(3, PlayerPrefs.GetInt("TrapsTakeCounter_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1)));
         }
 
         // Set HP
         try
         {
             UpdateCharacter_Health(PlayerPrefs.GetInt("Character_OverallHealth", 1), true);
-            try { UpdateEnemy_Health(PlayerPrefs.GetInt("Enemy_OverallHealth", 1) + PreSelection_Script.thisPre.get_AreaData.EnemyBaseHealth[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1], true); }
+            try { UpdateEnemy_Health(PlayerPrefs.GetInt("Enemy_OverallHealth", 1) + PreSelection_Script.thisPre.get_AreaData.EnemyBaseHealth[MeloMelo_GameSettings.GetAreaDifficultyMode() - 1], true); }
             catch { UpdateEnemy_Health(PlayerPrefs.GetInt("Enemy_OverallHealth", 1), true); }
 
             // Update Score System
             OpeningScore();
+
+            // Update Character reference
+            SetupCharacterEntries();
         }
         catch { }
     }
@@ -341,9 +362,12 @@ public class GameManager : MonoBehaviour, IGameManager
             if (!DeveloperMode)
             {
                 GameObject KO = GameObject.FindGameObjectWithTag("EnemyStatus");
-                if (KO.transform.GetChild(KO.transform.childCount - 1).gameObject.activeInHierarchy) { PlayerPrefs.SetString(BeatConductor.thisBeat.Music_Database.Title + "_SuccessBattle_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + PlayerPrefs.GetInt("BattleDifficulty_Mode", 1), "T"); WinAlert = true; }
+                if (KO.transform.GetChild(KO.transform.childCount - 1).gameObject.activeInHierarchy) { PlayerPrefs.SetString(BeatConductor.thisBeat.Music_Database.Title + "_SuccessBattle_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + MeloMelo_GameSettings.GetAreaDifficultyMode(), "T"); WinAlert = true; }
                 else { WinAlert = false; }
             }
+
+            // Marathon Final Scoring
+            if (PlayerPrefs.HasKey("MarathonPermit")) GetComponent<MeloMelo_UnitSlot_Editor>().FinalizeQuestCondition();
         }
     }
 
@@ -387,12 +411,6 @@ public class GameManager : MonoBehaviour, IGameManager
             // ScoreSystem: Display
             MeloMelo_ScoreSystem.thisSystem.UpdateScoreDisplay();
             MeloMelo_ScoreSystem.thisSystem.UpdatePointDisplay();
-        }
-
-        if (PlayerPrefs.HasKey("MarathonPermit"))
-        {
-            GetComponent<MeloMelo_UnitSlot_Editor>().UpdateQuestCondition();
-            UnitStatusSlot();
         }
     }
 
@@ -559,11 +577,9 @@ public class GameManager : MonoBehaviour, IGameManager
 
     private void CheckingRetreatStatus()
     {
-        GameObject character = GameObject.FindGameObjectWithTag("MainCharacter");
-
-        if (character != null)
+        if (MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Character) != null)
         {
-            if (character.GetComponent<Character>().get_character.getInput.GetForInputExitPlay()
+            if (MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Character).GetComponent<Character>().get_character.getInput.GetForInputExitPlay()
                 && !RetreatSuccess && BeatConductor.thisBeat.get_startNote)
             {
                 if (Time.time >= NextRetreatTime)
@@ -593,17 +609,47 @@ public class GameManager : MonoBehaviour, IGameManager
         // Raise judge with off-beat timing
         ModifyMainJudge();
 
+        // Marathon: Update Status
+        if (PlayerPrefs.HasKey("MarathonPermit"))
+        {
+            GetComponent<MeloMelo_UnitSlot_Editor>().SetQuestCondition(false);
+            UpdateUnitStatusSlot();
+        }
+
         // Update text judge counter or Create feedback on character
         if (DeveloperMode) GameObject.Find(judge_string).GetComponent<Text>().text = judge_string + ": " + Update_Counter(judge_string, false);
         else
         {
-            if (GameObject.Find("Character") != null)
+            if (MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Character) != null) // GameObject.Find("Character")
             {
-                Vector3 position = new Vector3(GameObject.Find("Character").transform.position.x, GameObject.Find("Judgement Line").transform.position.y, GameObject.Find("Judgement Line").transform.position.z);
+                Vector3 position = new Vector3(
+                    MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Character).transform.position.x, 
+                    MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Judgement_Line).transform.position.y, 
+                    MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Judgement_Line).transform.position.z
+                    );
+                // GameObject.Find("Judgement Line")
 
                 // Extra: Judgement only shown determine on settings
                 if ((PlayerPrefs.GetInt("Feedback_Display_Type_B") == 1 && judge_string != "Perfect_2") || PlayerPrefs.GetInt("Feedback_Display_Type_B") == 0)
-                    Instantiate(Resources.Load<GameObject>("Prefabs/PopUp/" + judge_string), position, Quaternion.identity);
+                {
+                    if (inGameObjectWindow != null)
+                    {
+                        GameObject popUp_target = inGameObjectWindow.judgeIndicator.GetPopUpText();
+
+                        if (popUp_target != null)
+                        {
+                            popUp_target.transform.position = position;
+                            popUp_target.GetComponent<IndicatorText_Script>().UpdateJudgementStatus(judge_string);
+                            popUp_target.SetActive(true);
+                        }
+
+                        else if (inGameObjectWindow.judgeIndicator.IsSpawnAvailable())
+                        {
+                            GameObject newPopUp = Instantiate(Resources.Load<GameObject>("Prefabs/PopUp/" + judge_string), position, Quaternion.identity);
+                            newPopUp.GetComponent<IndicatorText_Script>().UpdateJudgementStatus(judge_string);
+                        }
+                    }
+                }
             }
         }
     }
@@ -638,8 +684,8 @@ public class GameManager : MonoBehaviour, IGameManager
     // Update Auto: Character Health
     public void UpdateCharacter_Health(int amount, bool setHP)
     {
-        GameObject slotStatus = GameObject.FindGameObjectWithTag("PartyStatus");
-        GameObject characterHealth = GameObject.FindGameObjectWithTag("Character_Health");
+        GameObject slotStatus = characterSlotStatus[PlayerPrefs.HasKey("MarathonPermit") ? 1 : 0];
+        Text characterHealth = characterSlotStatus[0].transform.GetChild(1).GetChild(0).GetChild(3).GetComponent<Text>();
 
         if (slotStatus != null)
         {
@@ -677,12 +723,37 @@ public class GameManager : MonoBehaviour, IGameManager
 
             if (characterHealth != null)
             {
-                characterHealth.GetComponent<Text>().text = ((characterStatus.get_maxHealth == 1) ? "0/0" :
+                characterHealth.text = ((characterStatus.get_maxHealth == 1) ? "0/0" :
                    MeloMelo_GameSettings.GetUnitDisplayHealth(characterStatus.get_health, characterStatus.get_maxHealth,
                         MeloMelo_PlayerSettings.GetUnitHealthOnCharacter_ValueKey));
 
-                if (characterStatus.get_health <= 0 && GameObject.Find("Character").GetComponent<Character>().stats.get_name != "NA" && !RetreatSuccess)
-                    { slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.SetActive(true); Game_over(); }
+                if (characterStatus.get_health <= 0 && MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Character).GetComponent<Character>().stats.get_name != "NA" && !RetreatSuccess)
+                {
+                    // Item Usage: For health pot
+                    int boostedLifePoint = MeloMelo_ItemUsage_Settings.GetExtraBoostLifePoint(PlayerPrefs.GetString("CharacterFront", "None"));
+
+                    if (boostedLifePoint > 0)
+                    {
+                        GameHealingPot(boostedLifePoint);
+                    }
+                    else
+                    {
+                        slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.SetActive(true);
+
+                        if (slotStatus.transform.GetChild(1).GetChild(0).GetComponent<Slider>() != null)
+                            slotStatus.transform.GetChild(1).GetChild(0).GetComponent<Slider>().value = 0;
+
+                        if (!PlayerPrefs.HasKey("CharacterKnockOutSuccessful"))
+                        {
+                            AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/Defeat"), new Vector3(0, 0, -10), PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetSE_ValueKey));
+                            PlayerPrefs.SetInt("CharacterKnockOutSuccessful", 1);
+                            PromptInGameMessage("BATTLE CONDITION", "Character KnockOut !", "Your character is unable to continue this battle. This battle will end here instead.");
+
+                            // Get game over screen
+                            Invoke("Game_over", 2);
+                        }
+                    }
+                }
                 else
                     if (slotStatus.transform.GetChild(1).GetChild(0).GetComponent<Slider>() != null)
                         slotStatus.transform.GetChild(1).GetChild(0).GetComponent<Slider>().value = characterStatus.get_health;
@@ -690,11 +761,25 @@ public class GameManager : MonoBehaviour, IGameManager
         }
     }
 
+    private void GameHealingPot(int totalUsage)
+    {
+        // Life Pot: Usage up to 0 to 100
+        int usageLifePointPlan = Mathf.Clamp(totalUsage, 0, 100);
+        float calculateLifePoint = characterStatus.get_maxHealth / 100 * usageLifePointPlan;
+
+        UpdateCharacter_Health((int)calculateLifePoint, false);
+        SpawnDamageIndicator(transform.position, 1, (int)calculateLifePoint);
+        MeloMelo_ItemUsage_Settings.UseExtraLifePoint(PlayerPrefs.GetString("CharacterFront", "None"), usageLifePointPlan);
+
+        // Added message prompt
+        PromptInGameMessage("ITEM USAGE", "Recovering Health Point", "Your character used healing potion as character health has been reduced to 0.");
+    }
+
     // Update Auto: Enemy Health
     public void UpdateEnemy_Health(int amount, bool setHP)
     {
-        GameObject slotStatus = GameObject.FindGameObjectWithTag("EnemyStatus");
-        GameObject enemyHealth = GameObject.FindGameObjectWithTag("Enemy_Health");
+        GameObject slotStatus = enemySlotStatus[PlayerPrefs.HasKey("MarathonPermit") ? 1 : 0];
+        Text enemyHealth = enemySlotStatus[0].transform.GetChild(0).GetChild(0).GetChild(3).GetComponent<Text>();
 
         if (slotStatus != null)
         {
@@ -714,13 +799,21 @@ public class GameManager : MonoBehaviour, IGameManager
 
             if (enemyHealth != null)
             {
-                enemyHealth.GetComponent<Text>().text = MeloMelo_GameSettings.GetUnitDisplayHealth(
+                enemyHealth.text = MeloMelo_GameSettings.GetUnitDisplayHealth(
                     enemyStatus.get_health, enemyStatus.get_maxHealth, MeloMelo_PlayerSettings.GetUnitHealthOnEnemy_ValueKey);
 
                 if (enemyStatus.get_health <= 0)
                 {
                     slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.SetActive(true);
                     OverkillBonus_Display(-enemyStatus.get_knockOutValue, enemyStatus.get_maxHealth);
+                    if (HealthBar_E.activeInHierarchy) HealthBar_E.GetComponent<Slider>().value = 0;
+
+                    if (!PlayerPrefs.HasKey("EnemyKnockOutSuccessful"))
+                    {
+                        AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/Victory"), new Vector3(0, 0, -10), PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetSE_ValueKey));
+                        PlayerPrefs.SetInt("EnemyKnockOutSuccessful", 1);
+                        PromptInGameMessage("BATTLE CONDITION", "KnockOut Successful !", "Technical Score will be double on your next enemy or enemy-attack hits.");
+                    }
                 }
                 else
                 {
@@ -731,6 +824,44 @@ public class GameManager : MonoBehaviour, IGameManager
         }
     }
 
+    struct InGameMessage
+    {
+        public string topic;
+        public string title;
+        public string description;
+    }
+
+    public void PromptInGameMessage(string topic, string title, string description)
+    {
+        InGameMessage messageOnReceive = new InGameMessage();
+        messageOnReceive.topic = topic;
+        messageOnReceive.title = title;
+        messageOnReceive.description = description;
+
+        inGameMessageList.Enqueue(messageOnReceive);
+        if (!PlayerPrefs.HasKey("InGameMessage")) StartCoroutine(GetInGameMessageCalled());
+    }
+
+    private IEnumerator GetInGameMessageCalled()
+    {
+        PlayerPrefs.SetInt("InGameMessage", 1);
+
+        while (inGameMessageList.Count > 0)
+        {
+            InGameMessage currentMessage = inGameMessageList.Dequeue();
+
+            GamePromptAlert.SetActive(true);
+            GamePromptAlert.transform.GetChild(0).GetComponent<Text>().text = currentMessage.title;
+            GamePromptAlert.transform.GetChild(1).GetComponent<Text>().text = currentMessage.description;
+            GamePromptAlert.transform.GetChild(2).GetComponentInChildren<Text>().text = currentMessage.topic;
+            yield return new WaitForSeconds(2.5f);
+        }
+
+        PlayerPrefs.DeleteKey("InGameMessage");
+        GamePromptAlert.SetActive(false);       
+    }
+
+    // Spawn damage pop-up text in-game
     public void SpawnDamageIndicator(Vector3 target, int typeOfTarget, int damage)
     {
         bool characterIndicator = typeOfTarget == 1 && PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorA_ValueKey, 1) == 1;
@@ -746,11 +877,29 @@ public class GameManager : MonoBehaviour, IGameManager
 
             if (characterVisibleValue || enemyVisibleValue)
             {
-                GameObject damageIndicator = Instantiate(Resources.Load<GameObject>("Prefabs/Floating Damage/DamageIndicator"));
-                damageIndicator.GetComponent<TextMesh>().color = damage == 0 ? Color.grey : damage < 0 ? new Color32(125, 36, 5, 255) : new Color32(50, 137, 50, 255);
-                damageIndicator.GetComponent<TextMesh>().text = damage == 0 ? "Miss" : damage > 0 ? "+" + damage.ToString() : damage.ToString();
-                damageIndicator.transform.position = typeOfTarget == 1 ? new Vector3(target.x, 0, -3.5f) : new Vector3(target.x, 2.5f, 0);
-                Destroy(damageIndicator, 0.5f);
+                if (inGameObjectWindow != null)
+                {
+                    GameObject isDamageIndicator = inGameObjectWindow.damageIndicator.GetPopUpText();
+
+                    if (isDamageIndicator != null)
+                    {
+                        isDamageIndicator.GetComponent<TextMesh>().color = damage == 0 ? Color.grey : damage < 0 ? new Color32(125, 36, 5, 255) : new Color32(50, 137, 50, 255);
+                        isDamageIndicator.GetComponent<TextMesh>().text = damage == 0 ? "Miss" : damage > 0 ? "+" + damage.ToString() : damage.ToString();
+                        isDamageIndicator.transform.position = typeOfTarget == 1 ? new Vector3(target.x, 0, -3.5f) : new Vector3(target.x, 2.5f, 0);
+                        isDamageIndicator.GetComponent<DamageIndicator_Script>().Setup(2);
+                        isDamageIndicator.SetActive(true);
+                    }
+
+                    else if (inGameObjectWindow.damageIndicator.IsSpawnAvailable())
+                    {
+                        GameObject damageIndicator = Instantiate(Resources.Load<GameObject>("Prefabs/Floating Damage/DamageIndicator"));
+                        damageIndicator.GetComponent<TextMesh>().color = damage == 0 ? Color.grey : damage < 0 ? new Color32(125, 36, 5, 255) : new Color32(50, 137, 50, 255);
+                        damageIndicator.GetComponent<TextMesh>().text = damage == 0 ? "Miss" : damage > 0 ? "+" + damage.ToString() : damage.ToString();
+
+                        damageIndicator.transform.position = typeOfTarget == 1 ? new Vector3(target.x, 0, -3.5f) : new Vector3(target.x, 2.5f, 0);
+                        damageIndicator.GetComponent<DamageIndicator_Script>().Setup(2);
+                    }
+                }
             }
         }
     }
@@ -776,9 +925,14 @@ public class GameManager : MonoBehaviour, IGameManager
 
     private void BattleProgress_Display(float progressValue, Color border)
     {
-        GameObject.Find("ProgressBar").GetComponent<Slider>().value = progressValue;
-        GameObject.FindGameObjectWithTag("ProgressBar").GetComponent<Text>().text = progressValue.ToString("0") + "%";
-        GameObject.Find("ProgressBar").transform.GetChild(1).GetChild(0).GetComponent<Image>().color = border;
+        if (MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.ProgressBar) != null)
+        {
+            MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.ProgressBar).GetComponent<Slider>().value = progressValue;
+            MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.ProgressBar).transform.GetChild(3).GetComponent<Text>().text = progressValue.ToString("0") + "%";
+            MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.ProgressBar).transform.GetChild(1).GetChild(0).GetComponent<Image>().color = border;
+        }
+        else
+            Debug.Log("Progress Bar: No reference has been found yet...");
     }
     #endregion
 
@@ -839,8 +993,26 @@ public class GameManager : MonoBehaviour, IGameManager
 
     private void DisplayCounterParticle_FastNLate(int offbeat_judge)
     {
-        if (GameObject.FindGameObjectWithTag("MainCharacter") != null && offbeat_judge < JudgeCounterParticle.Length)
-            Instantiate(JudgeCounterParticle[offbeat_judge], GameObject.FindGameObjectWithTag("MainCharacter").transform.position, Quaternion.identity);
+        if (MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Character) != null && offbeat_judge < JudgeCounterParticle.Length)
+        {
+            if (inGameObjectWindow != null)
+            {
+                GameObject marginError_PopUp = inGameObjectWindow.judgeIndicator.GetPopUpText();
+
+                if (marginError_PopUp != null)
+                {
+                    marginError_PopUp.transform.position = MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Character).transform.position;
+                    marginError_PopUp.GetComponent<IndicatorText_Script>().UpdateMarginErrorStatus(offbeat_judge);
+                    marginError_PopUp.SetActive(true);
+                }
+
+                else if (inGameObjectWindow.judgeIndicator.IsSpawnAvailable())
+                {
+                    GameObject newPopUp = Instantiate(JudgeCounterParticle[offbeat_judge], MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Character).transform.position, Quaternion.identity);
+                    newPopUp.GetComponent<IndicatorText_Script>().UpdateMarginErrorStatus(offbeat_judge);
+                }
+            }
+        }
     }
 
     private bool Feeback_Settings_Filter(int mainJudge, int subJudge)
@@ -943,8 +1115,6 @@ public class GameManager : MonoBehaviour, IGameManager
 
     private void UnitStatusSlot()
     {
-        string[] slot_key = { "PartyStatus", "EnemyStatus" };
-
         // Setup character
         for (int currentSlot = 0; currentSlot < characterSlotStatus.Length; currentSlot++)
             characterSlotStatus[currentSlot].SetActive((PlayerPrefs.HasKey("MarathonPermit") ? 1 : 0) == currentSlot);
@@ -953,17 +1123,21 @@ public class GameManager : MonoBehaviour, IGameManager
         for (int currentSlot = 0; currentSlot <  enemySlotStatus.Length; currentSlot++)
             enemySlotStatus[currentSlot].SetActive((PlayerPrefs.HasKey("MarathonPermit") ? 1 : 0) == currentSlot);
 
+        Invoke("UpdateUnitStatusSlot", 0.05f);
+    }
+
+    private void UpdateUnitStatusSlot()
+    {       
         // Action slot status
         if (PlayerPrefs.HasKey("MarathonPermit"))
         {
-            for (int index = 0; index < slot_key.Length; index++)
-            {
-                GameObject slot = GameObject.FindGameObjectWithTag(slot_key[index]);
-                slot.transform.GetChild(slot.transform.childCount - 1).GetComponent<Text>().text = 
-                    GetComponent<MeloMelo_UnitSlot_Editor>().GetMarathonQuestSlot(index);
-                slot.transform.GetChild(1).GetChild(0).GetComponent<RawImage>().texture = 
-                    GetComponent<MeloMelo_UnitSlot_Editor>().GetMarathonProfileIcon(index);
-            }
+            // Character
+            characterSlotStatus[1].transform.GetChild(characterSlotStatus[1].transform.childCount - 1).GetComponent<Text>().text = GetComponent<MeloMelo_UnitSlot_Editor>().GetMarathonStageIndicator();
+            characterSlotStatus[1].transform.GetChild(1).GetChild(0).GetComponent<RawImage>().texture = GetComponent<MeloMelo_UnitSlot_Editor>().GetMarathonProfileIcon(0);
+
+            // Enemy
+            enemySlotStatus[1].transform.GetChild(enemySlotStatus[1].transform.childCount - 1).GetComponent<Text>().text = GetComponent<MeloMelo_UnitSlot_Editor>().GetMarathonQuestCheckerIndicator();
+            enemySlotStatus[1].transform.GetChild(1).GetChild(0).GetComponent<RawImage>().texture = GetComponent<MeloMelo_UnitSlot_Editor>().GetMarathonProfileIcon(1);
         }
     }
 

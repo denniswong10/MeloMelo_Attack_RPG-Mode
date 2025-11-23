@@ -13,6 +13,7 @@ public class StartMenu_Script : MonoBehaviour
     [SerializeField] private Animator GameTitle_Background;
     [SerializeField] private Text startEnable;
     [SerializeField] private GameObject GameLoader_Icon;
+    private GameObject LoadingScreen = null;
 
     [Header("Game Application")]
     [SerializeField] private int seasonOutput;
@@ -50,7 +51,7 @@ public class StartMenu_Script : MonoBehaviour
     // Transition --> From StartMenu_Transition
     void Update()
     {
-        if (isStartEnable) 
+        if (isStartEnable)
             return;
 
         inputTimer += Time.deltaTime;
@@ -116,6 +117,7 @@ public class StartMenu_Script : MonoBehaviour
 
     private void CheckParemterData_Connect()
     {
+        LoadAllInGameAsset();
         ConnectionAlert.SetActive(true);
     }
 
@@ -126,7 +128,7 @@ public class StartMenu_Script : MonoBehaviour
 
         GetLoaderDisplay(
             loadingText, 3,
-            Application.internetReachability != NetworkReachability.NotReachable ? "CheckParameterData" : "CheckParemterData_Connect"
+            (Application.internetReachability != NetworkReachability.NotReachable && PlayerPrefs.GetString("GameLatest_Update", string.Empty) != string.Empty) ? "CheckParameterData" : "CheckParemterData_Connect"
         );
     }
     #endregion
@@ -135,6 +137,11 @@ public class StartMenu_Script : MonoBehaviour
     public void SkipUpdateContent()
     {
         StartCoroutine(GetGateWayScene());
+    }
+
+    public void SkipAndConnectOffline()
+    {
+        PlayerPrefs.DeleteKey("AccountSync");
     }
 
     public void GetUpdateContent()
@@ -166,8 +173,10 @@ public class StartMenu_Script : MonoBehaviour
     #region COMPONENT (Scene Transition)
     private IEnumerator GetGateWayScene()
     {
-        yield return StartCoroutine(CheckingForExtensionContent());
-        yield return new WaitForSeconds(1);
+        if (MeloMelo_PlayerSettings.GetLocalUserAccount()) yield return StartCoroutine(CheckingForExtensionContent());
+        yield return StartCoroutine(CheckingForAreaLoaded());
+        yield return StartCoroutine(CheckingForItemLoaded());
+        yield return StartCoroutine(CheckingForStoryProgress());
 
         AsyncOperation loadScene = SceneManager.LoadSceneAsync("ServerGateway");
         while (!loadScene.isDone)
@@ -196,21 +205,21 @@ public class StartMenu_Script : MonoBehaviour
     {
         MeloMelo_GameSettings.GetScoreStructureSetup();
         MeloMelo_GameSettings.GetStatusRemarkStructureSetup();
+        MeloMelo_GameSettings.GetZoneRewardSetup();
         MeloMelo_ExtensionContent_Settings.LoadStartingStats();
     }
 
     private IEnumerator CheckingForExtensionContent()
     {
-        GameObject preLoaded_loadingUI = Resources.Load<GameObject>("Prefabs/LoadingUI");
-        GameObject loadingUI = Instantiate(preLoaded_loadingUI, transform);
-        loadingUI.GetComponent<LoadingContent_Script>().NowLoading("Checking for content been loaded.\n Stay connected through the internet.This \n will take a while.");
+        // Loading component: Text loader
+        GetLoadingContent("Checking for content been loaded.\n Stay connected through the internet. This \n will take a while.");
 
         // Load: Marathon Content
         string jsonMarathonContent = PlayerPrefs.GetString("JSON_Custom_Marathon_Challenge", string.Empty);
 
         Task runMarathonContent = Task.Run(() =>
         {
-            if (jsonMarathonContent != string.Empty)
+            if (jsonMarathonContent.Trim('{', '}') != string.Empty)
             {
                 MeloMelo_ExtensionContent_Settings.marathonListing = new CustomMarathonInfo().GetArrays(jsonMarathonContent);
                 MeloMelo_ExtensionContent_Settings.totalMarathonCount = MeloMelo_ExtensionContent_Settings.marathonListing.data.Length;
@@ -227,7 +236,7 @@ public class StartMenu_Script : MonoBehaviour
 
         Task runMarathonExchange = Task.Run(() =>
         {
-            if (jsonMarathonExchange != string.Empty)
+            if (jsonMarathonExchange.Trim('{', '}') != string.Empty)
             {
                 MarathonExchangeArray exchangeArray = new MarathonExchangeArray().GetExchangeList(jsonMarathonExchange);
                 MeloMelo_Economy.exchangeContentOfMarathon = new List<MarathonExchangeContent>();
@@ -238,10 +247,175 @@ public class StartMenu_Script : MonoBehaviour
         });
 
         yield return new WaitUntil(() => runMarathonExchange.IsCompleted);
-        Debug.Log("Total Exchange Content (Marathon) : " + MeloMelo_Economy.exchangeContentOfMarathon.ToArray().Length + " Loaded!");
+        Debug.Log("Total Exchange Content (Marathon) : " + (MeloMelo_Economy.exchangeContentOfMarathon != null ? MeloMelo_Economy.exchangeContentOfMarathon.ToArray().Length : 0) + " Loaded!");
 
         yield return new WaitForSeconds(1);
-        loadingUI.GetComponent<LoadingContent_Script>().DoneLoading();
+        GetLoadingCompleted();
+    }
+
+    private IEnumerator CheckingForItemLoaded()
+    {
+        // Loading component: Text loader
+        GetLoadingContent("Loading item into the game. The content might be big as content will grow overtime.\n This will take a while.");
+
+        int itemCount = 1;
+        MeloMelo_GameSettings.preloaded_itemListing = new List<ItemData>();
+
+        while (MeloMelo_GameSettings.preloaded_itemListing != null)
+        {
+            ResourceRequest itemRequest = Resources.LoadAsync<ItemData>("Database_Item/#" + itemCount);
+            yield return new WaitUntil(() => itemRequest.isDone);
+
+            ItemData itemRetrieved = itemRequest.asset as ItemData;
+            if (itemRetrieved != null) { itemCount++; MeloMelo_GameSettings.preloaded_itemListing.Add(itemRetrieved); }
+            else break;
+        }
+
+        GetLoadingCompleted();
+        Debug.Log("Total Item Content : " + MeloMelo_GameSettings.preloaded_itemListing.ToArray().Length + " Loaded!");
+    }
+
+    private IEnumerator CheckingForAreaLoaded()
+    {
+        // Loading component: Text loader
+        GetLoadingContent("Loading battle area into the game. The world might be expanding in the future.\n This will take ages to load.");
+
+        MeloMelo_AreaControl_Settings.OpenAreaControlToGame();
+        int currentAreaCount = 0;
+        AreaInfo loadedArea = null;
+
+        for (int currentSeason = 0; currentSeason < seasonOutput + 1; currentSeason++)
+        {
+            do
+            {
+                currentAreaCount++;
+                ResourceRequest areaToBeLoaded = Resources.LoadAsync<AreaInfo>("Database_Area/Season" + currentSeason + "/A" + currentAreaCount);
+                yield return new WaitUntil(() => areaToBeLoaded.isDone);
+
+                loadedArea = areaToBeLoaded.asset as AreaInfo;
+                if (loadedArea != null) MeloMelo_AreaControl_Settings.LoadAreaToGame(loadedArea);
+            }
+            while (loadedArea != null);
+
+            currentAreaCount = 0;
+        }
+
+        GetLoadingCompleted();
+        Debug.Log("Total Area Setup : " + MeloMelo_AreaControl_Settings.GetAreaFromLoadGame().Length + " Loaded!");
+    }
+
+    private IEnumerator CheckingForStoryProgress()
+    {
+        // Loading component: Text loader
+        GetLoadingContent("Getting story progress ready to restore.\n This will take a while.");
+
+        MeloMelo_Adventure.allAdventureRouteData = new List<StoryProgressData>();
+        string[] storyType = { "Event Story", "Main Story" };
+        string[] storyDirectory = { "Event_Area_", "Main_Area_" };
+        List<StoryInfo> mainStoryInfo = new List<StoryInfo>();
+        List<StoryInfo> eventStoryInfo = new List<StoryInfo>();
+
+        ResourceRequest requestForStoryInfo;
+        int totalCountInfo = 1;
+
+        for (int storyId = 0; storyId < storyType.Length; storyId++)
+        {
+            while (true)
+            {
+                requestForStoryInfo = Resources.LoadAsync<StoryInfo>("Database_Story/" + storyType[storyId] + "/" + storyDirectory[storyId] + totalCountInfo);
+                yield return new WaitUntil(() => requestForStoryInfo.isDone);
+
+                StoryInfo info = requestForStoryInfo.asset as StoryInfo;
+                totalCountInfo++;
+
+                if (info != null)
+                {
+                    switch (storyId)
+                    {
+                        case 1:
+                            mainStoryInfo.Add(info);
+                            break;
+
+                        default:
+                            eventStoryInfo.Add(info);
+                            break;
+                    }
+                }
+                else
+                    break;
+            }
+
+            int totalCount = storyId == 0 ? eventStoryInfo.ToArray().Length : mainStoryInfo.ToArray().Length;
+            Debug.Log("Load Completed: " + storyType[storyId] + " backup of " + totalCount + " have been found");
+            totalCountInfo = 1;
+        }
+        
+        // Load main story to game directory
+        if (mainStoryInfo != null && mainStoryInfo.ToArray().Length > 0)
+        {
+            foreach (StoryInfo storyData in mainStoryInfo)
+            {
+                StoryProgressData progress = new StoryProgressData();
+                progress.title = storyData.StoryTitle;
+                progress.adventure_type = 1;
+                progress.routeId_listing = new List<int>();
+
+                for (int stage = 0; stage < storyData.Stage.Length; stage++)
+                {
+                    foreach (SlotQuestLog info in storyData.Stage[stage].myQuestLog)
+                    {
+                        progress.routeId_listing.Add(info.id);
+                    }
+                }
+
+                MeloMelo_Adventure.allAdventureRouteData.Add(progress);
+            }
+        }
+
+        // Load event story to game directory
+        if (eventStoryInfo != null && eventStoryInfo.ToArray().Length > 0)
+        {
+            foreach (StoryInfo storyData in eventStoryInfo)
+            {
+                StoryProgressData progress = new StoryProgressData();
+                progress.title = storyData.StoryTitle;
+                progress.adventure_type = 0;
+                progress.routeId_listing = new List<int>();
+
+                for (int stage = 0; stage < storyData.Stage.Length; stage++)
+                {
+                    foreach (SlotQuestLog info in storyData.Stage[stage].myQuestLog)
+                    {
+                        progress.routeId_listing.Add(info.id);
+                    }
+                }
+
+                MeloMelo_Adventure.allAdventureRouteData.Add(progress);
+            }
+        }
+
+        yield return new WaitForSeconds(1);
+        GetLoadingCompleted();
+    }
+    #endregion
+
+    #region MISC 
+    private void GetLoadingContent(string loading_text)
+    {
+        if (LoadingScreen == null)
+        {
+            GameObject preLoaded_loadingUI = Resources.Load<GameObject>("Prefabs/LoadingUI");
+            GameObject loadingUI = Instantiate(preLoaded_loadingUI, transform);
+            LoadingScreen = loadingUI;
+        }
+
+        LoadingScreen.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+        LoadingScreen.GetComponent<LoadingContent_Script>().NowLoading(loading_text);
+    }
+
+    private void GetLoadingCompleted()
+    {
+        if (LoadingScreen != null) LoadingScreen.GetComponent<LoadingContent_Script>().DoneLoading();
     }
     #endregion
 }

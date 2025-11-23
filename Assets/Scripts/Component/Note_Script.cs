@@ -4,7 +4,7 @@ using MeloMelo_PlayerManagement;
 
 public class Note_Script : MonoBehaviour
 {
-    private bool isHit = false;
+    private bool isHit;
     public bool isNotationHit { get { return isHit; } }
 
     public int note_index;
@@ -24,12 +24,21 @@ public class Note_Script : MonoBehaviour
     private bool notationTimeOut = false;
     private bool notationExpired = false;
     private float noteTimeToNextHit;
+    private int noteBasicIndex;
+    public int get_noteBasicIndex { get { return noteBasicIndex; } }
 
-    void Start()
+    private float waitTillsCacheEnds;
+    public float get_waitTillsCacheEnds { get { return waitTillsCacheEnds; } }
+
+    void Update()
     {
-        // Options:
-        GetComponent<Notation_Visual_Script>().enabled = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAirGuide_ValueKey) == 0;
-        GetComponent<Notation_Motion_Script>().UpdateMotionBehaviour(PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetFacnyMovement_ValueKey) == 1);
+        if (waitTillsCacheEnds > 0 && Time.time > waitTillsCacheEnds)
+        {
+            waitTillsCacheEnds = -1;
+
+            if (GameManager.thisManager.getInGameObjectWindow != null)
+                GameManager.thisManager.getInGameObjectWindow.notationBundle.ReturnNotationInBundle(noteBasicIndex, gameObject);
+        }
     }
 
     #region SETUP (Advance)
@@ -41,13 +50,19 @@ public class Note_Script : MonoBehaviour
             case CharacterSettings.PICKUP_TYPE.ITEM:
             case CharacterSettings.PICKUP_TYPE.ITEM3:
             case CharacterSettings.PICKUP_TYPE.TRAP:
-                Destroy(gameObject);
+                AddWaitCacheEnds(false, BeatConductor.thisBeat.get_BPM_Calcuate);
                 break;
 
             default:
-                if (note_index != 3) Destroy(gameObject);
+                if (note_index != 3) AddWaitCacheEnds(false, BeatConductor.thisBeat.get_BPM_Calcuate);
                 break;
         }
+    }
+
+    public void AddWaitCacheEnds(bool active, float cacheTimeOut = -1)
+    {
+        gameObject.SetActive(active);
+        waitTillsCacheEnds = Time.time + cacheTimeOut;
     }
     #endregion
 
@@ -58,6 +73,23 @@ public class Note_Script : MonoBehaviour
         bool checkForHit = isHit;
         if (!checkForHit) isHit = true;
         return checkForHit;
+    }
+
+    public void Respawn(int index) 
+    {
+        preJudgedNote = -1;
+        preOffBeat = -1;
+        waitTillsCacheEnds = -1;
+
+        notationTimeOut = false;
+        notationExpired = false;
+
+        noteBasicIndex = index;
+        isHit = false;
+
+        // Options:
+        GetComponent<Notation_Visual_Script>().enabled = PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAirGuide_ValueKey) == 0;
+        GetComponent<Notation_Motion_Script>().UpdateMotionBehaviour(PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetFacnyMovement_ValueKey) == 1);
     }
 
     public void Despawn() { ClearOfCompletedCycle(); }
@@ -86,6 +118,9 @@ public class Note_Script : MonoBehaviour
                 0 : PlayerPrefs.GetFloat(MeloMelo_PlayerSettings.GetSE_ValueKey);
 
             AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/EnemyAttack"), new Vector3(0, 0, -10f), volume);
+
+            // Add traps count
+            GameManager.thisManager.getGameplayComponent.AddTrapsCount();
         }
 
         ClearOfCompletedCycle();
@@ -105,7 +140,7 @@ public class Note_Script : MonoBehaviour
 
     public void GetTimeOutNotation()
     {
-        if (notationTimeOut && !notationExpired)
+        if (notationTimeOut && !notationExpired) //&& gameObject.activeInHierarchy)
         {
             if (Time.time >= noteTimeToNextHit) NotationHitExpired();
 

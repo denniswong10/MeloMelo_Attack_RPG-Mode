@@ -55,8 +55,12 @@ public class ResultMenu_Script : MonoBehaviour
         rateZone = GetComponent<RatePointToggleZone>();
 
         // Transfer score data for result 
-        highscore = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_score" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0);
-        techScore = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_techScore" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + PlayerPrefs.GetInt("BattleDifficulty_Mode", 1), 0);
+        highscore = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_score" + MeloMelo_GameSettings.GetTrackDifficultyMode(), 0);
+        techScore = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_techScore" + MeloMelo_GameSettings.GetTrackDifficultyMode() + MeloMelo_GameSettings.GetAreaDifficultyMode(), 0);
+
+        // Clear cache
+        MeloMelo_UnitData_Settings.SetSuccessPickItem(0);
+        MeloMelo_PlayEntries_Settings.ResetAll();
 
         LoadAllResult();
         UpdateMusicInfo();
@@ -82,7 +86,7 @@ public class ResultMenu_Script : MonoBehaviour
     void UpdateMusicInfo()
     {
         int levelMeter = (int)PlayerPrefs.GetFloat("difficultyLevel_play2", 0);
-        string level = (PlayerPrefs.GetInt("DifficultyLevel_valve", 1) == 1 ? PlayerPrefs.GetString("Difficulty_Normal_selectionTxt", "?") : (PlayerPrefs.GetInt("DifficultyLevel_valve", 1) == 2 ? PlayerPrefs.GetString("Difficulty_Hard_selectionTxt", "?") : PlayerPrefs.GetString("Difficulty_Ultimate_selectionTxt", "?")));
+        string level = (MeloMelo_GameSettings.GetTrackDifficultyMode() == 1 ? PlayerPrefs.GetString("Difficulty_Normal_selectionTxt", "?") : (MeloMelo_GameSettings.GetTrackDifficultyMode() == 2 ? PlayerPrefs.GetString("Difficulty_Hard_selectionTxt", "?") : PlayerPrefs.GetString("Difficulty_Ultimate_selectionTxt", "?")));
 
         if (!GameManager.thisManager.DeveloperMode)
         {
@@ -96,7 +100,7 @@ public class ResultMenu_Script : MonoBehaviour
             Result_Title.text = BeatConductor.thisBeat.Music_Database.Title;
 
             // Info: Difficulty Status
-            switch (PlayerPrefs.GetInt("DifficultyLevel_valve"))
+            switch (MeloMelo_GameSettings.GetTrackDifficultyMode())
             {
                 case 1:
                     string[] difficultyArray = { "[NORMAL PLUS] Lv. ", "[NORMAL] Lv.  " };
@@ -154,6 +158,9 @@ public class ResultMenu_Script : MonoBehaviour
                     MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(stats.slot_Stats[i].name) * PlayerPrefs.GetInt("Temp_Experience", 0) :
                         PlayerPrefs.GetInt("Temp_Experience", 0));
 
+            GameObject characterInfoPlate = GameObject.Find("Slot" + (i + 1) + "_CharInfo");
+            int currentCharacterLevel = stats.slot_Stats[i].level;
+
             if (stats.slot_Stats[i].name != "None")
             {
                 stats.slot_Stats[i].experience += PlayerPrefs.HasKey("MarathonPermit") ||
@@ -182,12 +189,16 @@ public class ResultMenu_Script : MonoBehaviour
 
                 GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(1).GetComponent<Image>().enabled = true;
                 GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(1).GetComponent<Image>().sprite = stats.slot_Stats[i].icon;
+
+                characterInfoPlate.transform.GetChild(6).gameObject.SetActive(MeloMelo_ExtraStats_Settings.GetRebirthPoint(stats.slot_Stats[i].name) >= 1);
+                characterInfoPlate.transform.GetChild(6).GetComponentInChildren<Text>().text = MeloMelo_ExtraStats_Settings.GetRebirthPoint(stats.slot_Stats[i].name).ToString();
+                characterInfoPlate.transform.GetChild(7).gameObject.SetActive(stats.slot_Stats[i].level > currentCharacterLevel);
             }
         }
 
         if (GameManager.thisManager.get_WinAlert) { GameObject.Find("Battle Status").GetComponent<Text>().text = "BATTLE SUCCESS!"; }
-        else { GameObject.Find("Battle Status").GetComponent<Text>().text = "BATTLE FAILED!"; }
-
+        else { GameObject.Find("Battle Status").GetComponent<Text>().text = "BATTLE DRAW!"; }
+         
         GameObject.Find("Score2").GetComponent<Text>().text = "ADVENTURER RANK: " + (PlayerPrefs.GetInt("UpperScoreTech", 0) == 0 ? "NO STAR" :
             PlayerPrefs.GetInt("UpperScoreTech", 0) + " STAR");
         //+ " (" + TechScore_Ref() + ")";
@@ -259,12 +270,12 @@ public class ResultMenu_Script : MonoBehaviour
 
     private string Result_GetPreviousScore()
     {
-        return PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_score" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0).ToString("0000000");
+        return PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_score" + MeloMelo_GameSettings.GetTrackDifficultyMode(), 0).ToString("0000000");
     }
 
     private string Result_GetCurrentPoint(bool highscore)
     {
-        string pointTitleName = BeatConductor.thisBeat.Music_Database.Title + "_point" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1);
+        string pointTitleName = BeatConductor.thisBeat.Music_Database.Title + "_point" + MeloMelo_GameSettings.GetTrackDifficultyMode();
         int highscoreInPoint = PlayerPrefs.GetInt(pointTitleName, 0);
 
         if (highscore && highscoreInPoint < GameManager.thisManager.getJudgeWindow.getOverallCombo * 3)
@@ -316,7 +327,7 @@ public class ResultMenu_Script : MonoBehaviour
 
     private string Result_GetPointImprove()
     {
-        int i = (int)GameManager.thisManager.get_point.get_score - PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_point" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0);
+        int i = (int)GameManager.thisManager.get_point.get_score - PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_point" + MeloMelo_GameSettings.GetTrackDifficultyMode(), 0);
         PlayerPrefs.SetInt("Temp_PointResult", i);
 
         if (i == 0) { return "+0"; }
@@ -440,16 +451,23 @@ public class ResultMenu_Script : MonoBehaviour
         switch (index)
         {
             case 1:
-                unlock_ProcessingBtn[0].interactable = false;
-                GameObject.Find("Menu_Main").GetComponent<Animator>().SetTrigger("Closing");
+                GameObject.Find("Menu_Viewer").GetComponent<Animator>().SetTrigger("Closing");
                 Invoke("GoSelection2", 1.5f);
                 break;
 
             case 2:
+                unlock_ProcessingBtn[0].interactable = false;
                 GameObject.Find("Menu_Main").GetComponent<Animator>().SetTrigger("Closing");
-                Invoke("GoSelection_Viewer", 1.5f);
+
+                string transitionCheck = PlayerPrefs.HasKey("MarathonPermit") ? "GoSelection2" : "GoSelection_Viewer";
+                Invoke(transitionCheck, 1.5f);
                 break;
 
+            case 3:
+                unlock_ProcessingBtn[0].interactable = false;
+                GameObject.Find("Menu_Main").GetComponent<Animator>().SetTrigger("Closing");
+                Invoke("GoSelection2", 1.5f);
+                break;
         }
     }
 
@@ -473,11 +491,11 @@ public class ResultMenu_Script : MonoBehaviour
     private void GoSelection2()
     {
         // Data: Overlay score with the latest one
-        if (PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 5) != 5
-            && (int)GameManager.thisManager.get_score1.get_score > highscore)
+        if (PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + MeloMelo_GameSettings.GetTrackDifficultyMode(), 5) != 5
+            && (int)GameManager.thisManager.get_score1.get_score >= highscore)
         {
             Debug.Log("Local Score Achievement: OK!");
-            PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_score" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1),
+            PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_score" + MeloMelo_GameSettings.GetTrackDifficultyMode(),
                 (int)GameManager.thisManager.get_score1.get_score);
         }
 
@@ -493,23 +511,23 @@ public class ResultMenu_Script : MonoBehaviour
         int currentScore = (int)GameManager.thisManager.get_score2.get_score;
 
         data.SaveBattleProgress(
-                PlayerPrefs.GetInt("BattleDifficulty_Mode", 1),
-                PlayerPrefs.GetInt("DifficultyLevel_valve", 1),
+                MeloMelo_GameSettings.GetAreaDifficultyMode(),
+                MeloMelo_GameSettings.GetTrackDifficultyMode(),
                 BeatConductor.thisBeat.Music_Database.Title,
-                PlayerPrefs.GetString(BeatConductor.thisBeat.Music_Database.Title + "_SuccessBattle_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + PlayerPrefs.GetInt("BattleDifficulty_Mode", 1), "F"),
+                PlayerPrefs.GetString(BeatConductor.thisBeat.Music_Database.Title + "_SuccessBattle_" + MeloMelo_GameSettings.GetTrackDifficultyMode() + MeloMelo_GameSettings.GetAreaDifficultyMode(), "F"),
                 techScore,
                 currentScore
                 );
 
         if (currentScore > techScore)
-            PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_techScore" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + PlayerPrefs.GetInt("BattleDifficulty_Mode", 1), currentScore);
+            PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_techScore" + MeloMelo_GameSettings.GetTrackDifficultyMode() + MeloMelo_GameSettings.GetAreaDifficultyMode(), currentScore);
     }
 
     public void CheckMarathonContent()
     {
         if (PlayerPrefs.HasKey("MarathonPermit"))
         {
-            if (PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 6) < 5)
+            if (PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + MeloMelo_GameSettings.GetTrackDifficultyMode(), 6) < 5)
             {
                 PlayerPrefs.SetInt("MarathonChallenge_MCount", PlayerPrefs.GetInt("MarathonChallenge_MCount") + 1);
                 PlayerPrefs.SetInt("Marathon_Quest_ScoreAddons", PlayerPrefs.GetInt("Marathon_Quest_Score", 0));
@@ -528,8 +546,8 @@ public class ResultMenu_Script : MonoBehaviour
         if (GameManager.thisManager.get_point.get_score > PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_point" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0))
         {
             // Point Loader
-            PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_point" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), (int)GameManager.thisManager.get_point.get_score);
-            PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_maxPoint" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), PlayerPrefs.GetInt("OverallCombo", 0) * 3);
+            PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_point" + MeloMelo_GameSettings.GetTrackDifficultyMode(), (int)GameManager.thisManager.get_point.get_score);
+            PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_maxPoint" + MeloMelo_GameSettings.GetTrackDifficultyMode(), PlayerPrefs.GetInt("OverallCombo", 0) * 3);
         }
 
         // Server Database: Store Time-Stamp
@@ -541,7 +559,7 @@ public class ResultMenu_Script : MonoBehaviour
         // Go Scene to Music Selection / BlackBoard
         if (PlayerPrefs.HasKey("Mission_Played")) 
         {
-            int playedStatus = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 5) != 5 ? 1 : 2;
+            int playedStatus = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + MeloMelo_GameSettings.GetTrackDifficultyMode(), 5) != 5 ? 1 : 2;
             PlayerPrefs.SetInt(PlayerPrefs.GetString("Mission_Title"), playedStatus); 
             PlayerPrefs.DeleteKey("Mission_Title"); 
         }

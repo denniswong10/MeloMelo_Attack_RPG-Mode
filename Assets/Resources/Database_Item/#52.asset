@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: 'Present Case: Story Reward from Journey To North'
   Icon: {fileID: 2800000, guid: 8132ebee24e6b88488a64fb482551dc2, type: 3}
   stackable: 1
-  thisItemType: 0
+  thisItemType: 2
   description: This is a gift from the developer where player successfully cleared
     a story. Gift only be opened where player played a battle. Case is limited to
     1 reedem upon obtaining.

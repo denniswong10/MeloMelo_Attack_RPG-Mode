@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: 'Title Deed: Kingdom of Tiles Story Play'
   Icon: {fileID: 2800000, guid: 12cdb98f3fb302d459e8fb39d5cf5d0e, type: 3}
   stackable: 0
-  thisItemType: 2
+  thisItemType: 0
   description: This prove that player had completed the story play series of Kingdom
     of Tiles, you can use them to present your title deed to access content which
     are unlockable at this point.

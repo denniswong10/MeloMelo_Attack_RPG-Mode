@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e8b0e0e05ea2e4dbb347c649c3fe92, type: 3}
+  m_Name: Marksman2_Secondary_Skill_3
+  m_EditorClassIdentifier: 
+  skillName: Restoration
+  skillIcon: {fileID: 2800000, guid: 2bc71dab5b0e53547b16b3268457fdee, type: 3}
+  description: Recover character health draining off your stats for hit point. Healing
+    of (Health) by (Grade x 5%) whenever character health reduce to 0. For every
+    restoration perform, drain (MAG) stats by (Grade x 1) points. If (MAG) stats
+    drain empty, this ability become inactive.
+  target_caterogy: 4
+  customEffectData: []
+  isUnlockReady: 0

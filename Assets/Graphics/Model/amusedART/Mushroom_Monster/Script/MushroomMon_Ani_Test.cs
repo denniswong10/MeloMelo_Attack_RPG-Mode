@@ -53,12 +53,14 @@ public class MushroomMon_Ani_Test : MonoBehaviour {
         {
             case MoveDirection.left:
                 transform.Translate(Vector3.left * 2 * Time.deltaTime, Space.World);
+                transform.Rotate(Vector3.up * -100 * Time.deltaTime, Space.World);
                 try { if (transform.position.x <= -GameManager.thisManager.get_playField.get_limitBorder) { moveDir = MoveDirection.right; } }
                 catch { if (transform.position.x <= -TutorialManager.thisManager.get_limitBorder) { moveDir = MoveDirection.right; } }
                 break;
 
             case MoveDirection.right:
                 transform.Translate(Vector3.right * 2 * Time.deltaTime, Space.World);
+                transform.Rotate(Vector3.up * 100 * Time.deltaTime, Space.World);
                 try { if (transform.position.x >= GameManager.thisManager.get_playField.get_limitBorder) { moveDir = MoveDirection.left; } }
                 catch { if (transform.position.x >= TutorialManager.thisManager.get_limitBorder) { moveDir = MoveDirection.left; } }
                 break;

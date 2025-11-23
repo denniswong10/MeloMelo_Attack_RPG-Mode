@@ -22,3 +22,4 @@ MonoBehaviour:
   characterName: None
   icon: {fileID: 0}
   elementType: 2
+  fixClassType: 3

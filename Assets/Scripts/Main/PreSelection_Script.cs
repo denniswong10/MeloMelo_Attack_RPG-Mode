@@ -79,7 +79,7 @@ public class PreSelection_Script : MonoBehaviour
 
         // Load current area
         AreaDatabase = AreaDatabaseArray[currentArea - 1];
-        DifficultyArea[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].GetComponent<RawImage>().enabled = true;
+        DifficultyArea[MeloMelo_GameSettings.GetAreaDifficultyMode() - 1].GetComponent<RawImage>().enabled = true;
 
         RefreshScrollBarInterface();
         GetAreaInformationDash();

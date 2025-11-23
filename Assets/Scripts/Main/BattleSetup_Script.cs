@@ -72,7 +72,7 @@ public class BattleSetup_Script : MonoBehaviour
     [SerializeField] private GameObject[] BoostPanel;
     [SerializeField] private GameObject BoostPanelTemplate;
     [SerializeField] private GameObject MessagePrompt;
-    [SerializeField] private GameObject LoadingUI;
+    private GameObject LoadingUI = null;
 
     // Load All Database
     void Start()
@@ -85,7 +85,7 @@ public class BattleSetup_Script : MonoBehaviour
         catch { Debug.Log("BGM Not Detected"); }
         if (BGM.Length > 1) { Destroy(BGM[1]); }
 
-        DifficultyArea[PlayerPrefs.GetInt("BattleDifficulty_Mode", 1) - 1].GetComponent<RawImage>().enabled = true;
+        DifficultyArea[MeloMelo_GameSettings.GetAreaDifficultyMode() - 1].GetComponent<RawImage>().enabled = true;
 
         if (PlayerPrefs.GetString("BattleSetup_Guide", "T") == "T")
         {
@@ -97,13 +97,13 @@ public class BattleSetup_Script : MonoBehaviour
             !PlayerPrefs.HasKey("MarathonPermit") && !PlayerPrefs.HasKey("Mission_Played") ? PreSelection_Script.thisPre.get_AreaData.BG : PlayerPrefs.HasKey("Mission_Played") ?
                 Resources.Load<Texture>("Background/BG1C") : Resources.Load<Texture>("Background/BG11");
 
-        LoadGameplaySetup();
+        IntitBattleSetup();
     }
 
     void Update()
     {
-        AddonsToExpBoost();
         AddonsToPowerBoost();
+        AddonsToExpBoost();
     }
 
     #region SETUP
@@ -121,6 +121,7 @@ public class BattleSetup_Script : MonoBehaviour
     {
         OpeningTransitionSetup(CharacterSetup_GUI, string.Empty);
         StartCoroutine(unitSlot.FinishedTransition_SelectUI());
+        AssignSkillSlot();
     }
 
     private void LoadGameplaySetup()
@@ -133,8 +134,22 @@ public class BattleSetup_Script : MonoBehaviour
         IntiScoreDisplay();
         IntiBottomDisplay();
         IntiFeedbackDisplay();
+    }
 
-        AssignSkillSlot();
+    private void IntitBattleSetup()
+    {
+        switch (PlayerPrefs.GetInt("BattleSetup_PreviousOpening", 1))
+        {
+            case 2:
+                LoadCharacterSetup();
+                break;
+
+            default:
+                LoadGameplaySetup();
+                break;
+        }
+
+        PlayerPrefs.DeleteKey("BattleSetup_PreviousOpening");
     }
     #endregion
 
@@ -407,6 +422,7 @@ public class BattleSetup_Script : MonoBehaviour
     {
         PlayerPrefs.SetInt("SlotSelect_setup", id);
         PlayerPrefs.SetString("SlotSelect_lastSelect", SceneManager.GetActiveScene().name);
+        PlayerPrefs.SetInt("BattleSetup_PreviousOpening", 2);
         ClosingTransitionSetup(CharacterSetup_GUI, "TransitionInCharacterSelection");
     }
 
@@ -462,12 +478,32 @@ public class BattleSetup_Script : MonoBehaviour
         GameObject panel = GameObject.Find("ExpBoostSlot");
         if (panel)
         {
+            // Exchange Value: Only value hits to -2 (Special Use of pot)
+            if (PlayerPrefs.HasKey(PlayerPrefs.GetString("CharacterFront", "None") + "_EXP_SPECIAL"))
+            {
+                StatsDistribution mainParty = new StatsDistribution();
+                mainParty.load_Stats();
+
+                foreach (ClassBase current_char in mainParty.slot_Stats)
+                {
+                    PlayerPrefs.DeleteKey(current_char.name + "_EXP_SPECIAL");
+
+                    int existingValue = MeloMelo_ItemUsage_Settings.GetExpBoost(current_char.name);
+                    PlayerPrefs.SetInt(current_char.name + "_EXP_BOOST", existingValue + mainParty.get_UnitPower());
+                }
+            }
+
             panel.transform.GetChild(1).GetComponent<Text>().text = 
-                MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(PlayerPrefs.GetString("CharacterFront", "None")) > 0 ? "x " +
-                MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(PlayerPrefs.GetString("CharacterFront", "None")) : "- None -";
+                MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(PlayerPrefs.GetString("CharacterFront", "None")) > 0 ?         // Multiple Exp
+                    "x " + MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(PlayerPrefs.GetString("CharacterFront", "None")) :
+
+                         MeloMelo_ItemUsage_Settings.GetExpBoost(PlayerPrefs.GetString("CharacterFront", "None")) > 0 ?          // Addons Exp
+                            "+ " + MeloMelo_ItemUsage_Settings.GetExpBoost(PlayerPrefs.GetString("CharacterFront", "None")) :
+                            
+                                "- None -";
 
             panel.transform.GetChild(2).GetComponent<Button>().interactable = 
-                MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(PlayerPrefs.GetString("CharacterFront", "None")) == 0;
+                PlayerPrefs.GetInt(PlayerPrefs.GetString("CharacterFront", "None") + "_EXP_USAGE_COUNT", 0) == 0;
         }
     }
 
@@ -481,19 +517,37 @@ public class BattleSetup_Script : MonoBehaviour
 
             if (MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(PlayerPrefs.GetString("CharacterFront", "None")) > 0)
             {
-                foreach (ClassBase character in mainParty.slot_Stats)
-                    if (character.name == PlayerPrefs.GetString("CharacterFront", "None"))
-                        powerByMultiple += MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(PlayerPrefs.GetString("CharacterFront", "None")) *
-                            (character.strength + character.vitality + character.magic);
+                foreach (ClassBase mainChar in mainParty.slot_Stats)
+                {
+                    if (PlayerPrefs.GetString("CharacterFront", "None") == mainChar.name)
+                    {
+                        int totalStats = mainChar.strength + mainChar.vitality + mainChar.magic;
+                        powerByMultiple = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(mainChar.name) * totalStats;
+                    }
+                }
             }
 
-            if (MeloMelo_ItemUsage_Settings.GetPowerBoost(PlayerPrefs.GetString("CharacterFront", "None")) > 0)
-                powerByMultiple += MeloMelo_ItemUsage_Settings.GetPowerBoost(PlayerPrefs.GetString("CharacterFront", "None"));
+            // Exchange Value: Only value hits to -2 (Special Use of pot)
+            else if (PlayerPrefs.HasKey(PlayerPrefs.GetString("CharacterFront", "None") + "_POWER_SPECIAL"))
+            {
+                foreach (ClassBase mainChar in mainParty.slot_Stats)
+                {
+                    PlayerPrefs.DeleteKey(mainChar.name + "_POWER_SPECIAL");
+                    PlayerPrefs.SetInt(mainChar.name + "_POWER_BOOST", mainParty.get_UnitPower());
+                }
 
-            panel.transform.GetChild(1).GetComponent<Text>().text =
-                powerByMultiple > 0 ? "+ " + powerByMultiple : "- None -";
+                powerByMultiple = mainParty.get_UnitPower();
+            }
 
-            panel.transform.GetChild(2).GetComponent<Button>().interactable = powerByMultiple == 0;
+            else if (MeloMelo_ItemUsage_Settings.GetPowerBoost(PlayerPrefs.GetString("CharacterFront", "None")) > 0)
+                powerByMultiple = MeloMelo_ItemUsage_Settings.GetPowerBoost(PlayerPrefs.GetString("CharacterFront", "None"));
+
+            panel.transform.GetChild(1).GetComponent<Text>().text = 
+                PlayerPrefs.GetInt(PlayerPrefs.GetString("CharacterFront", "None") + "_POWER_USAGE_COUNT", 0) == 0
+                    ? "- None -" : "+ " + powerByMultiple;
+
+            panel.transform.GetChild(2).GetComponent<Button>().interactable = 
+                PlayerPrefs.GetInt(PlayerPrefs.GetString("CharacterFront", "None") + "_POWER_USAGE_COUNT", 0) == 0;
         }
     }
     #endregion
@@ -509,7 +563,14 @@ public class BattleSetup_Script : MonoBehaviour
     {
         if (GameObject.Find(nameOfPanel) == null)
         {
-            LoadingUI.SetActive(true);
+            if (LoadingUI == null)
+            {
+                LoadingUI = Instantiate(Resources.Load<GameObject>("Prefabs/LoadingUI"), CharacterSetup_GUI.transform);
+                LoadingUI.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            }
+
+            // Loader prompt
+            LoadingUI.GetComponent<LoadingContent_Script>().NowLoading("Getting ready to display\navailable item on panel.\nJust a moment");
 
             Task<List<UsageOfItemDetail>> isItemUsageReady = PreLoadingFilteredItem(nameOfPanel);
             yield return new WaitUntil(() => isItemUsageReady.IsCompleted);
@@ -526,7 +587,7 @@ public class BattleSetup_Script : MonoBehaviour
             instance_panel.GetComponent<VirtualStorageBag>().SetLimitedUsageTime(true);
             PlayerPrefs.SetString(VirtualStorageBag.VirtualStorage_UsableKey, PlayerPrefs.GetString("CharacterFront", "None") + ",0,1");
 
-            LoadingUI.SetActive(false);
+            LoadingUI.GetComponent<LoadingContent_Script>().DoneLoading();        
         }
     }
 

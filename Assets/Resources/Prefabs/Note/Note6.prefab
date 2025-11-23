@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1281146779}
   - component: {fileID: 1281146781}
   - component: {fileID: 1281146780}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 2103131772}
   - component: {fileID: 2103131774}
   - component: {fileID: 2103131773}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4918,7 +4918,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1109235851376736924}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4951,7 +4951,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1109168216793150440}
   - component: {fileID: 1048603801531832326}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MushroomMon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5038,7 +5038,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1109480522646093980}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5070,7 +5070,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1115313948192072764}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5103,7 +5103,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1109254680327215878}
   - component: {fileID: 1072226769012433418}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: object
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5156,7 +5156,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1109442439141058890}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dummy001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5192,7 +5192,7 @@ GameObject:
   - component: {fileID: 7682276981652124432}
   - component: {fileID: 935060678703903620}
   - component: {fileID: 7473234095386996334}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Note6
   m_TagString: note
   m_Icon: {fileID: 0}

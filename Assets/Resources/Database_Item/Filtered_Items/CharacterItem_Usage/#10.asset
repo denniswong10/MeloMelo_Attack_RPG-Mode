@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Book of Strength I
   useTypeDetail: 3
-  dataArray: "{\"title\":\"This character gain 5 to its strength stats\",\"choice\":\"Confirm*Leave
-    it\"}@^\r10"
+  dataArray: "{\"title\":\"This book contain the following stats upgrade.\",\"choice\":\"STR\"}@{\"title\":\"The
+    following stats amount can be upgraded.\",\"choice\":\"5\"}@{\"title\":\"Do you
+    wish to use it for upgrade?\",\"choice\":\"YES*NO\"}@^\r13"

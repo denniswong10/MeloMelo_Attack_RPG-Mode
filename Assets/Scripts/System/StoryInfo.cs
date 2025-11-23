@@ -17,9 +17,24 @@ public class SlotQuestLog
     public string logTitle;
     public int id;
 
-    public enum SlotType { Story, Quest, Step, Goals };
+    public enum SlotType { Story, Quest, Step, Request, Goals };
     public SlotType mySlotTypte;
     public bool isOpen;
+}
+
+[System.Serializable]
+public class ItemRequestLog
+{
+    public string itemName;
+    public int amount;
+    public enum RequestType { Giveaway, Obtainable };
+    public RequestType typeOfRequest;
+}
+
+[System.Serializable]
+public class RequestFormLog
+{
+    public ItemRequestLog[] tradeOnRequest;
 }
 
 [System.Serializable]
@@ -27,6 +42,8 @@ public class FragmentInfo
 {
     public int[] numberOfSteps;
     public MusicScore[] Quest_Stage;
+    public RequestFormLog[] myTradeLog;
+
     public SlotQuestLog[] myQuestLog;
 }
 

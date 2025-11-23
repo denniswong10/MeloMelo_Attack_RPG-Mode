@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 558913248515084527}
   - component: {fileID: 632335922064951278}
   - component: {fileID: 4997664869622017224}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Note1
   m_TagString: note
   m_Icon: {fileID: 0}
@@ -116,7 +116,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7077840795205146979}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -149,7 +149,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7077908230060593175}
   - component: {fileID: 7192289352203205625}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MushroomMon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -236,7 +236,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7077666561384883043}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -268,7 +268,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7072659902011688899}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bone001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -300,7 +300,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7077633932421122741}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Dummy001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -332,7 +332,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7077859624390457593}
   - component: {fileID: 7186643320371544565}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: object
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -38,8 +38,8 @@ public partial class ContentSelectionLocker_Script
     #region SETUP
     private void Setup()
     {
-        enchant_challengeList = new string[] { "", "", "Challenge", "Skills" };
-        optionCodeIndex = new string[] { "", "", "C", "S" };
+        enchant_challengeList = new string[] { "", "", "Challenge", "Skills", "" };
+        optionCodeIndex = new string[] { "", "", "C", "S", "" };
     }
     #endregion
 
@@ -461,8 +461,21 @@ public class MarathonSelection_Script : MonoBehaviour
 
             foreach (TrackDetails detail in currentSelection.trackList)
             {
-                localAreaArray.Add(detail.areaName);
-                localTitleArray.Add(detail.title);
+                if (detail.trackRandom)
+                {
+                    string[] allAreaSort = detail.areaName.Split("/");
+                    string selectedArea = string.Empty;
+                    if (allAreaSort.Length > 1) selectedArea = allAreaSort[Random.Range(0, allAreaSort.Length - 1)];
+                    
+                    MusicScore isTrackLoaded = MeloMelo_AreaControl_Settings.GetTrackRandomize(selectedArea != string.Empty ? selectedArea : detail.areaName);
+                    localAreaArray.Add(selectedArea != string.Empty ? selectedArea : detail.areaName);
+                    localTitleArray.Add(isTrackLoaded != null ? isTrackLoaded.name : detail.title);
+                }
+                else
+                {
+                    localAreaArray.Add(detail.areaName);
+                    localTitleArray.Add(detail.title);
+                }
             }
 
             // Peform task info
@@ -664,6 +677,7 @@ public class MarathonSelection_Script : MonoBehaviour
     private void BeginPlayMarathon()
     {
         // Enter to Music Selection Stage
+        Destroy(BGM[0]);
         SceneManager.LoadScene("Music Selection Stage");
     }
 
@@ -698,6 +712,9 @@ public class MarathonSelection_Script : MonoBehaviour
 
             // Track Assign setup
             PlayerPrefs.SetString("Marathon_Assigned_Area_" + track, "Database_Area/" + areaS[track] + "/" + titleS[track]);
+
+            // ???
+            Debug.Log("Check Marathon Cache: " + PlayerPrefs.GetString("Marathon_Assigned_Area_" + track, string.Empty));
         }
     }
 

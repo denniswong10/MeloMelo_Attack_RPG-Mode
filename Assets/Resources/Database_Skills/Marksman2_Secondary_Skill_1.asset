@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e8b0e0e05ea2e4dbb347c649c3fe92, type: 3}
+  m_Name: Marksman2_Secondary_Skill_1
+  m_EditorClassIdentifier: 
+  skillName: Enforced Bow
+  skillIcon: {fileID: 2800000, guid: 52f470648af606f44b2e21ccb047d4d2, type: 3}
+  description: At the start of track, receive additional physical damage by (MAG
+    x 5% + Grade x 10%). At the end of track, dealing bonus damage to enemy health
+    by (MAG x 20% + Grade x 30%).
+  target_caterogy: 0
+  customEffectData: []
+  isUnlockReady: 0

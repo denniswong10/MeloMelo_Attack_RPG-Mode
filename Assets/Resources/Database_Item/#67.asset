@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
+  m_Name: '#67'
+  m_EditorClassIdentifier: 
+  itemName: Mysterious Potion
+  Icon: {fileID: 2800000, guid: b83d6d48f9b07944a9daab593e03b084, type: 3}
+  stackable: 1
+  thisItemType: 1
+  description: Receive buff of X to all characters. X is to random buff type of exp
+    or stats by the total power unit. Applied only from power boost section.
+  itemValue: 20
+  NoQuantityLimit: 0
+  CreditSet: 0

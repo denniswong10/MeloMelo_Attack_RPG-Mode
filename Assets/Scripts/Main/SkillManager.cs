@@ -97,7 +97,8 @@ public class SkillManager : MonoBehaviour
             {
                 if (!SkillIndicator.activeInHierarchy)
                 {
-                    StartCoroutine(GetSkillActiveAlert(_dat.skillName, _dat.description));
+                    //StartCoroutine(GetSkillActiveAlert(_dat.skillName, _dat.description));
+                    GameManager.thisManager.PromptInGameMessage("SKILL ACTIVATION", "Skill Effect: " + _dat.skillName, _dat.description);
                     effectToggleData.Remove(_dat);
                     break;
                 }
@@ -510,10 +511,9 @@ public class SkillManager : MonoBehaviour
 
     private void OnResetTargetCounted()
     {
-        MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(0, 1);
-        MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(0, 2);
-        MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(0, 3);
-        MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(0, -1);
+        MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(0, MeloMelo_UnitData_Settings.UnitData.SuccessHitForEnemy);
+        MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(0, MeloMelo_UnitData_Settings.UnitData.SuccessHitForAttack);
+        MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(0, MeloMelo_UnitData_Settings.UnitData.SuccessHitOnEverything);
     }
 
     private void OnResetTrapBeenTrigger()
@@ -560,11 +560,11 @@ public class SkillManager : MonoBehaviour
         // Display: All Target Hit Counted
         if (indicator)
         {
-            indicator.text = MeloMelo_UnitData_Settings.GetSuccessHitOfAllEnemyTarget().ToString();
+            indicator.text = MeloMelo_UnitData_Settings.GetSuccessHitOfAllEnemyTarget(MeloMelo_UnitData_Settings.UnitData.SuccessHitOnEverything).ToString();
 
-            SkillManager_Properties.SetEffectCondition(MeloMelo_UnitData_Settings.GetSuccessHitOfAllEnemyTarget() >=
+            SkillManager_Properties.SetEffectCondition(MeloMelo_UnitData_Settings.GetSuccessHitOfAllEnemyTarget(MeloMelo_UnitData_Settings.UnitData.SuccessHitOnEverything) >=
                 countLimitBreak * int.Parse(onTargetCountedTriggerData[1]));
-            if (MeloMelo_UnitData_Settings.GetSuccessHitOfAllEnemyTarget() >= countLimitBreak * int.Parse(onTargetCountedTriggerData[1]))
+            if (MeloMelo_UnitData_Settings.GetSuccessHitOfAllEnemyTarget(MeloMelo_UnitData_Settings.UnitData.SuccessHitOnEverything) >= countLimitBreak * int.Parse(onTargetCountedTriggerData[1]))
                 SkillManager_Properties.SetEffectLimit(SkillManager_Properties.GetEffectName(), countLimitBreak + 1);
         }
     }
@@ -581,7 +581,7 @@ public class SkillManager : MonoBehaviour
         {
             // Total up all targets
             int totalTargetCount = 0;
-            foreach (string target in typeOfTarget) totalTargetCount += MeloMelo_UnitData_Settings.GetSuccessHitOfAllEnemyTarget(int.Parse(target));
+            //foreach (string target in typeOfTarget) totalTargetCount += MeloMelo_UnitData_Settings.GetSuccessHitOfAllEnemyTarget(int.Parse(target));
             indicator.transform.GetChild(0).GetComponent<Text>().text = totalTargetCount.ToString();
 
             // Enable icon to show clear in this condition
@@ -590,8 +590,8 @@ public class SkillManager : MonoBehaviour
 
             // Allow to perform action
             SkillManager_Properties.SetEffectCondition(totalTargetCount > int.Parse(onTargetStackTriggerData[1]));
-            if (totalTargetCount >= int.Parse(onTargetStackTriggerData[1])) 
-                foreach (string target in typeOfTarget) MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(0, int.Parse(target));
+            //if (totalTargetCount >= int.Parse(onTargetStackTriggerData[1])) 
+               // foreach (string target in typeOfTarget) MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(0, int.Parse(target));
         }
     }
 
@@ -701,7 +701,7 @@ public class SkillManager : MonoBehaviour
             allDamage + " damage taken to enemy");
 
         // Arrange indicator for damage check
-        GameManager.thisManager.SpawnDamageIndicator(GameObject.Find("Boss").transform.position, 2, -allDamage);
+        GameManager.thisManager.SpawnDamageIndicator(MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Target_Reference).transform.position, 2, -allDamage);
 
         //PromptDamageIndicator(SkillManager_Properties.GetActiveInstance(), SkillManager_Properties.GetEffectName(),
             //GetEffectCalculatedValue(1), GetEffectCalculatedValue(2));

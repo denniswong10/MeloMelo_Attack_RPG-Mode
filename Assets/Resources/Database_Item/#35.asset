@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
+  m_Name: '#35'
+  m_EditorClassIdentifier: 
+  itemName: Book of Wisdom II
+  Icon: {fileID: 2800000, guid: 544cc8fb6ea6d1f4f8df24e71e57424b, type: 3}
+  stackable: 1
+  thisItemType: 0
+  description: This book contain the second part of any other wisdom book. Enhant
+    your mage strength. This improve character magic stats by 50.
+  itemValue: 5
+  NoQuantityLimit: 0
+  CreditSet: 0

@@ -12,10 +12,11 @@ public class RoutePanel_DescriptionScript : MonoBehaviour
 
     [SerializeField] private GameObject Submission_Panel;
     [SerializeField] private GameObject Submission_Prompt_Panel;
+    [SerializeField] private GameObject TradePanel_Instance;
 
-    [SerializeField] private GameObject LoadingScreen_Content;
+    private GameObject LoadingScreen_Content = null;
 
-    private enum Interaction_Identify_Value { Detail, Play, Story, Task, ClaimRewards, AllButtonSelection, CLOSED, COMPLETED }
+    private enum Interaction_Identify_Value { Detail, Play, Story, Task, ItemPanel, ClaimRewards, AllButtonSelection, CLOSED, COMPLETED }
 
     private GameObject Cahce_Submission_Panel;
     private FragmentInfo currentStage;
@@ -69,6 +70,10 @@ public class RoutePanel_DescriptionScript : MonoBehaviour
                 Title.text = "Stage " + instance_id + " - " + title + " ( Progression Play )";
                 break;
 
+            case SlotQuestLog.SlotType.Request:
+                Title.text = "Zone " + instance_id + " - " + title + " ( Trade Route )";
+                break;
+
             default:
                 Title.text = "Story Completed!";
                 break;
@@ -81,28 +86,34 @@ public class RoutePanel_DescriptionScript : MonoBehaviour
         isRouteUnlocked = log.isOpen;
         ResetInteractionPanel();
 
+        // Get updated description message
+        Description.text = "Goals: " + DescribeContext(log);
+    }
+
+    private string DescribeContext(SlotQuestLog log)
+    {
         switch (log.mySlotTypte)
         {
             case SlotQuestLog.SlotType.Story:
-                Description.text = "Goals: Complete Story Play Through" + "\n" + "Status: " + RouteCompletionStatus(log.id);
                 GetInteractionButton((int)Interaction_Identify_Value.Story);
-                break;
+                return "Complete Story Play Through" + "\n" + "Status: " + RouteCompletionStatus(log.id);
 
             case SlotQuestLog.SlotType.Step:
-                Description.text = "Goals: " + GetFragmentRequire(log) + "\n" + "Status: " + RouteCompletionStatus(log.id);
                 GetInteractionButton((int)Interaction_Identify_Value.Detail);
                 GetInteractionButton((int)Interaction_Identify_Value.Play);
-                break;
+                return GetFragmentRequire(log) + "\n" + "Status: " + RouteCompletionStatus(log.id);
 
             case SlotQuestLog.SlotType.Quest:
-                Description.text = "Goals: " + GetTaskPlay(log) + "\n" + "Status: " + RouteCompletionStatus(log.id);
                 GetInteractionButton((int)Interaction_Identify_Value.Task);
-                break;
+                return GetTaskPlay(log) + "\n" + "Status: " + RouteCompletionStatus(log.id);
+
+            case SlotQuestLog.SlotType.Request:
+                GetInteractionButton((int)Interaction_Identify_Value.ItemPanel);
+                return "Complete trade to continue story";
 
             default:
-                Description.text = "Goals: Claim rewards for playing in story mode";
                 GetInteractionButton((int)Interaction_Identify_Value.ClaimRewards);
-                break;
+                return "Claim rewards for playing in story mode";
         }
     }
     #endregion
@@ -244,7 +255,15 @@ public class RoutePanel_DescriptionScript : MonoBehaviour
         PlayerPrefs.SetInt("Mission_Played", 1);
         PlayerPrefs.SetInt("DifficultyLevel_valve", 1);
         PlayerPrefs.SetString("Mission_Title", "RoutePlayableStatus_" + PlayerPrefs.GetInt("StoryTypePlayBack", 0) + currentRouteId);
+
+        Destroy(GameObject.Find("BGM"));
         StartCoroutine(StoryTransitionLeave("Music Selection Stage"));
+    }
+
+    public void GetTradePanel(bool activePanel)
+    {
+        Interaction_Panel.transform.GetChild((int)Interaction_Identify_Value.ItemPanel).GetComponent<Button>().interactable = !activePanel;
+        TradePanel_Instance.SetActive(activePanel);
     }
 
     private IEnumerator StoryTransitionLeave(string scene_load)
@@ -278,7 +297,13 @@ public class RoutePanel_DescriptionScript : MonoBehaviour
     {
         if (GameObject.Find("SubmissionPanel") == null)
         {
-            LoadingScreen_Content.SetActive(true);
+            if (LoadingScreen_Content == null)
+            {
+                LoadingScreen_Content = Instantiate(Resources.Load<GameObject>("Prefabs/LoadingUI"), StoryMode_Scripts.thisStory.selection_main.transform);
+                LoadingScreen_Content.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+            }
+
+            LoadingScreen_Content.GetComponent<LoadingContent_Script>().NowLoading("Getting ready to display\navailable item on panel.\nJust a moment");
 
             Task<List<UsageOfItemDetail>> allFilteredItem = PreLoadingFilteredItem("Material_Section");
             yield return new WaitUntil(() => allFilteredItem.IsCompleted);
@@ -288,7 +313,7 @@ public class RoutePanel_DescriptionScript : MonoBehaviour
 
             GameObject instance_panel = Instantiate(Submission_Panel, StoryMode_Scripts.thisStory.selection_main.transform);
             instance_panel.name = "SubmissionPanel";
-            LoadingScreen_Content.SetActive(false);
+            LoadingScreen_Content.GetComponent<LoadingContent_Script>().DoneLoading();
 
             Cahce_Submission_Panel = instance_panel;
             instance_panel.GetComponent<VirtualStorageBag>().SetAlertPopReference(Submission_Prompt_Panel);
@@ -371,12 +396,21 @@ public class RoutePanel_DescriptionScript : MonoBehaviour
         }
 
         MarkAsCompletedRoute();
+        LoadAllItemToLocal();
     }
 
     private bool IsItemAlreadyBeenClaimed(string itemName)
     {
         VirtualItemDatabase itemExisting = MeloMelo_ItemUsage_Settings.GetActiveItem(itemName);
         return itemExisting.itemName == itemName && itemExisting.amount > 0;
+    }
+
+    private void LoadAllItemToLocal()
+    {
+        MeloMelo_Local.LocalLoad_DataManagement loadData = new MeloMelo_Local.LocalLoad_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
+               "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+        loadData.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
+        StartCoroutine(loadData.PostLoading_VirtualItemData());
     }
     #endregion
 }

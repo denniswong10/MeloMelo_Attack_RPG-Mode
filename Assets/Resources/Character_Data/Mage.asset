@@ -22,3 +22,4 @@ MonoBehaviour:
   characterName: Mei
   icon: {fileID: 21300000, guid: f7dc711bccf04d84a9312fd3d3409526, type: 3}
   elementType: 2
+  fixClassType: 1

@@ -17,6 +17,8 @@ public class ClassBase : ScriptableObject
     public Sprite icon;
     public enum ElementStats { Light, Dark, Earth };
     public ElementStats elementType;
+    public enum ClassTypeChar { Warrior, Mage, Marksman, Support };
+    public ClassTypeChar fixClassType;
 
     #region MAIN
     public void CheckLeveling(int max) 
@@ -26,7 +28,7 @@ public class ClassBase : ScriptableObject
         if (experience >= max)
         {
             PlayerPrefs.SetInt(name + "_LEVEL", level + 1);
-            int addonsToNewMastery = MeloMelo_ExtraStats_Settings.GetMasteryPoint(name) + 2;
+            int addonsToNewMastery = MeloMelo_ExtraStats_Settings.GetMasteryPoint(name) + MeloMelo_ExtraStats_Settings.masteryPointGathered;
             MeloMelo_ExtraStats_Settings.SetMasteryPoint(name, addonsToNewMastery);
 
             int experienceInStock = experience - max;
@@ -79,6 +81,24 @@ public class ClassBase : ScriptableObject
         strength = PlayerPrefs.GetInt(name + "_STRENGTH", 0);
         vitality = PlayerPrefs.GetInt(name + "_VITALITY", 0);
         magic = PlayerPrefs.GetInt(name + "_MAGIC", 0);
+    }
+
+    public string GetClassType()
+    {
+        switch (fixClassType)
+        {
+            case ClassTypeChar.Warrior:
+                return "Warrior";
+
+            case ClassTypeChar.Marksman:
+                return "Marksman";
+
+            case ClassTypeChar.Mage:
+                return "Mage";
+
+            default:
+                return "Jobless";
+        }
     }
     #endregion
 }

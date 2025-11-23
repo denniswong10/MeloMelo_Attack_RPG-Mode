@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4177df903b9ab8a48b39e8089ba02970, type: 3}
+  m_Name: '#15'
+  m_EditorClassIdentifier: 
+  itemName: Supplier Kit Pack
+  useTypeDetail: 2
+  dataArray: '{"itemName":"5X EXP POTION","amount":3,"obtainableRate":35}/
+
+    {"itemName":"10X
+    EXP POTION","amount":2,"obtainableRate":22.5}/
+
+    {"itemName":"Small Healing
+    Potion","amount":10,"obtainableRate":15}/
+
+    {"itemName":"Medium Healing Potion","amount":5,"obtainableRate":12}/
+
+    {"itemName":"Great
+    Healing Potion","amount":3,"obtainableRate":10}/
+
+    {"itemName":"2X POWER
+    ELIXIR","amount":1,"obtainableRate":3}/
+
+    {"itemName":"5X POWER ELIXIR","amount":1,"obtainableRate":2}/
+
+    {"itemName":"Mysterious
+    Potion","amount":1,"obtainableRate":0.5}/'

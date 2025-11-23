@@ -20,6 +20,7 @@ MonoBehaviour:
   Stage:
   - numberOfSteps: 320000000f000000
     Quest_Stage: []
+    myTradeLog: []
     myQuestLog:
     - logTitle: Peaceful Day for Adventure
       id: 1
@@ -36,6 +37,7 @@ MonoBehaviour:
   - numberOfSteps: 32000000
     Quest_Stage:
     - {fileID: 11400000, guid: 3eaedcbfd69c021459e318b7da1168bd, type: 2}
+    myTradeLog: []
     myQuestLog:
     - logTitle: Finding the right path
       id: 4
@@ -51,5 +53,5 @@ MonoBehaviour:
       isOpen: 0
     - logTitle: Arrive to a new land
       id: 7
-      mySlotTypte: 3
+      mySlotTypte: 4
       isOpen: 0

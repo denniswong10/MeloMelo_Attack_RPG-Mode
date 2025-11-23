@@ -80,7 +80,24 @@ public class SelectionPage_Script : MonoBehaviour
 
     public void GetPlayDifficultSelection(int index)
     {
-        PlayerPrefs.SetInt("BattleDifficulty_Mode", index);
+        MeloMelo_GameSettings.BattleDifficultyMode option;
+
+        switch (index)
+        {
+            case 2:
+                option = MeloMelo_GameSettings.BattleDifficultyMode.Intermidate;
+                break;
+
+            case 3:
+                option = MeloMelo_GameSettings.BattleDifficultyMode.Advance;
+                break;
+
+            default:
+                option = MeloMelo_GameSettings.BattleDifficultyMode.Beginner;
+                break;
+        }
+
+        MeloMelo_GameSettings.SetAreaDifficultyMode(option);
         ClosingSelection(Selection[currentSelection], "SeasonTransition");
     }
     #endregion

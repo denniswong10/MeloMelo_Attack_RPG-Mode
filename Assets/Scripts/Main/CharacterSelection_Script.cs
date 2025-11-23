@@ -203,9 +203,11 @@ public class CharacterSelection_Script : MonoBehaviour
     private void GetCharacterInfoPlate(bool active, string character)
     {
         // Title: Update character name and class type
+        ClassBase selectedChar_ref = Resources.Load<ClassBase>("Character_Data/" + character);
+        string previousCharacter = PlayerPrefs.GetString("Slot" + PlayerPrefs.GetInt("SlotSelect_setup", 1) + "_charName", "None");
+
         CharacterInformationBoard.transform.GetChild(0).gameObject.SetActive(active);
-        CharacterInformationBoard.transform.GetChild(0).GetComponent<Text>().text =
-            Resources.Load<ClassBase>("Character_Data/" + character).characterName + " (" + character + ")";
+        CharacterInformationBoard.transform.GetChild(0).GetComponent<Text>().text = selectedChar_ref.characterName + " (" + selectedChar_ref.GetClassType() + ")";
 
         // Script: Calculate unit power
         StatsDistribution characterStats = new StatsDistribution();
@@ -214,10 +216,10 @@ public class CharacterSelection_Script : MonoBehaviour
         // Body: Update character power and assigned power
         CharacterInformationBoard.transform.GetChild(1).gameObject.SetActive(active);
         CharacterInformationBoard.transform.GetChild(1).GetComponent<Text>().text =
-            "Current Unit Power: " + characterStats.get_UnitPower(character) + "\n" +
-            "Assigned Character Power: " + (characterStats.get_UnitPower() - characterStats.get_UnitPower(character)) + 
-            "(+" + characterStats.get_UnitPower(character) + ")\n" +
-            "Total Unit Power: " + characterStats.get_UnitPower();
+            "Current Unit Power: " + characterStats.get_UnitPower(previousCharacter) + "\n" +
+            "Assigned Character Power: " + SelfScoringForUnitPower(selectedChar_ref) + 
+            " (" + GetValueAlternative(SelfScoringForUnitPower(selectedChar_ref) - characterStats.get_UnitPower(previousCharacter)) + ")\n" +
+            "Total Unit Power: " + (characterStats.get_UnitPower() - characterStats.get_UnitPower(previousCharacter) + SelfScoringForUnitPower(selectedChar_ref));
 
         // Features: Status and Skills
         AdditionalSelectionTab[PlayerPrefs.GetInt("CharacterSelection_ToggleTab", 0)].GetComponent<RawImage>().color = Color.green;
@@ -301,6 +303,35 @@ public class CharacterSelection_Script : MonoBehaviour
 
         // Update chosen selection
         MeloMelo_CharacterInfo_Settings.SetCharacterChosenSelection(isCharacterAvailableByDefault || isCharacrterUnlockedByCondition);
+    }
+
+    private int SelfScoringForUnitPower(ClassBase characterData)
+    {
+        int calcuatedPower = 0;
+        StatsDistribution distributionRef = new StatsDistribution();
+
+        if (characterData.name != "None")
+        {
+            characterData.UpdateCurrentStats(false);
+            StatsManage_Database characterStats = new StatsManage_Database(characterData.name);
+            ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
+                characterData.elementType == ClassBase.ElementStats.Light ? "Light" :
+                characterData.elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                characterData.elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+
+            calcuatedPower += (int)(baseStats.strength * (characterStats.GetCharacterStatus(characterData.level).GetStrength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(characterData.name)));
+            calcuatedPower += (int)(baseStats.magic * (characterStats.GetCharacterStatus(characterData.level).GetMagic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(characterData.name)));
+            calcuatedPower += (int)(baseStats.vitality * (characterStats.GetCharacterStatus(characterData.level).GetVitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(characterData.name)));
+            calcuatedPower += (int)(baseStats.multipler * distributionRef.baseHealth * characterStats.GetCharacterStatus(characterData.level).GetHealth);
+        }
+
+        return calcuatedPower;
+    }
+
+    private string GetValueAlternative(int value)
+    {
+        if (value < 0) return value.ToString();
+        else return "+" + value;
     }
     #endregion
 }

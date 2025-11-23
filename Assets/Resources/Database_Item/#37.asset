@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
+  m_Name: '#37'
+  m_EditorClassIdentifier: 
+  itemName: Book of Strength II
+  Icon: {fileID: 2800000, guid: 9e14682eec6dc4c4ba0cd294f31549cf, type: 3}
+  stackable: 1
+  thisItemType: 0
+  description: "This book contain the second part of any other book for character
+    to fight against stronger opponent. Suitable \nfor marksman character. This help
+    improve their strength stats by 50."
+  itemValue: 5
+  NoQuantityLimit: 0
+  CreditSet: 0

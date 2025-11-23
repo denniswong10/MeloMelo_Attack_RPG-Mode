@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e8b0e0e05ea2e4dbb347c649c3fe92, type: 3}
+  m_Name: Mage2_Secondary_Skill_1
+  m_EditorClassIdentifier: 
+  skillName: Death Rise Spell
+  skillIcon: {fileID: 2800000, guid: 7bdbdf23256ec784b895aa2daae243c8, type: 3}
+  description: This spell spent your character life soul to activate its ability,
+    drain stats point (VIT) by (Grade x 1) point. Every 25 combo, enemy health reduced
+    by (MAG x 15% + Grade x 95%). If (VIT) has drain empty, reduce character health
+    by (Health x 2%) instead.
+  target_caterogy: 2
+  customEffectData: []
+  isUnlockReady: 0

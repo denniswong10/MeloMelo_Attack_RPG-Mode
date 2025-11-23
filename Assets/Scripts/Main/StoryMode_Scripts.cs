@@ -130,7 +130,7 @@ public class StoryMode_Scripts : MonoBehaviour
         for (int id = 0; id < SubMenu_Route_Detail.transform.childCount; id++)
         {
             // Toggle current selection point
-            const int checker_id = 4;
+            const int checker_id = 5;
             SubMenu_Route_Detail.transform.GetChild(id).GetChild(checker_id).gameObject.SetActive(id == routePointerPos);
         }
 

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74be61cf4819b8c479cb123ee54be224, type: 3}
+  m_Name: Marksman2_Restrict
+  m_EditorClassIdentifier: 
+  description: Vibe of Hoshizaki Akari
+  trackCleared:
+  - trackName: Viyella s Scream
+    difficulty: 1
+    score: 980000
+  - trackName: Viyella s Scream
+    difficulty: 2
+    score: 950000
+  - trackName: Viyella s Tears
+    difficulty: 1
+    score: 980000
+  - trackName: Viyella s Tears
+    difficulty: 2
+    score: 950000
+  - trackName: "\u03BC3"
+    difficulty: 1
+    score: 980000
+  - trackName: "\u03BC3"
+    difficulty: 2
+    score: 950000

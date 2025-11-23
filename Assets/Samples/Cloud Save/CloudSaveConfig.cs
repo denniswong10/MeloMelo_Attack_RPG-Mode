@@ -30,7 +30,11 @@ public class CloudSaveConfig : MonoBehaviour
         MeloMelo_GameSettings.CloudSaveSetting_CharacterStats,
         MeloMelo_GameSettings.CloudSaveSetting_SkillDatabase,
         MeloMelo_GameSettings.CloudSaveSetting_ItemDatabase,
-        MeloMelo_GameSettings.CloudSaveSetting_ExchangeHistory
+        MeloMelo_GameSettings.CloudSaveSetting_ExchangeHistory,
+        MeloMelo_GameSettings.CloudSaveSetting_ElementScoreRPG,
+        MeloMelo_GameSettings.CloudSaveSetting_RPGElementRecord,
+        MeloMelo_GameSettings.CloudSaveSetting_ZoneRewardRecord,
+        MeloMelo_GameSettings.CloudSaveSetting_TrackComboProgress
     };
 
     private string[] pathLoader2 =
@@ -110,19 +114,19 @@ public class CloudSaveConfig : MonoBehaviour
     private async void UploadCloudData(string key, object value)
     {
         var data = new Dictionary<string, object> { { key, value } };
-        await CloudSaveService.Instance.Data.Player.SaveAsync(data);
+        await CloudSaveService.Instance.Data.ForceSaveAsync(data);
     }
 
     private async Task GetCloudData(string key, string cloudKey)
     {
-        var data = await CloudSaveService.Instance.Data.Player.LoadAsync(new HashSet<string> { cloudKey });
+        var data = await CloudSaveService.Instance.Data.LoadAsync(new HashSet<string> { cloudKey });
 
         if (data.TryGetValue(cloudKey, out var getToken))
         {
-            Debug.Log("Cloud Data: " + getToken.Value.GetAs<string>());
+            Debug.Log("Cloud Data: " + getToken);
 
             if (PlayerPrefs.HasKey(key)) PlayerPrefs.DeleteKey(key);
-            PlayerPrefs.SetString(key, getToken.Value.GetAs<string>());
+            PlayerPrefs.SetString(key, getToken);
             PlayerPrefs.SetInt("ReviewTransfer", 1);
         }
     }

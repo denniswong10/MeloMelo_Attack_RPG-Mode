@@ -178,7 +178,9 @@ public class GuestLogin_Script : MonoBehaviour
 
     private IEnumerator LoadAllProgress()
     {
-        LoadingUI.SetActive(true);
+        GameObject loadingProgressScreen = Instantiate(LoadingUI, transform);
+        loadingProgressScreen.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+        loadingProgressScreen.GetComponent<LoadingContent_Script>().NowLoading("Progress is still loading...\nJust a moment");
 
         string[] paths =
         {
@@ -192,7 +194,11 @@ public class GuestLogin_Script : MonoBehaviour
             MeloMelo_GameSettings.GetLocalFileCharacterStats,
             MeloMelo_GameSettings.GetLocalFileSkillDatabase,
             MeloMelo_GameSettings.GetLocalFileVirtualItemData,
-            MeloMelo_GameSettings.GetLocalFileAdventureMode
+            MeloMelo_GameSettings.GetLocalFileAdventureMode,
+            MeloMelo_GameSettings.GetLocalFileElementScoreRPG,
+            MeloMelo_GameSettings.GetLocalFileZoneRewardRecord,
+            MeloMelo_GameSettings.GetLocalFileRPGElementRecord,
+            MeloMelo_GameSettings.GetLocalFileTrackComboProgress
         };
 
         LoginPage_Script.thisPage.Icon.SetActive(true);
@@ -210,7 +216,7 @@ public class GuestLogin_Script : MonoBehaviour
         }
 
         yield return new WaitForSeconds(0.5f);
-        LoadingUI.SetActive(false);
+        loadingProgressScreen.GetComponent<LoadingContent_Script>().DoneLoading();
     }
 
     private IEnumerator CheckingProgressLoaded(string path, int id)
@@ -223,19 +229,19 @@ public class GuestLogin_Script : MonoBehaviour
             case 0:
                 Task<List<ScoreDatabase>> isProgressScore = data.PreLoading_ScoreData();
                 yield return new WaitUntil(() => isProgressScore.IsCompleted);
-                yield return StartCoroutine(data.PostLoading_ScoreData(isProgressScore.Result.ToArray()));
+                yield return StartCoroutine(data.PostLoading_ScoreData(isProgressScore.Result));
                 break;
 
             case 1:
                 Task<List<PointDatabase>> isProgressPoint = data.PreLoading_PointData();
                 yield return new WaitUntil(() => isProgressPoint.IsCompleted);
-                yield return StartCoroutine(data.PostLoading_PointData(isProgressPoint.Result.ToArray()));
+                yield return StartCoroutine(data.PostLoading_PointData(isProgressPoint.Result));
                 break;
 
             case 2:
                 Task<List<BattleProgressDatabase>> isProgressBattleData = data.PreLoading_BattleProgressData();
                 yield return new WaitUntil(() => isProgressBattleData.IsCompleted);
-                yield return StartCoroutine(data.PostLoading_BattleProgressData(isProgressBattleData.Result.ToArray()));
+                yield return StartCoroutine(data.PostLoading_BattleProgressData(isProgressBattleData.Result));
                 break;
 
             case 3:
@@ -257,25 +263,49 @@ public class GuestLogin_Script : MonoBehaviour
             case 7:
                 Task<List<BattleUnitDatabase>> isCharacterStatsReady = data.PreLoading_CharacterStatsData();
                 yield return new WaitUntil(() => isCharacterStatsReady.IsCompleted);
-                yield return StartCoroutine(data.PostLoading_CharacterStatsData(isCharacterStatsReady.Result.ToArray()));
+                yield return StartCoroutine(data.PostLoading_CharacterStatsData(isCharacterStatsReady.Result));
                 break;
 
             case 8:
                 Task<List<SkillUnitDatabase>> isSkillsLoaded = data.PreLoading_SkillsData();
                 yield return new WaitUntil(() => isSkillsLoaded.IsCompleted);
-                yield return StartCoroutine(data.PostLoading_SkillsData(isSkillsLoaded.Result.ToArray()));
+                yield return StartCoroutine(data.PostLoading_SkillsData(isSkillsLoaded.Result));
                 break;
 
             case 9:
                 Task<bool> isVirtualItemLoaded = data.PreLoading_VirtualItemData();
                 yield return new WaitUntil(() => isVirtualItemLoaded.IsCompleted);
-                Debug.Log("Total Item Stored: " + MeloMelo_ItemUsage_Settings.GetActiveItems().Length);
+                Debug.Log("Total Item Stored: " + (MeloMelo_ItemUsage_Settings.GetActiveItems() != null ? MeloMelo_ItemUsage_Settings.GetActiveItems().Length : "N/A"));
                 break;
 
             case 10:
                 Task<List<AdventureStoreData>> isAdventureDataLoaded = data.Preloading_AdventureModeData();
                 yield return new WaitUntil(() => isAdventureDataLoaded.IsCompleted);
-                yield return StartCoroutine(data.PostLoading_AdventureModeData(isAdventureDataLoaded.Result.ToArray()));
+                yield return StartCoroutine(data.PostLoading_AdventureModeData(isAdventureDataLoaded.Result));
+                break;
+
+            case 11:
+                Task<List<ExtraElementScore>> isElementRPGScoreLoaded = data.PreLoading_ScoreElementRPG();
+                yield return new WaitUntil(() => isElementRPGScoreLoaded.IsCompleted);
+                yield return StartCoroutine(data.PostLoading_ScoreElementRPG(isElementRPGScoreLoaded.Result));
+                break;
+
+            case 12:
+                Task<List<PlayerZoneRewardRecord>> isRecordZoneRewardLoaded = data.Preloading_ZoneRewardRecord();
+                yield return new WaitUntil(() => isRecordZoneRewardLoaded.IsCompleted);
+                yield return StartCoroutine(data.PostLoading_ZoneRewardRecord(isRecordZoneRewardLoaded.Result));
+                break;
+
+            case 13:
+                Task<List<RPGElementDatabase>> isScoreRPGElementLoaded = data.Preloading_RPGElementScoreData();
+                yield return new WaitUntil(() => isScoreRPGElementLoaded.IsCompleted);
+                yield return StartCoroutine(data.PostLoading_RPGElementScoreData(isScoreRPGElementLoaded.Result));
+                break;
+
+            case 14:
+                Task<List<TrackComboProgressData>> isTrackComboProgressLoaded = data.Preloading_TrackComboProgress();
+                yield return new WaitUntil(() => isTrackComboProgressLoaded.IsCompleted);
+                yield return StartCoroutine(data.PostLoading_TrackComboProgress(isTrackComboProgressLoaded.Result));
                 break;
 
             default:

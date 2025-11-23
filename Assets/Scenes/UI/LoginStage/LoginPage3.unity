@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311947, g: 0.38074005, b: 0.35872722, a: 1}
+  m_IndirectSpecularColor: {r: 0.12731725, g: 0.13414745, b: 0.12107873, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -98,8 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: 4554a5c21cdd7004085084ae5978bdf6,
-    type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 4554a5c21cdd7004085084ae5978bdf6, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -886,7 +885,7 @@ MonoBehaviour:
   - {fileID: 515543199}
   entryFormDisplay: {fileID: 1188654580}
   profileList: {fileID: 613072030}
-  LoadingUI: {fileID: 192732032}
+  LoadingUI: {fileID: 3853888580635407936, guid: 3f5e563a57cca394fa9407f0dd48e0f2, type: 3}
   PlayerMenu:
   - {fileID: 1186164391}
   - {fileID: 15000377}
@@ -1080,7 +1079,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 35}
-  m_SizeDelta: {x: 80, y: 80}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &430725775
 MonoBehaviour:
@@ -1102,7 +1101,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: b3c4b26745f21e444837bf88dd04b510, type: 3}
+  m_Texture: {fileID: 2800000, guid: 89b88799033464f44b3f8e6bfec2a1e4, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -3513,8 +3512,7 @@ MonoBehaviour:
   m_text: No entry found
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c38775ed2822a6c41b2292744b1e92a2, type: 2}
-  m_sharedMaterial: {fileID: 21243777319734966, guid: c38775ed2822a6c41b2292744b1e92a2,
-    type: 2}
+  m_sharedMaterial: {fileID: 21243777319734966, guid: c38775ed2822a6c41b2292744b1e92a2, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3934,8 +3932,7 @@ MonoBehaviour:
   m_text: Your current session still on-going. What do you want it to do?
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5f898ded92947bc4ea743d746f0cd3a5, type: 2}
-  m_sharedMaterial: {fileID: 21671073235651406, guid: 5f898ded92947bc4ea743d746f0cd3a5,
-    type: 2}
+  m_sharedMaterial: {fileID: 21671073235651406, guid: 5f898ded92947bc4ea743d746f0cd3a5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4798,8 +4795,7 @@ MonoBehaviour:
   m_text: Entry List
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b2ffe09c7c86bbe4aafb64c43adfdcc3, type: 2}
-  m_sharedMaterial: {fileID: 21960655749452914, guid: b2ffe09c7c86bbe4aafb64c43adfdcc3,
-    type: 2}
+  m_sharedMaterial: {fileID: 21960655749452914, guid: b2ffe09c7c86bbe4aafb64c43adfdcc3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

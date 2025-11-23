@@ -15,9 +15,11 @@ public class Character : MonoBehaviour
     private CharacterSettings character;
     public CharacterSettings get_character { get { return character; } }
     public Character_StorageStats stats;
+    private StatsDistribution character_stats;
 
     private bool isJumping = false;
     private bool[] isAttacking = { false, false };
+    private int partySize = 0;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -86,7 +88,8 @@ public class Character : MonoBehaviour
                 character.AutoPlayField();
                 SetCharacterAutoField();
             }
-            else
+
+            else if (GameManager.thisManager.get_characterStatus.get_health > 0)
             {
                 PlayerSettingsControl();
                 PlayerAttackAction();
@@ -102,6 +105,11 @@ public class Character : MonoBehaviour
     {
         stats = new Character_StorageStats("NA", 1);
         character = new CharacterSettings();
+        character_stats = new StatsDistribution();
+
+        character_stats.load_Stats();
+        partySize = character_stats.get_unitSize();
+        MeloMelo_PlayEntries_Settings.AddEntriesToGamePlay(GameObject.Find("HotKey_Controller"), MeloMelo_PlayEntries_Settings.PlayEntries.KeyController);
     }
 
     private void LoadCharacterStats()
@@ -239,7 +247,9 @@ public class Character : MonoBehaviour
     {
         // Key Output: Display
         character.SwitchToNextAttackState();
-        GameObject.Find("HotKey_Controller").transform.GetChild(key_output).GetComponent<RawImage>().color = Color.black;
+
+        if (MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.KeyController) != null)
+            MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.KeyController).transform.GetChild(key_output).GetComponent<RawImage>().color = Color.black;
 
         // Suspend and get to the next available state
         if (!character.IsAttackFinished())
@@ -263,7 +273,9 @@ public class Character : MonoBehaviour
 
     private void CancelAttack(int output, int key)
     {
-        GameObject.Find("HotKey_Controller").transform.GetChild(output).GetComponent<RawImage>().color = Color.white;
+        if (MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.KeyController) != null)
+            MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.KeyController).transform.GetChild(output).GetComponent<RawImage>().color = Color.white;
+
         character.ResetAttackState();
         character.ResetAttackKey(key);
         isAttacking[key] = false;
@@ -441,12 +453,12 @@ public class Character : MonoBehaviour
         JudgeNote_MainField(note_define, sound);
 
         // Count all targets
-        int targetCount = MeloMelo_UnitData_Settings.GetSuccessHitOfAllEnemyTarget(note_define.note_index);
-        MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(targetCount + 1, note_define.note_index);
+        int targetCount = MeloMelo_UnitData_Settings.GetSuccessHitOfAllEnemyTarget(MeloMelo_UnitData_Settings.UnitData.SuccessHitForAttack);
+        MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(targetCount + 1, MeloMelo_UnitData_Settings.UnitData.SuccessHitForAttack);
 
         // Count any targets
-        int anyTargetCount = MeloMelo_UnitData_Settings.GetSuccessHitOfAllEnemyTarget();
-        MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(anyTargetCount + 1);
+        int anyTargetCount = MeloMelo_UnitData_Settings.GetSuccessHitOfAllEnemyTarget(MeloMelo_UnitData_Settings.UnitData.SuccessHitOnEverything);
+        MeloMelo_UnitData_Settings.SetSuccessHitOfAllEnemyTarget(anyTargetCount + 1, MeloMelo_UnitData_Settings.UnitData.SuccessHitOnEverything);
     }
 
     private void TimingSequenceForItem(Note_Script note_define, string sound)
@@ -485,7 +497,6 @@ public class Character : MonoBehaviour
     private void IncludePerfromanceScore(float _score)
     {
         GameManager.thisManager.FinalScoreMultipler(_score);
-        //if (PlayerPrefs.GetInt("MissCP", 0) > 0) scoreF.score_combo();
     }
 
     private void IncludeTechnicalScore(Note_Script target)
@@ -493,7 +504,7 @@ public class Character : MonoBehaviour
         bool isAttackAreReflectable = target.note_define_index == CharacterSettings.PICKUP_TYPE.NONE && target.note_index == 3;
         int bonusScoring = isAttackAreReflectable ? 2 : 1;
 
-        GameManager.thisManager.UpdateScore_Tech((PlayerPrefs.GetInt("Character_OverallPower", 0) / 3) * bonusScoring);
+        GameManager.thisManager.UpdateScore_Tech(PlayerPrefs.GetInt("Character_OverallPower", 0) / partySize * bonusScoring);
         if (isAttackAreReflectable) target.GetComponent<Notation_Motion_Script>().Reflect_MoveEffect();
     }
 
@@ -501,15 +512,20 @@ public class Character : MonoBehaviour
     {
         if (condition)
         {
+            int finalDamageCount = PlayerPrefs.GetInt("Character_OverallDamage", 0) + MeloMelo_ExtraStats_Settings.GetBonusDamage();
+            if (finalDamageCount <= 0) { finalDamageCount = Random.Range(0, 10) > 5 ? -1 : 0; }
+
             GameManager.thisManager.UpdateBattle_Progress((float)100 / GameManager.thisManager.getGameplayComponent.getTotalEnemy * multiple);
-            GameManager.thisManager.UpdateEnemy_Health(-PlayerPrefs.GetInt("Character_OverallDamage", 0) - MeloMelo_ExtraStats_Settings.GetBonusDamage(), false);
-            GameManager.thisManager.SpawnDamageIndicator(transform.position, 2,
-                -PlayerPrefs.GetInt("Character_OverallDamage", 0) - MeloMelo_ExtraStats_Settings.GetBonusDamage());
+            GameManager.thisManager.UpdateEnemy_Health(-finalDamageCount, false);
+            GameManager.thisManager.SpawnDamageIndicator(transform.position, 2, -finalDamageCount);
 
             // Prompt basic attack information
             GameManager.thisManager.gameObject.GetComponent<SkillManager>().PromptCharacterBaseDamage("Basic Attack",
                 -PlayerPrefs.GetInt("Character_OverallDamage", 0), -MeloMelo_ExtraStats_Settings.GetBonusDamage());
             stats.WEXP_input();
+
+            // Add enemy count
+            GameManager.thisManager.getGameplayComponent.AddEnemyCount(multiple >= 1 ? 1 : 0);
         }
     }
 
@@ -518,18 +534,22 @@ public class Character : MonoBehaviour
         if (stats.get_name != "NA")
         {
             int healing_value = 10;
-            StatsDistribution stats = new StatsDistribution();
-            stats.load_Stats();
+            int finalValue = 0;
 
-            foreach (ClassBase character in stats.slot_Stats)
+            foreach (ClassBase character in character_stats.slot_Stats)
             {
-                int originalValue = healing_value * (character.magic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(character.name));
-                healing_value += originalValue + MeloMelo_ItemUsage_Settings.GetPowerBoost(character.name) +
-                    originalValue * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(character.name);
+                int originalValue, boostedValue;
+                boostedValue = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(character.name) > 0 ? MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(character.name) : 1;
+                originalValue = (character.magic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(character.name) + MeloMelo_ItemUsage_Settings.GetPowerBoost(character.name)) * boostedValue;
+
+                finalValue += boostedValue * healing_value;
             }
 
-            GameManager.thisManager.UpdateCharacter_Health(healing_value, false);
-            GameManager.thisManager.SpawnDamageIndicator(transform.position, 1, healing_value);
+            GameManager.thisManager.UpdateCharacter_Health(finalValue, false);
+            GameManager.thisManager.SpawnDamageIndicator(transform.position, 1, finalValue);
+
+            // Add health pack count
+            GameManager.thisManager.getGameplayComponent.AddHealthPackCount();
         }
     }
     #endregion

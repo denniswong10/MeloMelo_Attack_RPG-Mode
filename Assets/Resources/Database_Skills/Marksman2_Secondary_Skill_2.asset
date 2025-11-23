@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e8b0e0e05ea2e4dbb347c649c3fe92, type: 3}
+  m_Name: Marksman2_Secondary_Skill_2
+  m_EditorClassIdentifier: 
+  skillName: Hooking Soul
+  skillIcon: {fileID: 2800000, guid: be0c2020e5d002d4b85f85b2ce1016d6, type: 3}
+  description: 'Unleash the hook by targeting an incoming enemy, if any of the enemy
+    got hits successful, heal character health by (MAG x 5% + Grade x 20%). At the
+    end of track, hits enemy health by (ATK x 10% + Grade x 5%) + (MAG x 5% + Grade
+    x 10%). '
+  target_caterogy: 0
+  customEffectData: []
+  isUnlockReady: 0

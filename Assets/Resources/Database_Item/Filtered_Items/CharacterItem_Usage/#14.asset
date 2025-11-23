@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4177df903b9ab8a48b39e8089ba02970, type: 3}
+  m_Name: '#14'
+  m_EditorClassIdentifier: 
+  itemName: Book of Power II
+  useTypeDetail: 3
+  dataArray: "{\"title\":\"This book contain the following stats upgrade.\",\"choice\":\"VIT\"}@{\"title\":\"The
+    following stats amount can be upgraded.\",\"choice\":\"50\"}@{\"title\":\"Do
+    you wish to use it for upgrade?\",\"choice\":\"YES*NO\"}@^\r13"

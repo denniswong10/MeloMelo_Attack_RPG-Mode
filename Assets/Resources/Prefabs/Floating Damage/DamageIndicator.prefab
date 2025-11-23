@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3260549791398313496}
   - component: {fileID: 7404948016209846538}
   - component: {fileID: 423759313449104771}
+  - component: {fileID: 2667704353611146455}
   m_Layer: 0
   m_Name: DamageIndicator
   m_TagString: Untagged
@@ -97,3 +98,15 @@ TextMesh:
   m_Color:
     serializedVersion: 2
     rgba: 4281502002
+--- !u!114 &2667704353611146455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6725129341257368947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6b183b3afafd0c42a0e91ff96ea25f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -72,5 +72,5 @@ MonoBehaviour:
       isOpen: 0
     - logTitle: End Of Story
       id: 11
-      mySlotTypte: 3
+      mySlotTypte: 4
       isOpen: 0

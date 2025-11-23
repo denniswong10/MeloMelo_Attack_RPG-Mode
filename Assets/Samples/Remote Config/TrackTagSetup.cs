@@ -34,25 +34,36 @@ public class TrackTagSetup : MonoBehaviour
 
     async void Start()
     {
-        if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_PlayerSettings.LoginType.GuestLogin && AuthenticationService.Instance.IsSignedIn)
+        try
         {
-            await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
-            JsonConvertTrackAssign();
-            JsonConvertPlayEvent();
+            if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_PlayerSettings.LoginType.GuestLogin && AuthenticationService.Instance.IsSignedIn)
+            {
+                await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
+                JsonConvertTrackAssign();
+                JsonConvertPlayEvent();
+            }
+        }
+        catch
+        {
+            Debug.Log("Selection Tag: Disable");
         }
     }
 
     #region SETUP
     private void JsonConvertTrackAssign()
     {
-        releaseTag = new TrackTagSupport().SetReleaseTag(RemoteConfigService.Instance.appConfig.GetJson("TrackTag_Support"));
-        areaBonusTag = new TrackTagSupport2().SetBonusTag(RemoteConfigService.Instance.appConfig.GetJson("TrackTag_Support"));
+        try
+        {
+            releaseTag = new TrackTagSupport().SetReleaseTag(RemoteConfigService.Instance.appConfig.GetJson("TrackTag_Support"));
+            areaBonusTag = new TrackTagSupport2().SetBonusTag(RemoteConfigService.Instance.appConfig.GetJson("TrackTag_Support"));
 
-        foreach (string track in releaseTag.newReleaseTrack)
-            PlayerPrefs.SetInt(track + "_newReleaseTrack", 1);
+            foreach (string track in releaseTag.newReleaseTrack)
+                PlayerPrefs.SetInt(track + "_newReleaseTrack", 1);
 
-        foreach (string track in areaBonusTag.areaBonusTrack)
-            PlayerPrefs.SetInt(track + "_areaBonusTrack", 1);
+            foreach (string track in areaBonusTag.areaBonusTrack)
+                PlayerPrefs.SetInt(track + "_areaBonusTrack", 1);
+        }
+        catch { Debug.Log("Unable to connect network..."); }
     }
 
     private void JsonConvertPlayEvent()

@@ -15,7 +15,7 @@ MonoBehaviour:
   title: Season 4
   Area_BG: {fileID: 2800000, guid: 9103bf7215c60004191ace739c50206a, type: 3}
   sub_title: Level 5
-  chartType: 1
+  chartType: 2
   content_id: 4
   isRestricted: 0
   newContent: 1

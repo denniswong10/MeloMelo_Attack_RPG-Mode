@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StoryTitle: MeloLand
   StoryBG: {fileID: 2800000, guid: 8b0b03055ca3ae64a89186a1f3e28681, type: 3}
-  storyEndRewards: []
+  storyEndRewards:
+  - typeOfReward: 0
+    rewardName: 'Present Case: Story Reward from MeloLand'
   Stage:
   - numberOfSteps: 05000000
     Quest_Stage:
@@ -61,5 +63,5 @@ MonoBehaviour:
       isOpen: 0
     - logTitle: End Of Story
       id: 19
-      mySlotTypte: 3
+      mySlotTypte: 4
       isOpen: 0

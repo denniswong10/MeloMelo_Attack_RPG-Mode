@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b296974f7525ba64b81d387debbb4465, type: 3}
+  m_Name: R3
+  m_EditorClassIdentifier: 
+  title: All-In With Legacy Random
+  trackList:
+  - title: Random #1
+    areaName: Kingdom of Tiles/MeloLand
+    DifficultyType: 2
+    trackRandom: 1
+  - title: Random #2
+    areaName: Journey to North/Witch Woods/Mount Silent/Northern Ruin
+    DifficultyType: 2
+    trackRandom: 1
+  - title: Random #3
+    areaName: Lakeside Village/Lime Forestry
+    DifficultyType: 2
+    trackRandom: 1
+  - title: Random #4
+    areaName: New Mystical/Death Road
+    DifficultyType: 2
+    trackRandom: 1
+  Difficultylevel:
+  - '?'
+  - '?'
+  - '?'
+  - '?'
+  clearingType: 1
+  clearingValue: 500
+  conditionAddons:
+  - judgeTitle: 2
+    judgeCount: 1
+  - judgeTitle: 3
+    judgeCount: 2
+  - judgeTitle: 4
+    judgeCount: 3

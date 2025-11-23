@@ -21,15 +21,18 @@ public class StoragePage_Script : MonoBehaviour
 
     [SerializeField] private GameObject[] CurrencyPanel;
     [SerializeField] private GameObject OpenChoiceTemplate;
+    [SerializeField] private GameObject OpenChoiceResultUsage;
 
     private Queue<string> batchList;
     private bool isBatchPromptRunning;
+    private List<StorageMergeWarpper> allItemExclusive = null;
 
     void Start()
     {
         BGM_Loader();
         isBatchPromptRunning = false;
         batchList = new Queue<string>();
+        allItemExclusive = new List<StorageMergeWarpper>();
 
         Selection.GetComponent<Animator>().SetTrigger("Opening");
         Invoke("RefreshStorageLoader", 2);
@@ -39,8 +42,8 @@ public class StoragePage_Script : MonoBehaviour
     #region SETUP
     private void GetStorageOnCurrency()
     {
-        PlayerPrefs.SetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_Active Items", MeloMelo_ItemUsage_Settings.GetActiveItems() != null
-            ? MeloMelo_ItemUsage_Settings.GetActiveItems().Length : 0);
+        PlayerPrefs.SetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_Active Items", allItemExclusive != null ? allItemExclusive.ToArray().Length : 0);
+
         for (int instance = 0; instance < CurrencyPanel.Length; instance++)
             CurrencyPanel[instance].GetComponent<CurrencyInTag_Scripts>().UpdateCurrencyValue();
     }
@@ -65,33 +68,69 @@ public class StoragePage_Script : MonoBehaviour
     {
         int currentPage = PlayerPrefs.GetInt("StorageBag_PageIndex", 0);
         ClearSlotData();
-        //PerformItemFileLoader();
+        //PerformItemFileLoader();    
 
-        VirtualItemDatabase[] allItems = MeloMelo_ItemUsage_Settings.GetActiveItems();
-        GetStorageOnCurrency();
-
-        if (allItems != null)
+        if (allItemExclusive != null)
         {
+            allItemExclusive.Clear();
+
+            // Item: Individual
+            if (MeloMelo_ItemUsage_Settings.GetActiveItems() != null)
+            {
+                foreach (VirtualItemDatabase item in MeloMelo_ItemUsage_Settings.GetActiveItems())
+                {
+                    StorageMergeWarpper groupItem = new StorageMergeWarpper(StorageMergeWarpper.ItemCaterogyType.Item);
+                    groupItem.AddItem(item);
+                    allItemExclusive.Add(groupItem);
+                }
+            }
+
+            // Item Bundle: Warpped from marathon exchange
+            if (MeloMelo_ItemUsage_Settings.GetActiveMarathonItemWarp() != null)
+            {
+                foreach (MarathonExchangeWrapper itemInWarp in MeloMelo_ItemUsage_Settings.GetActiveMarathonItemWarp())
+                {
+                    StorageMergeWarpper warppedItem = new StorageMergeWarpper(StorageMergeWarpper.ItemCaterogyType.MarathonExchangeWarp);
+                    warppedItem.AddWarpper(itemInWarp);
+                    allItemExclusive.Add(warppedItem);
+                }
+            }
+
+            GetStorageOnCurrency();
+
             for (int slot_id = 0; slot_id < slots.Length; slot_id++)
             {
                 int currentSlot = slots.Length * currentPage + slot_id;
 
-                if (allItems.Length != 0 && currentSlot < allItems.Length)
+                if (allItemExclusive.ToArray().Length != 0 && currentSlot < allItemExclusive.ToArray().Length)
                 {
-                    int totalAmount = allItems[currentSlot].amount - MeloMelo_ItemUsage_Settings.GetItemUsed(allItems[currentSlot].itemName);
-
-                    if (totalAmount > 0)
+                    switch (allItemExclusive[currentSlot].storageWarpType)
                     {
-                        slots[slot_id].transform.GetChild(0).GetComponent<RawImage>().enabled = true;
-                        slots[slot_id].transform.GetChild(0).GetComponent<RawImage>().texture = RetrieveItemData(allItems[currentSlot].itemName).Icon;
-                        slots[slot_id].transform.GetChild(1).GetComponent<Text>().text = "x" + Mathf.Clamp(totalAmount, 0, 9999);
-                        PlayerPrefs.SetString(slot_id + "_Slot_ItemName", allItems[currentSlot].itemName);
+                        case StorageMergeWarpper.ItemCaterogyType.Item:
+                            int totalAmount = allItemExclusive[currentSlot].itemData.amount - MeloMelo_ItemUsage_Settings.GetItemUsed(allItemExclusive[currentSlot].itemData.itemName);
+
+                            if (totalAmount > 0)
+                            {
+                                slots[slot_id].transform.GetChild(0).GetComponent<RawImage>().enabled = true;
+                                slots[slot_id].transform.GetChild(0).GetComponent<RawImage>().texture = RetrieveItemData(allItemExclusive[currentSlot].itemData.itemName).Icon;
+                                slots[slot_id].transform.GetChild(1).GetComponent<Text>().text = "x" + Mathf.Clamp(totalAmount, 0, 9999);
+                                PlayerPrefs.SetString(slot_id + "_Slot_ItemName", allItemExclusive[currentSlot].itemData.itemName);
+                            }
+                            else
+                                PlayerPrefs.DeleteKey(slot_id + "_Slot_ItemName");
+                            break;
+
+                        default:
+                            slots[slot_id].transform.GetChild(0).GetComponent<RawImage>().enabled = true;
+                            slots[slot_id].transform.GetChild(0).GetComponent<RawImage>().texture = RetrieveItemData("Present Case: Story Reward from Kingdom of Tiles").Icon;
+                            slots[slot_id].transform.GetChild(1).GetComponent<Text>().text = "x" + Mathf.Clamp(1, 0, 9999);
+                            PlayerPrefs.SetString(slot_id + "_Slot_ItemName", allItemExclusive[currentSlot].warpperData.wrapperName);
+                            break;
                     }
-                    else
-                        PlayerPrefs.DeleteKey(slot_id + "_Slot_ItemName");
+
+                    // Sort item type to toggle item
+                    PlayerPrefs.SetInt(slot_id + "_Slot_ItemType", (int)allItemExclusive[currentSlot].storageWarpType);
                 }
-                else
-                    break;
             }
         }
     }
@@ -119,7 +158,7 @@ public class StoragePage_Script : MonoBehaviour
     {
         if (PlayerPrefs.HasKey(slot_index + "_Slot_ItemName"))
         {
-            ItemData currentData = RetrieveItemData(PlayerPrefs.GetString(slot_index + "_Slot_ItemName", string.Empty));
+            ItemData currentData = RetrieveItemData(PlayerPrefs.GetString(slot_index + "_Slot_ItemName", string.Empty), PlayerPrefs.GetInt(slot_index + "_Slot_ItemType", 0));
             string[] typeOfItems = { "Item", "Consumable", "Artifact", "Non-Item" };
             ItemDesPanel.transform.GetChild(0).GetComponent<Text>().text = currentData.itemName == string.Empty ? "???" :
                 currentData.itemName;
@@ -213,6 +252,7 @@ public class StoragePage_Script : MonoBehaviour
                         break;
 
                     case UsageOfItemDetail.UseType.OpenResultUsage:
+                        PerformChoicePrompt(item);
                         break;
                 }
 
@@ -227,19 +267,37 @@ public class StoragePage_Script : MonoBehaviour
     {
         NagivatorSelector[0].interactable = PlayerPrefs.GetInt("StorageBag_PageIndex", 0) > 0;
         NagivatorSelector[1].interactable = PlayerPrefs.GetInt("StorageBag_PageIndex", 0) < GetTotalPageAvailable();
-        PageIndicator.text = PlayerPrefs.GetInt("StorageBag_PageIndex", 0) + "/" + GetTotalPageAvailable();
+        PageIndicator.text = (1 + PlayerPrefs.GetInt("StorageBag_PageIndex", 0)) + "/" + (1 + GetTotalPageAvailable());
     }
 
     private int GetTotalPageAvailable()
     {
-        int total = MeloMelo_ItemUsage_Settings.GetActiveItems() != null ? MeloMelo_ItemUsage_Settings.GetActiveItems().Length : 0;
-        return total / slots.Length;
+        int total = allItemExclusive != null ? allItemExclusive.ToArray().Length : 0;
+        int pageFixedValue = total / slots.Length;
+        return total % slots.Length != 0 ? pageFixedValue : pageFixedValue - 1;
     }
 
-    private ItemData RetrieveItemData(string itemName)
+    private ItemData RetrieveItemData(string itemName, int itemModel = 0)
     {
-        foreach (ItemData item in Resources.LoadAll<ItemData>("Database_Item")) if (item.itemName == itemName) return item;
-        return Resources.Load<ItemData>("Database_Item/#0");
+        switch (itemModel)
+        {
+            case (int)StorageMergeWarpper.ItemCaterogyType.Item:
+                foreach (ItemData item in MeloMelo_GameSettings.preloaded_itemListing) if (item.itemName == itemName) return item;
+                return Resources.Load<ItemData>("Database_Item/#0");
+
+            case (int)StorageMergeWarpper.ItemCaterogyType.MarathonExchangeWarp:
+                ItemData referenceData = Resources.Load<ItemData>("Database_Item/#74");
+                ItemData itemForWarp = ScriptableObject.CreateInstance<ItemData>();
+
+                itemForWarp.itemName = referenceData.itemName + itemName;
+                itemForWarp.description = referenceData.description;
+                itemForWarp.Icon = referenceData.Icon;
+                itemForWarp.thisItemType = referenceData.thisItemType;
+                itemForWarp.itemValue = referenceData.itemValue;
+                return itemForWarp;
+        }
+
+        return null;
     }
 
     private IEnumerator PromptMessageBox(string message)
@@ -311,6 +369,9 @@ public class StoragePage_Script : MonoBehaviour
         List<ItemRateContainer> itemListing = new List<ItemRateContainer>();
         string[] itemInArray = production.dataArray.Split("/");
 
+        int mysterygranted = MeloMelo_ItemProbability_Settings.GetWinnerPrize() ? MeloMelo_ItemProbability_Settings.GetSpecialWinningPercentage() : 0;
+        MeloMelo_ItemProbability_Settings.ResetRarityRate();
+
         foreach (string item in itemInArray)
         {
             if (item != string.Empty) 
@@ -319,10 +380,14 @@ public class StoragePage_Script : MonoBehaviour
 
         foreach (ItemRateContainer itemSearch in itemListing)
         {
-            if (fixedPercentageRate - itemSearch.obtainableRate >= generateNumber)
-            {               
+            float customObtainRate = mysterygranted == 0 ? generateNumber : mysterygranted;
+            
+            if (fixedPercentageRate - itemSearch.obtainableRate >= customObtainRate)
+            {
                 GiveawayItemToPlayer(itemSearch.itemName, itemSearch.amount);
-                Debug.Log("SuccessRate: " + generateNumber + " %");
+                MeloMelo_ItemProbability_Settings.IncreaseRarityRate();
+
+                Debug.Log("SuccessRate: " + customObtainRate + " % ( " + MeloMelo_ItemProbability_Settings.GetWinningChanceRate() + " % rare obtain chance )");
                 Debug.Log("Item Obtained: " + itemSearch.itemName + " | " + itemSearch.obtainableRate + " %");
 
                 yield return new WaitForSeconds(0.5f);
@@ -360,6 +425,19 @@ public class StoragePage_Script : MonoBehaviour
     #endregion
 
     #region MISC (System File)
+    private void PerformChoicePrompt(UsageOfItemDetail usageData)
+    {
+        if (GameObject.Find("OpenChoice_Setup") == null)
+        {
+            GameObject instance = Instantiate(OpenChoiceResultUsage, Selection.transform);
+            instance.name = "OpenChoice_Setup";
+
+            int activationTicket = int.Parse(usageData.dataArray.Split("^")[1]);
+            instance.GetComponent<OpenChoiceSetupScript>().Setup(activationTicket, usageData, "None");
+            instance.GetComponent<OpenChoiceSetupScript>().SetupPromptMessage(AlertPop);
+        }
+    }
+
     private void PerformItemUpdateFile(string itemName, int updateAmount)
     {
         switch (LoginPage_Script.thisPage.portNumber)

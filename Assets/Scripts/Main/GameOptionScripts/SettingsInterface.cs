@@ -30,6 +30,9 @@ interface ISettings
 
     void InternalPanelCodeReedem(GameObject id);
     void InternalPanelFilledCode(GameObject id);
+    void InternalPanelPlayRewardHandler(GameObject id);
+    void InternalPanelPlayAlertDisplayHandler(GameObject id);
+    void InternalPanelPlaySkipDisplayHandler(GameObject id);
 }
 
 public class SettingsInterface : MonoBehaviour, ISettings
@@ -40,6 +43,7 @@ public class SettingsInterface : MonoBehaviour, ISettings
     [SerializeField] private Dropdown[] AutoSaveConfigArray;
     [SerializeField] private Dropdown[] UnitDisplayInterfaceArray;
     [SerializeField] private Dropdown[] OtherVisualDataArray;
+    [SerializeField] private GameObject[] PlayEventCheckBoxArray;
 
     private SettingsManager option;
     private Options_Menu main;
@@ -98,6 +102,13 @@ public class SettingsInterface : MonoBehaviour, ISettings
             MeloMelo_PlayerSettings.GetAutoSavePlaySettings_ValueKey
         };
 
+        string[] playEventKeyArray =
+        {
+            MeloMelo_PlayerSettings.GetPlayEventSettings_DisplayKey,
+            MeloMelo_PlayerSettings.GetPlayEventSettings_RewardKey,
+            MeloMelo_PlayerSettings.GetPlayEventSettings_SkipKey
+        };
+
         if (option != null)
         {
             // Audio Toggle
@@ -123,6 +134,10 @@ public class SettingsInterface : MonoBehaviour, ISettings
             // Auto Save Checklist
             for (int autoSave_index = 0; autoSave_index < AutoSaveConfigArray.Length; autoSave_index++)
                 option.ToggleSettingsUsingDropdown(AutoSaveConfigArray[autoSave_index], autoSaveKeyArray[autoSave_index], true, 1);
+
+            // Play Event Options
+            for (int playEventOption = 0; playEventOption < PlayEventCheckBoxArray.Length; playEventOption++)
+                option.ToggleSettingsUsingCheckbox(PlayEventCheckBoxArray[playEventOption], playEventKeyArray[playEventOption], true, true);
         }
     }
     #endregion
@@ -200,6 +215,24 @@ public class SettingsInterface : MonoBehaviour, ISettings
     {
         // Adjust panel settings for enemy damage indicator
         if (option != null) option.ToggleSettingsUsingCheckbox(id, MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey);
+    }
+
+    public void InternalPanelPlayRewardHandler(GameObject id)
+    {
+        // Adjust panel settings for play event rewards
+        if (option != null) option.ToggleSettingsUsingCheckbox(id, MeloMelo_PlayerSettings.GetPlayEventSettings_RewardKey);
+    }
+
+    public void InternalPanelPlayAlertDisplayHandler(GameObject id)
+    {
+        // Adjust panel settings for play event message display
+        if (option != null) option.ToggleSettingsUsingCheckbox(id, MeloMelo_PlayerSettings.GetPlayEventSettings_DisplayKey);
+    }
+
+    public void InternalPanelPlaySkipDisplayHandler(GameObject id)
+    {
+        // Adjust panel settings for play event skip message display
+        if (option != null) option.ToggleSettingsUsingCheckbox(id, MeloMelo_PlayerSettings.GetPlayEventSettings_SkipKey);
     }
     #endregion
 

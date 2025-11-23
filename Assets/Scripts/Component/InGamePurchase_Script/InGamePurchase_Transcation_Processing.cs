@@ -116,17 +116,18 @@ public class InGamePurchase_Transcation_Processing : MonoBehaviour
         itemReceiver.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
 
         // Item is to be exchanged
-        itemReceiver.SaveVirtualItemFromPlayer(itemToBeExchange.itemName, totalAmountForExchange, itemToBeExchange.stackable);
+        //itemReceiver.SaveVirtualItemFromPlayer(itemToBeExchange.itemName, totalAmountForExchange, itemToBeExchange.stackable);
 
         // Currency have be deducted
-        itemReceiver.SaveVirtualItemFromPlayer("HONOR COIN", -currenyToBeDeduct, itemToBeExchange.stackable);
+        //itemReceiver.SaveVirtualItemFromPlayer("HONOR COIN", -currenyToBeDeduct, itemToBeExchange.stackable);
 
         // To Load: Item have been reimport into the game
-        MeloMelo_ItemUsage_Settings.OverwriteActiveItem("HONOR COIN", -currenyToBeDeduct);
-        MeloMelo_ItemUsage_Settings.OverwriteActiveItem(itemToBeExchange.itemName, totalAmountForExchange);
+        //MeloMelo_ItemUsage_Settings.OverwriteActiveItem("HONOR COIN", -currenyToBeDeduct);
+        PlayerPrefs.SetInt("HONOR COIN" + "_VirtualItem_Unsaved_Used", currenyToBeDeduct);
+        MeloMelo_ItemUsage_Settings.CreateMarathonExchangePack(new VirtualItemDatabase(itemToBeExchange.itemName, totalAmountForExchange));
         
         PlayerPrefs.SetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_" + MeloMelo_Economy.currencyTagInArray[(int)MeloMelo_Economy.CurrencyType.HonorCoin],
-            MeloMelo_ItemUsage_Settings.GetActiveItem("HONOR COIN").amount);
+            MeloMelo_ItemUsage_Settings.GetActiveItem("HONOR COIN").amount - MeloMelo_ItemUsage_Settings.GetItemUsed("HONOR COIN"));
 
         // Continue user interface 
         TranscationCompleted();

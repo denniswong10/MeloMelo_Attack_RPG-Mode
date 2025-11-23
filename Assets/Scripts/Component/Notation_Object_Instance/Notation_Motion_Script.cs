@@ -28,7 +28,24 @@ public class Notation_Motion_Script : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Motion_Reset();
+    }
+
+    void Update()
+    {
+        if (gameObject.activeInHierarchy)
+        {
+            if (!mainScript.isNotationHit || direction_type != Direction.Backward) return;
+            Perform_Reflect_Movement();
+        }
+    }
+
+    #region SETUP
+    public void Motion_Reset()
+    {
         mainScript = GetComponent<Note_Script>();
+        direction_type = Direction.Forward;
+
         isReadyToRoll = false;
         isRollCompleted = false;
 
@@ -42,13 +59,6 @@ public class Notation_Motion_Script : MonoBehaviour
         StartActionRolling();
     }
 
-    void Update()
-    {
-        if (!mainScript.isNotationHit || direction_type != Direction.Backward) return;
-        Perform_Reflect_Movement();
-    }
-
-    #region SETUP
     private void StartActionRolling()
     {
         if (direction_type == Direction.Backward) return;
@@ -99,7 +109,7 @@ public class Notation_Motion_Script : MonoBehaviour
 
     public void CheckLogicOnMiss()
     {
-        if (direction_type == Direction.None) Destroy(gameObject);
+        if (direction_type == Direction.None) mainScript.AddWaitCacheEnds(false, BeatConductor.thisBeat.get_BPM_Calcuate);
     }
 
     private void Perform_Forward_Movement()
@@ -123,7 +133,7 @@ public class Notation_Motion_Script : MonoBehaviour
     private void Perform_Reflect_Movement()
     {
         if (transform.position.z >= 1)
-            Destroy(gameObject);
+            mainScript.AddWaitCacheEnds(false, BeatConductor.thisBeat.get_BPM_Calcuate);
 
         else
             transform.Translate(Vector3.forward * BeatConductor.thisBeat.get_BPM_Calcuate * note_speed * Time.deltaTime);
@@ -231,8 +241,8 @@ public class Notation_Motion_Script : MonoBehaviour
         switch (index)
         {
             case 1:
-                GetComponent<BoxCollider>().enabled = previousNote == null || !previousNote.activeInHierarchy;
                 direction_type = Direction.None;
+                GetComponent<BoxCollider>().enabled = previousNote == null || !previousNote.activeInHierarchy;
                 mainScript.BeginNotationTimeOut();
                 break;
 

@@ -16,6 +16,9 @@ public class TrackDetails
     public string areaName;
     public enum DifficultyList { NORMAL = 1, HARD, ULTIMATE }
     public DifficultyList DifficultyType;
+
+    [Header("Extra Features: Randomize")]
+    public bool trackRandom;
 }
 
 [CreateAssetMenu(fileName = "MarathonInfo", menuName = "ChallengeInfo")]

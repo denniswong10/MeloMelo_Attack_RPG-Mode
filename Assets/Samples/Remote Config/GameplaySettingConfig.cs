@@ -50,38 +50,48 @@ public class GameplaySettingConfig : MonoBehaviour
     #region COMPONENT
     private int GetRemoteConfigurationOfNoteSpeed(int bpmState, int index)
     {
-        if (isLogin)
+        try
         {
-            int selectedSpeed = 0;
-            string jsonForamt = RemoteConfigService.Instance.appConfig.GetJson("NoteSpeed_Settings_Configuration");
-            string jsonFormat_default = RemoteConfigService.Instance.appConfig.GetJson("NoteSpeed_Default_Configuration");
+            if (isLogin)
+            {
+                int selectedSpeed = 0;
+                string jsonForamt = RemoteConfigService.Instance.appConfig.GetJson("NoteSpeed_Settings_Configuration");
+                string jsonFormat_default = RemoteConfigService.Instance.appConfig.GetJson("NoteSpeed_Default_Configuration");
 
-            selectedSpeed = GetNoteSpeedInArrayForm(bpmState, jsonForamt);
+                selectedSpeed = GetNoteSpeedInArrayForm(bpmState, jsonForamt);
 
-            if (selectedSpeed == 0)
-                selectedSpeed = GetNoteSpeedInSingleForm(bpmState, jsonFormat_default);
+                if (selectedSpeed == 0)
+                    selectedSpeed = GetNoteSpeedInSingleForm(bpmState, jsonFormat_default);
 
-            Debug.Log("Use config through network: NoteSpeed[" + index + ", " + selectedSpeed +"]");
-            return selectedSpeed + (index * 5);
+                Debug.Log("Use config through network: NoteSpeed[" + index + ", " + selectedSpeed + "]");
+                return selectedSpeed + (index * 5);
+            }
+            else
+                return GetLocalConfigurationNoteSpeed(bpmState, index);
         }
-        else
+        catch
         {
-            int selectedSpeed = 0;
-
-            MeloMelo_Local.LocalLoad_DataManagement setting = new MeloMelo_Local.LocalLoad_DataManagement
-                (
-                    string.Empty,
-                    "StreamingAssets/PlaySettings"
-                );
-
-            selectedSpeed = GetNoteSpeedInArrayForm(bpmState, setting.GetLocalJsonFile("MeloMelo_NoteSpeed_Configuration.json", false));
-
-            if (selectedSpeed == 0)
-                selectedSpeed = GetNoteSpeedInSingleForm(bpmState, setting.GetLocalJsonFile("MeloMelo_NoteSpeed_Default_Configuration.json", false));
-
-            Debug.Log("Use config through local: NoteSpeed[" + index + ", " + selectedSpeed + "]");
-            return selectedSpeed + (index * 5);
+            return GetLocalConfigurationNoteSpeed(bpmState, index);
         }
+    }
+
+    private int GetLocalConfigurationNoteSpeed(int bpmState, int index)
+    {
+        int selectedSpeed = 0;
+
+        MeloMelo_Local.LocalLoad_DataManagement setting = new MeloMelo_Local.LocalLoad_DataManagement
+            (
+                string.Empty,
+                "StreamingAssets/PlaySettings"
+            );
+
+        selectedSpeed = GetNoteSpeedInArrayForm(bpmState, setting.GetLocalJsonFile("MeloMelo_NoteSpeed_Configuration.json", false));
+
+        if (selectedSpeed == 0)
+            selectedSpeed = GetNoteSpeedInSingleForm(bpmState, setting.GetLocalJsonFile("MeloMelo_NoteSpeed_Default_Configuration.json", false));
+
+        Debug.Log("Use config through local: NoteSpeed[" + index + ", " + selectedSpeed + "]");
+        return selectedSpeed + (index * 5);
     }
 
     private int GetNoteSpeedInArrayForm(int state, string dataString)

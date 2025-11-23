@@ -66,6 +66,44 @@ public class Local_Save_Script : MonoBehaviour
                 GameManager.thisManager.get_score1.get_score,
                 MeloMelo_GameSettings.GetScoreRankStructure(GameManager.thisManager.get_score1.get_score.ToString()).rank);
 
+            // Data: Update area leveling system
+            if (!PlayerPrefs.HasKey("CharacterKnockOutSuccessful"))
+            {
+                int currentLevel = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_areaLevel" + MeloMelo_GameSettings.GetAreaDifficultyMode() + MeloMelo_GameSettings.GetTrackDifficultyMode(), 1);
+                int currentExperience = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_areaExperience" + MeloMelo_GameSettings.GetAreaDifficultyMode() + MeloMelo_GameSettings.GetTrackDifficultyMode(), 0);
+                int finalCalculatedExp = currentExperience + PlayerPrefs.GetInt("UpperScoreTech", 0);
+
+                if (currentLevel < MeloMelo_GameSettings.maxLevelZoneArea)
+                {
+                    while (finalCalculatedExp >= GetZoneMaxExperience())
+                    {
+                        int maxExperience = GetZoneMaxExperience();
+                        PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_areaLevel" + MeloMelo_GameSettings.GetAreaDifficultyMode() + MeloMelo_GameSettings.GetTrackDifficultyMode(), currentLevel + 1);
+                        finalCalculatedExp -= maxExperience;
+                    }
+
+                    PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_areaExperience" + MeloMelo_GameSettings.GetAreaDifficultyMode() + MeloMelo_GameSettings.GetTrackDifficultyMode(), finalCalculatedExp);
+                }
+                else
+                    PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_areaExperience" + MeloMelo_GameSettings.GetAreaDifficultyMode() + MeloMelo_GameSettings.GetTrackDifficultyMode(), 0);
+            }
+
+            // Save: Element Score RPG
+            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileElementScoreRPG);
+            data.SaveElementRPGScore(BeatConductor.thisBeat.Music_Database.Title,
+                MeloMelo_GameSettings.GetTrackDifficultyMode(),
+                MeloMelo_GameSettings.GetAreaDifficultyMode()
+                );
+
+            // Save: Track Combo
+            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileTrackComboProgress);
+            data.SaveProgressComboData(BeatConductor.thisBeat.Music_Database.Title,
+                MeloMelo_GameSettings.GetTrackDifficultyMode(),
+                GameManager.thisManager.getJudgeWindow.getMaxCombo,
+                GameManager.thisManager.getJudgeWindow.getOverallCombo,
+                (int)GameManager.thisManager.get_score1.get_score == BeatConductor.thisBeat.fixedScore + GameManager.thisManager.getJudgeWindow.getOverallCombo
+                );
+
             // Save: Points
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFilePointData);
             data.SavePointProgress(BeatConductor.thisBeat.Music_Database.Title,
@@ -78,8 +116,8 @@ public class Local_Save_Script : MonoBehaviour
             data.SaveBattleProgress(
                 BeatConductor.thisBeat.Music_Database.Title,
                 PlayerPrefs.GetInt("DifficultyLevel_valve", 1),
-                PlayerPrefs.GetInt("BattleDifficulty_Mode", 1),
-                PlayerPrefs.GetString(BeatConductor.thisBeat.Music_Database.Title + "_SuccessBattle_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + PlayerPrefs.GetInt("BattleDifficulty_Mode", 1), "F") == "T" ? true : false,
+                MeloMelo_GameSettings.GetAreaDifficultyMode(),
+                PlayerPrefs.GetString(BeatConductor.thisBeat.Music_Database.Title + "_SuccessBattle_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1) + MeloMelo_GameSettings.GetAreaDifficultyMode(), "F") == "T" ? true : false,
                 (int)GameManager.thisManager.get_score2.get_score);
 
 
@@ -94,6 +132,14 @@ public class Local_Save_Script : MonoBehaviour
             // Save: Account
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileAccountSettings);
             data.SaveAccountSettings();
+
+            // Save: RPG Element Data
+            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileRPGElementRecord);
+            data.SaveProgressOfRPGElementData(BeatConductor.thisBeat.Music_Database.Title,
+                MeloMelo_GameSettings.GetAreaDifficultyMode(),
+                PlayerPrefs.GetInt("DifficultyLevel_valve", 1),
+                GameManager.thisManager.getGameplayComponent
+                );
 
             // Save: Last Selection Point
             data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileSelectionData);
@@ -124,6 +170,13 @@ public class Local_Save_Script : MonoBehaviour
                             PlayerPrefs.SetInt(character.name + "_POWER_BOOST", 0);
                         if (MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(character.name) > 0)
                             PlayerPrefs.SetInt(character.name + "_POWER_BOOST_2", 0);
+
+                        if (MeloMelo_ItemUsage_Settings.GetExtraBoostLifePoint(character.name) > 0)
+                            PlayerPrefs.SetInt(character.name + "_LifePoint_Value", 0);
+
+                        // Reset usage of pot slot
+                        PlayerPrefs.DeleteKey(character.name + "_EXP_USAGE_COUNT");
+                        PlayerPrefs.DeleteKey(character.name + "_POWER_USAGE_COUNT");
                     }
                 }
 
@@ -157,16 +210,43 @@ public class Local_Save_Script : MonoBehaviour
                     }
                 }
 
+                // Unload: Marathon Exchange Item
+                if (MeloMelo_ItemUsage_Settings.GetActiveMarathonItemWarp() != null)
+                {
+                    foreach (MarathonExchangeWrapper itemWarp in MeloMelo_ItemUsage_Settings.GetActiveMarathonItemWarp())
+                    {
+                        if (itemWarp.itemContainer != null)
+                        {
+                            foreach (VirtualItemDatabase item in itemWarp.itemContainer)
+                            {
+                                // Store item in local
+                                data.SaveVirtualItemFromPlayer(item.itemName, item.amount, true);
+
+                                mainScript.PromptMessage.SetActive(true);
+                                mainScript.PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Marathon Exchange: " +
+                                    item.itemName + " ( x" + item.amount + " )";
+
+                                yield return new WaitForSeconds(1);
+                            }
+                        }
+                    }
+
+                    // Done with unwarpping
+                    mainScript.PromptMessage.SetActive(false);
+                    MeloMelo_ItemUsage_Settings.ConvertItemWarpDone();
+                }
+
+                // Event: Item Obtain
                 StartCoroutine(PlayEventControl());
             }
             else 
                 StartCoroutine(PlayMarathonReward());
 
+            yield return new WaitUntil(() => postProcessing.GetProcessingComplete());
             LoadAllItemToLocal();
         }
 
         yield return new WaitForSeconds(!isInvaild ? 5 : 1);
-        yield return new WaitUntil(() => postProcessing.GetProcessingComplete());
         mainScript.ContentSavedCompleted(serverTitle, isInvaild);
 
         yield return new WaitForSeconds(1);
@@ -222,30 +302,41 @@ public class Local_Save_Script : MonoBehaviour
 
     private IEnumerator GatherFragmentAfterBattle()
     {
-        postProcessing.BeginProcess();
-
-        LocalSave_DataManagement data = new LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
-                "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
-
-        ItemData item = Resources.Load<ItemData>("Database_Item/#49");
-        int itemChanceObtain = 100 - Random.Range(1, 100);
-        int maxAmount = itemChanceObtain >= 55 ? 1 : 0;
-
-        if (item && maxAmount > 0)
+        if (!PlayerPrefs.HasKey("CharacterKnockOutSuccessful"))
         {
+            postProcessing.BeginProcess();
+
+            LocalSave_DataManagement data = new LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
+                    "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+
+            ItemData item = Resources.Load<ItemData>("Database_Item/#49");
+            int itemChanceObtain = Random.Range(1, 100);
+            int maxAmount = (PlayerPrefs.HasKey("EnemyKnockOutSuccessful") ? 1 : 0) + (itemChanceObtain >= 80 ? 1 : 0);
             mainScript.PromptMessage.SetActive(true);
-            mainScript.PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Item Obtained: " +
-                item.itemName + " ( x" + maxAmount + " )";
 
-            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
-            data.SaveVirtualItemFromPlayer(item.itemName, maxAmount, true);
+            if (item != null)
+            {
+                if (maxAmount > 0)
+                {
+                    mainScript.PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Item Obtained: " +
+                    item.itemName + " ( x" + maxAmount + " )";
+
+                    data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
+                    data.SaveVirtualItemFromPlayer(item.itemName, maxAmount, true);
+                }
+                else
+                {
+                    mainScript.PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Gathering Mode: " +
+                    item.itemName + " [ No drop obtained ]";
+
+                    Debug.Log("Map Fragment Chance: " + itemChanceObtain + " %");
+                }
+            }
+
+            yield return new WaitForSeconds(1);
+            mainScript.PromptMessage.SetActive(false);
+            postProcessing.CompletedProcess();
         }
-        else
-            Debug.Log("Map Fragment Chance: " + itemChanceObtain + " %");
-
-        yield return new WaitForSeconds(1);
-        mainScript.PromptMessage.SetActive(false);
-        postProcessing.CompletedProcess();
     }
 
     private IEnumerator ClaimRewardAdventureSeries()
@@ -311,7 +402,8 @@ public class Local_Save_Script : MonoBehaviour
         // Save: Reward Items
         data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
 
-        if (MeloMelo_ExtensionContent_Settings.GetEventRewardArray() != null)
+        if (PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_RewardKey) == 1 && 
+            MeloMelo_ExtensionContent_Settings.GetEventRewardArray() != null)
         {
             postProcessing.BeginProcess();
 
@@ -338,16 +430,19 @@ public class Local_Save_Script : MonoBehaviour
                     data.SaveVirtualItemFromPlayer(item.itemName, item.maxObtain, true);
                     int currentObtain = PlayerPrefs.GetInt(eventPlayId + "_RepeatableRewarding", 1);
                     PlayerPrefs.SetInt(eventPlayId + "_RepeatableRewarding", currentObtain + 1);
+
+                    yield return new WaitForSeconds(1.5f);
                 }
-                else
+                else if (PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_SkipKey) == 0)
                 {
                     mainScript.PromptMessage.SetActive(true);
-                    mainScript.PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Item Review: " +
+                    mainScript.PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Play Event: " +
                     item.itemName + " (" + PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_playedCount_EventReward", 0) +
                     "/" + item.playRequirement * PlayerPrefs.GetInt(eventPlayId + "_RepeatableRewarding", 1) + " )";
+
+                    yield return new WaitForSeconds(1.5f);
                 }
 
-                yield return new WaitForSeconds(1.5f);
                 mainScript.PromptMessage.SetActive(false);
                 eventPlayId++;
             }
@@ -355,8 +450,60 @@ public class Local_Save_Script : MonoBehaviour
             postProcessing.CompletedProcess();
         }
 
-        if (PlayerPrefs.HasKey("GatheringMode")) StartCoroutine(GatherFragmentAfterBattle());
+        if (PlayerPrefs.HasKey("GatheringMode")) yield return StartCoroutine(GatherFragmentAfterBattle());
+        StartCoroutine(ZoneControlReward());
+    }
+
+    private IEnumerator ZoneControlReward()
+    {
+        LocalSave_DataManagement record = new LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
+                "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+        record.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileZoneRewardRecord);
+
+        LocalSave_DataManagement itemGetter = new LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
+                "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+        itemGetter.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
+
+
+        int levelCheck = 1;
+        int currentLevel = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_areaLevel" + MeloMelo_GameSettings.GetAreaDifficultyMode() + MeloMelo_GameSettings.GetTrackDifficultyMode(), 1);
+        postProcessing.BeginProcess();
+
+        while (levelCheck <= currentLevel)
+        {
+            bool isObtainAvailable = PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_" +
+                MeloMelo_GameSettings.GetAreaDifficultyMode() + MeloMelo_GameSettings.GetTrackDifficultyMode() + 
+                    "_" + levelCheck + "_rewardObtain", 0) == 0 ?
+                        true : false;
+
+            if (isObtainAvailable)
+            {
+                MeloMelo_AreaZoneData targetReward = MeloMelo_GameSettings.GetZoneData(levelCheck);
+
+                if (targetReward.obtainName != string.Empty)
+                {
+                    mainScript.PromptMessage.SetActive(true);
+                    mainScript.PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Zone Reward: " + targetReward.obtainName + " ( x" + targetReward.amount + " )";
+
+                    itemGetter.SaveVirtualItemFromPlayer(targetReward.obtainName, targetReward.amount, true);
+                    PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_" + MeloMelo_GameSettings.GetAreaDifficultyMode() + MeloMelo_GameSettings.GetTrackDifficultyMode() + 
+                        "_" + levelCheck + "_rewardObtain", 1);
+
+                    yield return new WaitForSeconds(1);
+                }
+
+                // Save: Zone Reward
+                record.SaveAreaWithZoneReward(BeatConductor.thisBeat.Music_Database.Title, MeloMelo_GameSettings.GetAreaDifficultyMode(), MeloMelo_GameSettings.GetTrackDifficultyMode(), levelCheck, true);
+            }
+
+            levelCheck++;
+        }
+
+        mainScript.PromptMessage.SetActive(false);
         StartCoroutine(ClaimRewardAdventureSeries());
+
+        yield return new WaitForSeconds(1);
+        postProcessing.CompletedProcess();
     }
 
     private void LoadAllItemToLocal()
@@ -365,6 +512,17 @@ public class Local_Save_Script : MonoBehaviour
                "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
         loadData.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
         StartCoroutine(loadData.PostLoading_VirtualItemData());
+    }
+
+    private int GetZoneMaxExperience()
+    {
+        int maxExperience = MeloMelo_GameSettings.GetZoneData(PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_areaLevel" +
+            MeloMelo_GameSettings.GetAreaDifficultyMode() + MeloMelo_GameSettings.GetTrackDifficultyMode(), 1)) != null
+
+                ? MeloMelo_GameSettings.GetZoneData(PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_areaLevel" +
+                    MeloMelo_GameSettings.GetAreaDifficultyMode() + MeloMelo_GameSettings.GetTrackDifficultyMode(), 1)).requiredExperience : 0;
+
+        return maxExperience;
     }
     #endregion
 }

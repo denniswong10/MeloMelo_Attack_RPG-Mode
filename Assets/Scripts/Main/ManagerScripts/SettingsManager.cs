@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 struct BundleOptionSettings
 {
@@ -72,7 +72,7 @@ public class SettingsManager : MonoBehaviour
         if (option != null)
         {
             int valveSelector = isInitial ? PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) : 
-                PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) == 0 ? 1 : 0;
+                PlayerPrefs.GetInt(key) == 0 ? 1 : 0;
 
             GetCheckBoxesSettings_ModifyValue(option, key, valveSelector);
             Debug.Log("Checkbox as [ " + option.name + " ] is currently ( " + (valveSelector == 1 ? "Active" : "Not Active") + " )");
@@ -184,6 +184,7 @@ public class SettingsManager : MonoBehaviour
 
                         saveItem.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
                         saveItem.SaveVirtualItemFromPlayer(key.packageName, 1, MeloMelo_ExtensionContent_Settings.GetItemIsStackable(key.packageName));
+                        MeloMelo_ItemUsage_Settings.OverwriteActiveItem(key.packageName, 1);
 
                         saveItem.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileExchangeHistory);
                         saveItem.SaveExchangeTranscationHistory(JsonUtility.ToJson(key));

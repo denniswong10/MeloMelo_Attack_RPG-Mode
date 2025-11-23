@@ -88,18 +88,29 @@ public class Menu : MonoBehaviour
 
     #region COMPONENT (NEWS UPDATE)
     private void UpdateNewsReport()
-    {
+    {      
         if (Application.internetReachability != NetworkReachability.NotReachable)
         {
             if (MeloMelo_PlayerSettings.GetLocalUserAccount() && PlayerPrefs.HasKey("MeloMelo_NewsReport_Daily"))
             {
                 string reportFormat = PlayerPrefs.GetString("MeloMelo_NewsReport_Daily");
-                NewsReportList reportListing = new NewsReportList().GetReportArray(reportFormat);
 
-                foreach (NewsReportFormat newsBlocking in reportListing.data_array)
-                    CreateNewsLetter(newsBlocking.title, newsBlocking.description, newsBlocking.releasedDate);
+                try
+                {
+                    NewsReportList reportListing = new NewsReportList().GetReportArray(reportFormat);
+                    int count = 0;
 
-                if (reportListing.data_array.Length == 0) UpdateErrorReport("THERE IS NO NEWS UPDATE");
+                    foreach (NewsReportFormat newsBlocking in reportListing.data_array)
+                    {
+                        if (count < 1) AutoFillNewsReport(newsBlocking.title, newsBlocking.releasedDate, newsBlocking.description);
+                        else break;
+
+                        count++;
+                    }
+
+                    if (reportListing.data_array.Length == 0) UpdateErrorReport("THERE IS NO NEWS UPDATE");
+                }
+                catch { UpdateErrorReport("NETWORK ERROR!"); }
             }
             else
                 UpdateErrorReport("SIGN IN TO GUEST LOGIN");
@@ -114,11 +125,34 @@ public class Menu : MonoBehaviour
         Display_ReportError.transform.GetComponentInChildren<Text>().text = message;
     }
 
-    private void CreateNewsLetter(string title, string description, string timeStamp)
+    //private void CreateNewsLetter(string title, string description, string timeStamp)
+    //{
+    //    Text newsBlock = Instantiate(NewsBlockElement);
+    //    newsBlock.text = title + "\n" + timeStamp + "\n------------------------------\n" + description + "\n\n";
+    //    newsBlock.transform.SetParent(NewsBoard.transform.GetChild(1).GetChild(0).transform);
+    //}
+
+    private void AutoFillNewsReport(string title, string releasedDate, string description)
     {
-        Text newsBlock = Instantiate(NewsBlockElement);
-        newsBlock.text = title + "\n" + timeStamp + "\n------------------------------\n" + description + "\n\n";
-        newsBlock.transform.SetParent(NewsBoard.transform.GetChild(1).GetChild(0).transform);
+        NewsBoard.transform.GetChild(2).gameObject.SetActive(true);
+        NewsBoard.transform.GetChild(3).gameObject.SetActive(true);
+        NewsBoard.transform.GetChild(4).gameObject.SetActive(true);
+
+        NewsBoard.transform.GetChild(2).GetComponent<Text>().text = title;
+        NewsBoard.transform.GetChild(3).GetComponent<Text>().text = releasedDate;
+        NewsBoard.transform.GetChild(4).GetComponent<Text>().text = description;
+
+        if (PlayerPrefs.GetString("GameLatest_Update", string.Empty) != string.Empty)
+        {
+            NewsBoard.transform.GetChild(5).gameObject.SetActive(true);
+            NewsBoard.transform.GetChild(5).GetComponent<Text>().text = "Latest Update ( " + PlayerPrefs.GetString("GameLatest_Update", string.Empty) + " )";
+        }
+    }
+
+    public void GetLatestUpdatePanel()
+    {
+        string url = PlayerPrefs.GetString("GameUpdate_URL", string.Empty);
+        if (url != string.Empty) Application.OpenURL(url);
     }
     #endregion
 }

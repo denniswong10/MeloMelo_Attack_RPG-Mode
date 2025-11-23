@@ -66,7 +66,7 @@ public class BeatConductor : MonoBehaviour
     public float get_musicPerformanceScore { get { return musicPerformaceScore; } }
 
     public ParticleSystem SpeedMeter;
-    private ChartModification[] noteModding;
+
     private string userInput;
 
     private List<GameObject> noteDataArray;
@@ -107,12 +107,11 @@ public class BeatConductor : MonoBehaviour
         Instantiate(Music_Database.ScoreObject, transform.position, Quaternion.identity);
         PlayerPrefs.DeleteKey("TrackCompleted");
 
-        musicPerformaceScore = PlayerPrefs.GetInt(Music_Database.Title + "_score" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0);
+        musicPerformaceScore = PlayerPrefs.GetInt(Music_Database.Title + "_score" + MeloMelo_GameSettings.GetTrackDifficultyMode(), 0);
         Invoke("UpdateMusicInfo", 0.05f);
         Invoke("StartEncode", 0.05f);
 
         // New Chart Content
-        noteModding = Music_Database.addons3b;
         //StartMusic();
     }
 
@@ -123,6 +122,9 @@ public class BeatConductor : MonoBehaviour
 
         if (!GameManager.thisManager.DeveloperMode) { GameManager.thisManager.Invoke("GameStarting", 0.05f); }
         else { Invoke("StartMusicButton", 2); }
+
+        // Set reference
+        MeloMelo_PlayEntries_Settings.AddEntriesToGamePlay(GameObject.Find("Boss"), MeloMelo_PlayEntries_Settings.PlayEntries.Target_Reference);
     }
 
     IEnumerator IntiNoteArrayData(int[] noteData)
@@ -195,7 +197,7 @@ public class BeatConductor : MonoBehaviour
     #region MAIN
     private bool NewTimingOnPlay()
     {
-        int difficulty = PlayerPrefs.GetInt("DifficultyLevel_valve", 1);
+        int difficulty = MeloMelo_GameSettings.GetTrackDifficultyMode();
         if (Music_Database.timingAddons != null) foreach(NewTimingAddons addons in Music_Database.timingAddons) if (difficulty == addons.difficulty_index && addons.active) return true;
         return false;
     }
@@ -263,8 +265,8 @@ public class BeatConductor : MonoBehaviour
 
             if (isNotationStarted)
             {
-                if (myData_Note2[0] != 0) { SpawnTargetAsNote(note, spawner.transform.position, true); }
-                if (whiteTick) GetTimingMarker(whiteTick);
+                if (myData_Note2[0] != 0) { ReCreationOfNoteObject(myData_Note2[0], note, spawner.transform.position, true); }
+                if (whiteTick) GetTimingMarker(whiteTick, MarginBundlePackage.MarginType.M_Head);
                 startNote = true;
             }
         }
@@ -310,14 +312,14 @@ public class BeatConductor : MonoBehaviour
                 }
 
                 // Get blank line
-                if (!check) GetTimingMarker(blankTick);
+                if (!check) GetTimingMarker(blankTick, MarginBundlePackage.MarginType.M_Blank);
             }
             else if (GameManager.thisManager.DeveloperMode)
             {
                 NextTickTime += (decimal)BPM_Calcuate;
                 totalTickCounter++;
 
-                if (myData_Note2[totalTickCounter] != 0) { SpawnTargetAsNote(note, new Vector3(Random.Range(-GameManager.thisManager.get_playField.get_limitBorder, GameManager.thisManager.get_playField.get_limitBorder), spawner.transform.position.y, spawner.transform.position.z), true); }
+                if (myData_Note2[totalTickCounter] != 0) { SpawnTargetAsNote(note, myData_Note2[totalTickCounter], new Vector3(Random.Range(-GameManager.thisManager.get_playField.get_limitBorder, GameManager.thisManager.get_playField.get_limitBorder), spawner.transform.position.y, spawner.transform.position.z), true); }
                 GameObject.Find("Ticker").GetComponent<Text>().text = "Total Tick: " + totalTickCounter;
 
                 Tick2_millseconds(4);
@@ -330,8 +332,8 @@ public class BeatConductor : MonoBehaviour
     {
         if (!startNote && (decimal)Time.time >= NextTickTime - (decimal)BPM_Calcuate)
         {
-            if (myData_Note2[0] != 0) { SpawnTargetAsNote(note, spawner.transform.position, true); }
-            if (whiteTick) GetTimingMarker(whiteTick);
+            if (myData_Note2[0] != 0) { ReCreationOfNoteObject(myData_Note2[totalTickCounter], note, spawner.transform.position, true); }
+            if (whiteTick) GetTimingMarker(whiteTick, MarginBundlePackage.MarginType.M_Head);
             startNote = true;
         }
 
@@ -376,14 +378,14 @@ public class BeatConductor : MonoBehaviour
                 }
 
                 // Get blank line
-                if (!check) GetTimingMarker(blankTick);
+                if (!check) GetTimingMarker(blankTick, MarginBundlePackage.MarginType.M_Blank);
             }
             else if (GameManager.thisManager.DeveloperMode)
             {
                 NextTickTime = (decimal)Time.time + (decimal)BPM_Calcuate;
                 totalTickCounter++;
 
-                if (myData_Note2[totalTickCounter] != 0) { SpawnTargetAsNote(note, new Vector3(Random.Range(-GameManager.thisManager.get_playField.get_limitBorder, GameManager.thisManager.get_playField.get_limitBorder), spawner.transform.position.y, spawner.transform.position.z), true); }
+                if (myData_Note2[totalTickCounter] != 0) { SpawnTargetAsNote(note, myData_Note2[totalTickCounter], new Vector3(Random.Range(-GameManager.thisManager.get_playField.get_limitBorder, GameManager.thisManager.get_playField.get_limitBorder), spawner.transform.position.y, spawner.transform.position.z), true); }
                 GameObject.Find("Ticker").GetComponent<Text>().text = "Total Tick: " + totalTickCounter;
 
                 Tick2_millseconds(4);
@@ -527,7 +529,7 @@ public class BeatConductor : MonoBehaviour
 
     private float GetRandomXOffset(PatternLane _obj)
     {
-        float x = GameObject.Find("Boss").transform.position.x;
+        float x = MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Target_Reference).transform.position.x;
 
         if (_obj.random_xOffset) return x + _obj.xOffset;
         else return _obj.xOffset;
@@ -555,7 +557,7 @@ public class BeatConductor : MonoBehaviour
     private void Tick2_seconds()
     {
         seconds_H++;
-        if (whiteTick) GetTimingMarker(whiteTick);
+        if (whiteTick) GetTimingMarker(whiteTick, MarginBundlePackage.MarginType.M_Head);
     }
     #endregion
 
@@ -614,22 +616,38 @@ public class BeatConductor : MonoBehaviour
         return indicator;
     }
 
-    private void GetTimingMarker(GameObject obj)
+    private void GetTimingMarker(GameObject obj, MarginBundlePackage.MarginType typeMarginId, bool lastMarker = false)
     {
         if (PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetSpeedMeter_ValueKey) == 0)
         {
-            GameObject line = Instantiate(obj);
-            GetComponent<NotationManager>().AddMargin(line);
+            if (GameManager.thisManager.getInGameObjectWindow != null)
+            {
+                GameObject readyToUseObject = GameManager.thisManager.getInGameObjectWindow.marginBundle.GetMarginAlignment(typeMarginId);
 
-            line.transform.position = new Vector3(spawner.transform.position.x, 0.05f, spawner.transform.position.z);
-            line.transform.localScale = new Vector3(spawner.transform.localScale.x, line.transform.localScale.y, line.transform.localScale.z);
+                if (readyToUseObject != null && !lastMarker)
+                {
+                    readyToUseObject.transform.position = new Vector3(spawner.transform.position.x, 0.05f, spawner.transform.position.z);
+                    readyToUseObject.transform.localScale = new Vector3(spawner.transform.localScale.x, readyToUseObject.transform.localScale.y, readyToUseObject.transform.localScale.z);
+                    readyToUseObject.SetActive(true);
+
+                    readyToUseObject.GetComponent<WhiteTick_Script>().Setup(typeMarginId);
+                    GetComponent<NotationManager>().AddMargin(readyToUseObject);
+                }
+                else
+                {
+                    GameObject line = Instantiate(obj);
+                    line.GetComponent<WhiteTick_Script>().Setup(typeMarginId);
+                    GetComponent<NotationManager>().AddMargin(line);
+                }
+            }
         }    
     }
 
     private void GetLastMarker()
     {
-        if (spawnCounter >= GameManager.thisManager.getJudgeWindow.getOverallCombo) GetTimingMarker(lastNoteTick);
-        else GetTimingMarker(normalTick);
+        if (spawnCounter == GameManager.thisManager.getJudgeWindow.getOverallCombo) GetTimingMarker(lastNoteTick, MarginBundlePackage.MarginType.M_End, true);
+        else if (spawnCounter < GameManager.thisManager.getJudgeWindow.getOverallCombo) GetTimingMarker(normalTick, MarginBundlePackage.MarginType.M_Fill);
+        else GetTimingMarker(blankTick, MarginBundlePackage.MarginType.M_Blank);
     }
     #endregion
 
@@ -647,7 +665,7 @@ public class BeatConductor : MonoBehaviour
                 case 9:
                     previousNote = note;
                     note = noteDataArray[myData_Note2[totalTickCounter] - 1];
-                    SpawnTargetAsNote(note, new Vector3(GameObject.Find("Boss").transform.position.x, spawner.transform.position.y, spawner.transform.position.z), true);
+                    ReCreationOfNoteObject(myData_Note2[totalTickCounter], note, new Vector3(MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Target_Reference).transform.position.x, spawner.transform.position.y, spawner.transform.position.z), true);
 
                     spawnCounter++;
                     isSpawn = true;
@@ -661,8 +679,8 @@ public class BeatConductor : MonoBehaviour
                 case 8:
                     previousNote = null;
                     note = noteDataArray[myData_Note2[totalTickCounter] - 1];
-                    SpawnTargetAsNote(note, new Vector3(GameObject.Find("Boss").transform.position.x, spawner.transform.position.y, spawner.transform.position.z), true);
-                    
+                    ReCreationOfNoteObject(myData_Note2[totalTickCounter], note, new Vector3(MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Target_Reference).transform.position.x, spawner.transform.position.y, spawner.transform.position.z), true);
+
                     spawnCounter++;
                     isSpawn = true;
                     break;
@@ -670,7 +688,7 @@ public class BeatConductor : MonoBehaviour
                 case 93: // Item 3
                     previousNote = null;
                     note = noteDataArray[noteDataArray.ToArray().Length - 1];
-                    SpawnTargetAsNote(note, new Vector3(GameObject.Find("Boss").transform.position.x, spawner.transform.position.y, spawner.transform.position.z), true);
+                    ReCreationOfNoteObject(myData_Note2[totalTickCounter], note, new Vector3(MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Target_Reference).transform.position.x, spawner.transform.position.y, spawner.transform.position.z), true);
 
                     spawnCounter++;
                     isSpawn = true;
@@ -689,6 +707,8 @@ public class BeatConductor : MonoBehaviour
                 default:
                     break;
             }
+
+            MakeGameplayObjectCount(myData_Note2[totalTickCounter]);
         }
 
         return isSpawn;
@@ -710,7 +730,8 @@ public class BeatConductor : MonoBehaviour
                         else previousNote = null;
 
                         note = Resources.Load<GameObject>("Prefabs/Note/Note" + chart.FirstLane);
-                        SpawnTargetAsNote(note, new Vector3(-0.2f * chart.LaneSpacing, spawner.transform.position.y, spawner.transform.position.z), true);
+                        ReCreationOfNoteObject(chart.FirstLane, note, new Vector3(-0.2f * chart.LaneSpacing, spawner.transform.position.y, spawner.transform.position.z), true);
+                        MakeGameplayObjectCount(chart.FirstLane);
                         spawnCounter++;
                     }
 
@@ -720,7 +741,8 @@ public class BeatConductor : MonoBehaviour
                         else previousNote = null;
 
                         note = Resources.Load<GameObject>("Prefabs/Note/Note" + chart.SecondLane);
-                        SpawnTargetAsNote(note, new Vector3(-0.1f * chart.LaneSpacing, spawner.transform.position.y, spawner.transform.position.z), true);
+                        ReCreationOfNoteObject(chart.SecondLane, note, new Vector3(-0.1f * chart.LaneSpacing, spawner.transform.position.y, spawner.transform.position.z), true);
+                        MakeGameplayObjectCount(chart.SecondLane);
                         spawnCounter++;
                     }
 
@@ -730,7 +752,8 @@ public class BeatConductor : MonoBehaviour
                         else previousNote = null;
 
                         note = Resources.Load<GameObject>("Prefabs/Note/Note" + chart.ThirdLane);
-                        SpawnTargetAsNote(note, new Vector3(0, spawner.transform.position.y, spawner.transform.position.z + chart.zOffset), true);
+                        ReCreationOfNoteObject(chart.ThirdLane, note, new Vector3(0, spawner.transform.position.y, spawner.transform.position.z), true);
+                        MakeGameplayObjectCount(chart.ThirdLane);
                         spawnCounter++;
                     }
 
@@ -740,7 +763,8 @@ public class BeatConductor : MonoBehaviour
                         else previousNote = null;
 
                         note = Resources.Load<GameObject>("Prefabs/Note/Note" + chart.FourthLane);
-                        SpawnTargetAsNote(note, new Vector3(0.1f * chart.LaneSpacing, spawner.transform.position.y, spawner.transform.position.z), true);
+                        ReCreationOfNoteObject(chart.FourthLane, note, new Vector3(0.1f * chart.LaneSpacing, spawner.transform.position.y, spawner.transform.position.z), true);
+                        MakeGameplayObjectCount(chart.FourthLane);
                         spawnCounter++;
                     }
 
@@ -750,7 +774,8 @@ public class BeatConductor : MonoBehaviour
                         else previousNote = null;
 
                         note = Resources.Load<GameObject>("Prefabs/Note/Note" + chart.FifthLane);
-                        SpawnTargetAsNote(note, new Vector3(0.2f * chart.LaneSpacing, spawner.transform.position.y, spawner.transform.position.z), true);
+                        ReCreationOfNoteObject(chart.FifthLane, note, new Vector3(0.2f * chart.LaneSpacing, spawner.transform.position.y, spawner.transform.position.z), true);
+                        MakeGameplayObjectCount(chart.FifthLane);
                         spawnCounter++;
                     }
 
@@ -791,7 +816,9 @@ public class BeatConductor : MonoBehaviour
                                     GetBeatZOffset(chart.noteArray[row], row)   // S4
                                     );
 
-                                SpawnTargetAsNote(note, position, false);
+                                ReCreationOfNoteObject(col.PrimaryNote, note, position, false);
+                                MakeGameplayObjectCount(col.PrimaryNote);
+
                                 spawnCounter++;
                             }
                         }
@@ -838,7 +865,10 @@ public class BeatConductor : MonoBehaviour
                                         GetBeatZOffset(row, 0)                                       // S4
                                         );
 
-                                    SpawnTargetAsNote(note, position, false);
+                                    int newModdedPrimary = GetChartModificationPrimaryNote(mod, col.PrimaryNote);
+                                    ReCreationOfNoteObject(newModdedPrimary, note, position, false);
+                                    MakeGameplayObjectCount(newModdedPrimary);
+
                                     spawnCounter++;
                                 }
                             }
@@ -855,13 +885,63 @@ public class BeatConductor : MonoBehaviour
         return isModded;
     }
 
-    private void SpawnTargetAsNote(GameObject target, Vector3 plotPoint, bool condition)
+    private void SpawnTargetAsNote(GameObject target, int basicIndex, Vector3 plotPoint, bool condition)
     {
         GameObject note = Instantiate(target, plotPoint, Quaternion.identity);
+        note.GetComponent<Note_Script>().Respawn(basicIndex);
+
         note.GetComponent<Notation_Motion_Script>().SetNoteHitOnPrevious(previousNote);
         GetComponent<NotationManager>().AddNote(note);
 
         if (condition) note.GetComponent<Notation_Visual_Script>().JudgeLineToggle();
+    }
+
+    public void MakeGameplayObjectCount(int noteType)
+    {
+        if (GameManager.thisManager.getGameplayComponent != null)
+        {
+            switch (noteType)
+            {
+                case 4:
+                    GameManager.thisManager.getGameplayComponent.AddTotalCount(2, 1);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void ReCreationOfNoteObject(int currentIndex, GameObject default_spawnNote, Vector3 position, bool marginSet)
+    {
+        // Note Pooling: Reduce waste been thrown away
+        if (GameManager.thisManager.getInGameObjectWindow != null)
+        {
+            if (GameManager.thisManager.getInGameObjectWindow.notationBundle != null)
+            {
+                GameObject readyUseObject = GameManager.thisManager.getInGameObjectWindow.notationBundle.GetNotationFromBundle(currentIndex);
+
+                if (readyUseObject != null)
+                {
+                    // Reset the current position back to spawn
+                    readyUseObject.transform.position = position;
+                    readyUseObject.SetActive(true);
+
+                    // Reset all note behaviour
+                    readyUseObject.GetComponent<Note_Script>().Respawn(currentIndex);
+                    readyUseObject.GetComponent<Notation_Motion_Script>().Motion_Reset();
+
+                    // Add note to note manager as usual
+                    readyUseObject.GetComponent<Notation_Motion_Script>().SetNoteHitOnPrevious(previousNote);
+                    GetComponent<NotationManager>().AddNote(readyUseObject);
+                    if (marginSet) readyUseObject.GetComponent<Notation_Visual_Script>().JudgeLineToggle();
+                }
+                else
+                    SpawnTargetAsNote(default_spawnNote, currentIndex, position, marginSet);
+            }
+            else
+                SpawnTargetAsNote(default_spawnNote, currentIndex, position, marginSet);
+        }
     }
     #endregion
 

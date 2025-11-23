@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2728479838488484079}
   - component: {fileID: 863692145212956979}
   - component: {fileID: 6858225978882316186}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 155447763840817970}
   - component: {fileID: 1291192782729482471}
   - component: {fileID: 8024474435905092585}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4924,7 +4924,7 @@ GameObject:
   - component: {fileID: 5962861423269410182}
   - component: {fileID: 3273733629675915610}
   - component: {fileID: 6822792904994167342}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Note9
   m_TagString: note
   m_Icon: {fileID: 0}

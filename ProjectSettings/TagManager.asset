@@ -4,32 +4,26 @@
 TagManager:
   serializedVersion: 2
   tags:
+  - BGM
+  - ScoreSheet
   - Start
   - End
   - PerformanceScore
-  - note
-  - ScoreSheet
+  - MainCharacter
   - PartyStatus
   - Character_Health
+  - PointSystem
+  - RankID_System
+  - SecondScoreDisplay
+  - CP_System
   - EnemyStatus
   - Enemy_Health
+  - HiScore_System
   - TechScore
   - BP_ColorMeasure
   - ProgressBar
+  - note
   - note2
-  - Slot
-  - MainCharacter
-  - BGM
-  - PointSystem
-  - CP_System
-  - HiScore_System
-  - SecondScoreDisplay
-  - SetupCompleted
-  - TrackList
-  - RankID_System
-  - Challenge_Storage
-  - DifficultyDisplaySelection
-  - Option_TopPanel_Button
   layers:
   - Default
   - TransparentFX
@@ -37,9 +31,9 @@ TagManager:
   - 
   - Water
   - UI
+  - Notation
   - 
   - 
-  - PostProcessing
   - 
   - 
   - 

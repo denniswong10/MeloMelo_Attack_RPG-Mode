@@ -169,7 +169,7 @@ public class OpenChoiceSetupScript : MonoBehaviour
                 break;
 
             case 9:
-                CharacterInstantUpgrade("MAG", 5);
+                CharacterInstantUpgrade("STR,MAG,VIT", 50);
                 break;
 
             case 10:
@@ -180,8 +180,23 @@ public class OpenChoiceSetupScript : MonoBehaviour
                 CharacterInstantUpgrade("STR", 5);
                 break;
 
+            case 12:
+                int selectedChoice = choiceOptionListing[0];
+                RestoreAdventureProgressPlay(createChoicePath[0].choices[selectedChoice - 1]);
+                break;
+
+            case 13:
+                int choiceConfirmation = choiceOptionListing[2];
+
+                CharacterInstantUpgrade(
+                    createChoicePath[0].choices[choiceOptionListing[0] - 1], 
+                    int.Parse(createChoicePath[1].choices[choiceOptionListing[1] - 1]),
+                    choiceConfirmation
+                    );
+                break;
+
             default:
-                StartCoroutine(MessagePopUp("Item is not available at this moment"));
+                AddMessageToPopUp("Item is not available at this moment");
                 Invoke("ClosePanel", 3.1f);
                 break;
         }
@@ -196,19 +211,49 @@ public class OpenChoiceSetupScript : MonoBehaviour
                 switch (tierGroup)
                 {
                     case 2:
-                        if (MeloMelo_SkillData_Settings.CheckSkillStatus(
-                            Resources.Load<SkillContainer>("Database_Skills/" + chosenCharacter + "_Priamry_Skill").skillName))
-                            MeloMelo_SkillData_Settings.LearnSkill(Resources.Load<SkillContainer>("Database_Skills/" + chosenCharacter + "_Priamry_Skill").skillName);
+                        SkillContainer primary_Skill = Resources.Load<SkillContainer>("Database_Skills/" + chosenCharacter + "_Primary_Skill");
+
+                        if (primary_Skill != null)
+                        {
+                            if (!MeloMelo_SkillData_Settings.CheckSkillStatus(primary_Skill.skillName))
+                            {
+                                MeloMelo_SkillData_Settings.UnlockSkill(primary_Skill.skillName);
+                                MeloMelo_SkillData_Settings.LearnSkill(primary_Skill.skillName);
+                                AddMessageToPopUp("Character just learned " + primary_Skill.skillName);
+                            }
+                            else
+                            {
+                                MeloMelo_SkillData_Settings.UpgradeSkill(primary_Skill.skillName);
+                                AddMessageToPopUp("Character has raise skill grade on " + primary_Skill.skillName);
+                            }
+
+                            ConfirmItemUsage();
+                        }
                         else
-                            MeloMelo_SkillData_Settings.UpgradeSkill(Resources.Load<SkillContainer>("Database_Skills/" + chosenCharacter + "_Priamry_Skill").skillName);
+                            AddMessageToPopUp("Character skill isn't available at the moment");
                         break;
 
                     case 3:
-                        if (MeloMelo_SkillData_Settings.CheckSkillStatus(
-                            Resources.Load<SkillContainer>("Database_Skills/" + chosenCharacter + "_Secondary_Skill_" + skill_index).skillName))
-                            MeloMelo_SkillData_Settings.LearnSkill(Resources.Load<SkillContainer>("Database_Skills/" + chosenCharacter + "_Secondary_Skill_" + skill_index).skillName);
+                        SkillContainer secondary_Skill = Resources.Load<SkillContainer>("Database_Skills/" + chosenCharacter + "_Secondary_Skill_" + skill_index);
+
+                        if (secondary_Skill != null)
+                        {
+                            if (!MeloMelo_SkillData_Settings.CheckSkillStatus(secondary_Skill.skillName))
+                            {
+                                MeloMelo_SkillData_Settings.UnlockSkill(secondary_Skill.skillName);
+                                MeloMelo_SkillData_Settings.LearnSkill(secondary_Skill.skillName);
+                                AddMessageToPopUp("Character just learned " + secondary_Skill.skillName);
+                            }
+                            else
+                            {
+                                MeloMelo_SkillData_Settings.UpgradeSkill(secondary_Skill.skillName);
+                                AddMessageToPopUp("Character has raise skill grade on " + secondary_Skill.skillName);
+                            }
+
+                            ConfirmItemUsage();
+                        }
                         else
-                            MeloMelo_SkillData_Settings.UpgradeSkill(Resources.Load<SkillContainer>("Database_Skills/" + chosenCharacter + "_Secondary_Skill_" + skill_index).skillName);
+                            AddMessageToPopUp("Character skill isn't available at the moment");
                         break;
 
                     default:
@@ -217,14 +262,12 @@ public class OpenChoiceSetupScript : MonoBehaviour
                 }
             }
             else
-                StartCoroutine(MessagePopUp("Character need to be unlock before using any consumable"));
-
-            ConfirmItemUsage();
-            try { StartCoroutine(MessagePopUp("Character just learned " + Resources.Load<SkillContainer>("Database_Skills/" + chosenCharacter + "_Priamry_Skill").skillName)); }
-            catch { StartCoroutine(MessagePopUp("Character just learned " + Resources.Load<SkillContainer>("Database_Skills/" + chosenCharacter + "_Secondary_Skill_" + skill_index).skillName)); }
+                AddMessageToPopUp("Character need to be unlock before using any consumable");
         }
         else
-            StartCoroutine(MessagePopUp("Ticket hasn't been used after rejecting"));
+            AddMessageToPopUp("Ticket hasn't been used after rejecting");
+
+        Invoke("ClosePanel", 3.1f);
     }
 
     private void CharacterManualTraining(int percentage)
@@ -242,13 +285,13 @@ public class OpenChoiceSetupScript : MonoBehaviour
                 GetCharacterIdentify(chosenCharacter).UpdateCurrentStats(true);
 
                 ConfirmItemUsage();
-                StartCoroutine(MessagePopUp("Character gained " + (amountPerUnit * percentage) + " experience during training"));
+                AddMessageToPopUp("Character gained " + (amountPerUnit * percentage) + " experience during training");
             }
             else
-                StartCoroutine(MessagePopUp("Character level have reached its limit during training"));
+                AddMessageToPopUp("Character level have reached its limit during training");
         }
         else
-            StartCoroutine(MessagePopUp("Ticket hasn't been used after rejecting"));
+            AddMessageToPopUp("Ticket hasn't been used after rejecting");
 
         Invoke("ClosePanel", 3.1f);
     }
@@ -267,13 +310,13 @@ public class OpenChoiceSetupScript : MonoBehaviour
                 GetCharacterIdentify(chosenCharacter).UpdateCurrentStats(true);
 
                 ConfirmItemUsage();
-                StartCoroutine(MessagePopUp("Character gained " + amount + " level during training"));
+                AddMessageToPopUp("Character gained " + amount + " level during training");
             }
             else
-                StartCoroutine(MessagePopUp("Character level have reached its limit during training"));
+                AddMessageToPopUp("Character level have reached its limit during training");
         }
         else
-            StartCoroutine(MessagePopUp("Ticket hasn't been used after rejecting"));
+            AddMessageToPopUp("Ticket hasn't been used after rejecting");
 
         Invoke("ClosePanel", 3.1f);
     }
@@ -288,26 +331,26 @@ public class OpenChoiceSetupScript : MonoBehaviour
         if (choiceOptionListing[2] == 1)
         {
             if (choiceOptionListing[0] == choiceOptionListing[1])
-                StartCoroutine(MessagePopUp("Stats modified repeated"));
+                AddMessageToPopUp("Stats modified repeated");
 
             else if (ModifyCharacterStats(GetStatsFromIndex(choiceOptionListing[0]), true, 1))
             {
                 ModifyCharacterStats(GetStatsFromIndex(choiceOptionListing[1]), false, 1);
                 ConfirmItemUsage();
-                StartCoroutine(MessagePopUp("Stats has been updated"));
+                AddMessageToPopUp("Stats has been updated");
             }
             else
-                StartCoroutine(MessagePopUp("Minimum of 1 stats point require to reset"));
+                AddMessageToPopUp("Minimum of 1 stats point require to reset");
         }
         else
-            StartCoroutine(MessagePopUp("Item hasn't been used after rejecting"));
+            AddMessageToPopUp("Item hasn't been used after rejecting");
 
         Invoke("ClosePanel", 3.1f);
     }
 
-    private void CharacterInstantUpgrade(string allStatsArray, int amount)
+    private void CharacterInstantUpgrade(string allStatsArray, int amount, int confirmationManual = -1)
     {
-        if (choiceOptionListing[2] == 1)
+        if ((confirmationManual == -1 && choiceOptionListing[0] == 1) || confirmationManual == 1)
         {
             string[] assignStats = allStatsArray.Split(",");
             foreach (string stats in assignStats)
@@ -331,11 +374,13 @@ public class OpenChoiceSetupScript : MonoBehaviour
                 }
             }
 
-            if (assignStats.Length > 0) { StartCoroutine(MessagePopUp("Succesful of used book")); }
-            else { StartCoroutine(MessagePopUp("Book attribute empty")); }
+            if (assignStats.Length > 0) { AddMessageToPopUp("Succesful of used book"); }
+            else { AddMessageToPopUp("Book attribute empty"); }
         }
         else
-            StartCoroutine(MessagePopUp("Cancel used of book"));
+            AddMessageToPopUp("Cancel used of book");
+
+        Invoke("ClosePanel", 3.1f);
     }
 
     private bool ModifyCharacterStats(string typeOfStats, bool reset, int amount)
@@ -383,17 +428,65 @@ public class OpenChoiceSetupScript : MonoBehaviour
     {
         return Resources.Load<ClassBase>("Character_Data/" + className);
     }
+
+    private void RestoreAdventureProgressPlay(string area)
+    {
+        if (choiceOptionListing[1] == 1)
+        {
+            foreach (StoryProgressData progress in MeloMelo_Adventure.allAdventureRouteData)
+            {
+                if (progress.title == area)
+                {
+                    foreach (int routeId in progress.routeId_listing)
+                        MeloMelo_Adventure.MarkRouteCleared(progress.adventure_type, routeId);
+
+                    break;
+                }
+            }
+
+            MeloMelo_Local.LocalSave_DataManagement forceSave = new MeloMelo_Local.LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
+                "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+
+            forceSave.SelectFileForActionWithUserTag(MeloMelo_GameSettings.CloudSaveSetting_AdventureMode);
+            forceSave.SaveAdventureRoutePlay();
+
+            AddMessageToPopUp("Progress Data ( " + area + " ) - Restore Successful!");
+        }
+
+        Invoke("ClosePanel", 3.1f);
+    }
     #endregion
 
     #region MISC
-    private IEnumerator MessagePopUp(string customText)
+    private Queue<string> messageInLine = new Queue<string>();
+    private bool messageInProgress = false;
+
+    private IEnumerator MessagePopUp()
     {
+        messageInProgress = true;
+
         if (promptMessage)
         {
-            promptMessage.SetActive(true);
-            promptMessage.transform.GetChild(0).GetComponent<Text>().text = customText;
-            yield return new WaitForSeconds(2);
-            promptMessage.SetActive(false);
+            while (messageInLine.Count > 0)
+            {
+                string messageOnQueue = messageInLine.Dequeue();
+                promptMessage.SetActive(true);
+
+                promptMessage.transform.GetChild(0).GetComponent<Text>().text = messageOnQueue;
+                yield return new WaitForSeconds(2);
+            }
+        }
+
+        promptMessage.SetActive(false);
+        messageInProgress = false;
+    }
+
+    private void AddMessageToPopUp(string customText)
+    {
+        if (messageInLine != null)
+        {
+            messageInLine.Enqueue(customText);
+            if (!messageInProgress) StartCoroutine(MessagePopUp());
         }
     }
     #endregion

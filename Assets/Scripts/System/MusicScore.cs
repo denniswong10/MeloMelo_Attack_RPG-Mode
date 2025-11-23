@@ -63,6 +63,7 @@ public class MusicScore : ScriptableObject
     [Header("Additional Difficulty Content")]
     public bool UltimateAddons;
     public NewTimingAddons[] timingAddons;
+    public float cappedRate;
 
     [Header("Restricted Content: Requirement")]
     public bool SetRestriction;

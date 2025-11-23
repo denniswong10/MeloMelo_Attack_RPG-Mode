@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.44657868, g: 0.49641263, b: 0.57481706, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028355, g: 0.22571374, b: 0.30692255, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -98,8 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: 1bcf4bf3d63e7af4faf1bc35222d76a7,
-    type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 1bcf4bf3d63e7af4faf1bc35222d76a7, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -973,7 +972,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myOption: 0
-  Music_Database: {fileID: 11400000, guid: 57928031360243f45af69b8666ec3034, type: 2}
+  Music_Database: {fileID: 11400000, guid: 8b692f8ac3ca3c2408cfe4f90bebb227, type: 2}
   BeatIndicator: {fileID: 0}
   spawner: {fileID: 699055986}
   FeedingTime_sign: {fileID: 1835079032}
@@ -1481,6 +1480,7 @@ MonoBehaviour:
   Bonus_sign: {fileID: 0}
   GameOver: {fileID: 0}
   AutoPlayText: {fileID: 0}
+  GamePromptAlert: {fileID: 0}
   Alert_Retreat: {fileID: 0}
   HealthBar_E: {fileID: 0}
   OverKill_Bar: {fileID: 0}
@@ -1741,7 +1741,7 @@ GameObject:
   - component: {fileID: 1390227948}
   m_Layer: 0
   m_Name: Character
-  m_TagString: Untagged
+  m_TagString: MainCharacter
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -111,7 +111,7 @@ public class LoadingTransition_Script : MonoBehaviour
         {
             PlayerPrefs.SetInt("Character_OverallHealth", 1);
             PlayerPrefs.DeleteKey("Character_OverallDamage");
-            PlayerPrefs.SetInt("Enemy_OverallHealth", 0);
+            PlayerPrefs.SetInt("Enemy_OverallHealth", 1);
             PlayerPrefs.DeleteKey("Enemy_OverallDamage");
         }
     }

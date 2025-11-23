@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf93b958aa3623a4da8365170344febc, type: 3}
+  m_Name: Main_Area_3
+  m_EditorClassIdentifier: 
+  StoryTitle: Lakeside Village
+  StoryBG: {fileID: 2800000, guid: 7cfd073ccc38e75479698b83f9f16dcf, type: 3}
+  storyEndRewards:
+  - typeOfReward: 0
+    rewardName: 'Present Case: Story Reward from Lakeside Village'
+  Stage:
+  - numberOfSteps: 
+    Quest_Stage:
+    - {fileID: 11400000, guid: 22125d9327021d049aeb6b1ec2a94c4b, type: 2}
+    myTradeLog: []
+    myQuestLog:
+    - logTitle: Arrival at new town
+      id: 20
+      mySlotTypte: 0
+      isOpen: 1
+    - logTitle: Mirgate through guard
+      id: 21
+      mySlotTypte: 1
+      isOpen: 0
+  - numberOfSteps: 14000000050000000a000000
+    Quest_Stage:
+    - {fileID: 11400000, guid: 08ff023a5e0f604479dc611689095628, type: 2}
+    myTradeLog: []
+    myQuestLog:
+    - logTitle: Explore town store
+      id: 22
+      mySlotTypte: 2
+      isOpen: 0
+    - logTitle: Greeting to town chief
+      id: 23
+      mySlotTypte: 2
+      isOpen: 0
+    - logTitle: Visiting tarven hall
+      id: 24
+      mySlotTypte: 2
+      isOpen: 0
+    - logTitle: Invitation to town hall
+      id: 25
+      mySlotTypte: 1
+      isOpen: 0
+  - numberOfSteps: 1e00000005000000
+    Quest_Stage: []
+    myTradeLog: []
+    myQuestLog:
+    - logTitle: Spenting time at lakeside
+      id: 26
+      mySlotTypte: 0
+      isOpen: 0
+    - logTitle: Spenting night at village
+      id: 27
+      mySlotTypte: 2
+      isOpen: 0
+    - logTitle: Farewell to village
+      id: 28
+      mySlotTypte: 2
+      isOpen: 0
+    - logTitle: Departure towards new fate
+      id: 28
+      mySlotTypte: 0
+      isOpen: 0
+    - logTitle: End Of Story
+      id: 29
+      mySlotTypte: 4
+      isOpen: 0

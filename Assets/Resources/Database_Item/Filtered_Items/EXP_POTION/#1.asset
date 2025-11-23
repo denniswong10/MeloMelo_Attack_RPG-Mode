@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: 2X EXP POTION
   useTypeDetail: 1
-  dataArray: _EXP_BOOST_2,2
+  dataArray: _EXP_BOOST_2,2,_EXP_USAGE_COUNT,1

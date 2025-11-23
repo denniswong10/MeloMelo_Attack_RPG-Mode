@@ -946,27 +946,53 @@ namespace MeloMelo_GameProperties
 
     public class GameplayObjectComponent
     {
+        private int currentEnemyCount = 0;
+        private int currentHealCount = 0;
+        private int currentTrapsCount = 0;
+
         private int totalEnemy = 0;
         private int totalTraps = 0;
-        private int totalItems = 0;
+        private int totalHeal = 0;
 
         public int getTotalEnemy { get { return totalEnemy; } }
         public int getTotalTraps { get { return totalTraps; } }
-        public int getTotalItems { get { return totalItems; } }
+        public int getTotalHeal { get { return totalHeal; } }
+
+        public int getCurrentEnemy { get { return currentEnemyCount; } }
+        public int getCurrentHeal { get { return currentHealCount; } }
+        public int getCurrentTrap { get { return currentTrapsCount; } }
+
+        public void AddTotalCount(int index, int amount)
+        {
+            switch (index)
+            {
+                case 1:
+                    totalEnemy += amount;
+                    break;
+
+                case 2:
+                    totalHeal += amount;
+                    break;
+
+                case 3:
+                    totalTraps += amount;
+                    break;
+            }
+        }
 
         public void AddEnemyCount(int amount = 1)
         {
-            totalEnemy += amount;
+            currentEnemyCount += amount;
         }
 
         public void AddTrapsCount(int amount = 1)
         {
-            totalTraps += amount;
+            currentTrapsCount += amount;
         }
 
-        public void AddItemCount()
+        public void AddHealthPackCount(int amount = 1)
         {
-            totalItems++;
+            currentHealCount += amount;
         }
     }
 

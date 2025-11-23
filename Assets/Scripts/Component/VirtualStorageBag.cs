@@ -104,9 +104,6 @@ public class VirtualStorageBag : MonoBehaviour
     // Object: Clear from scene
     public void ClosePanel()
     {
-        //for (int slot = 0; slot < storagePanel.transform.childCount; slot++)
-        //    PlayerPrefs.DeleteKey(slot + "_" + name + "_Slot_ItemBound");
-
         if (AlertPop) AlertPop.SetActive(false);
         Destroy(gameObject);
     }
@@ -115,7 +112,7 @@ public class VirtualStorageBag : MonoBehaviour
     #region COMPONENT (Item Control)
     private ItemData FindItemToPlot(string itemName)
     {
-        foreach (ItemData item in Resources.LoadAll<ItemData>("Database_Item")) if (item.itemName == itemName) return item;
+        foreach (ItemData item in MeloMelo_GameSettings.preloaded_itemListing) if (item.itemName == itemName) return item;
         return Resources.Load<ItemData>("Database_Item/#0");
     }
 
@@ -287,13 +284,53 @@ public class VirtualStorageBag : MonoBehaviour
                     for (int slot_id = 0; slot_id < 3; slot_id++)
                     {
                         string currentCharacter = PlayerPrefs.GetString("Slot" + (slot_id + 1) + "_charName", "None");
-                        PlayerPrefs.SetInt(currentCharacter + itemUsage.dataArray.Split(",")[0],
-                            int.Parse(itemUsage.dataArray.Split(",")[1]));
+
+                        // Only applied to all assigned slot character to consumption of pot
+                        if (currentCharacter != "None")
+                        {
+                            string[] dataArraySplitter = itemUsage.dataArray.Split(",");
+
+                            // Use any applied consumption effect to this character
+                            for (int boostArrayInt = 0; boostArrayInt < dataArraySplitter.Length / 2; boostArrayInt++)
+                            {
+                                int recentAddedValue = PlayerPrefs.GetInt(currentCharacter + dataArraySplitter[boostArrayInt * 2], 0);
+
+                                PlayerPrefs.SetInt(currentCharacter + dataArraySplitter[boostArrayInt * 2],
+                                    recentAddedValue + int.Parse(dataArraySplitter[boostArrayInt * 2 + 1]));
+                            }
+                        }
+                    }
+                }
+                break;
+
+            case UsageOfItemDetail.UseType.RandomObtain:
+                MeloMelo_ItemUsage_Settings.SetItemUsed(itemUsage.itemName);
+
+                string[] listOfBuffArray = itemUsage.dataArray.Split(",");
+                int buffIndex = Random.Range(0, (listOfBuffArray.Length - 1) / 2);
+
+                // Single Usage: Cosumable to all characters
+                for (int slot_char = 0; slot_char < 3; slot_char++)
+                {
+                    string currentCharacter = PlayerPrefs.GetString("Slot" + (slot_char + 1) + "_charName", "None");
+
+                    if (currentCharacter != "None")
+                    {
+                        // Get current value then add new value to them
+                        int recentAddedValue = PlayerPrefs.GetInt(currentCharacter + listOfBuffArray[buffIndex * 2 + 1], 0);
+
+                        PlayerPrefs.SetInt(currentCharacter + listOfBuffArray[buffIndex * 2 + 1],
+                            recentAddedValue + int.Parse(listOfBuffArray[buffIndex * 2 + 2]));
+
+                        // Update key to complete the pot used for multiple usage
+                        string keyUsedName = int.Parse(listOfBuffArray[0]) == 1 ? "_EXP_USAGE_COUNT" : "_POWER_USAGE_COUNT";
+                        PlayerPrefs.SetInt(currentCharacter + keyUsedName, 1);
                     }
                 }
                 break;
 
             case UsageOfItemDetail.UseType.OpenChoice:
+            case UsageOfItemDetail.UseType.OpenResultUsage:
                 if (GameObject.Find("OpenChoice_Setup") == null)
                 {
                     GameObject instance = Instantiate(openChoiceSet, GameObject.Find("Selection_Character").transform);
