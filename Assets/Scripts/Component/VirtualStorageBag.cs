@@ -112,7 +112,7 @@ public class VirtualStorageBag : MonoBehaviour
     #region COMPONENT (Item Control)
     private ItemData FindItemToPlot(string itemName)
     {
-        foreach (ItemData item in MeloMelo_GameSettings.preloaded_itemListing) if (item.itemName == itemName) return item;
+        foreach (ItemData item in MeloMelo_ItemStore_Management.preloaded_itemListing) if (item.itemName == itemName) return item;
         return Resources.Load<ItemData>("Database_Item/#0");
     }
 

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
+  m_Name: '#80'
+  m_EditorClassIdentifier: 
+  itemName: Level Advancement Card
+  Icon: {fileID: 2800000, guid: 0f3992c8ca268294a8ccd8869d1b56b2, type: 3}
+  stackable: 1
+  thisItemType: 0
+  description: A card which allow your character to advance leveling through reborn.
+    This card is valid for one-time used and your character get early advance by
+    1 level. Max used of advancement card is up to 50 times.
+  itemValue: 20
+  NoQuantityLimit: 0
+  CreditSet: 0

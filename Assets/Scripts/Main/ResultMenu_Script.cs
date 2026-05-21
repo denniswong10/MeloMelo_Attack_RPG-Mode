@@ -90,9 +90,7 @@ public class ResultMenu_Script : MonoBehaviour
 
         if (!GameManager.thisManager.DeveloperMode)
         {
-            BG.texture = PlayerPrefs.HasKey("Mission_Played") ? Resources.Load<Texture>("Background/BG1C") : 
-                PlayerPrefs.HasKey("MarathonPermit") ? Resources.Load<Texture>("Background/BG11") :
-                    PreSelection_Script.thisPre.get_AreaData.BG;
+            BG.texture = MeloMelo_Environment_Settings.GetBackgroundCover();
 
             // Gerenal Information
             Result_CoverImage.texture = BeatConductor.thisBeat.Music_Database.Background_Cover;
@@ -148,51 +146,69 @@ public class ResultMenu_Script : MonoBehaviour
         stats.load_Stats();
 
         // Load Viewer
-        for (int i = 0; i < stats.slot_Stats.Length; i++)
+        for (int i = 0; i < stats.slot_Stats.Count; i++)
         {
-            StatsManage_Database database = new StatsManage_Database(stats.slot_Stats[i].name);
-            stats.slot_Stats[i].UpdateCurrentStats(false);
-
-            int experienceAfterBoost = MeloMelo_ItemUsage_Settings.GetExpBoost(stats.slot_Stats[i].name) +
-                (MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(stats.slot_Stats[i].name) > 0 ?
-                    MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(stats.slot_Stats[i].name) * PlayerPrefs.GetInt("Temp_Experience", 0) :
-                        PlayerPrefs.GetInt("Temp_Experience", 0));
-
-            GameObject characterInfoPlate = GameObject.Find("Slot" + (i + 1) + "_CharInfo");
-            int currentCharacterLevel = stats.slot_Stats[i].level;
-
-            if (stats.slot_Stats[i].name != "None")
+            if (stats.slot_Stats[i] != null)
             {
-                stats.slot_Stats[i].experience += PlayerPrefs.HasKey("MarathonPermit") ||
-                database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience < 0
-                ? 0 : experienceAfterBoost;
-                stats.slot_Stats[i].UpdateCurrentStats(true);
+                Debug.Log("Experience Rate: " + stats.slot_Stats[i].charName + " => " + PlayerPrefs.GetFloat(stats.slot_Stats[i].className + "_MaxExpObtain", 0));
 
-                int checkLevel;
-                if (database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience > 0)
+                StatsManage_Database database = new StatsManage_Database(stats.slot_Stats[i].className);
+                float intilizeExperience = PlayerPrefs.GetInt("Temp_Experience", 0) / 
+                    100f * PlayerPrefs.GetFloat(stats.slot_Stats[i].className + "_MaxExpObtain", 0);
+
+                int experienceAfterBoost = MeloMelo_ItemUsage_Settings.GetExpBoost(stats.slot_Stats[i].className) +
+                    (MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(stats.slot_Stats[i].className) > 0 ?
+                        MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(stats.slot_Stats[i].className) * (int)intilizeExperience :
+                            (int)intilizeExperience);
+
+                Debug.Log("Finalize Experience: " + stats.slot_Stats[i].charName + " => " + experienceAfterBoost);
+
+                GameObject characterInfoPlate = GameObject.Find("Slot" + (i + 1) + "_CharInfo");
+                int currentCharacterLevel = stats.slot_Stats[i].level;
+
+                if (stats.slot_Stats[i].className != "None")
                 {
-                    do
+                    stats.slot_Stats[i].UpdateCharacterExperience(
+                        PlayerPrefs.HasKey("MarathonPermit") ||
+                            database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience < 0
+                                ? 0 : experienceAfterBoost);
+
+                    int checkLevel;
+                    if (database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience > 0)
                     {
-                        checkLevel = stats.slot_Stats[i].level;
-                        stats.slot_Stats[i].CheckLeveling(database.GetCharacterStatus(checkLevel).GetExperience);
-                    } while (checkLevel != stats.slot_Stats[i].level);
+                        do
+                        {
+                            checkLevel = stats.slot_Stats[i].level;
+                            stats.slot_Stats[i].CheckCharacterLeveling(database.GetCharacterStatus(checkLevel).GetExperience);
+                        } while (checkLevel != stats.slot_Stats[i].level);
 
-                    GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(3).GetComponent<Text>().text = "EXP: "
-                        + stats.slot_Stats[i].experience + "/" + database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience +
-                        " (+" + (PlayerPrefs.HasKey("MarathonPermit") ? 0 : experienceAfterBoost) + ")";
+                        GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(3).GetComponent<Text>().text = "EXP: "
+                            + MeloMelo_PlayerSettings.GetScoreConfigure(stats.slot_Stats[i].experience) + "/" +
+                            MeloMelo_PlayerSettings.GetScoreConfigure(database.GetCharacterStatus(stats.slot_Stats[i].level).GetExperience) +
+                            " (+" + (PlayerPrefs.HasKey("MarathonPermit") ? 0 : MeloMelo_PlayerSettings.GetScoreConfigure(experienceAfterBoost)) + ")";
+                    }
+                    else
+                        GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(3).GetComponent<Text>().text = "EXP: " +
+                            MeloMelo_PlayerSettings.GetScoreConfigure(stats.slot_Stats[i].experience) + 
+                                " (+" + (PlayerPrefs.HasKey("MarathonPermit") ? 0 : MeloMelo_PlayerSettings.GetScoreConfigure(experienceAfterBoost)) + ")";
+
+                    GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(2).GetComponent<Text>().text = "- " + stats.slot_Stats[i].charName + " -";
+                    GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(4).GetComponent<Text>().text = "LEVEL: " + stats.slot_Stats[i].level;
+
+                    GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(1).GetComponent<Image>().enabled = true;
+                    GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(1).GetComponent<Image>().sprite = stats.character_base_reference[i].icon;
+
+                    if (stats.slot_Stats[i].additionalProfile != null)
+                    {
+                        characterInfoPlate.transform.GetChild(6).gameObject.SetActive(stats.slot_Stats[i].additionalProfile.rebirth_count >= 1);
+                        characterInfoPlate.transform.GetChild(6).GetComponentInChildren<Text>().text = stats.slot_Stats[i].additionalProfile.rebirth_count.ToString();
+                        characterInfoPlate.transform.GetChild(7).gameObject.SetActive(stats.slot_Stats[i].level > currentCharacterLevel);
+                    }
+                    else
+                    {
+                        characterInfoPlate.transform.GetChild(6).gameObject.SetActive(false);
+                    }
                 }
-                else
-                    GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(3).GetComponent<Text>().text = string.Empty;
-
-                GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(2).GetComponent<Text>().text = "- " + stats.slot_Stats[i].characterName + " -";
-                GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(4).GetComponent<Text>().text = "LEVEL: " + stats.slot_Stats[i].level;
-
-                GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(1).GetComponent<Image>().enabled = true;
-                GameObject.Find("Slot" + (i + 1) + "_CharInfo").transform.GetChild(1).GetComponent<Image>().sprite = stats.slot_Stats[i].icon;
-
-                characterInfoPlate.transform.GetChild(6).gameObject.SetActive(MeloMelo_ExtraStats_Settings.GetRebirthPoint(stats.slot_Stats[i].name) >= 1);
-                characterInfoPlate.transform.GetChild(6).GetComponentInChildren<Text>().text = MeloMelo_ExtraStats_Settings.GetRebirthPoint(stats.slot_Stats[i].name).ToString();
-                characterInfoPlate.transform.GetChild(7).gameObject.SetActive(stats.slot_Stats[i].level > currentCharacterLevel);
             }
         }
 
@@ -405,28 +421,8 @@ public class ResultMenu_Script : MonoBehaviour
         entry.score = GameManager.thisManager.get_score1.get_score;
 
         // Process to addons track listing
-        TrackListingDistribution.thisList.GetRateContribution(FindTrackChartCateogry(BeatConductor.thisBeat.Music_Database.seasonNo), entry);
-        TrackListingDistribution.thisList.ClearCacheRate(FindTrackChartCateogry(BeatConductor.thisBeat.Music_Database.seasonNo), entry);
-    }
-
-    public int FindTrackChartCateogry(int season)
-    {
-        switch (season)
-        {
-            case 0:
-            case 1:
-            case 2:
-                return 1;
-
-            case 3:
-                return 2;
-
-            case 4:
-                return 3;
-
-            default:
-                return 0;
-        }
+        TrackListingDistribution.thisList.GetRateContribution(MeloMelo_GameSettings.FindTrackChartCateogry(BeatConductor.thisBeat.Music_Database.seasonNo), entry);
+        TrackListingDistribution.thisList.ClearCacheRate(MeloMelo_GameSettings.FindTrackChartCateogry(BeatConductor.thisBeat.Music_Database.seasonNo), entry);
     }
     #endregion
     #endregion
@@ -451,6 +447,9 @@ public class ResultMenu_Script : MonoBehaviour
         switch (index)
         {
             case 1:
+                unlock_ProcessingBtn[2].interactable = false;
+                unlock_ProcessingBtn[3].interactable = false;
+
                 GameObject.Find("Menu_Viewer").GetComponent<Animator>().SetTrigger("Closing");
                 Invoke("GoSelection2", 1.5f);
                 break;
@@ -465,6 +464,8 @@ public class ResultMenu_Script : MonoBehaviour
 
             case 3:
                 unlock_ProcessingBtn[0].interactable = false;
+                unlock_ProcessingBtn[1].interactable = false;
+
                 GameObject.Find("Menu_Main").GetComponent<Animator>().SetTrigger("Closing");
                 Invoke("GoSelection2", 1.5f);
                 break;

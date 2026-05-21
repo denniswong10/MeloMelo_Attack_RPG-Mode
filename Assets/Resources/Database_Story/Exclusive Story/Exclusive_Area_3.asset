@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf93b958aa3623a4da8365170344febc, type: 3}
+  m_Name: Exclusive_Area_3
+  m_EditorClassIdentifier: 
+  StoryTitle: Clear Valley
+  StoryBG: {fileID: 2800000, guid: c19d28575f152fe4093e7a3e250f89ae, type: 3}
+  storyEndRewards:
+  - typeOfReward: 0
+    rewardName: 'Present Case: Story Reward from Clear Valley'
+  Stage:
+  - numberOfSteps: 0a0000001e000000
+    Quest_Stage:
+    - {fileID: 11400000, guid: da5c978b032cc884e8b8f7209a1bdaa3, type: 2}
+    myTradeLog: []
+    myQuestLog:
+    - logTitle: Beginning of a Peaceful Town
+      id: 53
+      mySlotTypte: 0
+      isOpen: 1
+    - logTitle: Visiting of Merchant Store
+      id: 54
+      mySlotTypte: 2
+      isOpen: 0
+    - logTitle: Making up time for Adventure
+      id: 55
+      mySlotTypte: 2
+      isOpen: 0
+    - logTitle: First Job for the day
+      id: 56
+      mySlotTypte: 1
+      isOpen: 0

@@ -3,6 +3,170 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using MeloMelo_GameProperties;
+using System;
+
+public struct ScoreBundleWithMultipler
+{
+    public int totalCount;
+    public float latestMultipler;
+
+    public float GetScore(float score)
+    {
+        //int convertToInt = (int)(score * latestMultipler);
+        return totalCount * (score * latestMultipler);
+    }
+}
+
+public abstract class ScoringIndicator_Base
+{
+    protected float actualScore;
+    protected float estimatedScore;
+    protected abstract void UpdateScore_Interface();
+
+    #region MAIN
+    public void GetIndicatorUpdate()
+    {
+        UpdateScore_Interface();
+    }
+
+    public float GetActualScore()
+    {
+        return actualScore;
+    }
+
+    public float GetExpectedScore()
+    {
+        return estimatedScore;
+    }
+    #endregion
+
+    #region MISC
+    public void ResetDisplay()
+    {
+        actualScore = 0;
+        estimatedScore = 0;
+    }
+    #endregion
+}
+
+public class ScoringIndicator_MinScore : ScoringIndicator_Base
+{
+    private float score_perfect2;
+    private float score_perfect;
+    private float score_bad;
+
+    public ScoringIndicator_MinScore()
+    {
+        score_perfect2 = 0;
+        score_perfect = 0;
+        score_bad = 0;
+    }
+
+    #region MAIN
+    protected override void UpdateScore_Interface()
+    {
+        // Count up indivdual score and add up
+        score_perfect2 = GameManager.thisManager.getJudgeWindow.get_perfect2 * BeatConductor.thisBeat.get_scorePerfect2;
+        score_perfect = GameManager.thisManager.getJudgeWindow.get_perfect * BeatConductor.thisBeat.get_scorePerfect;
+        score_bad = GameManager.thisManager.getJudgeWindow.get_bad * BeatConductor.thisBeat.get_scoreBad;
+
+        actualScore = GameManager.thisManager.get_score1.get_score;
+        estimatedScore = GameManager.thisManager.ScoreRefactoring() + (score_perfect2 + score_perfect + score_bad);
+    }
+    #endregion
+}
+
+public class ScoringIndicator_MaxScore : ScoringIndicator_Base
+{
+    private float currentMultipler;
+    private List<ScoreBundleWithMultipler> allPieceOfScore;
+
+    public ScoringIndicator_MaxScore()
+    {
+        currentMultipler = 1;
+        estimatedScore = 0;
+        allPieceOfScore = new List<ScoreBundleWithMultipler>();
+    }
+
+    #region MAIN
+    protected override void UpdateScore_Interface()
+    {
+        float liveValueMultipler = GameManager.thisManager.CurrentValueMultipler();
+
+        if (liveValueMultipler != currentMultipler)
+            AddNewScoring(liveValueMultipler, currentMultipler, GameManager.thisManager.getJudgeWindow.TotalJudgeCounted());
+
+        if (allPieceOfScore != null && allPieceOfScore.Count > 0)
+            GetAdvanceCalculate();
+        else
+            GetBasicCalculate();
+    }
+    #endregion
+
+    #region COMPONENT
+    private void GetBasicCalculate()
+    {
+        // Count up all notes which has called
+        int totalCount = GameManager.thisManager.getJudgeWindow.TotalJudgeCounted();
+
+        // Compare both the score which is expected to get by the end of play
+        actualScore = GameManager.thisManager.get_score1.get_score;
+
+        float expectedBeforeFactor = totalCount * BeatConductor.thisBeat.get_scorePerfect2;
+        float expectedScore = expectedBeforeFactor + GameManager.thisManager.ScoreRefactoring();
+
+        // Calculate expected score to estimatedScore to apply the rest of the check
+        estimatedScore = expectedScore;
+    }
+
+    private void GetAdvanceCalculate()
+    {
+        // Count up all notes which has called
+        int totalCount = GameManager.thisManager.getJudgeWindow.TotalJudgeCounted();
+
+        // Compare both the score which is expected to get by the end of play
+        actualScore = GameManager.thisManager.get_score1.get_score;
+
+        // Calculate all score with split multipler value
+        float shardPieceScore = 0;
+        int lastCountAfterMultipler = 0;
+
+        foreach (ScoreBundleWithMultipler score in allPieceOfScore)
+        {
+            shardPieceScore += score.GetScore(BeatConductor.thisBeat.get_scorePerfect2);
+            lastCountAfterMultipler += score.totalCount;
+        }
+
+        float balanceCountScore = (totalCount - lastCountAfterMultipler) * (int)(BeatConductor.thisBeat.get_scorePerfect2 * currentMultipler);
+        float addFactorToCount = balanceCountScore + GameManager.thisManager.ScoreRefactoring();
+
+        estimatedScore = shardPieceScore + addFactorToCount;
+    }
+    #endregion
+
+    #region MISC
+    private void AddNewScoring(float afterNewMultipler, float beforeNewMultipler, int lastCount)
+    {
+        currentMultipler = afterNewMultipler;
+
+        if (allPieceOfScore != null)
+        {
+            ScoreBundleWithMultipler scoreForReplacement = new ScoreBundleWithMultipler();
+            int splitValueOnCount = lastCount;
+
+            if (allPieceOfScore.Count > 0)
+            {
+                foreach (ScoreBundleWithMultipler value in allPieceOfScore)
+                    splitValueOnCount -= value.totalCount;
+            }
+
+            scoreForReplacement.totalCount = splitValueOnCount;
+            scoreForReplacement.latestMultipler = beforeNewMultipler;
+            allPieceOfScore.Add(scoreForReplacement);
+        }
+    }
+    #endregion
+}
 
 public class MeloMelo_ScoreSystem : MonoBehaviour
 {
@@ -10,12 +174,15 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
 
     // Combo Penatly: GameProperties
     private GameSystem_Score score3;
+    private ScoringIndicator_Base specialIndicator_minScore;
+    private ScoringIndicator_Base specialIndicator_maxScore;
 
     private int maxPoint = 0;
     private int maxHiPoint = 0;
 
     private float hiScore = 0;
     private float estimatedScore = 0;
+    private float boundaryScoreCheck = 0;
     private int estimatedPoint = 0;
 
     private Text RankTxt;
@@ -45,21 +212,39 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
         try { RankTxt = GameObject.FindGameObjectWithTag("RankID_System").GetComponent<Text>(); }
         catch { RankTxt = null; }
 
+        switch (PlayerPrefs.GetInt("ScoreDisplay2"))
+        {
+            case 5:
+                specialIndicator_maxScore = new ScoringIndicator_MaxScore();
+                specialIndicator_maxScore.ResetDisplay();
+                MaxScoreDisplay();
+                break;
+
+            case 6:
+                specialIndicator_minScore = new ScoringIndicator_MinScore();
+                specialIndicator_minScore.ResetDisplay();
+                MinScoreDisplay();
+                break;
+        }
+       
         SetHiScore(PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_score" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0));
         SetMaxPoint(PlayerPrefs.GetInt(BeatConductor.thisBeat.Music_Database.Title + "_point" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0));
+
+        // Get update score for the first time
+        UpdatePointDisplay();
+        UpdateScoreDisplay();
     }
 
     #region MAIN
     // CP: Function
-    private void CheckingForStatus()
+    public void CheckingForStatus()
     {
         switch (PlayerPrefs.GetInt("AutoRetreat", 0))
         {
             case 1:
-                if (score3.get_score != 0)
+                if (IsComboPenatlyVisible())
                     GameManager.thisManager.RetreatTrigger();
                 break;
-
             case 2:
                 if (!BestScoreCondition(950000))
                     GameManager.thisManager.RetreatTrigger();
@@ -105,11 +290,11 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
     #region MAIN [POINT DISPLAY (MIN/MAX)]
     private void UpdatePoint()
     {
-        if (pointTxt != null) pointTxt.text = GameManager.thisManager.get_point + "/" + maxPoint;
+        if (pointTxt != null) pointTxt.text = GameManager.thisManager.get_point.get_score + " / " + maxPoint;
         if (PlayerPrefs.GetInt("ScoreDisplay2") == 1)
         {
             GameObject.FindGameObjectWithTag("SecondScoreDisplay").transform.GetChild(0).GetComponent<Text>().text = "CURRENT POINTS";
-            GameObject.FindGameObjectWithTag("SecondScoreDisplay").GetComponent<Text>().text = GameManager.thisManager.get_point + "/" + maxPoint;
+            GameObject.FindGameObjectWithTag("SecondScoreDisplay").GetComponent<Text>().text = GameManager.thisManager.get_point.get_score + " / " + maxPoint;
         }
     }
 
@@ -121,7 +306,8 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
             estimatedPoint = maxPoint - ((int)GameManager.thisManager.get_point.get_score - expected);
 
             // Display Score
-            SecondaryScoreDisplay("MAXIMUN POINT", ColorBasic(estimatedPoint), Binder(estimatedPoint));
+            GameObject.FindGameObjectWithTag("SecondScoreDisplay").transform.GetChild(0).GetComponent<Text>().text = "MAXIMUM POINTS";
+            GameObject.FindGameObjectWithTag("SecondScoreDisplay").GetComponent<Text>().text = Binder(estimatedPoint);
         }
     }
 
@@ -131,10 +317,12 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
         {
             int min = (int)GameManager.thisManager.get_point.get_score;
             int max = GameManager.thisManager.getJudgeWindow.TotalJudgeCounted() * 3;
-            estimatedPoint = maxHiPoint - (min - max);
+            estimatedPoint = (min > 0 ? 3 : 0) + (min - max);
 
             // Display Score
-            SecondaryScoreDisplay("HI_POINTS", ColorBasic(estimatedPoint), Binder(estimatedPoint));
+            GameObject.FindGameObjectWithTag("SecondScoreDisplay").transform.GetChild(0).GetComponent<Text>().text = "POINTS ( + / - )";
+            GameObject.FindGameObjectWithTag("SecondScoreDisplay").GetComponent<Text>().text = Binder(estimatedPoint);
+            GameObject.FindGameObjectWithTag("SecondScoreDisplay").GetComponent<Text>().color = ColorBasic(estimatedPoint);
         }
     }
     #endregion
@@ -157,8 +345,8 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
         // Score With Rank
         RankCalculateDisplay(GameManager.thisManager.get_score1.get_score);
 
-        // Hi-Score
-        HiScoreDisplay();
+        // Score On ( + / - )
+        ScoreLostDisplay();
     }
 
     public void ReceivedComboPenatly()
@@ -177,12 +365,14 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
             float maxScore = GameManager.thisManager.getJudgeWindow.TotalJudgeCounted() * BeatConductor.thisBeat.get_scorePerfect2 +
                 GameManager.thisManager.ScoreRefactoring();
 
-            float minScore = GameManager.thisManager.get_score1.get_score + GameManager.thisManager.ScoreRefactoring();
+            float minScore = GameManager.thisManager.get_score1.get_score;
 
-            estimatedScore = hiScore - (maxScore - minScore) - hiScore;
+            estimatedScore = hiScore - (minScore - maxScore) - hiScore;
 
             // Display Score
-            SecondaryScoreDisplay("HI-SCORE", ColorBasic((int)estimatedScore), " (" + hiScore + ")");
+            GameObject.FindGameObjectWithTag("SecondScoreDisplay").transform.GetChild(0).GetComponent<Text>().text = "BEST SCORE";
+            GameObject.FindGameObjectWithTag("SecondScoreDisplay").GetComponent<Text>().text = Binder(-estimatedScore);
+            GameObject.FindGameObjectWithTag("SecondScoreDisplay").GetComponent<Text>().color = ColorBasic((int)-estimatedScore);
         }
     }
     #endregion
@@ -190,19 +380,33 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
     #region MAIN [SCORE DISPLAY (MIN/MAX)]
     private void MinScoreDisplay()
     {
-        if (PlayerPrefs.GetInt("ScoreDisplay2") == 6)
+        //if (PlayerPrefs.GetInt("ScoreDisplay2") == 6)
+        //{
+        //    // Count up indivdual score and add up
+        //    float score_perfect2 = GameManager.thisManager.getJudgeWindow.get_perfect2 * BeatConductor.thisBeat.get_scorePerfect2;
+        //    float score_perfect = GameManager.thisManager.getJudgeWindow.get_perfect * BeatConductor.thisBeat.get_scorePerfect;
+        //    float score_bad = GameManager.thisManager.getJudgeWindow.get_bad * BeatConductor.thisBeat.get_scoreBad;
+
+        //    // Calculate expected score to estimatedScore to apply the rest of the check
+        //    string additional_info = FilterOffZero((int)(GameManager.thisManager.get_score1.get_maxScore - GameManager.thisManager.get_score1.get_score),
+        //        (int)(GameManager.thisManager.get_score1.get_score - GameManager.thisManager.get_score1.get_maxScore));
+
+        //    // Calculate min score which include factoring the score
+        //    estimatedScore = GameManager.thisManager.ScoreRefactoring() + (score_perfect2 + score_perfect + score_bad);
+
+        //    // Display score
+        //    SecondaryScoreDisplay("MINIMUM SCORE", ColorDetails((int)estimatedScore), additional_info);
+        //}
+
+        if (specialIndicator_minScore != null)
         {
-            // Count up indivdual score and add up
-            float score_perfect2 = GameManager.thisManager.getJudgeWindow.get_perfect2 * BeatConductor.thisBeat.get_scorePerfect2;
-            float score_perfect = GameManager.thisManager.getJudgeWindow.get_perfect * BeatConductor.thisBeat.get_scorePerfect;
-            float score_bad = GameManager.thisManager.getJudgeWindow.get_bad * BeatConductor.thisBeat.get_scoreBad;
+            specialIndicator_minScore.GetIndicatorUpdate();
+            estimatedScore = specialIndicator_minScore.GetExpectedScore();
 
             // Calculate expected score to estimatedScore to apply the rest of the check
-            string additional_info = FilterOffZero((int)(GameManager.thisManager.get_score1.get_maxScore - GameManager.thisManager.get_score1.get_score),
-                (int)(GameManager.thisManager.get_score1.get_score - GameManager.thisManager.get_score1.get_maxScore));
-
-            // Calculate min score which include factoring the score
-            estimatedScore = GameManager.thisManager.ScoreRefactoring() + (score_perfect2 + score_perfect + score_bad);
+            float referenceValue = GameManager.thisManager.get_score1.get_maxScore - (GameManager.thisManager.get_score1.get_maxScore + GameManager.thisManager.ScoreRefactoring());
+            float finalValue = specialIndicator_minScore.GetActualScore() - (GameManager.thisManager.get_score1.get_maxScore + GameManager.thisManager.ScoreRefactoring());
+            string additional_info = FilterOffZero((int)referenceValue, (int)finalValue);
 
             // Display score
             SecondaryScoreDisplay("MINIMUM SCORE", ColorDetails((int)estimatedScore), additional_info);
@@ -211,7 +415,7 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
 
     private void MaxScoreDisplay()
     {
-        if (PlayerPrefs.GetInt("ScoreDisplay2") == 5)
+        if (PlayerPrefs.GetInt("AutoRetreat") > 1 && PlayerPrefs.GetInt("AutoRetreat") < 6)
         {
             // Count up all notes which has called
             int totalCount = GameManager.thisManager.getJudgeWindow.TotalJudgeCounted();
@@ -223,15 +427,27 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
             float expectedScore = expectedBeforeFactor + GameManager.thisManager.ScoreRefactoring();
 
             // Calculate expected score to estimatedScore to apply the rest of the check
-            estimatedScore = GameManager.thisManager.get_score1.get_maxScore + (actualScore - expectedScore);
+            boundaryScoreCheck = GameManager.thisManager.get_score1.get_maxScore + (actualScore - expectedScore);
 
-            string additional_info = FilterOffZero((int)(GameManager.thisManager.get_score1.get_maxScore - estimatedScore), (int)(actualScore - expectedScore));
+            //string additional_info = FilterOffZero((int)(GameManager.thisManager.get_score1.get_maxScore - estimatedScore), (int)(actualScore - expectedScore));
 
-            // Display Score
+            //// Display Score
+            //SecondaryScoreDisplay("MAXIMUM SCORE", ColorDetails((int)estimatedScore), additional_info);
+
+            //// Check for border score
+            //CheckingForStatus();
+        }
+
+        if (specialIndicator_maxScore != null)
+        {
+            specialIndicator_maxScore.GetIndicatorUpdate();
+            estimatedScore = GameManager.thisManager.get_score1.get_maxScore + (specialIndicator_maxScore.GetActualScore() - specialIndicator_maxScore.GetExpectedScore());
+
+            float referenceValue = estimatedScore;
+            float finalValue = specialIndicator_maxScore.GetActualScore() - specialIndicator_maxScore.GetExpectedScore();
+            string additional_info = FilterOffZero((int)referenceValue, (int)finalValue);
+
             SecondaryScoreDisplay("MAXIMUM SCORE", ColorDetails((int)estimatedScore), additional_info);
-
-            // Check for border score
-            CheckingForStatus();
         }
     }
     #endregion
@@ -242,28 +458,34 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
         if (PlayerPrefs.GetInt("ScoreDisplay2") == 2)
         {
             // Display Score 
-            SecondaryScoreDisplay("COMBO PENALTY", ColorBasic(GameManager.thisManager.CurrentValueMultipler() >= 1 ? 1 : -1), 
+            SecondaryScoreDisplay("COMBO PENALTY", ColorBasic(Math.Round(GameManager.thisManager.CurrentValueMultipler(), 2) >= 1 ? 1 : -1), 
                 string.Empty);
 
-            GameObject.FindGameObjectWithTag("SecondScoreDisplay").GetComponent<Text>().text = "x" + GameManager.thisManager.CurrentValueMultipler();
+            GameObject.FindGameObjectWithTag("SecondScoreDisplay").GetComponent<Text>().text = "x" +
+                Math.Round(GameManager.thisManager.CurrentValueMultipler(), 2);
         }
+    }
+
+    private bool IsComboPenatlyVisible()
+    {
+        return Mathf.Ceil(GameManager.thisManager.CurrentValueMultipler()) < 1;
     }
     #endregion
 
     #region MAIN [SCORE DISPLAY 1]
-    private void HiScoreDisplay()
+    private void ScoreLostDisplay()
     {
         if (hiScoreTxt != null)
         {
             float maxScore = GameManager.thisManager.getJudgeWindow.TotalJudgeCounted() * BeatConductor.thisBeat.get_scorePerfect2 +
                 GameManager.thisManager.ScoreRefactoring();
 
-            float minScore = GameManager.thisManager.get_score1.get_score + GameManager.thisManager.ScoreRefactoring();
+            float minScore = GameManager.thisManager.get_score1.get_score;
 
-            estimatedScore = hiScore - (maxScore - minScore) - hiScore;
+            estimatedScore = minScore - maxScore;
 
-            hiScoreTxt.text = estimatedScore.ToString();
-            hiScoreTxt.color = ColorBasic((int)-estimatedScore);
+            hiScoreTxt.text = Binder(estimatedScore);
+            hiScoreTxt.color = ColorBasic((int)estimatedScore);
         }
     }
 
@@ -284,7 +506,7 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
         if (scoreTxt != null)
         {
             scoreTxt.color = ColorBasic(GameManager.thisManager.CurrentValueMultipler() >= 1 ? 1 : -1);
-            scoreTxt.text = "x" + GameManager.thisManager.CurrentValueMultipler();
+            scoreTxt.text = "x" + Math.Round(GameManager.thisManager.CurrentValueMultipler(), 2);
         }
     }
     #endregion
@@ -326,10 +548,13 @@ public class MeloMelo_ScoreSystem : MonoBehaviour
     #region COMPONENT [SCORE CONDITIONAL CHECKING]
     private bool BestScoreCondition(float score)
     {
-        if (estimatedScore > score)
-            return true;
-        else if (estimatedScore < score)
-            return false;
+        if (GameManager.thisManager.getJudgeWindow.TotalJudgeCounted() > 0)
+        {
+            if (boundaryScoreCheck > score)
+                return true;
+            else if (boundaryScoreCheck < score)
+                return false;
+        }
 
         return true;
     }

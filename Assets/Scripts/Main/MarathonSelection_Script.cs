@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using MeloMelo_Local;
 using MeloMelo_Network;
+using System.Threading.Tasks;
 
 [System.Serializable]
 struct MarathonChallengeProgress
@@ -38,8 +39,8 @@ public partial class ContentSelectionLocker_Script
     #region SETUP
     private void Setup()
     {
-        enchant_challengeList = new string[] { "", "", "Challenge", "Skills", "" };
-        optionCodeIndex = new string[] { "", "", "C", "S", "" };
+        enchant_challengeList = new string[] { "", "", "Challenge", "Skills", "Skills 2" };
+        optionCodeIndex = new string[] { "", "", "C", "S", "S" };
     }
     #endregion
 
@@ -123,8 +124,9 @@ public partial class MainSelection_Script
 
     private void UpdateCurrencyInterface()
     {
-        PlayerPrefs.SetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_" + MeloMelo_Economy.currencyTagInArray[(int)MeloMelo_Economy.CurrencyType.HonorCoin],
-            MeloMelo_ItemUsage_Settings.GetActiveItem("HONOR COIN").amount);
+        //const string itemName = "HONOR COIN";
+        //string currenyKey = LoginPage_Script.thisPage.GetUserPortOutput() + "_" + MeloMelo_Economy.currencyTagInArray[(int)MeloMelo_Economy.CurrencyType.HonorCoin];
+        //PlayerPrefs.SetInt(currenyKey, MeloMelo_ItemUsage_Settings.GetActiveItem(itemName).amount - MeloMelo_ItemUsage_Settings.GetItemUsed(itemName));
 
         for (int panel = 0; panel < CurrencyPanel.Length; panel++)
             CurrencyPanel[panel].GetComponent<CurrencyInTag_Scripts>().UpdateCurrencyValue();
@@ -148,6 +150,7 @@ public class MarathonSelection_Script : MonoBehaviour
     [Header("Main")]
     public GameObject[] selectionPanel;
     public GameObject Marathon_BeginWarning;
+    public GameObject AttentionPopBox;
 
     [Header("Main Function: Script")]
     [SerializeField] private MainSelection_Script mainSelection;
@@ -157,6 +160,8 @@ public class MarathonSelection_Script : MonoBehaviour
     [SerializeField] private GameObject ItemContentTemplate;
     [SerializeField] private GameObject TranscationTicketing;
     private GameObject UsingTranscationTicketing = null;
+
+    [SerializeField] private MarathonDifficulty_Script playModeDifficulty;
 
     // Start is called before the first frame update
     void Start()
@@ -188,7 +193,7 @@ public class MarathonSelection_Script : MonoBehaviour
         {
             mainSelection = new MainSelection_Script();
             StartCoroutine(mainSelection.Setup());
-        }        
+        }
     }
 
     #region SETUP
@@ -261,11 +266,11 @@ public class MarathonSelection_Script : MonoBehaviour
     {
         // Search detail from loaded progress data
         try { MarathonInfo info = Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)); LoadChallengeDetailCache(info.title); }
-        catch 
-        { 
+        catch
+        {
             BuildInChallengeInfo info = new BuildInChallengeInfo();
             info = MeloMelo_ExtensionContent_Settings.LoadMarathonDetail(PlayerPrefs.GetInt("MarathonInstanceNumber", 0));
-            LoadChallengeDetailCache(info.title); 
+            LoadChallengeDetailCache(info.title);
         }
     }
 
@@ -319,9 +324,16 @@ public class MarathonSelection_Script : MonoBehaviour
 
     public void DoSelectionPatcher()
     {
-        // Perform selection toggle upon task given from the indivdual selection
-        Invoke("PerformInitPatcher", 0.5f);
-    }   
+        if (!StartOutPanel.activeInHierarchy && !CompletionPanel.activeInHierarchy)
+        {
+            // Perform selection toggle upon task given from the indivdual selection
+            if (!MeloMelo_ItemStore_Management.IsPendingUsedItemStillActive()) Invoke("PerformInitPatcher", 0.5f);
+            else AttentionPopBox.SetActive(true);
+        }
+
+        else
+            Invoke("PerformInitPatcher", 0.5f);
+    }
 
     public void StartAlertMarathonBegin(Button target)
     {
@@ -407,10 +419,10 @@ public class MarathonSelection_Script : MonoBehaviour
                 // Get previous task action to send out marathon detail
                 bool isMarathonLocal = false;
 
-                foreach (MarathonInfo findInfo in Resources.LoadAll<MarathonInfo>("Database_Marathon/" + 
+                foreach (MarathonInfo findInfo in Resources.LoadAll<MarathonInfo>("Database_Marathon/" +
                     selectionPanel[(int)action_type - 1].GetComponent<MarathonTask_Script>().GetSelectionTitle(string.Empty, true) + "/"))
                 {
-                    if (findInfo.title == selectionPanel[(int)action_type].GetComponent<MarathonTask_Script>().GetSelectionTitle(string.Empty, true)) 
+                    if (findInfo.title == selectionPanel[(int)action_type].GetComponent<MarathonTask_Script>().GetSelectionTitle(string.Empty, true))
                     {
                         LocalChallengePickUp(selectionPanel[(int)action_type - 1].GetComponent<MarathonTask_Script>().GetSelectionTitle(string.Empty, true),
                         selectionPanel[(int)action_type].GetComponent<MarathonTask_Script>().GetSelectionTitle(string.Empty, true));
@@ -423,7 +435,7 @@ public class MarathonSelection_Script : MonoBehaviour
                     Debug.Log("Custom Marathon: " + selectionPanel[(int)action_type].GetComponent<MarathonTask_Script>().GetSelectionTitle(string.Empty, true));
                     GlobalChallengePickUp(selectionPanel[(int)action_type].GetComponent<MarathonTask_Script>().GetSelectionTitle(string.Empty, true));
                 }
-                
+
                 // Wait for current task is been process before sending out detail
                 Invoke("ListDownChallengeDetail", 0.5f);
                 break;
@@ -465,11 +477,13 @@ public class MarathonSelection_Script : MonoBehaviour
                 {
                     string[] allAreaSort = detail.areaName.Split("/");
                     string selectedArea = string.Empty;
-                    if (allAreaSort.Length > 1) selectedArea = allAreaSort[Random.Range(0, allAreaSort.Length - 1)];
-                    
+                    if (allAreaSort.Length > 1) selectedArea = allAreaSort[Random.Range(0, allAreaSort.Length)];
+
                     MusicScore isTrackLoaded = MeloMelo_AreaControl_Settings.GetTrackRandomize(selectedArea != string.Empty ? selectedArea : detail.areaName);
                     localAreaArray.Add(selectedArea != string.Empty ? selectedArea : detail.areaName);
                     localTitleArray.Add(isTrackLoaded != null ? isTrackLoaded.name : detail.title);
+
+                    Debug.Log("Track Randomize: " + (isTrackLoaded != null ? isTrackLoaded.name : detail.title));
                 }
                 else
                 {
@@ -480,6 +494,8 @@ public class MarathonSelection_Script : MonoBehaviour
 
             // Peform task info
             UpdateChallengeInfo(currentSelection.title, localAreaArray.ToArray(), localTitleArray.ToArray(), currentSelection.GetConditionDetails());
+            PlayerPrefs.SetString("ChallengeInfo_Title_Cache", playOption + "/Addons/" + currentSelection.name);
+            playModeDifficulty.CheckParameterForAdditionalMode();
 
             // Setup marathon cache
             CreateMarathonSetup(localTitleArray.ToArray(), localAreaArray.ToArray(), currentSelection.title, actionReference + currentSelection.name);
@@ -503,7 +519,7 @@ public class MarathonSelection_Script : MonoBehaviour
     private void GlobalChallengePickUp(string challengeTitle)
     {
         BuildInChallengeInfo customSelection = new BuildInChallengeInfo();
-        
+
         // Find and assign info
         for (int instance = 0; instance < MeloMelo_ExtensionContent_Settings.totalMarathonCount; instance++)
         {
@@ -563,7 +579,7 @@ public class MarathonSelection_Script : MonoBehaviour
 
         // Agree to set an action
         //selectionPanel[(int)MarathonTask_Script.TaskSelector.ConfirmationStart].GetComponent<MarathonTask_Script>().
-           //AllowActionTaken(actionReference + challengeTitle);
+        //AllowActionTaken(actionReference + challengeTitle);
     }
     #endregion
 
@@ -603,6 +619,7 @@ public class MarathonSelection_Script : MonoBehaviour
                 break;
 
             case (int)MeloMelo_PlayerSettings.LoginType.TempPass:
+                // Load Progress: All Played List
                 if (isSavingProgress)
                 {
                     CloudSave_DataManagement onSaveProgress = new CloudSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(), MeloMelo_PlayerSettings.GetWebServerUrl());
@@ -621,9 +638,13 @@ public class MarathonSelection_Script : MonoBehaviour
                 else
                 {
                     CloudLoad_DataManagement onLoadProgress = new CloudLoad_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(), MeloMelo_PlayerSettings.GetWebServerUrl());
-                    StartCoroutine(onLoadProgress.LoadMarathonProgress());
+                    StartCoroutine(onLoadProgress.VerifyMarathonProgress());
                     yield return new WaitUntil(() => onLoadProgress.cloudLogging.ToArray().Length == onLoadProgress.get_counter);
                 }
+
+                // Load Extension: Marathon Exchange
+                yield return StartCoroutine(ConnectingToContent());
+                yield return StartCoroutine(ReloadMarathonContent());
                 break;
 
             default:
@@ -648,7 +669,7 @@ public class MarathonSelection_Script : MonoBehaviour
                     );
 
         // Get files attracted with player name
-        progress.SelectFileForActionWithUserTag("savelog_MarathonPass_Data.txt");
+        progress.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileMarathonProgress);
 
         // Get progress action going for loading and saving
         switch (isCurrentProgressSaved)
@@ -724,7 +745,7 @@ public class MarathonSelection_Script : MonoBehaviour
         PlayerPrefs.DeleteKey(typeOfJudge + "_Deduct");
         if (typeOfJudge < judgeTitle.Length) PlayerPrefs.SetInt(judgeTitle[typeOfJudge] + "_Deduct", numberOfDeduction);
     }
-    
+
     private void ClearAllLifePointSetup()
     {
         string[] judgeTitle = { "Critical_Perfect", "Perfect", "Bad", "Miss" };
@@ -777,6 +798,76 @@ public class MarathonSelection_Script : MonoBehaviour
         }
 
         UsingTranscationTicketing.GetComponent<InGamePurchase_Transcation_PayRoll>().GetTranscation(item, costInItem, MeloMelo_Economy.CurrencyType.HonorCoin);
+    }
+    #endregion
+
+    #region REMOTE_NETWORK_MISC (MARATHON CONTENT)
+    private IEnumerator ConnectingToContent()
+    {
+        if (PlayerPrefs.GetString("storeCache_Connection", "off") == "OK!")
+        {
+            MeloMelo_Network_RemoteConfig.ConfigurationBase setup_config = new MeloMelo_Network_RemoteConfig.ConfigurationSetup_MarathonExchange();
+            StartCoroutine(setup_config.VerifyConfig());
+            yield return new WaitUntil(() => setup_config.GetConfigComplete());
+        }
+    }
+
+    private IEnumerator ReloadMarathonContent()
+    {
+        string jsonMarathonExchange = PlayerPrefs.GetString("JSON_Custom_Marathon_Exchange", string.Empty);
+        Task runMarathonExchange = Task.Run(() =>
+        {
+            if (jsonMarathonExchange.Trim('{', '}') != string.Empty)
+            {
+                MarathonExchangeArray exchangeArray = new MarathonExchangeArray().GetExchangeList(jsonMarathonExchange);
+                MeloMelo_Economy.exchangeContentOfMarathon = new List<MarathonExchangeContent>();
+                MeloMelo_Economy.exchangeContentOfMarathon.AddRange(exchangeArray.marathonContent);
+            }
+            else
+                Debug.Log("This is empty (2nd run)");
+        });
+
+        yield return new WaitUntil(() => runMarathonExchange.IsCompleted);
+        Debug.Log("Total Exchange Content (Marathon) : " + (MeloMelo_Economy.exchangeContentOfMarathon != null ? MeloMelo_Economy.exchangeContentOfMarathon.ToArray().Length : 0) + " Loaded!");
+    }
+    #endregion
+
+    #region MISC (Reload Challenge Info)
+    public void FirstSetupGetChallengeInfo(string[] storeData, string key)
+    {
+        foreach (string title in storeData)
+        {
+            string currentInfo = PlayerPrefs.GetString("ChallengeInfo_Setup_" + key, string.Empty);
+            currentInfo += title + ",";
+        }    
+    }
+
+    public string[] RetreiveDataChallengeInfo(string key)
+    {
+        string[] allInfo = PlayerPrefs.GetString("ChallengeInfo_Setup_" + key, string.Empty).Split(",");
+        return allInfo;
+    }
+
+    public void ReloadChallengeInfo(MarathonAdditionalMode info, int selection_index)
+    {
+        // Peform task info
+        UpdateChallengeInfo(
+            info.title,
+            RetreiveDataChallengeInfo("Challenge_AreaList"),
+            RetreiveDataChallengeInfo("Challenge_TrackList"),
+            info.GetConditionDetails(selection_index)
+            );
+
+        // Setup life when selection rules is enable
+        if ((int)info.additional_difficulty_data[selection_index].clearingType == (int)MarathonInfo.ClearedMethod.Life)
+        {
+            // Clear cache for life during the previous selection
+            ClearAllLifePointSetup();
+
+            // Adjust any available life value to this selection
+            foreach (JudgementAddons addons in info.additional_difficulty_data[selection_index].conditionAddons)
+                CreateLifePointSetup((int)addons.judgeTitle - 1, addons.judgeCount);
+        }
     }
     #endregion
 }

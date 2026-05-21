@@ -27,7 +27,7 @@ public class CharacterSelection_Script : MonoBehaviour
     private void GetCharactersInstance()
     {
         // Get all characters which are store in files
-        ClassBase[] characters = Resources.LoadAll<ClassBase>("Character_Data");
+        ClassBase[] characters = MeloMelo_CharacterInfo_Settings.allCharacterListing.ToArray();
 
         // Perform check on characters status (LOCKED, UNLOCKED)
         for (int character = 0; character < characters.Length; character++)
@@ -203,26 +203,54 @@ public class CharacterSelection_Script : MonoBehaviour
     private void GetCharacterInfoPlate(bool active, string character)
     {
         // Title: Update character name and class type
-        ClassBase selectedChar_ref = Resources.Load<ClassBase>("Character_Data/" + character);
-        string previousCharacter = PlayerPrefs.GetString("Slot" + PlayerPrefs.GetInt("SlotSelect_setup", 1) + "_charName", "None");
+        if (MeloMelo_CharacterInfo_Settings.GetCharacterStatus(character))
+        {
+            Character_Base_Data selectedChar_ref = null;
+            ClassBase character_ref = null;
 
-        CharacterInformationBoard.transform.GetChild(0).gameObject.SetActive(active);
-        CharacterInformationBoard.transform.GetChild(0).GetComponent<Text>().text = selectedChar_ref.characterName + " (" + selectedChar_ref.GetClassType() + ")";
+            foreach (Character_Base_Data findCharacter in MeloMelo_CharacterInfo_Settings.inGame_character_listing)
+            {
+                if (character == findCharacter.className)
+                {
+                    foreach (ClassBase characterRef in MeloMelo_CharacterInfo_Settings.allCharacterListing)
+                    {
+                        if (findCharacter.className == characterRef.name)
+                        {
+                            selectedChar_ref = findCharacter;
+                            character_ref = characterRef;
+                            break;
+                        }
+                    }
 
-        // Script: Calculate unit power
-        StatsDistribution characterStats = new StatsDistribution();
-        characterStats.load_Stats();
+                    break;
+                }
+            }
 
-        // Body: Update character power and assigned power
-        CharacterInformationBoard.transform.GetChild(1).gameObject.SetActive(active);
-        CharacterInformationBoard.transform.GetChild(1).GetComponent<Text>().text =
-            "Current Unit Power: " + characterStats.get_UnitPower(previousCharacter) + "\n" +
-            "Assigned Character Power: " + SelfScoringForUnitPower(selectedChar_ref) + 
-            " (" + GetValueAlternative(SelfScoringForUnitPower(selectedChar_ref) - characterStats.get_UnitPower(previousCharacter)) + ")\n" +
-            "Total Unit Power: " + (characterStats.get_UnitPower() - characterStats.get_UnitPower(previousCharacter) + SelfScoringForUnitPower(selectedChar_ref));
+            string previousCharacter = PlayerPrefs.GetString("Slot" + PlayerPrefs.GetInt("SlotSelect_setup", 1) + "_charName", "None");
 
-        // Features: Status and Skills
-        AdditionalSelectionTab[PlayerPrefs.GetInt("CharacterSelection_ToggleTab", 0)].GetComponent<RawImage>().color = Color.green;
+            CharacterInformationBoard.transform.GetChild(0).gameObject.SetActive(active);
+            CharacterInformationBoard.transform.GetChild(0).GetComponent<Text>().text = selectedChar_ref.charName + " (" + character_ref.GetClassType() + ")";
+
+            // Script: Calculate unit power
+            StatsDistribution characterStats = new StatsDistribution();
+            characterStats.load_Stats();
+
+            // Body: Update character power and assigned power
+            CharacterInformationBoard.transform.GetChild(1).gameObject.SetActive(active);
+            CharacterInformationBoard.transform.GetChild(1).GetComponent<Text>().text =
+                "Current Unit Power: " + characterStats.get_UnitPower(previousCharacter) + "\n" +
+                "Assigned Character Power: " + SelfScoringForUnitPower(selectedChar_ref, character_ref) +
+                " (" + GetValueAlternative(SelfScoringForUnitPower(selectedChar_ref, character_ref) - characterStats.get_UnitPower(previousCharacter)) + ")\n" +
+                "Total Unit Power: " + (characterStats.get_UnitPower() - characterStats.get_UnitPower(previousCharacter) + SelfScoringForUnitPower(selectedChar_ref, character_ref));
+
+            // Features: Status and Skills
+            AdditionalSelectionTab[PlayerPrefs.GetInt("CharacterSelection_ToggleTab", 0)].GetComponent<RawImage>().color = Color.green;
+        }
+        else
+        {
+            CharacterInformationBoard.transform.GetChild(0).gameObject.SetActive(false);
+            CharacterInformationBoard.transform.GetChild(1).gameObject.SetActive(false);
+        }
     }
 
     private void GetCharacterSkillInfoPlate(bool active, string character)
@@ -303,25 +331,37 @@ public class CharacterSelection_Script : MonoBehaviour
 
         // Update chosen selection
         MeloMelo_CharacterInfo_Settings.SetCharacterChosenSelection(isCharacterAvailableByDefault || isCharacrterUnlockedByCondition);
+
+        if (isCharacterAvailableByDefault || isCharacrterUnlockedByCondition)
+            MeloMelo_CharacterInfo_Settings.AssignCharacterAvailableSetup(className);
     }
 
-    private int SelfScoringForUnitPower(ClassBase characterData)
+    private int SelfScoringForUnitPower(Character_Base_Data characterData, ClassBase reference)
     {
         int calcuatedPower = 0;
         StatsDistribution distributionRef = new StatsDistribution();
 
-        if (characterData.name != "None")
+        if (characterData.className != "None")
         {
-            characterData.UpdateCurrentStats(false);
-            StatsManage_Database characterStats = new StatsManage_Database(characterData.name);
+            StatsManage_Database characterStats = new StatsManage_Database(characterData.className);
             ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
-                characterData.elementType == ClassBase.ElementStats.Light ? "Light" :
-                characterData.elementType == ClassBase.ElementStats.Dark ? "Dark" :
-                characterData.elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+                reference.elementType == ClassBase.ElementStats.Light ? "Light" :
+                reference.elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                reference.elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
 
-            calcuatedPower += (int)(baseStats.strength * (characterStats.GetCharacterStatus(characterData.level).GetStrength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(characterData.name)));
-            calcuatedPower += (int)(baseStats.magic * (characterStats.GetCharacterStatus(characterData.level).GetMagic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(characterData.name)));
-            calcuatedPower += (int)(baseStats.vitality * (characterStats.GetCharacterStatus(characterData.level).GetVitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(characterData.name)));
+            if (characterData.additionalStats != null)
+            {
+                calcuatedPower += (int)(baseStats.strength * (characterStats.GetCharacterStatus(characterData.level).GetStrength + characterData.additionalStats.strength));
+                calcuatedPower += (int)(baseStats.magic * (characterStats.GetCharacterStatus(characterData.level).GetMagic + characterData.additionalStats.magic));
+                calcuatedPower += (int)(baseStats.vitality * (characterStats.GetCharacterStatus(characterData.level).GetVitality + characterData.additionalStats.vitalilty));
+            }
+            else
+            {
+                calcuatedPower += (int)(baseStats.strength * (characterStats.GetCharacterStatus(characterData.level).GetStrength));
+                calcuatedPower += (int)(baseStats.magic * (characterStats.GetCharacterStatus(characterData.level).GetMagic));
+                calcuatedPower += (int)(baseStats.vitality * (characterStats.GetCharacterStatus(characterData.level).GetVitality));
+            }
+
             calcuatedPower += (int)(baseStats.multipler * distributionRef.baseHealth * characterStats.GetCharacterStatus(characterData.level).GetHealth);
         }
 

@@ -1,0 +1,8 @@
+It's seem like this place is quite a variable in material
+for herb and healing pot. We should get some of it. But I 
+felt that this might not be enough value contain magic 
+component for a great healing pot.
+
+Let's search around there instead. Flower which glow
+can tell its contain large component of magic been
+absorb.

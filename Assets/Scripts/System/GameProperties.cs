@@ -936,6 +936,11 @@ namespace MeloMelo_GameProperties
             return perfect2 + perfect + bad + miss;
         }
 
+        public int TotalHitCounted()
+        {
+            return perfect2 + perfect + bad;
+        }
+
         public bool IsPerfectChained()
         {
             if (bad == 0 && miss == 0) return true;

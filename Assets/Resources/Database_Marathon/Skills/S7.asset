@@ -14,27 +14,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Title Cup Course
   trackList:
-  - title: M13
+  - title: M3
     areaName: Lakeside Village
     DifficultyType: 2
-  - title: M28
+    trackRandom: 0
+  - title: M1
     areaName: Lime Forestry
     DifficultyType: 2
-  - title: M55
-    areaName: Lime Forestry
-    DifficultyType: 3
-  - title: M11
+    trackRandom: 0
+  - title: M17
     areaName: Witch Woods
     DifficultyType: 3
+    trackRandom: 0
+  - title: M12
+    areaName: Death Road
+    DifficultyType: 3
+    trackRandom: 0
   Difficultylevel:
   - 14
-  - 14
   - 15
+  - 14
   - 15
   clearingType: 1
   clearingValue: 10
   conditionAddons:
-  - judgeTitle: 3
-    judgeCount: 1
   - judgeTitle: 4
-    judgeCount: 5
+    judgeCount: 1

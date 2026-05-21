@@ -178,16 +178,8 @@ public class SettingsManager : MonoBehaviour
                 {
                     case "Gift":
                         PlayerPrefs.SetString("AlertPop_Message", "Added " + key.packageName + " into your storage bag");
-                        MeloMelo_Local.LocalSave_DataManagement saveItem = new 
-                            MeloMelo_Local.LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
-                            "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
-
-                        saveItem.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
-                        saveItem.SaveVirtualItemFromPlayer(key.packageName, 1, MeloMelo_ExtensionContent_Settings.GetItemIsStackable(key.packageName));
                         MeloMelo_ItemUsage_Settings.OverwriteActiveItem(key.packageName, 1);
-
-                        saveItem.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileExchangeHistory);
-                        saveItem.SaveExchangeTranscationHistory(JsonUtility.ToJson(key));
+                        ObtainRewardGateway(key);
                         break;
 
                     default:
@@ -222,7 +214,7 @@ public class SettingsManager : MonoBehaviour
                         if (versionControl.versions[countOfVersion] == StartMenu_Script.thisMenu.version)
                             currentVersion = countOfVersion;
 
-                        if (versionControl.versions[countOfVersion] == key.version)
+                        if (versionControl.versions[countOfVersion] == key.upToDate)
                             lengthOfVersion = countOfVersion;
                     }
                 }
@@ -259,6 +251,34 @@ public class SettingsManager : MonoBehaviour
         {
             ExtractPackageBundle(componentId, componentId.transform.GetChild(2).GetComponent<InputField>().text);
             componentId.transform.GetChild(2).GetComponent<InputField>().text = string.Empty;
+        }
+    }
+    #endregion
+
+    #region EXTRA SETTINGS
+    private void ObtainRewardGateway(DataPackStructure key)
+    {
+        switch (ServerGateway_Script.thisServer.get_loginType)
+        {
+            case (int)MeloMelo_PlayerSettings.LoginType.GuestLogin:
+                MeloMelo_Local.LocalSave_DataManagement saveItem = new
+                            MeloMelo_Local.LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
+                            "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+
+                saveItem.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
+                saveItem.SaveVirtualItemFromPlayer(key.packageName, 1, MeloMelo_ExtensionContent_Settings.GetItemIsStackable(key.packageName));
+
+                saveItem.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileExchangeHistory);
+                saveItem.SaveExchangeTranscationHistory(JsonUtility.ToJson(key));
+                break;
+
+            default:
+                MeloMelo_Network.CloudSave_DataManagement saveItemToServer = 
+                    new MeloMelo_Network.CloudSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(), 
+                    MeloMelo_PlayerSettings.GetWebServerUrl());
+
+                saveItemToServer.SaveExchangeTranscationHistory(key.packageName, key.dataSeriesKey, key.unqiueCode, key.upToDate);
+                break;
         }
     }
     #endregion

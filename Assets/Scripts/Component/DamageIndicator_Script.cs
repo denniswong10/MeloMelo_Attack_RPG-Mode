@@ -10,6 +10,7 @@ public class DamageIndicator_Script : MonoBehaviour
     public void Setup(int setTimeOut)
     {
         currentTimeline = Time.time + setTimeOut;
+        GetComponent<DamageIndicator_FloatingText>().ResetFloatText(setTimeOut);
     }
     #endregion
 

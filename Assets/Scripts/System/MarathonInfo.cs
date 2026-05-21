@@ -58,6 +58,8 @@ public class MarathonInfo : ScriptableObject
                 return "Cleared this challenge with a rank of " + MeloMelo_GameSettings.GetScoreRankStructure(clearingValue).rank + " or higher";
 
             case ClearedMethod.Life:
+                PlayerPrefs.SetInt("ClearingValue_Addons", int.Parse(clearingValue));
+
                 return "Survive this challenge with " + clearingValue + " life\n"
                     + "Critical (" + FindJudgeCount(1) + "), Perfect (" + FindJudgeCount(2) + "), Bad (" + FindJudgeCount(3) + "), Miss (" + FindJudgeCount(4) + ")";
 

@@ -504,8 +504,11 @@ public class Character : MonoBehaviour
         bool isAttackAreReflectable = target.note_define_index == CharacterSettings.PICKUP_TYPE.NONE && target.note_index == 3;
         int bonusScoring = isAttackAreReflectable ? 2 : 1;
 
-        GameManager.thisManager.UpdateScore_Tech(PlayerPrefs.GetInt("Character_OverallPower", 0) / partySize * bonusScoring);
-        if (isAttackAreReflectable) target.GetComponent<Notation_Motion_Script>().Reflect_MoveEffect();
+        if (PlayerPrefs.GetInt("Character_OverallPower", 0) != 0)
+        {
+            GameManager.thisManager.UpdateScore_Tech(PlayerPrefs.GetInt("Character_OverallPower", 0) / partySize * bonusScoring);
+            if (isAttackAreReflectable) target.GetComponent<Notation_Motion_Script>().Reflect_MoveEffect();
+        }
     }
 
     private void DamagingEnemyProgress(float multiple, bool condition)
@@ -516,8 +519,22 @@ public class Character : MonoBehaviour
             if (finalDamageCount <= 0) { finalDamageCount = Random.Range(0, 10) > 5 ? -1 : 0; }
 
             GameManager.thisManager.UpdateBattle_Progress((float)100 / GameManager.thisManager.getGameplayComponent.getTotalEnemy * multiple);
-            GameManager.thisManager.UpdateEnemy_Health(-finalDamageCount, false);
-            GameManager.thisManager.SpawnDamageIndicator(transform.position, 2, -finalDamageCount);
+            float randomCriticalValue = Random.Range(0, 100);
+
+            if (randomCriticalValue >= (100f - PlayerPrefs.GetFloat("Extra_Stats_1", 0)))
+            {
+                int finalCriticalValue = (int)(finalDamageCount + (finalDamageCount * 0.01f * randomCriticalValue));
+                GameManager.thisManager.UpdateEnemy_Health(-finalCriticalValue, false);
+                GameManager.thisManager.SpawnDamageIndicator(transform.position, 2, -finalCriticalValue, true);
+
+                //GameManager.thisManager.PromptInGameMessage("CHARACTER STATUS", "Critical Damage", "Final physical damage deal " + 
+                    //MeloMelo_PlayerSettings.GetScoreConfigure(-finalCriticalValue));
+            }
+            else
+            {
+                GameManager.thisManager.UpdateEnemy_Health(-finalDamageCount, false);
+                GameManager.thisManager.SpawnDamageIndicator(transform.position, 2, -finalDamageCount);
+            }
 
             // Prompt basic attack information
             GameManager.thisManager.gameObject.GetComponent<SkillManager>().PromptCharacterBaseDamage("Basic Attack",
@@ -536,13 +553,16 @@ public class Character : MonoBehaviour
             int healing_value = 10;
             int finalValue = 0;
 
-            foreach (ClassBase character in character_stats.slot_Stats)
+            foreach (Character_Base_Data character in character_stats.slot_Stats)
             {
-                int originalValue, boostedValue;
-                boostedValue = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(character.name) > 0 ? MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(character.name) : 1;
-                originalValue = (character.magic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(character.name) + MeloMelo_ItemUsage_Settings.GetPowerBoost(character.name)) * boostedValue;
+                if (character != null && character.additionalStats != null)
+                {
+                    int originalValue, boostedValue;
+                    boostedValue = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(character.className) > 0 ? MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(character.className) : 1;
+                    originalValue = (character.fixedStats.magic + character.additionalStats.magic + MeloMelo_ItemUsage_Settings.GetPowerBoost(character.className)) * boostedValue;
 
-                finalValue += boostedValue * healing_value;
+                    finalValue += boostedValue * healing_value;
+                }
             }
 
             GameManager.thisManager.UpdateCharacter_Health(finalValue, false);

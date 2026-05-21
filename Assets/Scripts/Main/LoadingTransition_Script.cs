@@ -36,23 +36,23 @@ public class LoadingTransition_Script : MonoBehaviour
         Selection.SetTrigger("Opening" + PlayerPrefs.GetString("Resoultion_Melo", string.Empty));
 
         // Filling in of all track information to dash
-        GameObject.Find("BG").GetComponent<RawImage>().texture =
-                !PlayerPrefs.HasKey("MarathonPermit") && !PlayerPrefs.HasKey("Mission_Played") ? PreSelection_Script.thisPre.get_AreaData.BG : PlayerPrefs.HasKey("Mission_Played") ?
-                Resources.Load<Texture>("Background/BG1C") : Resources.Load<Texture>("Background/BG11");
+        GameObject.Find("BG").GetComponent<RawImage>().texture = MeloMelo_Environment_Settings.GetBackgroundCover();
 
         if (PlayerPrefs.HasKey("Mission_Played"))
         {
-            GameObject.Find("Artist").GetComponent<Text>().text = "[ " + StoryMode_Scripts.thisStory.missionTrack.ArtistName + " ]";
-            GameObject.Find("Title").GetComponent<Text>().text = StoryMode_Scripts.thisStory.missionTrack.Title;
-            GameObject.Find("CoverImage").GetComponent<RawImage>().texture = StoryMode_Scripts.thisStory.missionTrack.Background_Cover;
-            GameObject.Find("Designer").GetComponent<Text>().text = "Played as " + userInput;
+            LoadingContentDescriptionCover(
+                StoryMode_Scripts.thisStory.missionTrack.ArtistName,
+                StoryMode_Scripts.thisStory.missionTrack.Title,
+                StoryMode_Scripts.thisStory.missionTrack.Background_Cover
+                );
         }
         else
         {
-            GameObject.Find("Artist").GetComponent<Text>().text = "[ " + SelectionMenu_Script.thisSelect.get_selection.get_form.ArtistName + " ]";
-            GameObject.Find("Title").GetComponent<Text>().text = SelectionMenu_Script.thisSelect.get_selection.get_form.Title;
-            GameObject.Find("CoverImage").GetComponent<RawImage>().texture = SelectionMenu_Script.thisSelect.get_selection.get_form.Background_Cover;
-            GameObject.Find("Designer").GetComponent<Text>().text = "Played as " + userInput;
+            LoadingContentDescriptionCover(
+                SelectionMenu_Script.thisSelect.get_selection.get_form.ArtistName,
+                SelectionMenu_Script.thisSelect.get_selection.get_form.Title,
+                SelectionMenu_Script.thisSelect.get_selection.get_form.Background_Cover
+                );
         }
 
         // Identify level difficulty and level value
@@ -81,18 +81,11 @@ public class LoadingTransition_Script : MonoBehaviour
         StartCoroutine(TransitToBattle());
 
         // Load up information from database
-        foreach (ClassBase character in getstats.slot_Stats)
+        foreach (Character_Base_Data character in getstats.slot_Stats)
         {
-            if (character.characterName != "None")
+            if (character != null)
             {
-                StatsManage_Database database = new StatsManage_Database(character.name);
-                character.UpdateCurrentStats(false);
-
-                character.health = database.GetCharacterStatus(character.level).GetHealth;
-                character.strength = database.GetCharacterStatus(character.level).GetStrength;
-                character.vitality = database.GetCharacterStatus(character.level).GetVitality;
-                character.magic = database.GetCharacterStatus(character.level).GetMagic;
-                character.UpdateStatsCache(true);
+                character.RefreshCharacterStats();
             }
         }
 
@@ -100,12 +93,52 @@ public class LoadingTransition_Script : MonoBehaviour
         if (!PlayerPrefs.HasKey("MarathonPermit"))
         {
             PlayerPrefs.SetInt("Character_OverallHealth", getstats.get_UnitHealth("Character"));
-            PlayerPrefs.SetInt("Character_OverallDamage", getstats.get_UnitDamage("Character"));
+            PlayerPrefs.SetInt("Character_OverallDamage", getstats.get_UnitDamage("Character", getstats.get_unitPierceDamage("Character")));
             PlayerPrefs.SetInt("Enemy_OverallHealth", getstats.get_UnitHealth("Enemy"));
-            PlayerPrefs.SetInt("Enemy_OverallDamage", getstats.get_UnitDamage("Enemy"));
+            PlayerPrefs.SetInt("Enemy_OverallDamage", getstats.get_UnitDamage("Enemy", getstats.get_unitPierceDamage("Enemy")));
 
-            PlayerPrefs.SetInt("Character_MagicDefense", (int)(getstats.get_UnitSpellResist("Character") * 0.01f * 80));
-            PlayerPrefs.SetInt("Enemy_MagicDefense", (int)(getstats.get_UnitSpellResist("Enemy") * 0.01f * 80));
+            PlayerPrefs.SetInt("Character_MagicDefense", (int)(getstats.get_UnitSpellResist("Character") * 0.01f * (100 - getstats.get_unitBurstDamage("Enemy"))));
+            PlayerPrefs.SetInt("Enemy_MagicDefense", (int)(getstats.get_UnitSpellResist("Enemy") * 0.01f * (100 - getstats.get_unitBurstDamage("Character"))));
+            PlayerPrefs.SetInt("PartySize_Index", getstats.get_unitSize());
+
+            PlayerPrefs.SetFloat("Extra_Stats_1", getstats.get_criticalRate("Character"));
+            PlayerPrefs.SetFloat("Extra_Stats_2", getstats.get_unitPierceDamage("Character"));
+            PlayerPrefs.SetFloat("Extra_Stats_3", getstats.get_unitBurstDamage("Character"));
+
+            // Get additional status
+            StatsDistribution allChar = new StatsDistribution();
+            allChar.load_Stats();
+
+            if (allChar.slot_Stats != null)
+            {
+                foreach (Character_Base_Data character in allChar.slot_Stats)
+                {
+                    if (character != null)
+                    {
+                        StatsManage_Database charInfo = new StatsManage_Database(character.className);
+                        int totalPoint = (character.level + (character.additionalProfile != null ? character.additionalProfile.rebirth_count * charInfo.GetCharacterMaxLevel() : 0)) * 2;
+
+                        if (character.additionalProfile != null)
+                        {
+                            PlayerPrefs.SetFloat(character.className + "_MaxExpObtain",
+                            (float)MeloMelo_CharacterInfo_Settings.GetCharacterMaxExperienceObtain(
+                                totalPoint, character.additionalProfile.dosageMasteryPoint,
+                                character.additionalProfile.masteryPoint)
+                            );
+
+                            //Debug.Log("Profile: " + (character.additionalProfile != null ? "OK!" : "Error!"));
+
+                            //if (character.additionalProfile != null)
+                            //{
+                            //    Debug.Log("Total Point:" + character.additionalProfile.masteryPoint + " / " + totalPoint);
+                            //    Debug.Log("Dosage Point:" + character.additionalProfile.dosageMasteryPoint);
+                            //}
+                        }
+                        else
+                            PlayerPrefs.SetFloat(character.className + "_MaxExpObtain", 100);
+                    }
+                }
+            }
         }
         else
         {
@@ -125,4 +158,14 @@ public class LoadingTransition_Script : MonoBehaviour
         yield return new WaitForSeconds(2);
         SceneManager.LoadScene("Battleground Stage" + PlayerPrefs.GetString("Resoultion_Melo", string.Empty));
     }
+
+    #region COMPONENT 
+    private void LoadingContentDescriptionCover(string artist, string title, Texture coverImage)
+    {
+        GameObject.Find("Artist").GetComponent<Text>().text = "[ " + artist + " ]";
+        GameObject.Find("Title").GetComponent<Text>().text = title;
+        GameObject.Find("CoverImage").GetComponent<RawImage>().texture = coverImage;
+        GameObject.Find("Designer").GetComponent<Text>().text = "Played as " + userInput;
+    }
+    #endregion
 }

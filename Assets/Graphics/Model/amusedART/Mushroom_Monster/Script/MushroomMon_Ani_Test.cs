@@ -16,10 +16,28 @@ public class MushroomMon_Ani_Test : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name == "Note5(Clone)") 
+        if (other.gameObject.name == "Note5(Clone)" && 
+            other.gameObject.GetComponent<Notation_Motion_Script>().get_direction_type == Notation_Motion_Script.Direction.Backward) 
         { 
-            GameManager.thisManager.UpdateEnemy_Health(-(PlayerPrefs.GetInt("Character_OverallDamage", 0) * 2), false);
-            GameManager.thisManager.SpawnDamageIndicator(transform.position, 2, -(PlayerPrefs.GetInt("Character_OverallDamage", 0) * 2));
+            //GameManager.thisManager.UpdateEnemy_Health(-(PlayerPrefs.GetInt("Character_OverallDamage", 0) * 2), false);
+            //GameManager.thisManager.SpawnDamageIndicator(transform.position, 2, -(PlayerPrefs.GetInt("Character_OverallDamage", 0) * 2));
+
+            int finalDamageCount = PlayerPrefs.GetInt("Character_OverallDamage", 0) + MeloMelo_ExtraStats_Settings.GetBonusDamage();
+            if (finalDamageCount <= 0) { finalDamageCount = Random.Range(0, 10) > 5 ? -1 : 0; }
+
+            float randomCriticalValue = Random.Range(0, 100);
+
+            if (randomCriticalValue >= (100f - PlayerPrefs.GetFloat("Extra_Stats_1", 0)))
+            {
+                int finalCriticalValue = (int)(finalDamageCount + (finalDamageCount * 0.01f * randomCriticalValue));
+                GameManager.thisManager.UpdateEnemy_Health(-finalCriticalValue * 2, false);
+                GameManager.thisManager.SpawnDamageIndicator(transform.position, 2, -finalCriticalValue * 2, true);
+            }
+            else
+            {
+                GameManager.thisManager.UpdateEnemy_Health(-finalDamageCount * 2, false);
+                GameManager.thisManager.SpawnDamageIndicator(transform.position, 2, -finalDamageCount * 2);
+            }
         }
     }
 

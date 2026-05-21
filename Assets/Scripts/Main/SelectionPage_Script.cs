@@ -22,8 +22,10 @@ public class SelectionPage_Script : MonoBehaviour
     #region SETUP
     private void BattleDifficultSelection()
     {
-        currentSelection = 2;
-        OpeningSelection(Selection[currentSelection], string.Empty);
+        GetPlayDifficultSelection(1);
+
+        //currentSelection = 2;
+        //OpeningSelection(Selection[currentSelection], string.Empty);
     }
 
     private void UpdateMainSectionMenu()
@@ -90,6 +92,10 @@ public class SelectionPage_Script : MonoBehaviour
 
             case 3:
                 option = MeloMelo_GameSettings.BattleDifficultyMode.Advance;
+                break;
+
+            case 4:
+                option = MeloMelo_GameSettings.BattleDifficultyMode.Expert;
                 break;
 
             default:

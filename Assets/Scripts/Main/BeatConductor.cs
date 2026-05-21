@@ -500,6 +500,8 @@ public class BeatConductor : MonoBehaviour
             PlayerPrefs.GetString("MVOption", "T") == "T" &&
             Music_Database.videoImport != null)
         {
+            yield return new WaitForSeconds(Music_Database.videoOffset);
+
             foreach (VideoPlayer player in GameObject.Find("MV").transform.GetComponentsInChildren<VideoPlayer>())
             {
                 player.clip = Music_Database.videoImport;

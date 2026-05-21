@@ -34,7 +34,9 @@ public class CloudSaveConfig : MonoBehaviour
         MeloMelo_GameSettings.CloudSaveSetting_ElementScoreRPG,
         MeloMelo_GameSettings.CloudSaveSetting_RPGElementRecord,
         MeloMelo_GameSettings.CloudSaveSetting_ZoneRewardRecord,
-        MeloMelo_GameSettings.CloudSaveSetting_TrackComboProgress
+        MeloMelo_GameSettings.CloudSaveSetting_TrackComboProgress,
+        MeloMelo_GameSettings.CloudSaveSetting_MarathonProgress,
+        MeloMelo_GameSettings.CloudSaveSetting_AdventureMode
     };
 
     private string[] pathLoader2 =

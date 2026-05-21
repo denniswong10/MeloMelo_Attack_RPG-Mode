@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4d13d767f47198488f4012df08a98bd, type: 3}
+  m_Name: '#85'
+  m_EditorClassIdentifier: 
+  itemName: Consumable Mystery Pack
+  Icon: {fileID: 2800000, guid: 64c6dbe6723a78548b229ba3ec18df75, type: 3}
+  stackable: 1
+  thisItemType: 0
+  description: A pack contain all sort of basic comsumable item where its useful
+    as your character growth. Click them to obtain random consumable item.
+  itemValue: 0
+  NoQuantityLimit: 0
+  CreditSet: 0

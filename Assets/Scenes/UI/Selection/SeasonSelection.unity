@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311947, g: 0.38074005, b: 0.35872722, a: 1}
+  m_IndirectSpecularColor: {r: 0.12731725, g: 0.13414745, b: 0.12107873, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -98,8 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: b16765c84c37c614fbd98cbe2fb2d1cf,
-    type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: b16765c84c37c614fbd98cbe2fb2d1cf, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -185,8 +184,7 @@ MonoBehaviour:
   m_text: Gathering Mode
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c38775ed2822a6c41b2292744b1e92a2, type: 2}
-  m_sharedMaterial: {fileID: 21243777319734966, guid: c38775ed2822a6c41b2292744b1e92a2,
-    type: 2}
+  m_sharedMaterial: {fileID: 21243777319734966, guid: c38775ed2822a6c41b2292744b1e92a2, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -728,7 +726,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 2dcdfa01fbc0760408bb7e6f3cf665c8, type: 3}
+  m_Texture: {fileID: 2800000, guid: 23f8b761af420644cbc9fe75c0049446, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -1282,8 +1280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AlertBox: {fileID: 35926480}
   contentLoader: {fileID: 128980625}
-  contentTemplate: {fileID: 5508921859426619237, guid: 4a51d0fb1786e6543b37c7e7068e2bd6,
-    type: 3}
+  contentTemplate: {fileID: 5508921859426619237, guid: 4a51d0fb1786e6543b37c7e7068e2bd6, type: 3}
 --- !u!1 &782916139
 GameObject:
   m_ObjectHideFlags: 0
@@ -2105,7 +2102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.6}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.47058824}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2215,8 +2212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbd319b98450e694b9a3b714f828ed49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectionTab: {fileID: 1673419089363695656, guid: 390af2ba3c436ac468bb1a09a7adc1af,
-    type: 3}
+  selectionTab: {fileID: 1673419089363695656, guid: 390af2ba3c436ac468bb1a09a7adc1af, type: 3}
   placementTab: {fileID: 1617051173}
 --- !u!114 &1684785066
 MonoBehaviour:

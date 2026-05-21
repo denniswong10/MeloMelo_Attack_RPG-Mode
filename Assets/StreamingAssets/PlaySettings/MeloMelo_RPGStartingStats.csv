@@ -1,5 +1,5 @@
-Element,STR,VIT,MAG,Multipler
-Light,12,3,11,2.8
-Dark,10,2.8,13,2.8
-Earth,5,4.5,10,2.5
-None,5,2.5,10,1.5
+Element,STR,VIT,MAG,Multipler,Limit
+Light,12,3,11,2.8,150
+Dark,10,2.8,13,2.8,150
+Earth,5,4.5,10,2.5,100
+None,8,20,15,3,200

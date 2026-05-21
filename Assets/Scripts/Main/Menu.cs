@@ -2,12 +2,14 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using MeloMelo_RatingMeter;
+using System;
 
 public class Menu : MonoBehaviour
 {
     private GameObject[] BGM;
     [SerializeField] private Text CurrentVersion;
     [SerializeField] private Text LatestVersion;
+    [SerializeField] private Text Time_Display;
 
     [Header("NewsUpdate Component")]
     public RawImage Display_ReportError;
@@ -18,6 +20,13 @@ public class Menu : MonoBehaviour
     {
         BGM_Setup();
         CallUpOptionTask();
+    }
+
+    void Update()
+    {
+        // Get current UTC time
+        DateTime utcTime = DateTime.UtcNow;
+        Time_Display.text = "Current Date/Time: " + utcTime.ToString();
     }
 
     #region SETUP

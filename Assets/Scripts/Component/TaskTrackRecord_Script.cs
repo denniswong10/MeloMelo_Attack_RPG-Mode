@@ -10,6 +10,8 @@ public class TaskTrackRecord_Script : MonoBehaviour
     [SerializeField] private Texture emptyCover;
     private float giveUpTimer = 0;
 
+    [SerializeField] private Text DifficultyMode_Field;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -18,6 +20,7 @@ public class TaskTrackRecord_Script : MonoBehaviour
 
         CreateNewEntry();
         StartCoroutine(DisplayAllEntry());
+        GetMarathonDifficultyMode();
     }
 
     void Update()
@@ -137,6 +140,12 @@ public class TaskTrackRecord_Script : MonoBehaviour
         transform.GetChild(7).GetComponent<Button>().interactable = true;
         transform.GetChild(6).gameObject.SetActive(PlayerPrefs.GetInt("MarathonChallenge_MCount", 1) != entry.Length);
         transform.GetChild(7).GetChild(0).GetComponent<Text>().text = PlayerPrefs.GetInt("MarathonChallenge_MCount", 1) == entry.Length ? "FINISH" : "NEXT";
+    }
+
+    private void GetMarathonDifficultyMode()
+    {
+        string[] difficulty_mode = { "Easy Mode", "Normal Mode", "Hard Mode" };
+        DifficultyMode_Field.text = difficulty_mode[PlayerPrefs.GetInt("MarathonPlay_DifficultyMode", 1)];
     }
     #endregion
 }

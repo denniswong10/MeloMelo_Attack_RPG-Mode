@@ -11,8 +11,9 @@ public class Notation_Motion_Script : MonoBehaviour
     private Vector3 destinationDesired;
     private GameObject previousNote;
 
-    private enum Direction { Forward, Backward, None };
+    public enum Direction { Forward, Backward, None };
     private Direction direction_type = Direction.Forward;
+    public Direction get_direction_type { get { return direction_type; } }
 
     private bool isReadyToRoll;
     private bool isRollCompleted;
@@ -82,7 +83,7 @@ public class Notation_Motion_Script : MonoBehaviour
 
     private void ReadyToRollOut()
     {
-        destinationDesired = GameObject.Find("Judgement Line").transform.position;
+        destinationDesired = MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Judgement_Line).transform.position;
         transform.position = new Vector3(transform.position.x, mainScript.get_NotePos, transform.position.z);
         note_speed = BeatConductor.thisBeat.get_noteSpeed;
     }

@@ -972,7 +972,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myOption: 0
-  Music_Database: {fileID: 11400000, guid: 8b692f8ac3ca3c2408cfe4f90bebb227, type: 2}
+  Music_Database: {fileID: 11400000, guid: ac4c42c7b4896f848aa0783ee039efae, type: 2}
   BeatIndicator: {fileID: 0}
   spawner: {fileID: 699055986}
   FeedingTime_sign: {fileID: 1835079032}
@@ -1488,6 +1488,7 @@ MonoBehaviour:
   JudgeCounterParticle: []
   characterSlotStatus: []
   enemySlotStatus: []
+  ExtraStatusDisplay: []
 --- !u!1 &1307153326
 GameObject:
   m_ObjectHideFlags: 0

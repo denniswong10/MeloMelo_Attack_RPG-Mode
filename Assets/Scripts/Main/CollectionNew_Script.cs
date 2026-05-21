@@ -268,6 +268,72 @@ public class CollectionNew_Script : MonoBehaviour
     #endregion
 
     #region CHARACTER ALBUM
+    public void ToggleOnBaseStatus(int index)
+    {
+        switch (index)
+        {
+            case 1:
+                collection_characterAlbum.CharacterTab_MessageTab.GetComponentInChildren<Text>().text =
+                   "Strength\n( Increase of physical damage )";
+                break;
+
+            case 2:
+                collection_characterAlbum.CharacterTab_MessageTab.GetComponentInChildren<Text>().text =
+                   "Vitality\n( Increase of physical defense and health )";
+                break;
+
+            case 3:
+                collection_characterAlbum.CharacterTab_MessageTab.GetComponentInChildren<Text>().text =
+                   "Magic\n( Increase of magic damage and magic defense )";
+                break;
+
+            case 4:
+                collection_characterAlbum.CharacterTab_MessageTab.GetComponentInChildren<Text>().text =
+                   "Health\n( Base life point for this character )";
+                break;
+        }
+
+        collection_characterAlbum.CharacterTab_MessageTab.SetActive(true);
+    }
+
+    public void ToggleOnCombatIcon(int index)
+    {
+        switch (index)
+        {
+            case 1:
+                collection_characterAlbum.CharacterTab_MessageTab.GetComponentInChildren<Text>().text = 
+                    "Physical Damage\n( Base Damage of this character during combat )";
+                break;
+
+            case 2:
+                collection_characterAlbum.CharacterTab_MessageTab.GetComponentInChildren<Text>().text =
+                    "Magic Damage\n( Base Magic of this character using skill during combat )";
+                break;
+
+            case 3:
+                collection_characterAlbum.CharacterTab_MessageTab.GetComponentInChildren<Text>().text =
+                    "Physical Defense\n( Reduce damage from physical during combat )";
+                break;
+
+            case 4:
+                collection_characterAlbum.CharacterTab_MessageTab.GetComponentInChildren<Text>().text =
+                    "Magic Defense\n( Reduce damage from magic during combat )";
+                break;
+
+            case 5:
+                collection_characterAlbum.CharacterTab_MessageTab.GetComponentInChildren<Text>().text =
+                    "Health\n( Overall life points of this character during combat )";
+                break;
+        }
+
+        collection_characterAlbum.CharacterTab_MessageTab.SetActive(true);
+    }
+
+    public void ToggleDownCombatIcon()
+    {
+        collection_characterAlbum.CharacterTab_MessageTab.SetActive(false);
+    }
+
     public void SelectCharacter_TabPanel(int index)
     {
         collection_characterAlbum.ToggleContentTab(index);
@@ -422,34 +488,38 @@ public class CollectionNew_Script : MonoBehaviour
         private List<SkillContainer> skill_listing_container;
         [SerializeField] private GameObject[] MasteryTabs;
         [SerializeField] private GameObject MasteryInfoTab;
+        [SerializeField] private Text TotalPointAvailable_Txt;
+        [SerializeField] private Text TotalPointOverall_Txt;
+        [SerializeField] private Text TypeMastery_Txt;
         public GameObject CharacterTab_MessageTab;
 
-        private List<ClassBase> Character_Database;
-        private List<StatsManage_Database> characterStatus;
+        private Character_Base_Data Character_Database;
         private int characterToggleIndex = 1;
 
         [SerializeField] private GameObject CharacterInfoTemplate;
+        [SerializeField] private GameObject CharacterGrowthPanel;
 
         #region SETUP
         public void LoadContent()
         {
             const string GetCharacterIsNull = "None";
-            characterStatus = new List<StatsManage_Database>();
-            Character_Database = new List<ClassBase>();
             skill_listing_container = new List<SkillContainer>();
 
             // Gather all available characters
-            foreach (ClassBase character in Resources.LoadAll<ClassBase>("Character_Data"))
-                if (character.characterName != GetCharacterIsNull) Character_Database.Add(character);
-
-            // Get status format with all characters
-            foreach (ClassBase character in Character_Database.ToArray())
-                characterStatus.Add(new StatsManage_Database(character.name));
+            foreach (Character_Base_Data character in MeloMelo_CharacterInfo_Settings.inGame_character_listing)
+            {
+                if (character.className != GetCharacterIsNull)
+                {
+                    character.RefreshCharacterStats();
+                    Debug.Log("Character (" + character.className + ") - Level: " + character.level + " (EXP: " + character.experience + ")");
+                    Debug.Log("Stats ( STR: " + character.fixedStats.strength + ", VIT: " + character.fixedStats.vitalilty + ", MAG: " + character.fixedStats.magic + " )");
+                }
+            }
 
             // Update content with the data given
             UpdateAlbum();
-            UpdateStatsTab();
             NavChanger();
+            UpdateStatsTab();
 
             // Load default selected tab
             selectionPanel.transform.GetChild(8).GetComponent<RawImage>().color = Color.green;
@@ -467,7 +537,10 @@ public class CollectionNew_Script : MonoBehaviour
 
         public void ToggleContentTab(int index)
         {
-            if (index == 2 && !MeloMelo_CharacterInfo_Settings.GetCharacterStatus(Character_Database[characterToggleIndex - 1].name))
+            bool isCharacterIsLocked =
+                !MeloMelo_CharacterInfo_Settings.GetCharacterStatus(Character_Database.className);
+
+            if (index == 2 && isCharacterIsLocked)
             {
                 thisCollect.StartCoroutine(PromptLockedFeatures(10));
                 thisCollect.StartCoroutine(GetPromptMessage("Unlock this character first"));
@@ -540,25 +613,43 @@ public class CollectionNew_Script : MonoBehaviour
         {
             MasteryInfoTab.SetActive(false);
             string[] breakData = MasteryInfoTab.transform.GetChild(5).name.Split("_");
-            MasteryContainer tempContainer = GetMasteryInfo(Character_Database[characterToggleIndex - 1].name, int.Parse(breakData[1]));
+            MasteryContainer tempContainer = GetMasteryInfo(int.Parse(breakData[1]), Character_Database.className);
             ProcessToAddonsMastery(tempContainer);
 
-            int currentMasteryPoint = MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name);
-            MeloMelo_ExtraStats_Settings.SetMasteryPoint(Character_Database[characterToggleIndex - 1].name, 
-                currentMasteryPoint - tempContainer.masteryCost);
+            //int currentMasteryPoint = Character_Database[characterToggleIndex - 1].GetCharacterRawMasteryPoint(); MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name);
+            bool isRebornMastery = GetMasteryInfo(int.Parse(breakData[1]), Character_Database.className).name.Split("_")[1] == "Ultimate";
+            //MeloMelo_ExtraStats_Settings.SetMasteryPoint(Character_Database[characterToggleIndex - 1].name, 
+            //currentMasteryPoint - tempContainer.masteryCost);
 
-            if (GetMasteryInfo(Character_Database[characterToggleIndex - 1].name, int.Parse(breakData[1])).name.Split("_")[1] == "Ultimate")
+            if (isRebornMastery)
             {
-                int currentLeveling = Character_Database[characterToggleIndex - 1].level;
-                int currentRebirthPoint = MeloMelo_ExtraStats_Settings.GetRebirthPoint(Character_Database[characterToggleIndex - 1].name);
-                MeloMelo_ExtraStats_Settings.IncreaseStrengthStats(Character_Database[characterToggleIndex - 1].name, characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLeveling).GetStrength);
-                MeloMelo_ExtraStats_Settings.IncreaseVitalityStats(Character_Database[characterToggleIndex - 1].name, characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLeveling).GetVitality);
-                MeloMelo_ExtraStats_Settings.IncreaseMagicStats(Character_Database[characterToggleIndex - 1].name, characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLeveling).GetMagic);
-                MeloMelo_ExtraStats_Settings.IncreaseBaseHealth(Character_Database[characterToggleIndex - 1].name, characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLeveling).GetHealth);
-                
-                MeloMelo_ExtraStats_Settings.SetRebirthPoint(Character_Database[characterToggleIndex - 1].name, currentRebirthPoint + 1);
-                Character_Database[characterToggleIndex - 1].ResetLevel();
+                Character_Database.UpdateCharacterExtraStats(
+                    Character_Database.fixedStats.strength,
+                    Character_Database.fixedStats.baseHealth,
+                    Character_Database.fixedStats.magic,
+                    Character_Database.fixedStats.baseHealth
+                    );
+
+                Character_Database.LoadCharacterLevelData(1);
+                Character_Database.RefreshCharacterStats();
             }
+
+            // Update all changes
+            if (MeloMelo_ItemUsage_Settings.GetPreSumbitOfMasteryPoint(Character_Database.className) > 0)
+            {
+                int balanceDosage = MeloMelo_ItemUsage_Settings.GetPreSumbitOfMasteryPoint(Character_Database.className) -
+                    tempContainer.masteryCost;
+
+                if (balanceDosage < 0)
+                {
+                    Character_Database.UpdateCharacterExtraMasteryPoint(tempContainer.masteryCost);
+                    PlayerPrefs.SetInt(Character_Database.className + "_DOSAGE_MASTERY", balanceDosage);
+                }
+
+                Character_Database.UpdateCharacterExtraProfile(isRebornMastery ? 1 : 0, 0);
+            }
+            else 
+                Character_Database.UpdateCharacterExtraProfile(isRebornMastery ? 1 : 0, tempContainer.masteryCost);
 
             PlayerPrefs.DeleteKey("MasteryShuffleTab");
             UpdateRebornTab();
@@ -576,11 +667,11 @@ public class CollectionNew_Script : MonoBehaviour
             Slider scrollBar = selectionPanel.transform.GetChild(3).GetComponent<Slider>();
 
             // Get character length display to user
-            scrollBar.GetComponent<Slider>().maxValue = Character_Database.ToArray().Length;
+            scrollBar.GetComponent<Slider>().maxValue = MeloMelo_CharacterInfo_Settings.inGame_character_listing.Count;
             UpdateScrollBarDisplay();
 
             // Get information ready before used
-            foreach (ClassBase i in Character_Database) { i.UpdateCurrentStats(false); }
+            //foreach (ClassBase i in Character_Database) { i.UpdateCurrentStats(false); }
         }
 
         private void NavChanger()
@@ -589,77 +680,100 @@ public class CollectionNew_Script : MonoBehaviour
 
             // Update new index to loader
             characterToggleIndex = (int)scrollBar.value;
+            Character_Database = MeloMelo_CharacterInfo_Settings.inGame_character_listing[characterToggleIndex - 1];
             UpdateScrollBarDisplay();
 
             // Check interaction to nagivator [LEFT]
             NagivatorSelector(1).interactable = scrollBar.value > 1;
 
             // Check interaction to nagivator [RIGHT]
-            NagivatorSelector(2).interactable = scrollBar.value < Character_Database.ToArray().Length;
+            NagivatorSelector(2).interactable = scrollBar.value < MeloMelo_CharacterInfo_Settings.inGame_character_listing.Count;
 
             // Get new information set from loader
             UpdateStatsTab();
-            if (!MeloMelo_CharacterInfo_Settings.GetCharacterStatus(Character_Database[characterToggleIndex - 1].name)) ToggleContentTab(0);
+            if (!MeloMelo_CharacterInfo_Settings.GetCharacterStatus(Character_Database.className)) ToggleContentTab(0);
         }
         #endregion
 
         #region COMPONENT (ALL TAB)
         private void UpdateStatsTab()
         {
-            // Assign data information of level, experience through class base
-            int currentLevel, currentExperience;
-            string className;
-
-            className = Character_Database[characterToggleIndex - 1].name;
-            currentLevel = Character_Database[characterToggleIndex - 1].level;
-            currentExperience = Character_Database[characterToggleIndex - 1].experience;
+            // Get current character and level
+            Character_Database.RefreshCharacterStats();
+            int currentLevel = Character_Database.level;
+            
+            // Find character experience limit
+            StatsManage_Database character_startingProfile = new StatsManage_Database(Character_Database.className);
+            int maxExperience = character_startingProfile.GetCharacterStatus(currentLevel).GetExperience;
 
             // Show that character icon is present in the class base
             selectionPanel.transform.GetChild(2).GetChild(1).GetComponent<Image>().enabled =
-                Character_Database[characterToggleIndex - 1].icon != null;
+                MeloMelo_CharacterInfo_Settings.allCharacterListing[characterToggleIndex - 1].icon != null;
 
             selectionPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<RawImage>().texture =
-                ElementListing[(int)Character_Database[characterToggleIndex - 1].elementType];
+                ElementListing[(int)MeloMelo_CharacterInfo_Settings.allCharacterListing[characterToggleIndex - 1].elementType];
 
             // Able to present character icon through current selection
             selectionPanel.transform.GetChild(2).GetChild(1).GetComponent<Image>().sprite =
-                Character_Database[characterToggleIndex - 1].icon;
+                MeloMelo_CharacterInfo_Settings.allCharacterListing[characterToggleIndex - 1].icon;
 
             // Fill in all character status information
-            SetStatusInformation(0).text = "[ " + Character_Database[characterToggleIndex - 1].characterName + " ]";
-            SetStatusInformation(1).text = "Class: " + Character_Database[characterToggleIndex - 1].GetClassType();
+            SetStatusInformation(0).text = "[ " + Character_Database.charName + " ]";
+            SetStatusInformation(1).text = "Class: " + Character_Database.className;
 
-            SetStatusInformation(2).text = "STRENGTH (STR): " + characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetStrength
-                + (MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(className) == 0 ? string.Empty : " (" +
-                GetValuePlusMinus(MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(className)) + ")");
+            if (Character_Database.additionalStats != null)
+            {
+                SetStatusInformation(2).text = "STRENGTH (STR): " + Character_Database.fixedStats.strength
+                + (Character_Database.additionalStats.strength == 0 ? string.Empty : " (" +
+                GetValuePlusMinus(Character_Database.additionalStats.strength) + ")");
 
-            SetStatusInformation(3).text = "VITALITY (VIT): " + characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetVitality
-                + (MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(className) == 0 ? string.Empty : " (" +
-                GetValuePlusMinus(MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(className)) + ")");
+                SetStatusInformation(3).text = "VITALITY (VIT): " + Character_Database.fixedStats.vitalilty
+                + (Character_Database.additionalStats.vitalilty == 0 ? string.Empty : " (" +
+                GetValuePlusMinus(Character_Database.additionalStats.vitalilty) + ")");
 
-            SetStatusInformation(4).text = "MAGIC (MAG): " + characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetMagic
-                + (MeloMelo_ExtraStats_Settings.GetExtraMagicStats(className) == 0 ? string.Empty : " (" +
-                GetValuePlusMinus(MeloMelo_ExtraStats_Settings.GetExtraMagicStats(className)) + ")");
+                SetStatusInformation(4).text = "MAGIC (MAG): " + Character_Database.fixedStats.magic
+                + (Character_Database.additionalStats.magic == 0 ? string.Empty : " (" +
+                GetValuePlusMinus(Character_Database.additionalStats.magic) + ")");
 
-            SetStatusInformation(5).text = "BASE HEALTH: " + characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetHealth
-                + (MeloMelo_ExtraStats_Settings.GetExtraBaseHealth(className) == 0 ? " (+0)" : " (" +
-                GetValuePlusMinus(MeloMelo_ExtraStats_Settings.GetExtraBaseHealth(className)) + ")");
+                SetStatusInformation(5).text = "BASE HEALTH: " + Character_Database.fixedStats.baseHealth
+                + (Character_Database.additionalStats.baseHealth == 0 ? " (+0)" : " (" +
+                GetValuePlusMinus(Character_Database.additionalStats.baseHealth) + ")");
+            }
+            else
+            {
+                SetStatusInformation(2).text = "STRENGTH (STR): " + Character_Database.fixedStats.strength;
+                SetStatusInformation(3).text = "VITALITY (VIT): " + Character_Database.fixedStats.vitalilty;
+                SetStatusInformation(4).text = "MAGIC (MAG): " + Character_Database.fixedStats.magic;
+                SetStatusInformation(5).text = "BASE HEALTH: " + Character_Database.fixedStats.baseHealth;
+            }
 
-            selectionPanel.transform.GetChild(2).GetChild(2).GetComponent<Text>().text = "LEVEL: " +
-                characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetLevel;
+            selectionPanel.transform.GetChild(2).GetChild(2).GetComponent<Text>().text = "LEVEL: " + 
+                currentLevel;
 
             selectionPanel.transform.GetChild(2).GetChild(3).GetComponent<Text>().text =
-                GetMaxHitPoint(characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetExperience) == 0 ?
-                string.Empty :
-                "EXP: " + currentExperience + "/" + characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetExperience;
+                GetMaxHitPoint(maxExperience) == 0 ? string.Empty :
+                    "EXP: " + Character_Database.experience + "/" + maxExperience;
 
-            selectionPanel.transform.GetChild(2).GetChild(4).GetComponent<Text>().text = "REBIRTH: " + MeloMelo_ExtraStats_Settings.GetRebirthPoint(className);
-            PlayerPrefs.SetString(VirtualStorageBag.VirtualStorage_UsableKey, Character_Database[characterToggleIndex - 1].name + ",1," +
-                (GetMaxHitPoint(characterStatus[characterToggleIndex - 1].GetCharacterStatus(currentLevel).GetExperience) == 0 ?
+            if (Character_Database.additionalProfile != null)
+                selectionPanel.transform.GetChild(2).GetChild(4).GetComponent<Text>().text = "REBIRTH: " + Character_Database.additionalProfile.rebirth_count;
+            else
+                selectionPanel.transform.GetChild(2).GetChild(4).GetComponent<Text>().text = string.Empty;
+
+            PlayerPrefs.SetString(VirtualStorageBag.VirtualStorage_UsableKey, Character_Database.className + ",1," +
+                (GetMaxHitPoint(maxExperience) == 0 ?
                 "0" : "1"));
 
-            Character_Database[characterToggleIndex - 1].UpdateStatsCache(false);
-            CharacterInfoTemplate.GetComponent<CharacterInfo_DataBuild>().GetCharacterBase(Character_Database[characterToggleIndex - 1], characterStatus[characterToggleIndex - 1]);
+            CharacterInfoTemplate.GetComponent<CharacterInfo_DataBuild>().GetCharacterBase(
+                Character_Database,
+                MeloMelo_CharacterInfo_Settings.allCharacterListing[characterToggleIndex - 1],
+                character_startingProfile
+                );
+
+            CharacterGrowthPanel.GetComponent<Character_Growth_Scripts>().InputCharacterInfo(
+                Character_Database,
+                MeloMelo_CharacterInfo_Settings.allCharacterListing[characterToggleIndex - 1],
+                character_startingProfile.GetCharacterMaxLevel()
+                );
 
             UpdateSkillTab();
         }
@@ -686,7 +800,7 @@ public class CollectionNew_Script : MonoBehaviour
         {
             // Find all available cards which is attached with the character class name
             int masteryLimit = 0;
-            while (Resources.Load<MasteryContainer>("Database_Reborn_Cards/" + Character_Database[characterToggleIndex - 1].name + "_Common_" + (1 + masteryLimit)) != null)
+            while (Resources.Load<MasteryContainer>("Database_Reborn_Cards/" + Character_Database.className + "_Common_" + (1 + masteryLimit)) != null)
                 masteryLimit++;
 
             if (masteryLimit != 0)
@@ -714,14 +828,14 @@ public class CollectionNew_Script : MonoBehaviour
         public bool UseOfTicketAllow()
         {
             // Allow only character which are unlocked
-            return MeloMelo_CharacterInfo_Settings.GetCharacterStatus(Character_Database[characterToggleIndex - 1].name);
+            return MeloMelo_CharacterInfo_Settings.GetCharacterStatus(Character_Database.className);
         }
 
         public void UpdateTicketPrompt(string panel)
         {
-            if (MeloMelo_ItemUsage_Settings.GetExpBoost(Character_Database[characterToggleIndex - 1].name) > 0)
+            if (MeloMelo_ItemUsage_Settings.GetExpBoost(Character_Database.className) > 0)
                 GameObject.Find(panel).transform.GetChild(2).GetComponent<Text>().text = 
-                    "Boosted x" + MeloMelo_ItemUsage_Settings.GetExpBoost(Character_Database[characterToggleIndex - 1].name) +
+                    "Boosted x" + MeloMelo_ItemUsage_Settings.GetExpBoost(Character_Database.className) +
                     " experience through ticket";
             else
                 GameObject.Find(panel).transform.GetChild(2).GetComponent<Text>().text = "No ticket has been used";
@@ -771,7 +885,7 @@ public class CollectionNew_Script : MonoBehaviour
 
             foreach (string skill_type in skill_key)
             {
-                SkillContainer singleSkill = Resources.Load<SkillContainer>("Database_Skills/" + Character_Database[characterToggleIndex - 1].name +
+                SkillContainer singleSkill = Resources.Load<SkillContainer>("Database_Skills/" + Character_Database.className +
                     skill_type);
 
                 skill_listing_container.Add(singleSkill);
@@ -793,11 +907,16 @@ public class CollectionNew_Script : MonoBehaviour
         {
             if (!PlayerPrefs.HasKey("MasteryShuffleTab"))
             {
+                StatsManage_Database getInfo = new StatsManage_Database(Character_Database.className);
+
                 if (maxLimit > 0)
                 {
                     for (int count = 0; count < MasteryTabs.Length; count++)
                     {
-                        int randomizeNumber = Character_Database[characterToggleIndex - 1].level == characterStatus[characterToggleIndex - 1].GetCharacterMaxLevel() ? (count + 1) : Random.Range(1, maxLimit);
+                        int randomizeNumber = Character_Database.level >=
+                            getInfo.GetCharacterMaxLevel() - MeloMelo_ItemUsage_Settings.GetLevelAdvancementForCharacter(Character_Database.className) ? 
+                                (count + 1) : Random.Range(1, maxLimit);
+
                         PlayerPrefs.SetInt("Mastery" + (count + 1), randomizeNumber);
                         PlayerPrefs.SetInt("MasteryShuffleTab", 1);
                     }
@@ -810,24 +929,45 @@ public class CollectionNew_Script : MonoBehaviour
             for (int index = 0; index < MasteryTabs.Length; index++)
             {
                 // Update content
-                MasteryTabs[index].transform.GetChild(0).GetComponent<Text>().text = 
-                    GetMasteryInfo(Character_Database[characterToggleIndex - 1].name, index) != null ? GetMasteryInfo(Character_Database[characterToggleIndex - 1].name, index).title : "???";
+                //MasteryTabs[index].transform.GetChild(0).GetComponent<Text>().text = 
+                    //GetMasteryInfo(index, Character_Database.className) != null ? GetMasteryInfo(index, Character_Database.className).title : "???";
 
-                MasteryTabs[index].transform.GetChild(1).GetComponent<Text>().text = 
-                    GetMasteryInfo(Character_Database[characterToggleIndex - 1].name, index) != null ? GetMasteryInfo(Character_Database[characterToggleIndex - 1].name, index).awardsTitle : "???";
+                MasteryTabs[index].transform.GetChild(0).GetComponent<Text>().text = 
+                    GetMasteryInfo(index, Character_Database.className) != null ? GetMasteryInfo(index, Character_Database.className).awardsTitle : "???";
             }
+
+            StatsManage_Database getInfo = new StatsManage_Database(Character_Database.className);
+            bool isSecondaryMastery = Character_Database.level >= getInfo.GetCharacterMaxLevel() - 
+                MeloMelo_ItemUsage_Settings.GetLevelAdvancementForCharacter(Character_Database.className);
+
+            TotalPointAvailable_Txt.text = "Available Points: " + Character_Database.GetCharacterRawMasteryPoint().ToString();
+            TotalPointOverall_Txt.text = "Total Points: " + (Character_Database.additionalProfile != null ? 
+                Character_Database.additionalProfile.masteryPoint + " / " + 
+                (Character_Database.GetCharacterRawMasteryPoint() + Character_Database.additionalProfile.masteryPoint) : "0");
+
+            TypeMastery_Txt.text = isSecondaryMastery ? "Secondary Mastery" : "Primary Mastery";
         }
 
-        private MasteryContainer GetMasteryInfo(string classType, int slot_index)
+        private MasteryContainer GetMasteryInfo(int slot_index, string classType)
         {
-            string masteryRarity = Character_Database[characterToggleIndex - 1].level >= characterStatus[characterToggleIndex - 1].GetCharacterMaxLevel() ? "Ultimate" + (slot_index + 1) : "Common";
-            int masteryIndex = PlayerPrefs.GetInt("Mastery" + (slot_index + 1), 1);
+            // Find character max level then get reborn card
+            StatsManage_Database getInfo = new StatsManage_Database(Character_Database.className);
+            string masteryRarity = "Common";
 
+            // Get reborn card details from resource
+            int masteryIndex = PlayerPrefs.GetInt("Mastery" + (slot_index + 1), 1);
             MasteryContainer masteryContent = Resources.Load<MasteryContainer>("Database_Reborn_Cards/" + classType + "_" + masteryRarity + "_" + masteryIndex);
 
+            if (Character_Database.level >= getInfo.GetCharacterMaxLevel() - MeloMelo_ItemUsage_Settings.GetLevelAdvancementForCharacter(Character_Database.className))
+            {
+                masteryRarity = "Ultimate";
+                masteryContent = Resources.Load<MasteryContainer>("Database_Reborn_Cards/" + classType + "_" + masteryRarity + "_" + (slot_index + 1));
+            }
+
+            // Finalize use of mastery card when found otherwise uniserval card for use instead
             if (masteryContent != null) return masteryContent;
             else if (classType == MeloMelo_ExtraStats_Settings.Universal_Mastery && masteryContent == null) return null;
-            else return GetMasteryInfo(MeloMelo_ExtraStats_Settings.Universal_Mastery, slot_index);
+            else return GetMasteryInfo(slot_index, MeloMelo_ExtraStats_Settings.Universal_Mastery);
         }
         #endregion
 
@@ -837,43 +977,43 @@ public class CollectionNew_Script : MonoBehaviour
             if (!MasteryInfoTab.activeInHierarchy)
             {
                 MasteryInfoTab.SetActive(true);
-                MasteryContainer currentMastery = GetMasteryInfo(Character_Database[characterToggleIndex - 1].name, index - 1);
+                MasteryContainer currentMastery = GetMasteryInfo(index - 1, Character_Database.className);
 
                 MasteryInfoTab.transform.GetChild(1).GetComponent<Text>().text = currentMastery.title;
                 MasteryInfoTab.transform.GetChild(2).GetComponent<Text>().text = currentMastery.description;
 
                 MasteryInfoTab.transform.GetChild(3).GetComponent<Text>().text = "Required Point: " +
-                    MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) + " >> " +
-                    (MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) - currentMastery.masteryCost);
+                    Character_Database.GetCharacterRawMasteryPoint() + " >> " +
+                    (Character_Database.GetCharacterRawMasteryPoint() - currentMastery.masteryCost);
 
                 // Check condition on confirm mastery
                 MasteryInfoTab.transform.GetChild(5).name = "Confirm_" + (index - 1) + "_Btn";
-                MasteryInfoTab.transform.GetChild(5).GetComponent<Button>().interactable = 
-                    MeloMelo_ExtraStats_Settings.GetMasteryPoint(Character_Database[characterToggleIndex - 1].name) >= currentMastery.masteryCost;
+                MasteryInfoTab.transform.GetChild(5).GetComponent<Button>().interactable =
+                    Character_Database.GetCharacterRawMasteryPoint() >= currentMastery.masteryCost;
             }
         }
 
         private void ProcessToAddonsMastery(MasteryContainer addons)
         {
             // Get class from container
-            string[] addons_data = addons.name.Split("_");
             string messagePrinter = string.Empty;
+
             foreach (AwardsSettings awards in addons.awards_settings)
             {
                 switch (awards.awards_caterogy)
                 {
                     case AwardsSettings.TypeOfAwards.STR:
-                        MeloMelo_ExtraStats_Settings.IncreaseStrengthStats(addons_data[0], int.Parse(awards.awards_value));
+                        Character_Database.UpdateCharacterExtraStats(int.Parse(awards.awards_value), 0, 0, 0);
                         messagePrinter += (int.Parse(awards.awards_value) > 0 ? "STRENGTH increased by " : "STRENGTH decreased by ") + int.Parse(awards.awards_value);
                         break;
 
                     case AwardsSettings.TypeOfAwards.VIT:
-                        MeloMelo_ExtraStats_Settings.IncreaseVitalityStats(addons_data[0], int.Parse(awards.awards_value));
+                        Character_Database.UpdateCharacterExtraStats(0, int.Parse(awards.awards_value), 0, 0);
                         messagePrinter += (int.Parse(awards.awards_value) > 0 ? "VITALITY increased by " : "VITALITY decreased by ") + int.Parse(awards.awards_value);
                         break;
 
                     case AwardsSettings.TypeOfAwards.MAG:
-                        MeloMelo_ExtraStats_Settings.IncreaseMagicStats(addons_data[0], int.Parse(awards.awards_value));
+                        Character_Database.UpdateCharacterExtraStats(0, 0, int.Parse(awards.awards_value), 0);
                         messagePrinter += (int.Parse(awards.awards_value) > 0 ? "MAGIC increased by " : "MAGIC increased by ") + int.Parse(awards.awards_value);
                         break;
 
@@ -994,14 +1134,23 @@ public class CollectionNew_Script : MonoBehaviour
             StatsDistribution formation = new StatsDistribution();
             formation.load_Stats();
 
-            foreach (ClassBase character in formation.slot_Stats)
+            foreach (ClassBase character in formation.character_base_reference)
             {
-                // Show character icon if assigned
-                selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(0).gameObject.SetActive(character.icon == null);
-                selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(1).GetComponent<Image>().enabled = character.icon != null;
-                selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(1).GetComponent<Image>().sprite = character.icon;
-                selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(2).gameObject.SetActive(character.icon != null);
-                selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(2).GetChild(0).GetComponent<Text>().text = GetCharacterMain(character.name);
+                selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(0).gameObject.SetActive(character == null);
+                selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(1).GetComponent<Image>().enabled = character != null;
+
+                if (character != null)
+                {
+                    // Show character icon if assigned
+                    selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(1).GetComponent<Image>().sprite = character.icon;
+                    selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(2).gameObject.SetActive(character.icon != null);
+                    selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(2).GetChild(0).GetComponent<Text>().text = GetCharacterMain(character.name);
+                }
+                else
+                {
+                    // Default display
+                    selectionPanel.transform.GetChild(3 + characterToggleIndex).GetChild(2).gameObject.SetActive(false);
+                }
                 
                 // Go to next character slot
                 characterToggleIndex++;
@@ -1014,7 +1163,7 @@ public class CollectionNew_Script : MonoBehaviour
             formation.load_Stats();
 
             selectionPanel.transform.GetChild(6).GetChild(0).GetComponent<Text>().text = "UNIT POWER:\n" + formation.get_UnitPower();
-            selectionPanel.transform.GetChild(7).GetChild(0).GetComponent<Text>().text = "UNIT RANK:\n" + get_Rank(formation.get_UnitPower());
+            selectionPanel.transform.GetChild(7).GetChild(0).GetComponent<Text>().text = "UNIT RANK:\n" + get_Rank(formation.get_UnitPower(), formation.get_unitSize());
             selectionPanel.transform.GetChild(8).GetChild(0).GetComponent<Text>().text = "TOTAL HEALTH:\n" + formation.get_UnitHealth("Character");
         }
 
@@ -1038,22 +1187,26 @@ public class CollectionNew_Script : MonoBehaviour
             return character == PlayerPrefs.GetString("CharacterFront", string.Empty) ? "MAIN" : "PARTY";
         }
 
-        public char get_Rank(int unitPower)
+        public char get_Rank(int unitPower, int partySize)
         {
-            if (unitPower >= 10000) return 'S';
-            else if (unitPower >= 8000) return 'A';
-            else if (unitPower >= 5000) return 'B';
-            else if (unitPower >= 2500) return 'C';
-            else if (unitPower >= 1000) return 'D';
-            else if (unitPower > 0) { return 'E'; }
-            else { return 'F'; }
+            if (partySize > 0)
+            {
+                if (unitPower >= 10000) return 'S';
+                else if (unitPower >= 8000) return 'A';
+                else if (unitPower >= 5000) return 'B';
+                else if (unitPower >= 2500) return 'C';
+                else if (unitPower >= 1000) return 'D';
+                else if (unitPower > 0) { return 'E'; }
+                else { return 'F'; }
+            }
+            else return '-';
         }
 
         public bool IsFormationHasSet()
         {
             StatsDistribution formationManage = new StatsDistribution();
             formationManage.load_Stats();
-            foreach (ClassBase character in formationManage.slot_Stats) if (character.icon != null) return true;
+            foreach (ClassBase character in formationManage.character_base_reference) if (character != null) return true;
             return false;
         }
 

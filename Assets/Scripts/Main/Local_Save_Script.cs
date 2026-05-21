@@ -41,7 +41,7 @@ public class Local_Save_Script : MonoBehaviour
         if (localfile != null)
         {
             mainScript.SaveIcon.SetActive(true);
-            StartCoroutine(AllSave("[Game Local]"));
+            StartCoroutine(GetExtensionLoad("[Game Local]"));
 
             // Prompt message to user
             mainScript.SaveIcon.transform.GetChild(1).GetComponent<Text>().text = "[Game Local]\nChecking Progress...";
@@ -50,9 +50,43 @@ public class Local_Save_Script : MonoBehaviour
     #endregion
 
     #region COMPONENT 
+    private IEnumerator GetExtensionLoad(string serverTitle)
+    {
+        // Update: Character Boost
+        CharacterBoostSetupForUpdate(PlayerPrefs.HasKey("MarathonPermit"));
+
+        // Update: Used Premium Free Track Play
+        PreimumFreePlayTrack(true);
+
+        // Update: Get every used item for update and reset
+        yield return StartCoroutine(AllItemUsedForUpdate());
+
+        // Update: Marathon unwrap process for item obtaining
+        yield return StartCoroutine(MarathonExchangeExtractor());
+
+        // Update: Play Event or Marthon Event
+        if (!PlayerPrefs.HasKey("MarathonPermit"))
+        {
+            yield return StartCoroutine(PlayEventControl());
+            yield return StartCoroutine(ZoneControlReward());
+            if (PlayerPrefs.HasKey("GatheringMode")) yield return StartCoroutine(GatherFragmentAfterBattle());
+            yield return StartCoroutine(ClaimRewardAdventureSeries());
+        }
+        else
+        {
+            Debug.Log("Marathon In-Progress (" + PlayerPrefs.GetInt("MarathonChallenge_MCount", 1) + "/4)");
+            if (PlayerPrefs.GetInt("MarathonChallenge_MCount", 1) == 4) yield return StartCoroutine(PlayMarathonReward());
+        }
+
+        StartCoroutine(AllSave(serverTitle));
+    }
+
     private IEnumerator AllSave(string serverTitle)
     {
         bool isInvaild = GameManager.thisManager.getJudgeWindow.TotalJudgeCounted() == GameManager.thisManager.getJudgeWindow.getOverallCombo;
+
+        // Prompt message to user
+        mainScript.SaveIcon.transform.GetChild(1).GetComponent<Text>().text = serverTitle + "\nSaving Progress...";
 
         if (isInvaild)
         {
@@ -148,99 +182,9 @@ public class Local_Save_Script : MonoBehaviour
             else if (!PlayerPrefs.HasKey("Mission_Played"))
                 data.SaveLatestSelectionPoint(PreSelection_Script.thisPre.get_AreaData.AreaName, PlayerPrefs.GetInt("LastSelection", 1));
 
-            if (!PlayerPrefs.HasKey("MarathonPermit"))
-            {
-                StatsDistribution allStats = new StatsDistribution();
-                allStats.load_Stats();
-
-                foreach (ClassBase character in allStats.slot_Stats)
-                {
-                    if (character.characterName != "None")
-                    {
-                        // Save: Character Progress
-                        data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileCharacterStats);
-                        data.SaveCharacterStatsProgress(character.name, character.level, character.experience);
-
-                        // Clear effect buff: After used
-                        if (MeloMelo_ItemUsage_Settings.GetExpBoost(character.name) > 0)
-                            PlayerPrefs.SetInt(character.name + "_EXP_BOOST", 0);
-                        if (MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(character.name) > 0)
-                            PlayerPrefs.SetInt(character.name + "_EXP_BOOST_2", 0);
-                        if (MeloMelo_ItemUsage_Settings.GetPowerBoost(character.name) > 0)
-                            PlayerPrefs.SetInt(character.name + "_POWER_BOOST", 0);
-                        if (MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(character.name) > 0)
-                            PlayerPrefs.SetInt(character.name + "_POWER_BOOST_2", 0);
-
-                        if (MeloMelo_ItemUsage_Settings.GetExtraBoostLifePoint(character.name) > 0)
-                            PlayerPrefs.SetInt(character.name + "_LifePoint_Value", 0);
-
-                        // Reset usage of pot slot
-                        PlayerPrefs.DeleteKey(character.name + "_EXP_USAGE_COUNT");
-                        PlayerPrefs.DeleteKey(character.name + "_POWER_USAGE_COUNT");
-                    }
-                }
-
-                // BonusPlay: Reset
-                if (PlayerPrefs.GetInt("BonusTrackPlay", 0) > 0)
-                {
-                    int currentUsed = PlayerPrefs.GetInt("BonusTrackPlay", 0);
-                    PlayerPrefs.SetInt("BonusTrackPlay", currentUsed - 1);
-                }
-
-                // Save: Skills
-                data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileSkillDatabase);
-                data.SaveAllSkillsType();
-
-                // Save: Used Items
-                data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
-                string[] listOfUsedItem = MeloMelo_ItemUsage_Settings.GetAllItemUsed();
-
-                if (listOfUsedItem != null)
-                {
-                    foreach (string itemName in listOfUsedItem)
-                    {
-                        mainScript.PromptMessage.SetActive(true);
-                        mainScript.PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Successful Used: " +
-                            itemName + " ( x" + MeloMelo_ItemUsage_Settings.GetItemUsed(itemName) + " )";
-
-                        data.SaveVirtualItemFromPlayer(itemName, -MeloMelo_ItemUsage_Settings.GetItemUsed(itemName), true);
-                        PlayerPrefs.DeleteKey(itemName + "_VirtualItem_Unsaved_Used");
-                        yield return new WaitForSeconds(2);
-                        mainScript.PromptMessage.SetActive(false);
-                    }
-                }
-
-                // Unload: Marathon Exchange Item
-                if (MeloMelo_ItemUsage_Settings.GetActiveMarathonItemWarp() != null)
-                {
-                    foreach (MarathonExchangeWrapper itemWarp in MeloMelo_ItemUsage_Settings.GetActiveMarathonItemWarp())
-                    {
-                        if (itemWarp.itemContainer != null)
-                        {
-                            foreach (VirtualItemDatabase item in itemWarp.itemContainer)
-                            {
-                                // Store item in local
-                                data.SaveVirtualItemFromPlayer(item.itemName, item.amount, true);
-
-                                mainScript.PromptMessage.SetActive(true);
-                                mainScript.PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Marathon Exchange: " +
-                                    item.itemName + " ( x" + item.amount + " )";
-
-                                yield return new WaitForSeconds(1);
-                            }
-                        }
-                    }
-
-                    // Done with unwarpping
-                    mainScript.PromptMessage.SetActive(false);
-                    MeloMelo_ItemUsage_Settings.ConvertItemWarpDone();
-                }
-
-                // Event: Item Obtain
-                StartCoroutine(PlayEventControl());
-            }
-            else 
-                StartCoroutine(PlayMarathonReward());
+            // Save: Primary and secondary skill unlockable
+            data.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileSkillDatabase);
+            data.SaveAllSkillsType();
 
             yield return new WaitUntil(() => postProcessing.GetProcessingComplete());
             LoadAllItemToLocal();
@@ -283,7 +227,24 @@ public class Local_Save_Script : MonoBehaviour
 
         ItemData item = Resources.Load<ItemData>("Database_Item/#12");
         int maxAmount = IsTrackListCleared() ? 1 : 0;
-        maxAmount += IsTrackListCleared() && PlayerPrefs.GetInt("Marathon_Quest_Result", 0) == 1 ? 1 : 0;
+        bool isMarathonPlayCleared = PlayerPrefs.GetInt("Marathon_Quest_Result", 0) == 1;
+
+        // Reward Benefit: Honor Coins 
+        switch (PlayerPrefs.GetInt("MarathonPlay_DifficultyMode", 1))
+        {
+            case 0:
+                if (isMarathonPlayCleared) ConfirmUsedOfMarathonPass();
+                break;
+
+            case 2:
+                maxAmount += IsTrackListCleared() && isMarathonPlayCleared ? 2 : 0;
+                if (isMarathonPlayCleared) ConfirmUsedOfMarathonPass();
+                break;
+
+            default:
+                maxAmount += IsTrackListCleared() && isMarathonPlayCleared ? 1 : 0;
+                break;
+        }
 
         if (item && maxAmount > 0)
         {
@@ -298,6 +259,14 @@ public class Local_Save_Script : MonoBehaviour
         yield return new WaitForSeconds(1);
         mainScript.PromptMessage.SetActive(false);
         postProcessing.CompletedProcess();
+    }
+
+    private void ConfirmUsedOfMarathonPass()
+    {
+        // Check play pass validation
+        int currentPlayPass = PlayerPrefs.GetInt("MarathonPlay_DifficultyCount", 0);
+        PlayerPrefs.SetInt("MarathonPlay_DifficultyCount", currentPlayPass - 1);
+        PlayerPrefs.DeleteKey("MarathonPlay_DifficultyMode");
     }
 
     private IEnumerator GatherFragmentAfterBattle()
@@ -368,7 +337,9 @@ public class Local_Save_Script : MonoBehaviour
                     {
                         if (item.amount > 0)
                         {
-                            data.SaveVirtualItemFromPlayer(item.itemName, item.amount, true);
+                            bool isItemStack = MeloMelo_ExtensionContent_Settings.GetItemIsStackable(item.itemName);
+                            data.SaveVirtualItemFromPlayer(item.itemName, item.amount, isItemStack);
+
                             mainScript.PromptMessage.SetActive(true);
                             mainScript.PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Story Reward: " + item.itemName + " ( x" + item.amount + " )";
                             yield return new WaitForSeconds(2);
@@ -420,14 +391,16 @@ public class Local_Save_Script : MonoBehaviour
                     PlayerPrefs.GetInt(eventPlayId + "_RepeatableRewarding", 1) &&
 
                     MeloMelo_ExtensionContent_Settings.GetVersionNumber(StartMenu_Script.thisMenu.version) >=
-                    MeloMelo_ExtensionContent_Settings.GetVersionNumber(item.version)
+                    MeloMelo_ExtensionContent_Settings.GetVersionNumber(item.upToDate)
                     )
                 {
+                    string get_multiple_obtain = item.CheckForMultipleItemObtain();
+
                     mainScript.PromptMessage.SetActive(true);
                     mainScript.PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Item Obtained: " +
-                        item.itemName + " ( x" + item.maxObtain + " )";
+                        get_multiple_obtain + " ( x" + item.maxObtain + " )";
 
-                    data.SaveVirtualItemFromPlayer(item.itemName, item.maxObtain, true);
+                    data.SaveVirtualItemFromPlayer(get_multiple_obtain, item.maxObtain, true);
                     int currentObtain = PlayerPrefs.GetInt(eventPlayId + "_RepeatableRewarding", 1);
                     PlayerPrefs.SetInt(eventPlayId + "_RepeatableRewarding", currentObtain + 1);
 
@@ -437,7 +410,7 @@ public class Local_Save_Script : MonoBehaviour
                 {
                     mainScript.PromptMessage.SetActive(true);
                     mainScript.PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Play Event: " +
-                    item.itemName + " (" + PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_playedCount_EventReward", 0) +
+                    item.GetItemObtainThroughRandom() + " (" + PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_playedCount_EventReward", 0) +
                     "/" + item.playRequirement * PlayerPrefs.GetInt(eventPlayId + "_RepeatableRewarding", 1) + " )";
 
                     yield return new WaitForSeconds(1.5f);
@@ -449,9 +422,6 @@ public class Local_Save_Script : MonoBehaviour
 
             postProcessing.CompletedProcess();
         }
-
-        if (PlayerPrefs.HasKey("GatheringMode")) yield return StartCoroutine(GatherFragmentAfterBattle());
-        StartCoroutine(ZoneControlReward());
     }
 
     private IEnumerator ZoneControlReward()
@@ -500,8 +470,6 @@ public class Local_Save_Script : MonoBehaviour
         }
 
         mainScript.PromptMessage.SetActive(false);
-        StartCoroutine(ClaimRewardAdventureSeries());
-
         yield return new WaitForSeconds(1);
         postProcessing.CompletedProcess();
     }
@@ -523,6 +491,120 @@ public class Local_Save_Script : MonoBehaviour
                     MeloMelo_GameSettings.GetAreaDifficultyMode() + MeloMelo_GameSettings.GetTrackDifficultyMode(), 1)).requiredExperience : 0;
 
         return maxExperience;
+    }
+    #endregion
+
+    #region MISC (Smaller Group Component)
+    private void CharacterBoostSetupForUpdate(bool onReset)
+    {
+        LocalSave_DataManagement saveProgressForCharacter = new LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
+                "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+
+        StatsDistribution allStats = new StatsDistribution();
+        allStats.load_Stats();
+
+        foreach (Character_Base_Data character in allStats.slot_Stats)
+        {
+            if (character != null)
+            {
+                // Save: Character Progress
+                saveProgressForCharacter.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileCharacterStats);
+                saveProgressForCharacter.SaveCharacterStatsProgress(character.className, character.level, character.experience);
+
+                // Clear effect buff: After used
+                if (MeloMelo_ItemUsage_Settings.GetExpBoost(character.className) > 0)
+                    PlayerPrefs.SetInt(character.className + "_EXP_BOOST", 0);
+                if (MeloMelo_ItemUsage_Settings.GetExpBoostByMultiply(character.className) > 0)
+                    PlayerPrefs.SetInt(character.className + "_EXP_BOOST_2", 0);
+                if (MeloMelo_ItemUsage_Settings.GetPowerBoost(character.className) > 0)
+                    PlayerPrefs.SetInt(character.className + "_POWER_BOOST", 0);
+                if (MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(character.className) > 0)
+                    PlayerPrefs.SetInt(character.className + "_POWER_BOOST_2", 0);
+
+                if (MeloMelo_ItemUsage_Settings.GetExtraBoostLifePoint(character.className) > 0)
+                    PlayerPrefs.SetInt(character.className + "_LifePoint_Value", 0);
+
+                // Reset usage of pot slot
+                PlayerPrefs.DeleteKey(character.className + "_EXP_USAGE_COUNT");
+                PlayerPrefs.DeleteKey(character.className + "_POWER_USAGE_COUNT");
+            }
+        }
+
+        if (onReset) MeloMelo_ItemStore_Management.ClearingUpBoostedItem();
+    }
+
+    private void PreimumFreePlayTrack(bool onReset)
+    {
+        if (onReset)
+        {
+            // BonusPlay: Reset
+            if (PlayerPrefs.GetInt("BonusTrackPlay", 0) > 0)
+            {
+                int currentUsed = PlayerPrefs.GetInt("BonusTrackPlay", 0);
+                PlayerPrefs.SetInt("BonusTrackPlay", currentUsed - 1);
+            }
+        }
+    }
+
+    private IEnumerator AllItemUsedForUpdate()
+    {
+        LocalSave_DataManagement saveItemUsage = new LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
+                "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+
+        // Save: Used Items
+        saveItemUsage.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
+        string[] listOfUsedItem = MeloMelo_ItemUsage_Settings.GetAllItemUsed();
+
+        if (listOfUsedItem != null)
+        {
+            foreach (string itemName in listOfUsedItem)
+            {
+                mainScript.PromptMessage.SetActive(true);
+                mainScript.PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Successful Used: " +
+                    itemName + " ( x" + MeloMelo_ItemUsage_Settings.GetItemUsed(itemName) + " )";
+
+                saveItemUsage.SaveVirtualItemFromPlayer(itemName, -MeloMelo_ItemUsage_Settings.GetItemUsed(itemName), true);
+                MeloMelo_ItemUsage_Settings.ResetItemUsed(itemName);
+                yield return new WaitForSeconds(2);
+                mainScript.PromptMessage.SetActive(false);
+            }
+        }
+    }
+
+    private IEnumerator MarathonExchangeExtractor()
+    {
+        LocalSave_DataManagement exchangeSaveZone = new LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
+                "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
+
+        // Save: Extracted Items
+        exchangeSaveZone.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileVirtualItemData);
+
+        // Unload: Marathon Exchange Item
+        if (MeloMelo_ItemUsage_Settings.GetActiveMarathonItemWarp() != null)
+        {
+            foreach (MarathonExchangeWrapper itemWarp in MeloMelo_ItemUsage_Settings.GetActiveMarathonItemWarp())
+            {
+                if (itemWarp.itemContainer != null)
+                {
+                    foreach (VirtualItemDatabase item in itemWarp.itemContainer)
+                    {
+                        // Store item in local
+                        bool isItemStack = MeloMelo_ExtensionContent_Settings.GetItemIsStackable(item.itemName);
+                        exchangeSaveZone.SaveVirtualItemFromPlayer(item.itemName, item.amount, isItemStack);
+
+                        mainScript.PromptMessage.SetActive(true);
+                        mainScript.PromptMessage.transform.GetChild(0).GetComponent<Text>().text = "Marathon Exchange: " +
+                            item.itemName + " ( x" + item.amount + " )";
+
+                        yield return new WaitForSeconds(1);
+                    }
+                }
+            }
+
+            // Done with unwarpping
+            mainScript.PromptMessage.SetActive(false);
+            MeloMelo_ItemUsage_Settings.ConvertItemWarpDone();
+        }
     }
     #endregion
 }

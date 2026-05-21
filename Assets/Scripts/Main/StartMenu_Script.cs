@@ -124,7 +124,7 @@ public class StartMenu_Script : MonoBehaviour
     private void LoadGameApplication()
     {
         string loadingText = "[Game Loading]\nInitialize...";
-        MeloMelo_ExtensionContent_Settings.UpdateCharacterProfile();
+        //MeloMelo_ExtensionContent_Settings.UpdateCharacterProfile();
 
         GetLoaderDisplay(
             loadingText, 3,
@@ -173,10 +173,11 @@ public class StartMenu_Script : MonoBehaviour
     #region COMPONENT (Scene Transition)
     private IEnumerator GetGateWayScene()
     {
-        if (MeloMelo_PlayerSettings.GetLocalUserAccount()) yield return StartCoroutine(CheckingForExtensionContent());
+        yield return StartCoroutine(CheckingForExtensionContent());
         yield return StartCoroutine(CheckingForAreaLoaded());
         yield return StartCoroutine(CheckingForItemLoaded());
         yield return StartCoroutine(CheckingForStoryProgress());
+        yield return StartCoroutine(CheckingForImportedCharacter());
 
         AsyncOperation loadScene = SceneManager.LoadSceneAsync("ServerGateway");
         while (!loadScene.isDone)
@@ -207,14 +208,24 @@ public class StartMenu_Script : MonoBehaviour
         MeloMelo_GameSettings.GetStatusRemarkStructureSetup();
         MeloMelo_GameSettings.GetZoneRewardSetup();
         MeloMelo_ExtensionContent_Settings.LoadStartingStats();
+
+        // Load secondary currency
+        MeloMelo_Economy.SetupSecondaryCurrency();
     }
 
     private IEnumerator CheckingForExtensionContent()
     {
         // Loading component: Text loader
-        GetLoadingContent("Checking for content been loaded.\n Stay connected through the internet. This \n will take a while.");
+        GetLoadingContent("Checking for content been loaded.\n Stay connected through the internet. \n This is an extension content in your marathon mode.");
 
         // Load: Marathon Content
+        if (PlayerPrefs.GetString("storeCache_Connection", "off") == "OK!")
+        {
+            //MeloMelo_Network_RemoteConfig.ConfigurationBase setup_config = new MeloMelo_Network_RemoteConfig.ConfigurationSetup_MarathonContent();
+            //StartCoroutine(setup_config.VerifyConfig());
+            //yield return new WaitUntil(() => setup_config.GetConfigComplete());
+        }
+
         string jsonMarathonContent = PlayerPrefs.GetString("JSON_Custom_Marathon_Challenge", string.Empty);
 
         Task runMarathonContent = Task.Run(() =>
@@ -231,9 +242,7 @@ public class StartMenu_Script : MonoBehaviour
         yield return new WaitUntil(() => runMarathonContent.IsCompleted);
         Debug.Log("Total Marathon Content: " + MeloMelo_ExtensionContent_Settings.totalMarathonCount + " Loaded!");
 
-        // Load: Marathon Exchange
         string jsonMarathonExchange = PlayerPrefs.GetString("JSON_Custom_Marathon_Exchange", string.Empty);
-
         Task runMarathonExchange = Task.Run(() =>
         {
             if (jsonMarathonExchange.Trim('{', '}') != string.Empty)
@@ -256,29 +265,62 @@ public class StartMenu_Script : MonoBehaviour
     private IEnumerator CheckingForItemLoaded()
     {
         // Loading component: Text loader
-        GetLoadingContent("Loading item into the game. The content might be big as content will grow overtime.\n This will take a while.");
+        GetLoadingContent("Item details will be needed to look up quickly without delay. \n Loading time might be longer depending on items is been added into the game.");
 
         int itemCount = 1;
-        MeloMelo_GameSettings.preloaded_itemListing = new List<ItemData>();
+        string[] filtered_item_checked = { "EXP_POTION", "POWER_POTION" };
+        string[] filtered_possibleUsedItem = { "EXP_TICKET", "TRACK_TICKET" };
+        MeloMelo_ItemStore_Management.preloaded_itemListing = new List<ItemData>();
+        MeloMelo_ItemStore_Management.GetCharacterBoostItemSetup();
+        MeloMelo_ItemStore_Management.GetPossibleItemSetup();
 
-        while (MeloMelo_GameSettings.preloaded_itemListing != null)
+        while (MeloMelo_ItemStore_Management.preloaded_itemListing != null)
         {
             ResourceRequest itemRequest = Resources.LoadAsync<ItemData>("Database_Item/#" + itemCount);
             yield return new WaitUntil(() => itemRequest.isDone);
 
             ItemData itemRetrieved = itemRequest.asset as ItemData;
-            if (itemRetrieved != null) { itemCount++; MeloMelo_GameSettings.preloaded_itemListing.Add(itemRetrieved); }
+            if (itemRetrieved != null) { itemCount++; MeloMelo_ItemStore_Management.preloaded_itemListing.Add(itemRetrieved); }
             else break;
         }
 
+        foreach (string possibleList in filtered_possibleUsedItem)
+        {
+            itemCount = 1;
+            while (true)
+            {
+                ResourceRequest itemRequest = Resources.LoadAsync<UsageOfItemDetail>("Database_Item/Filtered_Items/" + possibleList + "/#" + itemCount);
+                yield return new WaitUntil(() => itemRequest.isDone);
+
+                UsageOfItemDetail itemRetrieved = itemRequest.asset as UsageOfItemDetail;
+                if (itemRetrieved != null) { itemCount++; MeloMelo_ItemStore_Management.AddPossibleItemToList(itemRetrieved); }
+                else break;
+            }
+        }
+
+        foreach (string itemChecker in filtered_item_checked)
+        {
+            itemCount = 1;
+            while (true)
+            {
+                ResourceRequest itemRequest = Resources.LoadAsync<UsageOfItemDetail>("Database_Item/Filtered_Items/" + itemChecker + "/#" + itemCount);
+                yield return new WaitUntil(() => itemRequest.isDone);
+
+                UsageOfItemDetail itemRetrieved = itemRequest.asset as UsageOfItemDetail;
+                if (itemRetrieved != null) { itemCount++; MeloMelo_ItemStore_Management.AddCharacterBoostItemToList(itemRetrieved); }
+                else break;
+            }
+        }
+
         GetLoadingCompleted();
-        Debug.Log("Total Item Content : " + MeloMelo_GameSettings.preloaded_itemListing.ToArray().Length + " Loaded!");
+        Debug.Log("Total Item Content : " + MeloMelo_ItemStore_Management.preloaded_itemListing.ToArray().Length + " Loaded!");
+        Debug.Log("Total Possible Used Item : " + MeloMelo_ItemStore_Management.GetTotalPendingItemCount() + " Loaded!");
     }
 
     private IEnumerator CheckingForAreaLoaded()
     {
         // Loading component: Text loader
-        GetLoadingContent("Loading battle area into the game. The world might be expanding in the future.\n This will take ages to load.");
+        GetLoadingContent("Loading track according to season and area. The world is still developing for expansion. \n This will take ages to load.");
 
         MeloMelo_AreaControl_Settings.OpenAreaControlToGame();
         int currentAreaCount = 0;
@@ -396,6 +438,41 @@ public class StartMenu_Script : MonoBehaviour
 
         yield return new WaitForSeconds(1);
         GetLoadingCompleted();
+    }
+
+    private IEnumerator CheckingForImportedCharacter()
+    {
+        // Loading component: Text loader
+        GetLoadingContent("Loading of character details for quicker access.\n You can't miss out this part.");
+        int totalCount = 0;
+
+        string[] classRequireLoad =
+        {
+            "Warrior",
+            "Warrior2",
+            "Mage",
+            "Mage2",
+            "Marksman",
+            "Marksman2"
+        };
+
+        foreach (string findClass in classRequireLoad)
+        {
+            ResourceRequest requestCharacterToLoad = Resources.LoadAsync<ClassBase>("Character_Data/" + findClass);
+            yield return new WaitUntil(() => requestCharacterToLoad.isDone);
+
+            ClassBase info = requestCharacterToLoad.asset as ClassBase;
+            if (info != null)
+            {
+                totalCount++;
+                MeloMelo_CharacterInfo_Settings.AddCharacterReferenceToGame(info);
+            }
+        }
+
+        MeloMelo_CharacterInfo_Settings.CharacterProfileSetup();
+
+        GetLoadingCompleted();
+        Debug.Log("Total Character Loaded : " + totalCount + " Count Added!");
     }
     #endregion
 

@@ -24,12 +24,15 @@ public class CloudData_Login_Script : MonoBehaviour
         {
             isServerOk = true;
             string url = MeloMelo_PlayerSettings.GetWebServerUrl();
+            string serverTag = PlayerPrefs.GetString("ServerTag", string.Empty);
 
             if (LoginPage_Script.thisPage.GetUserPortOutput() != string.Empty)
             {
                 Debug.Log("[CloudServices] Login as: " + LoginPage_Script.thisPage.GetUserPortOutput());
                 PlayerPrefs.DeleteAll();
                 PlayerPrefs.SetString("TempPass_PlayerId", LoginPage_Script.thisPage.GetUserPortOutput());
+                PlayerPrefs.SetString("ServerTag", serverTag);
+
                 MeloMelo_PlayerSettings.UpdateWebServerUrl(url);
                 MeloMelo_ExtensionContent_Settings.UpdateCharacterProfile();
 
@@ -49,17 +52,18 @@ public class CloudData_Login_Script : MonoBehaviour
             LoginPage_Script.thisPage.GetUserPortOutput(), MeloMelo_PlayerSettings.GetWebServerUrl());
 
         for (int save = 0; save < 3; save++)
-            StartCoroutine(cloudData.LoadProgressTrack(save + 1));
+            StartCoroutine(cloudData.VerifyProgressTrack(save + 1));
 
-        StartCoroutine(cloudData.LoadSettingCofiguration());
-        StartCoroutine(cloudData.LoadProgressProfile());
-        StartCoroutine(cloudData.LoadPlayerSettings());
-        StartCoroutine(cloudData.LoadSelectionLastVisited());
-        StartCoroutine(cloudData.LoadBattleFormationData());
-        StartCoroutine(cloudData.LoadCharacterStatusData());
-        StartCoroutine(cloudData.LoadTrackDistributionChart());
-        StartCoroutine(cloudData.LoadItemFromServer());
-        StartCoroutine(cloudData.LoadMarathonContentListing());
+        StartCoroutine(cloudData.VerifySystemSettings());
+        StartCoroutine(cloudData.VerifyGameSettings());
+        StartCoroutine(cloudData.VerifyProgressProfile());
+        StartCoroutine(cloudData.VerifyPlayerSettings());
+        StartCoroutine(cloudData.VerifyTrackSelectionLastVisit());
+        StartCoroutine(cloudData.VerifyBattleFormationData());
+        StartCoroutine(cloudData.VerifyCharacterStatusData());
+        //StartCoroutine(cloudData.VerifyTrackDistributionList());
+        StartCoroutine(cloudData.VerifyItemObtainFromServer());
+        StartCoroutine(cloudData.VerifyExchangePointTranscation());
 
         yield return new WaitUntil(() => cloudData.cloudLogging.ToArray().Length == cloudData.get_counter);
         acquireEntryPass();

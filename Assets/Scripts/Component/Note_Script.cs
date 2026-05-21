@@ -165,10 +165,10 @@ public class Note_Script : MonoBehaviour
             switch (note_define_index)
             {
                 case CharacterSettings.PICKUP_TYPE.NONE:
-                    if (GameObject.Find("Character").GetComponent<Character>().stats.get_name != "NA")
-                        GameManager.thisManager.UpdateCharacter_Health(-(PlayerPrefs.GetInt("Enemy_OverallDamage", 0) * 2), false);
+                    if (MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(MeloMelo_PlayEntries_Settings.PlayEntries.Character).GetComponent<Character>().stats.get_name != "NA")
+                        GameManager.thisManager.UpdateCharacter_Health(-(PlayerPrefs.GetInt("Enemy_OverallDamage", 0)), false);
 
-                    GameManager.thisManager.SpawnDamageIndicator(transform.position, 1, -PlayerPrefs.GetInt("Enemy_OverallDamage", 0) * 2);
+                    GameManager.thisManager.SpawnDamageIndicator(transform.position, 1, -PlayerPrefs.GetInt("Enemy_OverallDamage", 0));
                     break;
 
                 default:

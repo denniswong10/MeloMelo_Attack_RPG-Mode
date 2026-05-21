@@ -28,7 +28,7 @@ MonoBehaviour:
     DifficultyType: 1
     trackRandom: 1
   - title: Random #4
-    areaName: Frost Shaft
+    areaName: Frost Shaft/Central Estate District
     DifficultyType: 1
     trackRandom: 1
   Difficultylevel:
@@ -37,7 +37,7 @@ MonoBehaviour:
   - '?'
   - '?'
   clearingType: 1
-  clearingValue: 700
+  clearingValue: 450
   conditionAddons:
   - judgeTitle: 2
     judgeCount: 1

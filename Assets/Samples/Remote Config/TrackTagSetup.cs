@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Services.RemoteConfig;
 using Unity.Services.Authentication;
 using UnityEngine;
@@ -36,11 +37,19 @@ public class TrackTagSetup : MonoBehaviour
     {
         try
         {
-            if (ServerGateway_Script.thisServer.get_loginType == (int)MeloMelo_PlayerSettings.LoginType.GuestLogin && AuthenticationService.Instance.IsSignedIn)
+            switch (ServerGateway_Script.thisServer.get_loginType)
             {
-                await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
-                JsonConvertTrackAssign();
-                JsonConvertPlayEvent();
+                case (int)MeloMelo_PlayerSettings.LoginType.GuestLogin:
+                    if (AuthenticationService.Instance.IsSignedIn)
+                    {
+                        RemoteConfigService.Instance.FetchCompleted += CompleteConfig;
+                        await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
+                    }
+                    break;
+
+                default:
+                    StartCoroutine(LoadingNetworkPlayEvent());
+                    break;
             }
         }
         catch
@@ -49,7 +58,17 @@ public class TrackTagSetup : MonoBehaviour
         }
     }
 
+    void OnDestroy()
+    {
+        RemoteConfigService.Instance.FetchCompleted -= CompleteConfig;
+    }
+
     #region SETUP
+    private void CompleteConfig(ConfigResponse configResponse)
+    {
+        JsonConvertTrackAssign();
+    }
+
     private void JsonConvertTrackAssign()
     {
         try
@@ -65,11 +84,18 @@ public class TrackTagSetup : MonoBehaviour
         }
         catch { Debug.Log("Unable to connect network..."); }
     }
+    #endregion
 
-    private void JsonConvertPlayEvent()
+    #region EXTRA
+    private IEnumerator LoadingNetworkPlayEvent()
     {
-        // Refresh: Every time event is started or ended
-        MeloMelo_ExtensionContent_Settings.LoadPlayEventRewards(RemoteConfigService.Instance.appConfig.GetJson("MeloMelo_PlayEvent_Reward"));
+        MeloMelo_Network_RemoteConfig.ConfigurationBase playEventSetup = new MeloMelo_Network_RemoteConfig.ConfigurationSetup_PlayEvent();
+        yield return StartCoroutine(playEventSetup.VerifyConfig());
+
+        MeloMelo_Network_RemoteConfig.ConfigurationBase check_config = new MeloMelo_Network_RemoteConfig.ConfigruationSetup_VersionControl();
+        yield return StartCoroutine(check_config.VerifyConfig());
+
+        MeloMelo_ExtensionContent_Settings.LoadPlayEventRewards(PlayerPrefs.GetString("Network_Config_PlayEvent"));
     }
     #endregion
 }

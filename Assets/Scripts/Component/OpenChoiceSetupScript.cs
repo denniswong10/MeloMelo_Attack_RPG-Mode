@@ -88,8 +88,13 @@ public class OpenChoiceSetupScript : MonoBehaviour
             PlayerPrefs.SetInt("ConfirmPick_OpenChoiceSetup", 1);
             transform.GetChild(3).gameObject.SetActive(currentTarget + 1 != createChoicePath.ToArray().Length);
 
-            transform.GetChild(0).GetComponent<Text>().text = "[ " + GetCharacterIdentify(chosenCharacter).characterName + " ] " 
+            if (GetCharacterIdentify(chosenCharacter) != null)
+            {
+                transform.GetChild(0).GetComponent<Text>().text = "[ " + GetCharacterIdentify(chosenCharacter).charName + " ] "
                 + createChoicePath[currentTarget].title;
+            }
+            else
+                transform.GetChild(0).GetComponent<Text>().text = createChoicePath[currentTarget].title;
 
             foreach (string choiceForPick in createChoicePath[currentTarget].choices)
             {
@@ -195,11 +200,35 @@ public class OpenChoiceSetupScript : MonoBehaviour
                     );
                 break;
 
+            case 14:
+                CharacterRebirthAdvancement();
+                break;
+
             default:
                 AddMessageToPopUp("Item is not available at this moment");
                 Invoke("ClosePanel", 3.1f);
                 break;
         }
+    }
+
+    private void CharacterRebirthAdvancement()
+    {
+        if (choiceOptionListing[0] == 1)
+        {
+            const int maxUsage = 50;
+            int checkOnAdvancementCount = PlayerPrefs.GetInt(chosenCharacter + "_LEVEL_ADVANCE_COUNT", 0);
+
+            if (checkOnAdvancementCount < maxUsage)
+            {
+                PlayerPrefs.SetInt(chosenCharacter + "_LEVEL_ADVANCE_COUNT", checkOnAdvancementCount + 1);
+                AddMessageToPopUp("Character used " + PlayerPrefs.GetInt(chosenCharacter + "_LEVEL_ADVANCE_COUNT", 0) + " of level advancement");
+                ConfirmItemUsage();
+            }
+            else
+                AddMessageToPopUp("Character reached the max use of level advancement");
+        }
+
+        Invoke("ClosePanel", 3.1f);
     }
 
     private void CharacterSkillFunction(int tierGroup, int skill_index)
@@ -275,16 +304,15 @@ public class OpenChoiceSetupScript : MonoBehaviour
         if (choiceOptionListing[0] == 1)
         {
             StatsManage_Database getInfo = new StatsManage_Database(chosenCharacter);
-            GetCharacterIdentify(chosenCharacter).UpdateCurrentStats(false);
+
             int maxExperience = getInfo.GetCharacterStatus(GetCharacterIdentify(chosenCharacter).level).GetExperience;
             float amountPerUnit = (maxExperience < 0 ? 0 : maxExperience) * 0.01f;
 
             if (maxExperience > 0)
             {
-                GetCharacterIdentify(chosenCharacter).experience += (int)(amountPerUnit * percentage);
-                GetCharacterIdentify(chosenCharacter).UpdateCurrentStats(true);
-
+                GetCharacterIdentify(chosenCharacter).UpdateCharacterExperience((int)(amountPerUnit * percentage));
                 ConfirmItemUsage();
+
                 AddMessageToPopUp("Character gained " + (amountPerUnit * percentage) + " experience during training");
             }
             else
@@ -301,15 +329,14 @@ public class OpenChoiceSetupScript : MonoBehaviour
         if (choiceOptionListing[0] == 1)
         {
             StatsManage_Database getInfo = new StatsManage_Database(chosenCharacter);
-            GetCharacterIdentify(chosenCharacter).UpdateCurrentStats(false);
+
             int currentLevel = GetCharacterIdentify(chosenCharacter).level;
 
             if (currentLevel < getInfo.GetCharacterStatus(GetCharacterIdentify(chosenCharacter).level + 1).GetLevel)
             {
-                GetCharacterIdentify(chosenCharacter).level += amount;
-                GetCharacterIdentify(chosenCharacter).UpdateCurrentStats(true);
-
+                GetCharacterIdentify(chosenCharacter).LoadCharacterLevelData(currentLevel + 1);
                 ConfirmItemUsage();
+
                 AddMessageToPopUp("Character gained " + amount + " level during training");
             }
             else
@@ -388,18 +415,18 @@ public class OpenChoiceSetupScript : MonoBehaviour
         switch (typeOfStats)
         {
             case "STR":
-                if (MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(chosenCharacter) <= 0 && reset) return false;
-                MeloMelo_ExtraStats_Settings.IncreaseStrengthStats(chosenCharacter, reset ? -amount : amount);
+                if (GetCharacterIdentify(chosenCharacter).additionalStats.strength <= 0 && reset) return false;
+                GetCharacterIdentify(chosenCharacter).UpdateCharacterExtraStats(reset ? -amount : amount, 0, 0, 0);
                 break;
 
             case "VIT":
-                if (MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(chosenCharacter) <= 0 && reset) return false;
-                MeloMelo_ExtraStats_Settings.IncreaseVitalityStats(chosenCharacter, reset ? -amount : amount);
+                if (GetCharacterIdentify(chosenCharacter).additionalStats.vitalilty <= 0 && reset) return false;
+                GetCharacterIdentify(chosenCharacter).UpdateCharacterExtraStats(0, reset ? -amount : amount, 0, 0);
                 break;
 
             case "MAG":
-                if (MeloMelo_ExtraStats_Settings.GetExtraMagicStats(chosenCharacter) <= 0 && reset) return false;
-                MeloMelo_ExtraStats_Settings.IncreaseMagicStats(chosenCharacter, reset ? -amount : amount);
+                if (GetCharacterIdentify(chosenCharacter).additionalStats.magic <= 0 && reset) return false;
+                GetCharacterIdentify(chosenCharacter).UpdateCharacterExtraStats(0, 0, reset ? -amount : amount, 0);
                 break;
         }
 
@@ -424,9 +451,15 @@ public class OpenChoiceSetupScript : MonoBehaviour
         }
     }
 
-    private ClassBase GetCharacterIdentify(string className)
+    private Character_Base_Data GetCharacterIdentify(string className)
     {
-        return Resources.Load<ClassBase>("Character_Data/" + className);
+        if (MeloMelo_CharacterInfo_Settings.inGame_character_listing != null)
+        {
+            foreach (Character_Base_Data getCharacter in MeloMelo_CharacterInfo_Settings.inGame_character_listing)
+                if (getCharacter.className == className) return getCharacter;
+        }
+
+        return null;
     }
 
     private void RestoreAdventureProgressPlay(string area)
@@ -447,7 +480,7 @@ public class OpenChoiceSetupScript : MonoBehaviour
             MeloMelo_Local.LocalSave_DataManagement forceSave = new MeloMelo_Local.LocalSave_DataManagement(LoginPage_Script.thisPage.GetUserPortOutput(),
                 "StreamingAssets/LocalData/MeloMelo_LocalSave_InGameProgress");
 
-            forceSave.SelectFileForActionWithUserTag(MeloMelo_GameSettings.CloudSaveSetting_AdventureMode);
+            forceSave.SelectFileForActionWithUserTag(MeloMelo_GameSettings.GetLocalFileAdventureMode);
             forceSave.SaveAdventureRoutePlay();
 
             AddMessageToPopUp("Progress Data ( " + area + " ) - Restore Successful!");

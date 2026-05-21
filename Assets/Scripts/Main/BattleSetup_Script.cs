@@ -13,11 +13,11 @@ public class BattleSetup_Script : MonoBehaviour
     private GameObject[] BGM;
 
     private int[] speed = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-    private string[] speed_label = { "--", "x1.5", "x2", "x2.5", "x3", "x3.5", "x4", "x4.5", "x5", "x5.5", "x6", "SONIC" };
+    private string[] speed_label = { "x1", "x1.5", "x2", "x2.5", "x3", "x3.5", "x4", "x4.5", "x5", "x5.5", "x6", "MAX" };
 
-    private string[] scoreDisplay_label = { "Score", "Points", "Score & Points", "Score & CP", "Score & HiScore", "Score With Rank" };
-    private string[] scoreDisplay2_label = { "OFF", "Points", "CP", "HiPoints", "HiScore", "Max Score", "Min Score", "Points V2" };
-    private string[] autoRetreat_label = { "OFF", "CP +0", "BORDER/S", "BORDER/SS", "BORDER/X", "MY BEST SCORE" };
+    private string[] scoreDisplay_label = { "Score", "Points", "Score & Points", "Score & CP", "Score With (+/-)", "Score With Rank" };
+    private string[] scoreDisplay2_label = { "OFF", "Points", "CP", "Max Points", "Best Score", "Max Score", "Min Score", "Points (+/-)" };
+    private string[] autoRetreat_label = { "OFF", "NO PENTALY", "BORDER/S", "BORDER/SS", "BORDER/X", "Best Score" };
     private string[] bottomDisplay_label = { "Default", "JudgeTiming", "Nothing" };
     private string[] feedbackDisplay_label = { "ALL", "Perfect & below", "OFF" };
     private string[] feedbackDisplay2_label = { "Critical Included", "Standard", "Don't Include" };
@@ -93,9 +93,7 @@ public class BattleSetup_Script : MonoBehaviour
             notice.NoticePlay(GuideNotice, ButtonUI_GN);
         }
 
-        GameObject.Find("BG").GetComponent<RawImage>().texture =
-            !PlayerPrefs.HasKey("MarathonPermit") && !PlayerPrefs.HasKey("Mission_Played") ? PreSelection_Script.thisPre.get_AreaData.BG : PlayerPrefs.HasKey("Mission_Played") ?
-                Resources.Load<Texture>("Background/BG1C") : Resources.Load<Texture>("Background/BG11");
+        GameObject.Find("BG").GetComponent<RawImage>().texture = MeloMelo_Environment_Settings.GetBackgroundCover();
 
         IntitBattleSetup();
     }
@@ -484,12 +482,15 @@ public class BattleSetup_Script : MonoBehaviour
                 StatsDistribution mainParty = new StatsDistribution();
                 mainParty.load_Stats();
 
-                foreach (ClassBase current_char in mainParty.slot_Stats)
+                foreach (Character_Base_Data current_char in mainParty.slot_Stats)
                 {
-                    PlayerPrefs.DeleteKey(current_char.name + "_EXP_SPECIAL");
+                    if (current_char != null)
+                    {
+                        PlayerPrefs.DeleteKey(current_char.className + "_EXP_SPECIAL");
 
-                    int existingValue = MeloMelo_ItemUsage_Settings.GetExpBoost(current_char.name);
-                    PlayerPrefs.SetInt(current_char.name + "_EXP_BOOST", existingValue + mainParty.get_UnitPower());
+                        int existingValue = MeloMelo_ItemUsage_Settings.GetExpBoost(current_char.className);
+                        PlayerPrefs.SetInt(current_char.className + "_EXP_BOOST", existingValue + mainParty.get_UnitPower());
+                    }
                 }
             }
 
@@ -517,12 +518,12 @@ public class BattleSetup_Script : MonoBehaviour
 
             if (MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(PlayerPrefs.GetString("CharacterFront", "None")) > 0)
             {
-                foreach (ClassBase mainChar in mainParty.slot_Stats)
+                foreach (Character_Base_Data mainChar in mainParty.slot_Stats)
                 {
-                    if (PlayerPrefs.GetString("CharacterFront", "None") == mainChar.name)
+                    if (mainChar != null && PlayerPrefs.GetString("CharacterFront", "None") == mainChar.className)
                     {
-                        int totalStats = mainChar.strength + mainChar.vitality + mainChar.magic;
-                        powerByMultiple = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(mainChar.name) * totalStats;
+                        int totalStats = mainChar.fixedStats.strength + mainChar.fixedStats.vitalilty + mainChar.fixedStats.magic;
+                        powerByMultiple = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(mainChar.className) * totalStats;
                     }
                 }
             }
@@ -530,10 +531,13 @@ public class BattleSetup_Script : MonoBehaviour
             // Exchange Value: Only value hits to -2 (Special Use of pot)
             else if (PlayerPrefs.HasKey(PlayerPrefs.GetString("CharacterFront", "None") + "_POWER_SPECIAL"))
             {
-                foreach (ClassBase mainChar in mainParty.slot_Stats)
+                foreach (Character_Base_Data mainChar in mainParty.slot_Stats)
                 {
-                    PlayerPrefs.DeleteKey(mainChar.name + "_POWER_SPECIAL");
-                    PlayerPrefs.SetInt(mainChar.name + "_POWER_BOOST", mainParty.get_UnitPower());
+                    if (mainChar != null)
+                    {
+                        PlayerPrefs.DeleteKey(mainChar.className + "_POWER_SPECIAL");
+                        PlayerPrefs.SetInt(mainChar.className + "_POWER_BOOST", mainParty.get_UnitPower());
+                    }
                 }
 
                 powerByMultiple = mainParty.get_UnitPower();
@@ -696,6 +700,12 @@ public class BattleSetup_Script : MonoBehaviour
     {
         // Find value of this nagivator
         ScoreDisplayUniversal_Nagivator("Feedback_Display_Type", 0, reserve, FeedbackDisplay_Panel, feedbackDisplay_label, feedbackDisplay2_label);
+    }
+
+    public void AutoRetreat_Choice_SearchNagivator(bool reserve)
+    {
+        // Find value of this nagivator
+        ScoreDisplayUniversal_Nagivator("AutoRetreat", 0, reserve, AutoRetreatPanel, autoRetreat_label, autoRetreat_label);
     }
 
     private void ScoreDisplayUniversal_Nagivator(string content, int index, bool reserve, GameObject[] panel, string[] option1, string[] option2)

@@ -5,11 +5,15 @@ using MeloMelo_Network;
 
 public class OpenLogin_Script : MonoBehaviour
 {
+    // Server ID - Display UI
+    [SerializeField] private Text serverID_placeholder;
+
+    // Login Intel - Input Response
     [SerializeField] private InputField userName;
     [SerializeField] private InputField passWord;
     [SerializeField] private Button loginBtn;
-    [SerializeField] private Text serverID_Tag;
     
+    // Services - Connection between cloud data
     private Authenticate_DataManagement services;
     private CloudData_Login_Script cloudFunction;
 
@@ -20,7 +24,7 @@ public class OpenLogin_Script : MonoBehaviour
         cloudFunction = GetComponent<CloudData_Login_Script>();
 
         // Display server name through text
-        GetServerID(PlayerPrefs.GetString("ServerTag", string.Empty));
+        Output_ServerID_Info();
     }
 
     void Update()
@@ -34,10 +38,16 @@ public class OpenLogin_Script : MonoBehaviour
     }
 
     #region SETUP
-    private void GetServerID(string id_address)
+    private void Output_ServerID_Info()
     {
-        string vaildServerId = id_address != string.Empty ? id_address : "???";
-        serverID_Tag.text = "Server ID: " + vaildServerId;
+        string serverName = PlayerPrefs.GetString("ServerTag", string.Empty);
+        string getNameEmpty =  !string.IsNullOrEmpty(serverName) ? serverName : "???";
+        serverID_placeholder.text = "Server ID: " + getNameEmpty;
+    }
+
+    private void Reset_Login_Input()
+    {
+
     }
     #endregion
 
@@ -47,34 +57,50 @@ public class OpenLogin_Script : MonoBehaviour
         if (cloudFunction != null)
         {
             LoginPage_Script.thisPage.portNumber = 1;
-            LockedLoginFiller();
+            LoginInputControl(false);
 
             StartCoroutine(services.AuthenticateUser(userName.text, passWord.text));
-            StartCoroutine(VerifyUser());
+            StartCoroutine(VerifyUser(5));
         }
     }
 
     public void Register()
     {
-        Application.OpenURL(MeloMelo_PlayerSettings.GetWebServerUrl() + "/database/transcripts/site7/database/sitemap/MeloMelo Site (GameHub)/signup.php");
+        const string API_Register_Site = "/database/transcripts/site7/database/sitemap/MeloMelo Site (GameHub)/signup.php";
+        Application.OpenURL(MeloMelo_PlayerSettings.GetWebServerUrl() + API_Register_Site);
     }
     #endregion
 
     #region COMPONENT
-    private IEnumerator VerifyUser()
+    private IEnumerator VerifyUser(float timeOutCount)
     {
-        float loginTimeOut = 5f;
         float timer = 0f;
-
         cloudFunction.UpdateMessageIcon("Logging in...");
 
-        yield return new WaitUntil(() => {
+        while (!services.get_success && timer < timeOutCount)
+        {
             timer += Time.deltaTime;
-            return services.get_success || timer >= loginTimeOut;
-        });
+            yield return null;
+        }
 
         if (!services.get_success) LoginTimeOut();
         else LoginSuccessful();
+    }
+
+    private void LoginTimeOut()
+    {
+        if (cloudFunction != null)
+        {
+            cloudFunction.UpdateMessageIcon("Login Failed!");
+            LoginInputControl(true);
+        }
+    }
+
+    private void LoginSuccessful()
+    {
+        cloudFunction.UpdateMessageIcon("Login Successful!");
+        LoginPage_Script.thisPage.UpdateUserProfileName(services.GetUserPlayerName());
+        cloudFunction.LoadPlayer();
     }
     #endregion
 
@@ -90,24 +116,11 @@ public class OpenLogin_Script : MonoBehaviour
         return target == null || string.IsNullOrWhiteSpace(target.text);
     }
 
-    private void LoginTimeOut()
+    private void LoginInputControl(bool visible)
     {
-        if (cloudFunction != null) cloudFunction.UpdateMessageIcon("Login Failed!");
-    }
-
-
-    private void LoginSuccessful()
-    {
-        cloudFunction.UpdateMessageIcon("Login Successful!");
-        LoginPage_Script.thisPage.UpdateUserProfileName(services.GetUserPlayerName());
-        cloudFunction.LoadPlayer();
-    }
-
-    private void LockedLoginFiller()
-    {
-        userName.interactable = false;
-        passWord.interactable = false;
-        loginBtn.interactable = false;
+        userName.interactable = visible;
+        passWord.interactable = visible;
+        loginBtn.interactable = visible;
     }
 
     private void ToggleInput()

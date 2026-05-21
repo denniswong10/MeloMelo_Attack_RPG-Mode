@@ -282,7 +282,7 @@ public class StoragePage_Script : MonoBehaviour
         switch (itemModel)
         {
             case (int)StorageMergeWarpper.ItemCaterogyType.Item:
-                foreach (ItemData item in MeloMelo_GameSettings.preloaded_itemListing) if (item.itemName == itemName) return item;
+                foreach (ItemData item in MeloMelo_ItemStore_Management.preloaded_itemListing) if (item.itemName == itemName) return item;
                 return Resources.Load<ItemData>("Database_Item/#0");
 
             case (int)StorageMergeWarpper.ItemCaterogyType.MarathonExchangeWarp:

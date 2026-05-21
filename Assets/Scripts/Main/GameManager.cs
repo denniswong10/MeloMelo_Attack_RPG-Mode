@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour, IGameManager
     private GameplayObjectComponent gameplayWindow;
     private InGameObject_Manager inGameObjectWindow;
     public UnitStatusComponent get_characterStatus { get { return characterStatus; } }
+    public UnitStatusComponent get_enemyStatus { get { return characterStatus; } }
 
     // Component Bundle: Get GameProperties
     public BattleProgressMeter get_progressMeter { get { return progressMeter; } }
@@ -75,6 +76,7 @@ public class GameManager : MonoBehaviour, IGameManager
     [SerializeField] private GameObject[] characterSlotStatus;
     [SerializeField] private GameObject[] enemySlotStatus;
     [SerializeField] private Queue<InGameMessage> inGameMessageList;
+    [SerializeField] private GameObject[] ExtraStatusDisplay;
 
     // Load Gameplay UI and function
     void Start()
@@ -91,6 +93,7 @@ public class GameManager : MonoBehaviour, IGameManager
         //PlayerPrefs.DeleteKey("MarathonPermit");
         //PlayerPrefs.SetInt("DifficultyLevel_valve", 2);
         //PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetSpeedMeter_ValueKey, 0);
+        //PlayerPrefs.SetInt("Enemy_OverallDamage", 0);
 
         if (!DeveloperMode)
         {
@@ -120,8 +123,7 @@ public class GameManager : MonoBehaviour, IGameManager
 
         try 
         { 
-            GameObject.Find("RetreatBG").GetComponent<RawImage>().texture = 
-                PlayerPrefs.HasKey("MarathonPermit") ? Resources.Load<Texture>("Background/BG11") : PreSelection_Script.thisPre.get_AreaData.BG; 
+            GameObject.Find("RetreatBG").GetComponent<RawImage>().texture = MeloMelo_Environment_Settings.GetBackgroundCover();
         } 
         catch { }
 
@@ -132,6 +134,12 @@ public class GameManager : MonoBehaviour, IGameManager
         PlayerPrefs.DeleteKey("Point_Scoring");
         PlayerPrefs.DeleteKey("UpperScoreTech");
 
+        foreach (GameObject extraStatusIndicator in ExtraStatusDisplay)
+        {
+            extraStatusIndicator.SetActive(!PlayerPrefs.HasKey("MarathonPermit"));
+            extraStatusIndicator.GetComponentInChildren<Text>().text = PlayerPrefs.GetFloat(extraStatusIndicator.name, 0) + "%";
+        }
+
         // Scoring Structure
         if (Application.isEditor)
         {
@@ -140,15 +148,19 @@ public class GameManager : MonoBehaviour, IGameManager
             MeloMelo_ExtensionContent_Settings.LoadStartingStats();
             PlayerPrefs.SetString("Character_Active_Skill", "F");
         }
-
-        // Cursor
-        if (Cursor.visible) Cursor.visible = false;
+        else
+            if (Cursor.visible) Cursor.visible = false; 
     }
 
     // Update Function: Score Pugin
     void Update()
     {
-        if (!DeveloperMode) CheckingBonusStatus();
+        if (!DeveloperMode)
+        {
+            CheckingBonusStatus();
+            MeloMelo_ScoreSystem.thisSystem.CheckingForStatus();
+        }
+
         CheckingRetreatStatus();
         EndOfPlay();
     }
@@ -172,7 +184,7 @@ public class GameManager : MonoBehaviour, IGameManager
         score2 = new GameSystem_Score();
 
         // Update scoring
-        MeloMelo_ScoreSystem.thisSystem.UpdateScoreDisplay();
+        //MeloMelo_ScoreSystem.thisSystem.UpdateScoreDisplay();
 
         // Extra: Counter
         float tempCount = score1.get_maxScore - judgeWindow.getOverallCombo * Mathf.Floor(BeatConductor.thisBeat.fixedScore / judgeWindow.getOverallCombo);
@@ -203,9 +215,20 @@ public class GameManager : MonoBehaviour, IGameManager
         // Set HP
         try
         {
+            try
+            {
+                int totalBaseHealth = PreSelection_Script.thisPre.get_AreaData.EnemyBaseHealth[MeloMelo_GameSettings.GetAreaDifficultyMode() - 1];
+                PlayerPrefs.SetInt("Enemy_AreaBaseHealth", totalBaseHealth);
+                PlayerPrefs.SetInt("Enemy_AreaBaseHealth_MAX", totalBaseHealth);
+            }
+            catch 
+            {
+                PlayerPrefs.SetInt("Enemy_AreaBaseHealth", 0);
+                PlayerPrefs.SetInt("Enemy_AreaBaseHealth_MAX", 0);
+            }
+
             UpdateCharacter_Health(PlayerPrefs.GetInt("Character_OverallHealth", 1), true);
-            try { UpdateEnemy_Health(PlayerPrefs.GetInt("Enemy_OverallHealth", 1) + PreSelection_Script.thisPre.get_AreaData.EnemyBaseHealth[MeloMelo_GameSettings.GetAreaDifficultyMode() - 1], true); }
-            catch { UpdateEnemy_Health(PlayerPrefs.GetInt("Enemy_OverallHealth", 1), true); }
+            UpdateEnemy_Health(PlayerPrefs.GetInt("Enemy_OverallHealth", 1), true);
 
             // Update Score System
             OpeningScore();
@@ -329,9 +352,9 @@ public class GameManager : MonoBehaviour, IGameManager
                     AudioSource.PlayClipAtPoint(Resources.Load<AudioClip>("Audio/SE/Missless"), new Vector3(0, 1.8f, -10.8f), voiceVolume);
                 }
 
-                if (LoadingTransition_Script.thisLoader != null)
-                    for (int i = 0; i < LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats.Length; i++) 
-                        LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats[i].StatLoader();
+                //if (LoadingTransition_Script.thisLoader != null)
+                //    for (int i = 0; i < LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats.Length; i++) 
+                //        LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats[i].StatLoader();
             }
 
             // Battle Progress: < 80
@@ -341,9 +364,9 @@ public class GameManager : MonoBehaviour, IGameManager
                 {
                     PlayerPrefs.SetInt(BeatConductor.thisBeat.Music_Database.Title + "_BattleRemark_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 4);
 
-                    if (LoadingTransition_Script.thisLoader != null)
-                        for (int i = 0; i < LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats.Length; i++)
-                            LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats[i].StatLoader();
+                    //if (LoadingTransition_Script.thisLoader != null)
+                    //    for (int i = 0; i < LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats.Length; i++)
+                    //        LoadingTransition_Script.thisLoader.get_statstoAll.slot_Stats[i].StatLoader();
                 }
 
                 MeloMelo_GameSettings.GetRecentStatusRemark = 4;
@@ -402,34 +425,33 @@ public class GameManager : MonoBehaviour, IGameManager
     #region MAIN (Score Updater)
     public void UpdateScore(float _score)
     {
-        if (Score != null)
+        if (score1 != null)
         {
             // Add performance score to the scoreboard and update the display
             score1.ModifyScore((int)_score);
-            Score.text = score1.get_score.ToString("000000");
-
-            // ScoreSystem: Display
-            MeloMelo_ScoreSystem.thisSystem.UpdateScoreDisplay();
-            MeloMelo_ScoreSystem.thisSystem.UpdatePointDisplay();
+            if (Score != null) Score.text = score1.get_score.ToString("000000");
         }
     }
 
     public void UpdateScore_Tech(int _score)
     {
-        if (Score2 != null)
+        if (score2 != null)
         {
             // Add technical score to the status board and update the display
             int scoreFilter = !OverKill_Bar.activeInHierarchy ? _score : (_score * 2);
             score2.ModifyScore(scoreFilter);
             UpperLimitTechScore();
 
-            Score2.text = Mathf.Clamp(score2.get_score, 0, 9999999).ToString();
+            if (Score2 != null) Score2.text = Mathf.Clamp(score2.get_score, 0, 9999999).ToString();
         }
     }
 
     public void UpdatePoint(int _point)
     {
-        if (point != null) point.ModifyScore(_point);
+        if (point != null)
+        {
+            point.ModifyScore(_point);
+        }
     }
     #endregion
 
@@ -474,10 +496,10 @@ public class GameManager : MonoBehaviour, IGameManager
                 UpdateSkillInformation(IsSkillReady);
                 yield return new WaitForSeconds(2);
 
-                foreach (ClassBase skillCaster in characterStats.slot_Stats)
+                foreach (ClassBase skillCaster in characterStats.character_base_reference)
                 {
                     // Get character is leading the party member
-                    if (PlayerPrefs.GetString("CharacterFront", "None") == skillCaster.name)
+                    if (skillCaster != null && PlayerPrefs.GetString("CharacterFront", "None") == skillCaster.name)
                     {
                         // Get character skill ready for use
                         GetComponent<SkillManager>().ExtractSkill(IsSkillReady, skillCaster);
@@ -571,6 +593,10 @@ public class GameManager : MonoBehaviour, IGameManager
     {
         RetreatSuccess = true;
         PlayerPrefs.SetInt("RetreatRoute", 1);
+
+        foreach (GameObject extraStatusDisplay in ExtraStatusDisplay)
+            extraStatusDisplay.SetActive(false);
+
         GameObject.Find("RetreatBG").GetComponent<Animator>().SetTrigger("Retreat");
         StartCoroutine(ProgressResult());
     }
@@ -615,6 +641,10 @@ public class GameManager : MonoBehaviour, IGameManager
             GetComponent<MeloMelo_UnitSlot_Editor>().SetQuestCondition(false);
             UpdateUnitStatusSlot();
         }
+
+        // Score System: Update
+        MeloMelo_ScoreSystem.thisSystem.UpdatePointDisplay();
+        MeloMelo_ScoreSystem.thisSystem.UpdateScoreDisplay();
 
         // Update text judge counter or Create feedback on character
         if (DeveloperMode) GameObject.Find(judge_string).GetComponent<Text>().text = judge_string + ": " + Update_Counter(judge_string, false);
@@ -772,6 +802,7 @@ public class GameManager : MonoBehaviour, IGameManager
         MeloMelo_ItemUsage_Settings.UseExtraLifePoint(PlayerPrefs.GetString("CharacterFront", "None"), usageLifePointPlan);
 
         // Added message prompt
+        GetComponent<SkillManager>().UpdatePotEffect("OnExtraLifeEffect", SkillManager.ItemUsageBuff.Healing);
         PromptInGameMessage("ITEM USAGE", "Recovering Health Point", "Your character used healing potion as character health has been reduced to 0.");
     }
 
@@ -780,6 +811,8 @@ public class GameManager : MonoBehaviour, IGameManager
     {
         GameObject slotStatus = enemySlotStatus[PlayerPrefs.HasKey("MarathonPermit") ? 1 : 0];
         Text enemyHealth = enemySlotStatus[0].transform.GetChild(0).GetChild(0).GetChild(3).GetComponent<Text>();
+        Text enemySeconadryHealth = enemySlotStatus[0].transform.GetChild(0).GetChild(1).GetChild(3).GetComponent<Text>();
+        Slider secondaryHealthBar = enemySlotStatus[0].transform.GetChild(0).GetChild(1).GetComponent<Slider>();
 
         if (slotStatus != null)
         {
@@ -788,6 +821,7 @@ public class GameManager : MonoBehaviour, IGameManager
                 enemyStatus.SetMaxHealth(amount);
                 enemyStatus.ModifyHealth(enemyStatus.get_maxHealth);
                 HealthBar_E.GetComponent<Slider>().maxValue = enemyStatus.get_maxHealth;
+                secondaryHealthBar.maxValue = PlayerPrefs.GetInt("Enemy_AreaBaseHealth_MAX", 0);
             }
             else
             {
@@ -802,7 +836,43 @@ public class GameManager : MonoBehaviour, IGameManager
                 enemyHealth.text = MeloMelo_GameSettings.GetUnitDisplayHealth(
                     enemyStatus.get_health, enemyStatus.get_maxHealth, MeloMelo_PlayerSettings.GetUnitHealthOnEnemy_ValueKey);
 
-                if (enemyStatus.get_health <= 0)
+                secondaryHealthBar.value = PlayerPrefs.GetInt("Enemy_AreaBaseHealth", 0);
+                enemySeconadryHealth.text = secondaryHealthBar.value + "/" + secondaryHealthBar.maxValue;
+
+                if (enemyStatus.get_health <= 0 && PlayerPrefs.GetInt("Enemy_AreaBaseHealth", 0) > 0)
+                {
+                    int calculateHealth = enemyStatus.get_maxHealth - enemyStatus.get_health;
+                    Vector3 setPosition = MeloMelo_PlayEntries_Settings.GetEntriesToGamePlay(
+                        MeloMelo_PlayEntries_Settings.PlayEntries.Target_Reference).transform.position;
+
+                    if (PlayerPrefs.GetInt("Enemy_AreaBaseHealth", 0) - calculateHealth >= 0)
+                    {
+                        int newAreaHealth = PlayerPrefs.GetInt("Enemy_AreaBaseHealth", 0) - calculateHealth;
+                        PlayerPrefs.SetInt("Enemy_AreaBaseHealth", newAreaHealth);
+
+                        enemyStatus.ModifyHealth(calculateHealth);
+                        SpawnDamageIndicator(setPosition, 2, calculateHealth);
+                    }
+                    else
+                    {
+                        int finalAreaHealth = PlayerPrefs.GetInt("Enemy_AreaBaseHealth", 0);
+                        enemyStatus.ModifyHealth(finalAreaHealth);
+
+                        PlayerPrefs.SetInt("Enemy_AreaBaseHealth", 0);
+                        SpawnDamageIndicator(setPosition, 2, finalAreaHealth);
+                    }
+
+                    enemyHealth.text = MeloMelo_GameSettings.GetUnitDisplayHealth(
+                    enemyStatus.get_health, enemyStatus.get_maxHealth, MeloMelo_PlayerSettings.GetUnitHealthOnEnemy_ValueKey);
+
+                    secondaryHealthBar.value = PlayerPrefs.GetInt("Enemy_AreaBaseHealth", 0);
+                    enemySeconadryHealth.text = secondaryHealthBar.value + "/" + secondaryHealthBar.maxValue;
+
+                    if (HealthBar_E.activeInHierarchy)
+                        HealthBar_E.GetComponent<Slider>().value = enemyStatus.get_health;
+                }
+
+                else if (enemyStatus.get_health <= 0)
                 {
                     slotStatus.transform.GetChild(slotStatus.transform.childCount - 1).gameObject.SetActive(true);
                     OverkillBonus_Display(-enemyStatus.get_knockOutValue, enemyStatus.get_maxHealth);
@@ -862,7 +932,7 @@ public class GameManager : MonoBehaviour, IGameManager
     }
 
     // Spawn damage pop-up text in-game
-    public void SpawnDamageIndicator(Vector3 target, int typeOfTarget, int damage)
+    public void SpawnDamageIndicator(Vector3 target, int typeOfTarget, int damage, bool textBIG = false)
     {
         bool characterIndicator = typeOfTarget == 1 && PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorA_ValueKey, 1) == 1;
         bool enemyIndicator = typeOfTarget == 2 && PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey, 1) == 1;
@@ -875,7 +945,7 @@ public class GameManager : MonoBehaviour, IGameManager
             bool enemyVisibleValue = typeOfTarget == 2 && enemyStatus.get_health > 0 
                 && enemyStatus.get_health + damage <= enemyStatus.get_maxHealth;
 
-            if (characterVisibleValue || enemyVisibleValue)
+            if ((characterVisibleValue || enemyVisibleValue) && !PlayerPrefs.HasKey("MarathonPermit"))
             {
                 if (inGameObjectWindow != null)
                 {
@@ -883,8 +953,9 @@ public class GameManager : MonoBehaviour, IGameManager
 
                     if (isDamageIndicator != null)
                     {
-                        isDamageIndicator.GetComponent<TextMesh>().color = damage == 0 ? Color.grey : damage < 0 ? new Color32(125, 36, 5, 255) : new Color32(50, 137, 50, 255);
-                        isDamageIndicator.GetComponent<TextMesh>().text = damage == 0 ? "Miss" : damage > 0 ? "+" + damage.ToString() : damage.ToString();
+                        isDamageIndicator.transform.localScale = textBIG ? new Vector3(3, 3, 1f) : new Vector3(1.2f, 1.2f, 1f);
+                        isDamageIndicator.GetComponent<TextMesh>().color = damage == 0 ? Color.grey : damage > 0 ? new Color32(0, 158, 0, 255) : new Color32(209, 0, 0, 255);
+                        isDamageIndicator.GetComponent<TextMesh>().text = damage == 0 ? "RESIST" : damage.ToString();
                         isDamageIndicator.transform.position = typeOfTarget == 1 ? new Vector3(target.x, 0, -3.5f) : new Vector3(target.x, 2.5f, 0);
                         isDamageIndicator.GetComponent<DamageIndicator_Script>().Setup(2);
                         isDamageIndicator.SetActive(true);
@@ -893,8 +964,9 @@ public class GameManager : MonoBehaviour, IGameManager
                     else if (inGameObjectWindow.damageIndicator.IsSpawnAvailable())
                     {
                         GameObject damageIndicator = Instantiate(Resources.Load<GameObject>("Prefabs/Floating Damage/DamageIndicator"));
-                        damageIndicator.GetComponent<TextMesh>().color = damage == 0 ? Color.grey : damage < 0 ? new Color32(125, 36, 5, 255) : new Color32(50, 137, 50, 255);
-                        damageIndicator.GetComponent<TextMesh>().text = damage == 0 ? "Miss" : damage > 0 ? "+" + damage.ToString() : damage.ToString();
+                        damageIndicator.transform.localScale = textBIG ? new Vector3(3, 3, 1f) : new Vector3(1.2f, 1.2f, 1f);
+                        damageIndicator.GetComponent<TextMesh>().color = damage == 0 ? Color.grey : damage > 0 ? new Color32(0, 158, 0, 255) : new Color32(209, 0, 0, 255);
+                        damageIndicator.GetComponent<TextMesh>().text = damage == 0 ? "RESIST" : damage.ToString();
 
                         damageIndicator.transform.position = typeOfTarget == 1 ? new Vector3(target.x, 0, -3.5f) : new Vector3(target.x, 2.5f, 0);
                         damageIndicator.GetComponent<DamageIndicator_Script>().Setup(2);
@@ -912,7 +984,11 @@ public class GameManager : MonoBehaviour, IGameManager
         { OverKill_Bar.GetComponent<Animator>().SetTrigger("Hit"); }
 
         if (enemyHP_MAXvalue != 0)
-        { OverKill_Bar.transform.GetChild(0).GetComponent<Text>().text = "Overkill Bonus: " + (100f / enemyHP_MAXvalue * overkill_value).ToString("0.00") + "%"; }
+        { 
+            int overkill_multipler = PlayerPrefs.GetInt("PartySize_Index", 1);
+            float final_score = 100f / (enemyHP_MAXvalue * overkill_multipler);
+            OverKill_Bar.transform.GetChild(0).GetComponent<Text>().text = "Overkill Bonus: " + (final_score * overkill_value).ToString("0.00") + "%"; 
+        }
         else { OverKill_Bar.transform.GetChild(0).GetComponent<Text>().text = "Overkill Bonus: --"; }
     }
 
@@ -1173,13 +1249,13 @@ public class GameManager : MonoBehaviour, IGameManager
         bool isRaised = false;
         int count = 0;
 
-        for (int star = 0; star < characterSlotStatus[0].transform.GetChild(7).transform.childCount; star++)
+        for (int star = 0; star < characterSlotStatus[0].transform.GetChild(6).transform.childCount; star++)
         {
-            if (characterSlotStatus[0].transform.GetChild(7).GetChild(star).GetComponent<RawImage>().color.a != 1)
+            if (characterSlotStatus[0].transform.GetChild(6).GetChild(star).GetComponent<RawImage>().color.a != 1)
             {
                 isRaised = true;
                 count++;
-                characterSlotStatus[0].transform.GetChild(7).GetChild(star).GetComponent<RawImage>().color = new Color(1, 1, 1, 1);
+                characterSlotStatus[0].transform.GetChild(6).GetChild(star).GetComponent<RawImage>().color = new Color(1, 1, 1, 1);
                 break;
             }
             else

@@ -73,7 +73,7 @@ public class InGamePurchase_Transcation_PayRoll : MonoBehaviour
             currencyType = typeOfCurrency;
             itemChosen = item;
 
-            int balance = PlayerPrefs.GetInt(LoginPage_Script.thisPage.GetUserPortOutput() + "_" + MeloMelo_Economy.currencyTagInArray[(int)currencyType], 0);
+            int balance = MeloMelo_Economy.GetHonorCoinCurrency(LoginPage_Script.thisPage.GetUserPortOutput());
             roll = new PayRollCalculator(costPerUnit, balance);
             UpdateTranscationDetails();
         }

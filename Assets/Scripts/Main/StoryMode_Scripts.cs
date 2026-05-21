@@ -35,7 +35,7 @@ public class StoryMode_Scripts : MonoBehaviour
 {
     public static StoryMode_Scripts thisStory;
     private GameObject[] BGM;
-    private readonly string[] storyType = { "Main Story", "Event Story" };
+    private readonly string[] storyType = { "Main Story", "Event Story", "Exclusive Story" };
 
     [Header("Main UI - Channel")]
     public GameObject selection_main;
@@ -80,7 +80,7 @@ public class StoryMode_Scripts : MonoBehaviour
         PlayerPrefs.DeleteKey("GatheringMode");
 
         selection_main.GetComponent<Animator>().SetTrigger("Opening");
-        StartCoroutine(ReloadStoryAdventureAssets(storyType[PlayerPrefs.GetInt("StoryTypePlayBack", 0)]));
+        FirstTimeSetup(PlayerPrefs.GetInt("StoryTypePlayBack", 0));
     }
 
     void Update()
@@ -93,6 +93,14 @@ public class StoryMode_Scripts : MonoBehaviour
     {
         BGM = GameObject.FindGameObjectsWithTag("BGM");
         if (BGM.Length > 1) { for (int i = 1; i < BGM.Length; i++) { Destroy(BGM[i]); } }
+    }
+
+    private void FirstTimeSetup(int story_index)
+    {
+        selection_main.transform.GetChild((int)Menu_Selection_Route.StorySwither).GetComponent<Dropdown>().value
+            = story_index;
+
+        StartCoroutine(ReloadStoryAdventureAssets(storyType[PlayerPrefs.GetInt("StoryTypePlayBack", 0)]));
     }
 
     private IEnumerator ReloadStoryAdventureAssets(string storyType)
@@ -144,7 +152,7 @@ public class StoryMode_Scripts : MonoBehaviour
 
         RefreshNagivatorButtonIndex((int)Menu_Selection_Route.LeftBtn, routePointerPos > 0 || settings.IsPastRouteAvailable(routePointerPos));
         RefreshNagivatorButtonIndex((int)Menu_Selection_Route.RightBtn, routePointerPos < settings.totalRoute - 1 || settings.currentStage < settings.totalStage - 1);
-        RefreshNagivatorButtonIndex((int)Menu_Selection_Route.StorySwither, true);
+        RefreshNagivatorDropDown((int)Menu_Selection_Route.StorySwither, true);
     }
 
     private void RouteLoader()
@@ -170,6 +178,12 @@ public class StoryMode_Scripts : MonoBehaviour
         Button buttonInteract = selection_main.transform.GetChild(button_index).GetComponent<Button>();
         buttonInteract.interactable = condition;
     }
+
+    private void RefreshNagivatorDropDown(int button_index, bool condition)
+    {
+        Dropdown optionInteract = selection_main.transform.GetChild(button_index).GetComponent<Dropdown>();
+        optionInteract.interactable = condition;
+    }
     #endregion
 
     #region MAIN
@@ -194,14 +208,15 @@ public class StoryMode_Scripts : MonoBehaviour
         }
     }
 
-    public void SwitchStoryModeBtn()
+    public void SwitchStoryModeBtn(Dropdown mode)
     {
-        int currentStoryType = PlayerPrefs.GetInt("StoryTypePlayBack") == 0 ? 1 : 0;
+        //int currentStoryType = PlayerPrefs.GetInt("StoryTypePlayBack") == 0 ? 1 : 0;
+        int currentStoryType = mode.value;
         settings.ChangeStage(0);
 
         RefreshNagivatorButtonIndex((int)Menu_Selection_Route.LeftBtn, false);
         RefreshNagivatorButtonIndex((int)Menu_Selection_Route.RightBtn, false);
-        RefreshNagivatorButtonIndex((int)Menu_Selection_Route.StorySwither, false);
+        RefreshNagivatorDropDown((int)Menu_Selection_Route.StorySwither, false);
 
         StartCoroutine(ReloadStoryAdventureAssets(storyType[currentStoryType]));
         PlayerPrefs.SetInt("StoryTypePlayBack", currentStoryType);

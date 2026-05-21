@@ -72,6 +72,7 @@ public class SelectionMenu_Script : MonoBehaviour
     public GameObject CheckLevelToggle;
     public GameObject FinalPhaseDisplay;
     public GameObject PlayerProfileQuickChecker;
+    public GameObject PlayEventQuickChecker;
     public GameObject ToggleLocked;
     public GameObject BackBtn;
 
@@ -124,6 +125,7 @@ public class SelectionMenu_Script : MonoBehaviour
         // Load items for marathon play component
         CheckCounter.SetActive(PlayerPrefs.HasKey("MarathonPermit"));
         PlayerProfileQuickChecker.SetActive(!PlayerPrefs.HasKey("MarathonPermit"));
+        PlayEventQuickChecker.SetActive(!PlayerPrefs.HasKey("MarathonPermit"));
 
         // Load start difficulty selection upon it
         if (!PlayerPrefs.HasKey("Mission_Played"))
@@ -216,8 +218,8 @@ public class SelectionMenu_Script : MonoBehaviour
         }
 
         loadBGM = true;
-        StartCoroutine(selection.Setup_Page());
-        if (MeloMelo_ExtensionContent_Settings.GetEventRewardArray() != null && !PlayerPrefs.HasKey("MarathonPermit")) Invoke("PlayEventAlertBox", 0.5f);
+        selection.SetupHolderTrack();
+        //StartCoroutine(selection.Setup_Page());
 
         // Cursor
         if (!Cursor.visible) Cursor.visible = true;
@@ -311,7 +313,7 @@ public class SelectionMenu_Script : MonoBehaviour
 
     public void UpdateCounterLevel(float level)
     {
-        CheckLevelToggle.SetActive(!PlayerPrefs.HasKey("MarathonPermit"));
+        //CheckLevelToggle.SetActive(!PlayerPrefs.HasKey("MarathonPermit"));
         CheckLevelToggle.transform.GetChild(0).GetComponent<Text>().text = "Lv: " + level.ToString("0.00");
     }
     #endregion
@@ -356,17 +358,32 @@ public class SelectionMenu_Script : MonoBehaviour
         PlayerPrefs.SetInt("LastSelection", (int)selection.get_ScrollNagivator_ProgressBar.value);
     }
 
-    protected void GoInfo_Selection_Info() //UpdateDetail()
+    void GoInfo_Selection_PlayEventInfo()
+    {
+        PlayerPrefs.SetInt("LastSelection", (int)selection.get_ScrollNagivator_ProgressBar.value);
+    }
+
+    void GoInfo_Selection_Info() //UpdateDetail()
     {
         AreaDifficulty.text = "Area Difficulty: " + getStats.get_AreaDifficulty() + " Level";
         NumberofEnemy.text = "Number of Enemy: " + PlayerPrefs.GetInt("EnemyTakeCounter_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0);
         NumberofTraps.text = "Number of Traps: " + PlayerPrefs.GetInt("TrapsTakeCounter_" + PlayerPrefs.GetInt("DifficultyLevel_valve", 1), 0);
         UnitPower.text = "Enemy Unit Power: " + getStats.get_UnitPower("Enemy");
-        DamageRange.text = "Enemy Unit Damage Range: " + getStats.get_UnitDamage("Enemy");
+        DamageRange.text = "Enemy Unit Damage Range: " + getStats.get_UnitDamage("Enemy", 0);
         BaseHealth.text = "Enemy Unit Base Health:  " + getStats.get_UnitHealth("Enemy") + " (+" + PreSelection_Script.thisPre.get_AreaData.EnemyBaseHealth[MeloMelo_GameSettings.GetAreaDifficultyMode() - 1] + ")";
 
         // Load LeaderBoard
         RefreshContentBoard();
+    }
+
+    public void OpenToggleIcon(RawImage target)
+    {
+        target.gameObject.SetActive(true);
+    }
+
+    public void CloseToggleIcon(RawImage target)
+    {
+        target.gameObject.SetActive(false);
     }
 
     #region COMPONENT (TRACK LEADERBOARD)
@@ -478,47 +495,6 @@ public class SelectionMenu_Script : MonoBehaviour
                 NewReleaseSign.SetActive(active);
                 break;
         }
-    }
-    #endregion
-
-    #region MISC (Play Event)
-    private void PlayEventAlertBox()
-    {
-        if (PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_DisplayKey) == 1)
-        {
-            PlayEventNotice.SetActive(true);
-            bool isUpdateRequire = false;
-
-            foreach (PlayEventRewardData data in MeloMelo_ExtensionContent_Settings.GetEventRewardArray())
-            {
-                if (MeloMelo_ExtensionContent_Settings.GetVersionNumber(StartMenu_Script.thisMenu.version) <
-                    MeloMelo_ExtensionContent_Settings.GetVersionNumber(data.version))
-                {
-                    isUpdateRequire = true;
-                    break;
-                }
-            }
-
-            PlayEventNotice.transform.GetChild(0).GetChild(0).GetComponent<Text>().text =
-                GetPlayEventMessage(MeloMelo_ExtensionContent_Settings.GetEventRewardArray().Length < 1, isUpdateRequire ?
-                "Game isn't up-to-date for this event" :
-                "Keep playing track to obtain reward");
-
-            Invoke("ClosePanelPlayEventNotice", 5);
-        }
-    }
-
-    private string GetPlayEventMessage(bool eventFinsihed, string extraMessage)
-    {
-        if (eventFinsihed)
-            return "Play Event has ended\n" + "Hope to see you on the next event";
-        else
-            return "Play Event is happening\n" + extraMessage;
-    }
-
-    private void ClosePanelPlayEventNotice()
-    {
-        PlayEventNotice.SetActive(false);
     }
     #endregion
 }

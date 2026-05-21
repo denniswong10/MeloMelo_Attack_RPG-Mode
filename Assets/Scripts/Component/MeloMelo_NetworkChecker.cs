@@ -76,4 +76,27 @@ public class MeloMelo_NetworkChecker : MonoBehaviour
         }
     }
     #endregion
+
+    #region MISC (NETWORK CHECKER)
+    public void GetServerInfo()
+    {
+        switch (PlayerPrefs.GetString("storeCache_Connection", string.Empty))
+        {
+            case "OK!":                
+                transform.GetChild(0).GetComponentInChildren<Text>().text = "Current Server:\n" + PlayerPrefs.GetString("ServerTag", "???");
+                break;
+
+            default:
+                transform.GetChild(0).GetComponentInChildren<Text>().text = "No active server is available";
+                break;
+        }
+
+        transform.GetChild(0).gameObject.SetActive(true);
+    }
+
+    public void OffToggleOnServerInfo()
+    {
+        transform.GetChild(0).gameObject.SetActive(false);
+    }
+    #endregion
 }

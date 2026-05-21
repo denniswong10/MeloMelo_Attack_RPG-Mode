@@ -73,17 +73,28 @@ public class SkillManager : MonoBehaviour
     [SerializeField] private GameObject SkillIndicator;
 
     private List<EffectToggleData> effectToggleData;
+    public enum ItemUsageBuff { Healing, StatsBoost }
+    private ItemUsageBuff itemUsageBuff;
 
     void Start()
     {
-        if (IsSkillOnActive() && !PlayerPrefs.HasKey("MarathonPermit"))
+        if (!PlayerPrefs.HasKey("MarathonPermit"))
         {
-            onStartOfTrackEffects = new List<EffectTypeBundle>();
-            onEndOfTrackEffects = new List<EffectTypeBundle>();
-            onTrackEffects = new List<EffectTypeBundle>();
-            effectToggleData = new List<EffectToggleData>();
+            if (IsSkillOnActive())
+            {
+                onStartOfTrackEffects = new List<EffectTypeBundle>();
+                onEndOfTrackEffects = new List<EffectTypeBundle>();
+                onTrackEffects = new List<EffectTypeBundle>();
+                effectToggleData = new List<EffectToggleData>();
 
-            skillHolder.SetActive(true);
+                skillHolder.SetActive(true);
+            }
+
+            if (MeloMelo_ItemUsage_Settings.GetExtraBoostLifePoint(PlayerPrefs.GetString("CharacterFront")) > 0)
+                CreatePotEffect("OnExtraLifeEffect", ItemUsageBuff.Healing);
+
+            if (MeloMelo_ItemUsage_Settings.GetPowerBoost(PlayerPrefs.GetString("CharacterFront")) > 0)
+                CreatePotEffect("OnItemPowerBoostEffect", ItemUsageBuff.StatsBoost);
         }
     }
 
@@ -156,15 +167,15 @@ public class SkillManager : MonoBehaviour
                             effectBundle_onAction.activationKey = effectBundle.activationKey;
                             effectBundle_onAction.effectOnCondtion = false;
                             effectBundle_onAction.effectOnAction = true;
-                            effectBundle_onAction.valueOfTrigger = actionData.effectActionName + "," + actionData.baseValue + "," + actionData.extraPercentage + "," +
+                            //effectBundle_onAction.valueOfTrigger = actionData.effectActionName + "," + actionData.baseValue + "," + actionData.extraPercentage + "," +
 
-                                ((skill.customEffectData[unloadAndModify].effectOnAction[actionArray].effectMainStats == EffectActionData.EffectActionStats.STR ?
-                                caster.strength * baseStats.strength :
-                                skill.customEffectData[unloadAndModify].effectOnAction[actionArray].effectMainStats == EffectActionData.EffectActionStats.VIT ?
-                                caster.vitality * baseStats.vitality : caster.magic * baseStats.magic) + baseStats.strength)
+                            //    ((skill.customEffectData[unloadAndModify].effectOnAction[actionArray].effectMainStats == EffectActionData.EffectActionStats.STR ?
+                            //    caster.strength * baseStats.strength :
+                            //    skill.customEffectData[unloadAndModify].effectOnAction[actionArray].effectMainStats == EffectActionData.EffectActionStats.VIT ?
+                            //    caster.vitality * baseStats.vitality : caster.magic * baseStats.magic) + baseStats.strength)
 
-                                 + "," + (MeloMelo_SkillData_Settings.CheckSkillGrade(skill.skillName) > 0 ? 
-                                 MeloMelo_SkillData_Settings.CheckSkillGrade(skill.skillName) : 1);
+                                 //+ "," + (MeloMelo_SkillData_Settings.CheckSkillGrade(skill.skillName) > 0 ? 
+                                 //MeloMelo_SkillData_Settings.CheckSkillGrade(skill.skillName) : 1);
 
                             // Add following condition and action type to list
                             actionArray++;
@@ -873,6 +884,42 @@ public class SkillManager : MonoBehaviour
         // Auto attack for character base damage (Before: Just Base Damage, After: Base Damage added with bonus damage)
         Debug.Log("Get character bonus damage of (" + typeOfAttack + "): " +
             "Before: " + originalDamage + " | After: " + (originalDamage + bonusDamage));
+    }
+    #endregion
+
+    #region MISC (HEALING POT EFFECT)
+    public void CreatePotEffect(string effect_name, ItemUsageBuff buff_type)
+    {
+        itemUsageBuff = buff_type;
+        RawImage effectIcon = Instantiate(Resources.Load<RawImage>("Database_Buffs_Effect/" + effect_name), allEffectIndicator.transform);
+        effectIcon.name = effect_name;
+
+        UpdatePotEffect(effect_name, itemUsageBuff);
+    }
+
+    public void UpdatePotEffect(string effect_name, ItemUsageBuff buff_type)
+    {
+        GameObject effect_retrieve = GameObject.Find(effect_name);
+
+        if (effect_retrieve != null)
+        {
+            switch (buff_type)
+            {
+                case ItemUsageBuff.Healing:
+                    int totalStashLife = MeloMelo_ItemUsage_Settings.GetExtraBoostLifePoint(PlayerPrefs.GetString("CharacterFront"));
+
+                    if (totalStashLife <= 0)
+                        Destroy(effect_retrieve);
+                    else
+                        effect_retrieve.transform.GetChild(0).GetComponent<Text>().text = totalStashLife + "%";
+                    break;
+
+                case ItemUsageBuff.StatsBoost:
+                    int statsBoostIndicate = MeloMelo_ItemUsage_Settings.GetPowerBoost(PlayerPrefs.GetString("CharacterFront"));
+                    effect_retrieve.transform.GetChild(0).GetComponent<Text>().text = "+" + statsBoostIndicate;
+                    break;
+            }
+        }
     }
     #endregion
 }

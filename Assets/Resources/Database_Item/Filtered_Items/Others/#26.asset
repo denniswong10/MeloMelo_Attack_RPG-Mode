@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4177df903b9ab8a48b39e8089ba02970, type: 3}
+  m_Name: '#26'
+  m_EditorClassIdentifier: 
+  itemName: Consumable Mystery Pack
+  useTypeDetail: 2
+  dataArray: '{"itemName":"Map Fragment","amount":2,"obtainableRate":22.5}/
+
+    {"itemName":"Map
+    Fragment","amount":5,"obtainableRate":22}/
+
+    {"itemName":"Map Fragment","amount":8,"obtainableRate":19.5}/
+
+    {"itemName":"Map
+    Fragment","amount":10,"obtainableRate":10}/
+
+    {"itemName":"2X EXP POTION","amount":1,"obtainableRate":6.9}/
+
+    {"itemName":"500
+    EXP TICKET","amount":1,"obtainableRate":6.5}/
+
+    {"itemName":"5 POWER POTION","amount":1,"obtainableRate":5.1}/
+
+    {"itemName":"Small
+    Healing Potion","amount":1,"obtainableRate":2.7}/
+
+    {"itemName":"FREE TRACK
+    TICKET","amount":1,"obtainableRate":2.3}/
+
+    {"itemName":"Basic Training Voucher","amount":1,"obtainableRate":1.2}/
+
+    {"itemName":"Basic
+    Skill Ticket","amount":1,"obtainableRate":1}/
+
+    {"itemName":"Leveling Ticket
+    Voucher","amount":1,"obtainableRate":0.3}/'

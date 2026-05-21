@@ -203,6 +203,7 @@ public class GuestLogin_Script : MonoBehaviour
 
         LoginPage_Script.thisPage.Icon.SetActive(true);
         LoginPage_Script.thisPage.Icon.transform.GetChild(1).GetComponent<Text>().text = "[Game Local]\nChecking Data...";
+        MeloMelo_ExtensionContent_Settings.UpdateCharacterProfile();
         int currentProgressId = 0;
 
         while (currentProgressId < paths.Length)
@@ -261,6 +262,10 @@ public class GuestLogin_Script : MonoBehaviour
                 break;
 
             case 7:
+                MeloMelo_CharacterInfo_Settings.CharacterAvailabilitySetup();
+                foreach (Character_Base_Data character_data in MeloMelo_CharacterInfo_Settings.inGame_character_listing)
+                    character_data.ResetProfile();
+
                 Task<List<BattleUnitDatabase>> isCharacterStatsReady = data.PreLoading_CharacterStatsData();
                 yield return new WaitUntil(() => isCharacterStatsReady.IsCompleted);
                 yield return StartCoroutine(data.PostLoading_CharacterStatsData(isCharacterStatsReady.Result));

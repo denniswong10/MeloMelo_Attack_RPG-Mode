@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: '#21'
   m_EditorClassIdentifier: 
   itemName: Scroll Of Wisdom
-  Icon: {fileID: 2800000, guid: ed0b634a1a1494c4480a8722f8c15be6, type: 3}
+  Icon: {fileID: 2800000, guid: 01d29bc7f0c55814daeef83d2828c7a5, type: 3}
   stackable: 1
   thisItemType: 0
   description: A scroll released forbidden magic that allow your character to be

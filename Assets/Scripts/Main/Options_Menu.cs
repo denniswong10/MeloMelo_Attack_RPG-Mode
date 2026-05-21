@@ -9,7 +9,7 @@ struct DataPackStructure
     public string packageName;
     public string dataSeriesKey;
     public string unqiueCode;
-    public string version;
+    public string upToDate;
 }
 
 [System.Serializable]

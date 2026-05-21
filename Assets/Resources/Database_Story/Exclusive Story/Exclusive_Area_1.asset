@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf93b958aa3623a4da8365170344febc, type: 3}
+  m_Name: Exclusive_Area_1
+  m_EditorClassIdentifier: 
+  StoryTitle: Mount Silent
+  StoryBG: {fileID: 2800000, guid: 244dccbcb8679704da3b7ee0cf89801b, type: 3}
+  storyEndRewards:
+  - typeOfReward: 0
+    rewardName: 'Present Case: Story Reward from Mount Silent'
+  Stage:
+  - numberOfSteps: 050000000a000000
+    Quest_Stage: []
+    myTradeLog: []
+    myQuestLog:
+    - logTitle: Explore the mountain of silent
+      id: 1
+      mySlotTypte: 0
+      isOpen: 1
+    - logTitle: Rest Pit tills the next stop
+      id: 2
+      mySlotTypte: 2
+      isOpen: 0
+    - logTitle: Night party out of the mountain
+      id: 3
+      mySlotTypte: 2
+      isOpen: 0
+  - numberOfSteps: 140000001e000000
+    Quest_Stage:
+    - {fileID: 11400000, guid: 1bcaaaeeaac68bf47bac783cf80e3605, type: 2}
+    myTradeLog: []
+    myQuestLog:
+    - logTitle: Uncover of the Hot Spring
+      id: 4
+      mySlotTypte: 0
+      isOpen: 0
+    - logTitle: Enjoy the scene in the spring
+      id: 5
+      mySlotTypte: 2
+      isOpen: 0
+    - logTitle: Night party after hot spring
+      id: 6
+      mySlotTypte: 2
+      isOpen: 0
+    - logTitle: First night in the mountain
+      id: 7
+      mySlotTypte: 1
+      isOpen: 0
+  - numberOfSteps: 320000003200000032000000
+    Quest_Stage:
+    - {fileID: 11400000, guid: 1bcaaaeeaac68bf47bac783cf80e3605, type: 2}
+    myTradeLog: []
+    myQuestLog:
+    - logTitle: Morning rise a new height
+      id: 8
+      mySlotTypte: 0
+      isOpen: 0
+    - logTitle: Getting ready for new adventure
+      id: 9
+      mySlotTypte: 2
+      isOpen: 0
+    - logTitle: Wind blow silent from the mountain
+      id: 10
+      mySlotTypte: 2
+      isOpen: 0
+    - logTitle: Set journey towards new place
+      id: 11
+      mySlotTypte: 2
+      isOpen: 0
+  - numberOfSteps: 
+    Quest_Stage:
+    - {fileID: 11400000, guid: 4ea6a33bdc197c74f80af0d0b8a62970, type: 2}
+    - {fileID: 11400000, guid: daa37b3ccfee9994dac0c41ebf56e3f1, type: 2}
+    myTradeLog: []
+    myQuestLog:
+    - logTitle: Journey through a new path
+      id: 12
+      mySlotTypte: 0
+      isOpen: 0
+    - logTitle: Farewell to mount silent
+      id: 13
+      mySlotTypte: 1
+      isOpen: 0
+    - logTitle: Sercet path down this mountain
+      id: 14
+      mySlotTypte: 1
+      isOpen: 0
+    - logTitle: End Of Story
+      id: 15
+      mySlotTypte: 4
+      isOpen: 0

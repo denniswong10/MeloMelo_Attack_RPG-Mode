@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1f16c8e1e452a9418745bdde6e11abe, type: 3}
   m_Name: Mage
   m_EditorClassIdentifier: 
-  health: 0
+  health: 90
   strength: 0
-  magic: 0
-  vitality: 1
+  magic: 1
+  vitality: 0
   experience: 0
-  expLimit: 0
+  expLimit: 100
   level: 1
   characterName: Mei
   icon: {fileID: 21300000, guid: f7dc711bccf04d84a9312fd3d3409526, type: 3}

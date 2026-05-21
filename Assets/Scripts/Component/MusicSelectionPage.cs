@@ -51,7 +51,48 @@ public class MusicSelectionPage : MonoBehaviour
     [SerializeField] private GameObject ScoreTag;
     //private GameObject LoadingScreen = null;
 
-    public IEnumerator Setup_Page()
+    // Condition Track Holder: List
+    private List<string> trackAvailableName;
+    private int totalHolderTrack = 0;
+    private bool isTrackLoaded = false;
+
+    public void SetupHolderTrack()
+    {
+        if (!PlayerPrefs.HasKey("Mission_Played") && !PlayerPrefs.HasKey("MarathonPermit")) trackAvailableName = new List<string>();
+        else trackAvailableName = null;
+
+        if (trackAvailableName != null)
+        {
+            string targetedArea = "Database_Area/Directory_Data/" + PreSelection_Script.thisPre.get_AreaData.AreaName;
+            TrackConditioner_Data[] allTrack = Resources.LoadAll<TrackConditioner_Data>(targetedArea);
+            int index = 0;
+
+            if (allTrack != null)
+            {
+                while (index < allTrack.Length)
+                {
+                    TrackConditioner_Data context = Resources.Load<TrackConditioner_Data>(targetedArea + "/M" + (index + 1));
+
+                    if (context != null && (!context.contentLocked || (context.contentLocked && IsTrackCondition_Visible(context.trackCondition, context.conditionArray))))
+                        trackAvailableName.Add(context.name);
+
+                    index++;
+                }
+            }
+
+            if (trackAvailableName.Count == 0)
+            {
+                trackAvailableName = null;
+                totalHolderTrack = PreSelection_Script.thisPre.get_AreaData.totalMusic;
+            }
+            else
+                totalHolderTrack = trackAvailableName.Count;
+        }
+
+        StartCoroutine(Setup_Page());
+    }
+
+    private IEnumerator Setup_Page()
     {
         yield return new WaitForSeconds(0.1f);
 
@@ -61,13 +102,13 @@ public class MusicSelectionPage : MonoBehaviour
                 PlayerPrefs.HasKey("Mission_Played") ? 1 :
                 PlayerPrefs.HasKey("MarathonPermit") && Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)) != null ?
                         Resources.Load<MarathonInfo>(PlayerPrefs.GetString("Marathon_Assigned_Task", string.Empty)).Difficultylevel.Length :
-                PlayerPrefs.HasKey("MarathonPermit") ? 
+                PlayerPrefs.HasKey("MarathonPermit") ?
                         MeloMelo_ExtensionContent_Settings.LoadMarathonDetail(PlayerPrefs.GetInt("MarathonInstanceNumber", 0)).track_difficulty.Length :
-                        PreSelection_Script.thisPre.get_AreaData.totalMusic
+                        totalHolderTrack
                 ,
 
                 // Current Selection
-                PlayerPrefs.HasKey("Mission_Played") ? 1 : 
+                PlayerPrefs.HasKey("Mission_Played") ? 1 :
                     PlayerPrefs.HasKey("MarathonPermit") ? PlayerPrefs.GetInt("MarathonChallenge_MCount") :
                         PlayerPrefs.GetInt("LastSelection", 1)
             );
@@ -84,7 +125,7 @@ public class MusicSelectionPage : MonoBehaviour
 
                 // Is play casual?
                 PlayerPrefs.HasKey("Mission_Played") ? true : !PlayerPrefs.HasKey("MarathonPermit")
-            ));       
+            ));
 
         // Get checkpoint instead of nagivator
         foreach (Button navigator in Nav_Selector)
@@ -121,17 +162,14 @@ public class MusicSelectionPage : MonoBehaviour
 
         // Load music database
         //LoadingScreen.GetComponent<LoadingContent_Script>().NowLoading("Loading track content...\n Just a moment");
-        string formFiller = PlayerPrefs.HasKey("Mission_Played") ? string.Empty : (areaLocated + (casualMode ? "/M" + ReservePickMode((int)ScrollNagivator_ProgressBar.value) : string.Empty));
 
-        if (PlayerPrefs.HasKey("Mission_Played")) MusicForm = StoryMode_Scripts.thisStory.missionTrack;
+        if (trackAvailableName != null)
+            NewSelectionContext(areaLocated, casualMode);
         else
-        {
-            foreach (Button navigator in Nav_Selector) navigator.interactable = false;
-            ResourceRequest musicOnLoading = Resources.LoadAsync<MusicScore>(formFiller);
+            LegacySelectionContext(areaLocated, casualMode);
 
-            yield return new WaitUntil(() => musicOnLoading.isDone);
-            MusicForm = musicOnLoading.asset as MusicScore;
-        }
+        yield return new WaitUntil(() => isTrackLoaded);
+        isTrackLoaded = false;
 
         // Load bgm preSet options
         SelectionMenu_Script.thisSelect.get_BGM.GetComponent<BGM_MusicPlayer>().UpdateTrackDetails(MusicForm.Music, MusicForm.PreviewTime, (int)ScrollNagivator_ProgressBar.value);
@@ -265,7 +303,7 @@ public class MusicSelectionPage : MonoBehaviour
             for (int i = 0; i < difficultyState.Length; i++)
             {
                 // Use it for marathon and casual to find any quick difficulty level display
-                if ((!PlayerPrefs.HasKey("MarathonPermit") && PlayerPrefs.GetString(difficultyState[i], "?") != "0") || 
+                if ((!PlayerPrefs.HasKey("MarathonPermit") && PlayerPrefs.GetString(difficultyState[i], "?") != "0") ||
                     (PlayerPrefs.HasKey("MarathonPermit") && i == MeloMelo_GameSettings.GetTrackDifficultyMode() - 1))
                 {
                     DifficultyDisplay.transform.GetChild(i).gameObject.SetActive(true);
@@ -544,7 +582,7 @@ public class MusicSelectionPage : MonoBehaviour
     {
         if (MusicForm.SetRestriction)
         {
-            if (RestrictionContentLifted(MusicForm))
+            if (RestrictionContentLifted(MusicForm) || PlayerPrefs.HasKey("Mission_Played"))
                 UpdateContentAchievementStatus(difficulty);
 
             else
@@ -622,10 +660,10 @@ public class MusicSelectionPage : MonoBehaviour
     {
         int i = PlayerPrefs.GetInt(MusicForm.Title + "_BattleRemark_" + index, 6);
 
-        RemarkIcon.text = MeloMelo_GameSettings.GetStatusByAchievement(i) != null ? 
+        RemarkIcon.text = MeloMelo_GameSettings.GetStatusByAchievement(i) != null ?
             MeloMelo_GameSettings.GetStatusByAchievement(i).remark : string.Empty;
 
-        RemarkIcon.color = MeloMelo_GameSettings.GetStatusByAchievement(i) != null ? 
+        RemarkIcon.color = MeloMelo_GameSettings.GetStatusByAchievement(i) != null ?
             MeloMelo_GameSettings.GetStatusByAchievement(i).colorBorder : Color.gray;
     }
 
@@ -786,7 +824,7 @@ public class MusicSelectionPage : MonoBehaviour
     public void SimpleVisibleLabel_BattleXP(bool visible)
     {
         Slider areaExperienceBar = UserDetailFeedback[(int)UserDetailFeebackOrder.ExistingEntry].transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Slider>();
-        
+
         Label_Visible_Tag[2].SetActive(visible);
         Label_Visible_Tag[2].transform.GetComponentInChildren<Text>().text = areaExperienceBar.value + " / " + areaExperienceBar.maxValue;
     }
@@ -801,8 +839,8 @@ public class MusicSelectionPage : MonoBehaviour
         Label_Visible_Tag[0].SetActive(visible);
     }
 
-    public void ToogleAchievementTab(bool visible) 
-    { 
+    public void ToogleAchievementTab(bool visible)
+    {
         if (!PlayerPrefs.HasKey("MarathonPermit"))
         {
             UserDetailFeedback[(int)UserDetailFeebackOrder.ExistingEntry].transform.GetChild(0).gameObject.SetActive(visible);
@@ -846,6 +884,60 @@ public class MusicSelectionPage : MonoBehaviour
 
         UpdateContentAchievementStatus_Board(1, 6).text =
             PlayerPrefs.GetInt(title + "_totalHealCountForTrack" + trackDifficulty + areaDifficulty, 0) + " / " + PlayerPrefs.GetInt(title + "_OverallHealCountForTrack" + trackDifficulty + areaDifficulty, 0);
+    }
+    #endregion
+
+    #region MISC (Selection Context Function)
+    private void NewSelectionContext(string areaName, bool isCasualPlay)
+    {
+        string formFiller = PlayerPrefs.HasKey("Mission_Played") ? string.Empty : (areaName + (isCasualPlay ? "/" +
+                trackAvailableName[(int)ScrollNagivator_ProgressBar.value - 1] : string.Empty));
+
+        StartCoroutine(UpdateSelectionContext(formFiller));
+    }
+
+    private void LegacySelectionContext(string areaName, bool isCasualPlay)
+    {
+        string formFiller = PlayerPrefs.HasKey("Mission_Played") ? string.Empty : (areaName + (isCasualPlay ? 
+            "/M" + ReservePickMode((int)ScrollNagivator_ProgressBar.value) : string.Empty));
+
+        StartCoroutine(UpdateSelectionContext(formFiller));
+    }
+
+    private IEnumerator UpdateSelectionContext(string filler)
+    {
+        if (PlayerPrefs.HasKey("Mission_Played")) MusicForm = StoryMode_Scripts.thisStory.missionTrack;
+        else
+        {
+            foreach (Button navigator in Nav_Selector) navigator.interactable = false;
+            ResourceRequest musicOnLoading = Resources.LoadAsync<MusicScore>(filler);
+
+            yield return new WaitUntil(() => musicOnLoading.isDone);
+            MusicForm = musicOnLoading.asset as MusicScore;
+        }
+
+        isTrackLoaded = true;
+    }
+    #endregion
+
+    #region MISC (Selection Condition Function)
+    private bool IsTrackCondition_Visible(TrackConditioner_Data.Track_Condition_Type condition_type, string[] dataInArray)
+    {
+        switch (condition_type)
+        {
+            case TrackConditioner_Data.Track_Condition_Type.Track:
+                foreach (string data in dataInArray)
+                {
+                    string[] condition_data_info = data.Split(",");
+                    int currentScore = PlayerPrefs.GetInt(condition_data_info[0] + "_score" + condition_data_info[1], 0);
+
+                    if (currentScore >= int.Parse(condition_data_info[2])) return true;
+                }
+                return false;
+
+            default:
+                return false;
+        }
     }
     #endregion
 }

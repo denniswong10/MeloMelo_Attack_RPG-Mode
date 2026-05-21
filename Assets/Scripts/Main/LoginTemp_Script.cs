@@ -143,15 +143,18 @@ public class LoginTemp_Script : MonoBehaviour
             LoginPage_Script.thisPage.GetUserPortOutput(), MeloMelo_PlayerSettings.GetWebServerUrl());
 
         for (int save = 0; save < 3; save++)
-            StartCoroutine(cloudData.LoadProgressTrack(save + 1));
+            StartCoroutine(cloudData.VerifyProgressTrack(save + 1));
 
-        StartCoroutine(cloudData.LoadSettingCofiguration());
-        StartCoroutine(cloudData.LoadProgressProfile());
-        StartCoroutine(cloudData.LoadPlayerSettings());
-        StartCoroutine(cloudData.LoadSelectionLastVisited());
-        StartCoroutine(cloudData.LoadBattleFormationData());
-        StartCoroutine(cloudData.LoadCharacterStatusData());
-        StartCoroutine(cloudData.LoadTrackDistributionChart());
+        StartCoroutine(cloudData.VerifySystemSettings());
+        StartCoroutine(cloudData.VerifyGameSettings());
+        StartCoroutine(cloudData.VerifyProgressProfile());
+        StartCoroutine(cloudData.VerifyPlayerSettings());
+        StartCoroutine(cloudData.VerifyTrackSelectionLastVisit());
+        StartCoroutine(cloudData.VerifyBattleFormationData());
+        StartCoroutine(cloudData.VerifyCharacterStatusData());
+        StartCoroutine(cloudData.VerifyTrackDistributionList());
+        StartCoroutine(cloudData.VerifyItemObtainFromServer());
+        StartCoroutine(cloudData.VerifyExchangePointTranscation());
 
         yield return new WaitUntil(() => cloudData.cloudLogging.ToArray().Length == cloudData.get_counter);
         acquireEntryPass();

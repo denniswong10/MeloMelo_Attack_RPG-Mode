@@ -308,10 +308,17 @@ namespace MeloMelo_ExtraComponent
                 }
             }
 
-            GameObject.Find("UNIT STATUS").transform.GetChild(0).GetComponent<Text>().text = "UNIT POWER:\n" + stats.get_UnitPower("Character");
+            GameObject.Find("UNIT STATUS").transform.GetChild(0).GetComponent<Text>().text = "UNIT POWER:\n" +
+                MeloMelo_PlayerSettings.GetScoreConfigure(stats.get_UnitPower("Character"));
+
             try { GameObject.Find("UNIT STATUS 2").transform.GetChild(0).GetComponent<Text>().text = "UNIT RANK:\n" + get_Rank(); } catch { }
-            try { GameObject.Find("UNIT STATUS 3").transform.GetChild(0).GetComponent<Text>().text = "HEALTH:\n" + stats.get_UnitHealth("Character"); } catch { }
-            try { for (int i = 0; i < 3; i++) { if (stats.slot_Stats[i].name != "None") { GameObject.FindGameObjectWithTag("SetupCompleted").GetComponent<Button>().interactable = true; break; } else { GameObject.FindGameObjectWithTag("SetupCompleted").GetComponent<Button>().interactable = false; } } }
+
+            try {
+                GameObject.Find("UNIT STATUS 3").transform.GetChild(0).GetComponent<Text>().text = "HEALTH:\n" +
+                  MeloMelo_PlayerSettings.GetScoreConfigure(stats.get_UnitHealth("Character")); 
+            } catch { }
+
+            try { for (int i = 0; i < 3; i++) { if (stats.slot_Stats[i] != null) { GameObject.FindGameObjectWithTag("SetupCompleted").GetComponent<Button>().interactable = true; break; } else { GameObject.FindGameObjectWithTag("SetupCompleted").GetComponent<Button>().interactable = false; } } }
             catch { }
         }
 
@@ -425,7 +432,7 @@ namespace MeloMelo_ExtraComponent
                 if (content != null)
                 {
                     Texture trackContent = content.Background_Cover;
-                    bool restrictContent = content.SetRestriction;
+                    bool restrictContent = content.SetRestriction || content.unlockAbleContent;
 
                     loadrequest = Resources.LoadAsync<RawImage>(coverImageTemplateFile);
                     yield return new WaitUntil(() => loadrequest.isDone);
@@ -452,18 +459,24 @@ namespace MeloMelo_ExtraComponent
 
         private int ImplementTotalMusic(string areaName)
         {
-            int total = 0;
+            TrackConditioner_Data[] allTrack = Resources.LoadAll<TrackConditioner_Data>("Database_Area/Directory_Data/" + areaName);
 
-            foreach (AreaInfo area in areaRegister.ToArray())
+            if (allTrack != null && allTrack.Length > 0) return allTrack.Length;
+            else
             {
-                if (area.AreaName == areaName)
-                {
-                    total = area.totalMusic;
-                    return total;
-                }
-            }
+                int total = 0;
 
-            return total;
+                foreach (AreaInfo area in areaRegister.ToArray())
+                {
+                    if (area.AreaName == areaName)
+                    {
+                        total = area.totalMusic;
+                        return total;
+                    }
+                }
+
+                return total;
+            }
         }
 
         private void ClearTrackContent()
@@ -497,7 +510,8 @@ namespace MeloMelo_ExtraComponent
             else SetTrackInformation(5).text = "";
 
             // Track Locked
-            CollectionNew_Script.thisCollect.ContentTrackDashBoard.transform.GetChild(3).GetChild(0).gameObject.SetActive(trackInfo.SetRestriction);
+            CollectionNew_Script.thisCollect.ContentTrackDashBoard.transform.GetChild(3).GetChild(0).gameObject.SetActive(
+                trackInfo.SetRestriction || trackInfo.unlockAbleContent);
         }
 
         public IEnumerator FinishedTransition_SelectMusic()
@@ -1817,6 +1831,7 @@ namespace MeloMelo_Local
         public int level;
         public int experience;
         public int totalMasteryAdded;
+        public int totalPointDosage;
         public int totalRebirthPoint;
 
         public int baseStrengthStats;
@@ -1979,7 +1994,9 @@ namespace MeloMelo_Local
             LocalPlayerIdentification user = new LocalPlayerIdentification();
             user.playerId = this.user;
 
-            if (uniqueId == string.Empty) user.uniqueId = "1111";// Random.Range(99, 999) + "_T2024_t&" + Random.Range(5, 55);
+            System.Random gerenateId = new System.Random();
+
+            if (uniqueId == string.Empty) user.uniqueId = gerenateId.Next(99, 999) + "_T2025_t&" + gerenateId.Next(5, 55);
             else user.uniqueId = uniqueId;
 
             // Process for checking new entry title
@@ -2550,18 +2567,25 @@ namespace MeloMelo_Local
                     MeloMelo_RPGEditor.StatsManage_Database characterStatsDatabase =
                         new MeloMelo_RPGEditor.StatsManage_Database(data.id);
 
-                    PlayerPrefs.SetInt(data.id + "_LEVEL", data.level);
-                    PlayerPrefs.SetInt(data.id + "_EXP", data.experience);
-                    MeloMelo_CharacterInfo_Settings.UnlockCharacter(data.id);
+                    MeloMelo_CharacterInfo_Settings.AssignCharacterAvailableSetup(data.id);
 
-                    int unUsedMasteryPoint = data.level * MeloMelo_ExtraStats_Settings.masteryPointGathered - data.totalMasteryAdded;
-                    int rebirthMasteryPoint = characterStatsDatabase.GetCharacterMaxLevel() * MeloMelo_ExtraStats_Settings.masteryPointGathered * data.totalRebirthPoint;
-                    MeloMelo_ExtraStats_Settings.SetMasteryPoint(data.id, unUsedMasteryPoint + rebirthMasteryPoint);
-                    MeloMelo_ExtraStats_Settings.SetRebirthPoint(data.id, data.totalRebirthPoint);
+                    if (MeloMelo_CharacterInfo_Settings.inGame_character_listing != null)
+                    {
+                        foreach (Character_Base_Data character_data in MeloMelo_CharacterInfo_Settings.inGame_character_listing)
+                        {
+                            if (data.id == character_data.className)
+                            {
+                                // Required data
+                                character_data.LoadCharacterLevelData(data.level);
+                                character_data.LoadCharacterExperienceData(data.experience);
 
-                    MeloMelo_ExtraStats_Settings.IncreaseStrengthStats(data.id, data.baseStrengthStats);
-                    MeloMelo_ExtraStats_Settings.IncreaseVitalityStats(data.id, data.baseVitalityStats);
-                    MeloMelo_ExtraStats_Settings.IncreaseMagicStats(data.id, data.baseMagicStats);
+                                // Additonal data
+                                character_data.LoadExtraInfoCharacterData(data.totalRebirthPoint, data.totalMasteryAdded, data.totalPointDosage);
+                                character_data.LoadAdditionalCharacterData(data.baseStrengthStats, data.baseVitalityStats, data.baseMagicStats, 0);
+                                break;
+                            }
+                        }
+                    }
 
                     currentLoadIndex++;
                     if (currentLoadIndex % maxLoadLimit == 0) yield return null;
@@ -2948,6 +2972,7 @@ namespace MeloMelo_Local
             data.ScoreDisplay1 = PlayerPrefs.GetInt("ScoreDisplay", 0);
             data.ScoreDisplay2 = PlayerPrefs.GetInt("ScoreDisplay2", 0);
             data.JudgeMeterSetup = PlayerPrefs.GetInt("JudgeMeter_Setup", 0);
+            data.AutoRetreat = PlayerPrefs.GetInt("AutoRetreat", 0);
 
             data.JudgeFeedback_TypeA = PlayerPrefs.GetInt("Feedback_Display_Type_B", 0);
             data.JudgeFeedback_TypeB = PlayerPrefs.GetInt("Feedback_Display_Type", 1);
@@ -3047,12 +3072,22 @@ namespace MeloMelo_Local
             character.id = name;
             character.level = level;
             character.experience = experience;
-            character.totalMasteryAdded = level * 2 - MeloMelo_ExtraStats_Settings.GetMasteryPoint(name);
-            character.totalRebirthPoint = MeloMelo_ExtraStats_Settings.GetRebirthPoint(name);
 
-            character.baseStrengthStats = MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(name);
-            character.baseVitalityStats = MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(name);
-            character.baseMagicStats = MeloMelo_ExtraStats_Settings.GetExtraMagicStats(name);
+            foreach (Character_Base_Data char_in_game in MeloMelo_CharacterInfo_Settings.inGame_character_listing)
+            {
+                if (name == char_in_game.className)
+                {
+                    character.totalMasteryAdded = char_in_game.additionalProfile != null ? char_in_game.additionalProfile.masteryPoint : 0;
+                    character.totalRebirthPoint = char_in_game.additionalProfile != null ? char_in_game.additionalProfile.rebirth_count : 0;
+                    //character.totalPointDosage += char_in_game.additionalProfile != null ? 
+                        //MeloMelo_ItemUsage_Settings.GetSubmittedOfMasteryPoint(char_in_game.className) : 0;
+
+                    character.baseStrengthStats = char_in_game.additionalStats != null ? char_in_game.additionalStats.strength : 0;
+                    character.baseVitalityStats = char_in_game.additionalStats != null ? char_in_game.additionalStats.vitalilty : 0;
+                    character.baseMagicStats = char_in_game.additionalStats != null ? char_in_game.additionalStats.magic : 0;
+                    break;
+                }
+            }
 
             if (File.Exists(directory + combinePath))
             {
@@ -3105,63 +3140,50 @@ namespace MeloMelo_Local
                 foreach (string data_decode in GetFormatToList())
                     if (data_decode != string.Empty) listing.Add(new VirtualItemDatabase().GetItemData(data_decode));
 
-                // Checking item amount isn't zero
-                if (amount != 0)
-                {
-                    if (itemContain.amount < 0)
-                    {
-                        // Find existing item and modify the value
-                        for (int itemOnUsed = 0; itemOnUsed < listing.ToArray().Length; itemOnUsed++)
-                        {
-                            // Get item and deduct them accordingly
-                            if (listing[itemOnUsed].itemName == itemContain.itemName)
-                            {
-                                itemContain.amount += listing[itemOnUsed].amount;
-                                listing.RemoveAt(itemOnUsed);
-                                if (itemContain.amount > 0) listing.Insert(itemOnUsed, itemContain);
-                                break;
-                            }
-                        }
-                    }
-
-                    else
-                    {
-                        bool isItemEmpty = false;
-
-                        for (int itemToAdd = 0; itemToAdd < listing.ToArray().Length; itemToAdd++)
-                        {
-                            // Get item and add into the current amount
-                            if (listing[itemToAdd].itemName == itemContain.itemName && isStackable)
-                            {
-                                itemContain.amount += listing[itemToAdd].amount;
-                                listing.RemoveAt(itemToAdd);
-                                listing.Insert(itemToAdd, itemContain);
-                                isItemEmpty = true;
-                                break;
-                            }
-                        }
-
-                        if (!isItemEmpty || !isStackable)
-                        {
-                            // Create new slot of item stack them together. Otherwise make them individually
-                            if (itemContain.amount > 1)
-                            {
-                                for (int itemSpawn = 0; itemSpawn < itemContain.amount; itemSpawn++)
-                                    listing.Add(new VirtualItemDatabase(itemContain.itemName, 1));
-                            }
-
-                            else if (itemContain.amount == 1)
-                                listing.Add(itemContain);
-                        }
-                    }
-                }
-
                 // Remove old data file from directory
                 File.Delete(directory + combinePath);
             }
 
-            // Create new slot for item
-            else if (itemContain.amount > 0) listing.Add(itemContain);
+            if (isStackable)
+            {
+                // Get item existing from item data list, if found, item will be overwritten to the existing one.
+                // Existing item which reduce to 0 will be remove from the list
+                // If not found, item will be added into the list
+
+                int valueOfExisting = listing.FindIndex(x => x.itemName == itemName);
+
+                if (valueOfExisting >= 0)
+                {
+                    VirtualItemDatabase itemReference = listing[valueOfExisting];
+                    itemReference.amount += amount;
+
+                    if (itemReference.amount <= 0) listing.Remove(listing[valueOfExisting]);
+                    else listing[valueOfExisting] = itemReference;
+                }
+                else if (amount > 0)
+                    listing.Add(new VirtualItemDatabase(itemName, amount));
+            }
+            else
+            {
+                // Put item into storage bag without the need to worry about slot space
+                // Always put item in a slot 
+
+                int findSingleItemById = listing.FindIndex(x => x.itemName == itemName);
+
+                if (findSingleItemById >= 0)
+                {
+                    if (amount < 1)
+                    {
+                        VirtualItemDatabase itemToBeRemove = listing[findSingleItemById];
+                        listing.Remove(itemToBeRemove);
+                    }
+                }
+                else
+                {
+                    for (int amountAdded = 0; amountAdded < amount; amount++)
+                        listing.Add(new VirtualItemDatabase(itemName, 1));
+                }
+            }              
 
             string jsonFormat = string.Empty;
             foreach (VirtualItemDatabase list in listing) { jsonFormat += JsonUtility.ToJson(list) + "/"; }
@@ -3352,23 +3374,6 @@ namespace MeloMelo_Local
 // MeloMelo: Networking
 namespace MeloMelo_Network
 {
-    [System.Serializable]
-    public struct TrackEventStorage
-    {
-        public string title;
-        public string cover;
-        public int difficulty;
-        public string level;
-        public float score;
-        public int point;
-
-        public TrackEventStorage GetTrack(string format)
-        {
-            Debug.Log(format);
-            return JsonUtility.FromJson<TrackEventStorage>(format);
-        }
-    }
-
     public class ServerIP_Settings
     {
         protected string portId = string.Empty;
@@ -3426,11 +3431,11 @@ namespace MeloMelo_Network
             progress.AddField("User", portId);
             progress.AddField("Title", title);
             progress.AddField("Difficulty", difficulty);
+
             progress.AddField("Score", score);
             progress.AddField("Combo", combo);
 
-            const string serverAPI = "MeloMelo_SaveProgress_2024.php";
-            GetAlternativeServer(serverAPI, progress);
+            GetAlternativeServer(MeloMelo_SQL_Services_DataStructure.MeloMelo_Save_Track_ProgressScoreData, progress);
         }
 
         public void SaveProgressTrackByPoint(string title, int difficulty, int point)
@@ -3439,10 +3444,10 @@ namespace MeloMelo_Network
             progress.AddField("User", portId);
             progress.AddField("Title", title);
             progress.AddField("Difficulty", difficulty);
+
             progress.AddField("Point", point);
 
-            const string serverAPI = "MeloMelo_SaveProgress_2_2024.php";
-            GetAlternativeServer(serverAPI, progress);
+            GetAlternativeServer(MeloMelo_SQL_Services_DataStructure.MeloMelo_Save_Track_ProgressPointData, progress);
         }
 
         public void SaveProgressTrackByRemark(string title, int difficulty, int remark)
@@ -3451,10 +3456,24 @@ namespace MeloMelo_Network
             progress.AddField("User", portId);
             progress.AddField("Title", title);
             progress.AddField("Difficulty", difficulty);
+
             progress.AddField("Remark", remark);
 
-            const string serverAPI = "MeloMelo_SaveProgress_3_2024.php";
-            GetAlternativeServer(serverAPI, progress);
+            GetAlternativeServer(MeloMelo_SQL_Services_DataStructure.MeloMelo_Save_Track_ProgressBattleStatusData, progress);
+        }
+
+        public void SaveProgressTrackCombo(string title, int difficulty, int max_combo, int overall_combo, int maxOut_count)
+        {
+            WWWForm progress = new WWWForm();
+            progress.AddField("User", portId);
+            progress.AddField("Title", title);
+            progress.AddField("Difficulty", difficulty);
+
+            progress.AddField("Combo", max_combo);
+            progress.AddField("Overall", overall_combo);
+            progress.AddField("MaxOut", maxOut_count);
+
+            GetAlternativeServer(MeloMelo_SQL_Services_DataStructure.MeloMelo_Save_TrackComboProgressData, progress);
         }
 
         public void SaveProgressProfile(int totalRatePoint, int playedCount, int credit)
@@ -3481,8 +3500,43 @@ namespace MeloMelo_Network
             config.AddField("JudgeType", judgeType);
             config.AddField("FeedbackA", PlayerPrefs.GetInt("Feedback_Display_Type_B", 0));
             config.AddField("FeedbackB", PlayerPrefs.GetInt("Feedback_Display_Type", 0));
+            config.AddField("skill_active_value", PlayerPrefs.GetString("Character_Active_Skill", "F"));
 
             const string serverAPI = "MeloMelo_SettingConfigOnSave_2024.php";
+            GetAlternativeServer(serverAPI, config);
+        }
+
+        public void SaveSystemSettingConfiguration()
+        {
+            WWWForm config = new WWWForm();
+            config.AddField("User", portId);
+
+            config.AddField("Audio_Mute", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAudioMute_ValueKey));
+            config.AddField("Voice_Mute", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAudioVoice_ValueKey));
+
+            config.AddField("Interface_Ani", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey));
+            config.AddField("Character_Ani", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetCharacterAnimation_ValueKey));
+            config.AddField("Enemy_Ani", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetEnemyAnimation_ValueKey));
+
+            config.AddField("Indicator_A", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorA_ValueKey));
+            config.AddField("Indicator_B", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey));
+
+            config.AddField("FrameLimit", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetFrameRateLimit_ValueKey));
+            config.AddField("PerformanceOptimize", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetPeformanceOptimize_ValueKey));
+            config.AddField("unitHealthType_OnCharacter", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetUnitHealthOnCharacter_ValueKey));
+            config.AddField("unitHealthType_OnEnemy", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetUnitHealthOnEnemy_ValueKey));
+            config.AddField("Cue_Margin", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetSpeedMeter_ValueKey));
+            config.AddField("Movement_Style", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetFacnyMovement_ValueKey));
+
+            config.AddField("saveProgress", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAutoSaveProgress_ValueKey));
+            config.AddField("saveGameSettings", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAutoSaveGameSettings_ValueKey));
+            config.AddField("savePlayerSettings", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetAutoSavePlaySettings_ValueKey));
+
+            config.AddField("playEvent_display", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_DisplayKey));
+            config.AddField("playEvent_reward", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_RewardKey));
+            config.AddField("playEvent_skipPrompt", PlayerPrefs.GetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_SkipKey));
+
+            const string serverAPI = "MeloMelo_Save_SystemSettings_2025.php";
             GetAlternativeServer(serverAPI, config);
         }
 
@@ -3517,9 +3571,9 @@ namespace MeloMelo_Network
         {
             WWWForm info = new WWWForm();
             info.AddField("User", portId);
-            info.AddField("HowToPlay", howToPlay);
-            info.AddField("Setup", setup);
-            info.AddField("Control", control);
+            info.AddField("HowToPlay", howToPlay == "T" ? 0 : 1);
+            info.AddField("Setup", setup == "T" ? 0 : 1);
+            info.AddField("Control", control == "T" ? 0 : 1);
             info.AddField("BGM", bgm.ToString());
             info.AddField("SE", se.ToString());
 
@@ -3560,7 +3614,8 @@ namespace MeloMelo_Network
 
         public void SaveChartDistributionData(int index, string jsonData)
         {
-            List<TrackEventStorage> listing = new List<TrackEventStorage>();
+            List<Cloud_DataStructure_TrackDistributionList> listing = new List<Cloud_DataStructure_TrackDistributionList>();
+            Debug.Log("Local Chart Distribution " + "(" + index + ") :" + jsonData);
             string[] dataS = jsonData.Split("/t");
 
             if (!string.IsNullOrEmpty(jsonData))
@@ -3569,27 +3624,34 @@ namespace MeloMelo_Network
                 {
                     try
                     {
-                        TrackEventStorage temp = new TrackEventStorage().GetTrack(data);
-                        if (data != string.Empty) listing.Add(temp);
+                        TrackEventEntry existingLocalList = JsonUtility.FromJson<TrackEventEntry>(data);
+                        Cloud_DataStructure_TrackDistributionList newCloudEntry = new Cloud_DataStructure_TrackDistributionList();
+                        Debug.Log("Track PP: " + existingLocalList.point);
+
+                        newCloudEntry.UserId = LoginPage_Script.thisPage.GetUserPortOutput();
+                        newCloudEntry.Title = existingLocalList.title;
+                        newCloudEntry.Image_ID = existingLocalList.cover;
+                        newCloudEntry.Difficulty = existingLocalList.difficulty;
+                        newCloudEntry.Level = existingLocalList.level;
+                        newCloudEntry.Score = (int)existingLocalList.score;
+                        newCloudEntry.Point = existingLocalList.point;
+                        newCloudEntry.Chart_ID = MeloMelo_GameSettings.FindTrackChartCateogry(BeatConductor.thisBeat.Music_Database.seasonNo);
+
+                        if (data != string.Empty) listing.Add(newCloudEntry);
                     } catch { }
                 }
             }
 
-            foreach (TrackEventStorage entry in listing)
-            {
-                WWWForm info = new WWWForm();
-                info.AddField("User", portId);
-                info.AddField("Title", entry.title);
-                info.AddField("CoverImage", entry.cover);
-                info.AddField("Difficulty", entry.difficulty);
-                info.AddField("Level", entry.level);
-                info.AddField("Score", (int)entry.score);
-                info.AddField("Point", entry.point);
-                info.AddField("Type", index);
+            CloudData_TrackDistributionList trackWarper = new CloudData_TrackDistributionList();
+            trackWarper.trackList = listing.ToArray();
+            string checkJson = JsonUtility.ToJson(trackWarper);
+            Debug.Log("Cloud Data Distribution => Transfer  " + "(" + index + ") :" + checkJson);
 
-                const string serverAPI = "MeloMelo_Save_TrackDistributionList_2024.php";
-                GetAlternativeServer(serverAPI, info);
-            }
+            WWWForm info = new WWWForm();
+            info.AddField("Played_List_JSON", checkJson);
+
+            const string serverAPI = "MeloMelo_Save_TrackDistributionList_2024.php";
+            GetAlternativeServer(serverAPI, info);
         }
 
         public void ClearCacheDistributionData(int index)
@@ -3605,16 +3667,31 @@ namespace MeloMelo_Network
         {
             WWWForm userClearId = new WWWForm();
             userClearId.AddField("User", portId);
+            GetAlternativeServer("MeloMelo_Clear_VirtualItemData_2025.php", userClearId);
 
-            foreach (VirtualItemDatabase item in items)
+            if (items != null)
             {
-                WWWForm item_form = new WWWForm();
-                item_form.AddField("User", portId);
-                item_form.AddField("Item", item.itemName);
-                item_form.AddField("Amount", item.amount);
-                string serverAPI = "MeloMelo_Save_VirtualItemData_2025.php";
-                GetAlternativeServer(serverAPI, item_form);
+                foreach (VirtualItemDatabase item in items)
+                {
+                    WWWForm item_form = new WWWForm();
+                    item_form.AddField("User", portId);
+                    item_form.AddField("Item", item.itemName);
+                    item_form.AddField("Amount", item.amount);
+                    string serverAPI = "MeloMelo_Save_VirtualItemData_2025.php";
+                    GetAlternativeServer(serverAPI, item_form);
+                }
             }
+        }
+
+        public void SaveExchangeTranscationHistory(string name, string key, string unique_code, string version)
+        {
+            WWWForm userClearId = new WWWForm();
+            userClearId.AddField("User", portId);
+            userClearId.AddField("PackageName", name);
+            userClearId.AddField("PackageType", key);
+            userClearId.AddField("PackageCode", unique_code);
+            userClearId.AddField("Version_Control", version);
+            GetAlternativeServer(MeloMelo_SQL_Services_DataStructure.MeloMelo_Save_ExchangePoint_TranscationHistory, userClearId);
         }
         #endregion
 
@@ -3644,24 +3721,7 @@ namespace MeloMelo_Network
         private int counter;
         public int get_counter { get { return counter; } }
 
-        private enum CloudLoad_TrackField { UserID, Title, Difficulty, TotalField };
-        private enum CloudLoad_TrackField_TypeOfResult { Individual = 1, Main };
-        private enum CloudLoad_ProfileField { UserID, RatePoint, PlayedCount, Credit, TotalField };
-        private enum CloudLoad_SettingConfiguration 
-        { 
-            UserID, MV, NoteSpeed, AutoRetreat, 
-            PrimaryDisplay, SecondaryDisplay, 
-            JudgeType, Feedback_TypeA, Feedback_TypeB,
-            TotalField 
-        };
-
-        private enum CloudLoad_LastSelectionVisited { AreaSelection, TrackSelection, TrackDifficuly, TotalField };
-        private enum CloudLoad_PlayerSettingData { HowToPlay, Setup, Control, BGM, SE, TotalField };
-        private enum CloudLoad_BattleFormationData { Slot1, Slot2, Slot3, MainSlot, TotalField };
-
         private enum CloudLoad_TrackList { Title, CoverImage, Difficulty_ID, Difficulty, Score, Point, ChartType, TotalField };
-        private enum CloudLoad_CharacterData { Name, Level, Experience, TotalMastery, TotalRebirth, TotalStrStats, TotalVitStats, TotalMagStats, TotalField };
-        private enum CloudLoad_MarathonProgress { Title, ClearedStatus, PlayedCount, Score, TotalField };
 
         public CloudLoad_DataManagement(string user, string url)
         {
@@ -3673,360 +3733,559 @@ namespace MeloMelo_Network
         }
 
         #region MAIN (Data Handler)
-        public IEnumerator LoadProgressTrack(int options)
+        // SQL Request: Load Progress Track
+        public IEnumerator VerifyProgressTrack(int options)
         {
             WWWForm progress = new WWWForm();
             progress.AddField("User", portId);
             counter++;
 
-            UnityWebRequest load = UnityWebRequest.Post(urlWeb + "MeloMelo_LoadProgress_" + options + "_2024.php", progress);
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + GetOptionProgress(options), progress);
             yield return load.SendWebRequest();
 
             switch (options)
             {
                 case 1:
-                    string[] trackDataByScore = load.downloadHandler.text.Split("\n");
-
-                    if (load.downloadHandler.text != "Empty")
-                    {
-                        int maxLength = (int)CloudLoad_TrackField.TotalField + (int)CloudLoad_TrackField_TypeOfResult.Main;
-
-                        // Save Data (Main Score)
-                        for (int piece = 0; piece < trackDataByScore.Length / maxLength; piece++)
-                        {
-                            // Data taken: UserId, Title, Difficulty, Score, Combo
-                            int id = piece * maxLength;
-
-                            int cloudScore = PlayerPrefs.GetInt(trackDataByScore[id + (int)CloudLoad_TrackField.Title] + "_score"
-                                + int.Parse(trackDataByScore[id + (int)CloudLoad_TrackField.Difficulty]), 0);
-
-                            // Get the latest score result from database
-                            if (int.Parse(trackDataByScore[id + (int)CloudLoad_TrackField.TotalField]) > cloudScore)
-
-                            {
-                                // Load score data
-                                PlayerPrefs.SetInt
-                                (
-                                    trackDataByScore[id + (int)CloudLoad_TrackField.Title] + "_score" +
-                                    int.Parse(trackDataByScore[id + (int)CloudLoad_TrackField.Difficulty]),
-                                    int.Parse(trackDataByScore[id + (int)CloudLoad_TrackField.TotalField])
-                                );
-                            }
-                        }
-                    }
+                    cloudLogging.Add(LoadScoreProgress_OnTrack(load.downloadHandler.text));
                     break;
 
                 case 2:
-                    string[] trackDataByPoint = load.downloadHandler.text.Split("\n");
-
-                    if (load.downloadHandler.text != "Empty")
-                    {
-                        int maxLength = (int)CloudLoad_TrackField.TotalField + (int)CloudLoad_TrackField_TypeOfResult.Individual;
-
-                        // Save Data (Point System)
-                        for (int piece = 0; piece < trackDataByPoint.Length / maxLength; piece++)
-                        {
-                            // Data taken: UserId, Title, Difficulty, Point
-                            int id = piece * maxLength;
-
-                            int cloudPoint = PlayerPrefs.GetInt(trackDataByPoint[id + (int)CloudLoad_TrackField.Title] + "_point" +
-                                    int.Parse(trackDataByPoint[id + (int)CloudLoad_TrackField.Difficulty]), 0);
-
-                            // Get the latest point result from database
-                            if (int.Parse(trackDataByPoint[id + (int)CloudLoad_TrackField.TotalField]) > cloudPoint)
-
-                            {
-                                // Load point data
-                                PlayerPrefs.SetInt
-                                    (
-                                        trackDataByPoint[id + (int)CloudLoad_TrackField.Title] + "_point" +
-                                        int.Parse(trackDataByPoint[id + (int)CloudLoad_TrackField.Difficulty]),
-                                        int.Parse(trackDataByPoint[id + (int)CloudLoad_TrackField.TotalField])
-                                    );
-                            }
-                        }
-                    }
+                    cloudLogging.Add(LoadPointProgress_OnTrack(load.downloadHandler.text));
                     break;
 
                 case 3:
-                    string[] trackDataByRemark = load.downloadHandler.text.Split("\n");
-
-                    if (load.downloadHandler.text != "Empty")
-                    {
-                        int maxLength = (int)CloudLoad_TrackField.TotalField + (int)CloudLoad_TrackField_TypeOfResult.Individual;
-
-                        // Save Data (Renark Status)
-                        for (int piece = 0; piece < trackDataByRemark.Length / maxLength; piece++)
-                        {
-                            // Data taken: UserId, Title, Difficulty, Remark
-                            int id = piece * maxLength;
-
-                            int cloudRemark = PlayerPrefs.GetInt(trackDataByRemark[id + (int)CloudLoad_TrackField.Title] + "_BattleRemark_" +
-                                    int.Parse(trackDataByRemark[id + (int)CloudLoad_TrackField.Difficulty]), 6);
-
-                            // Get the latest status remark from database
-                            if (int.Parse(trackDataByRemark[id + (int)CloudLoad_TrackField.TotalField]) < cloudRemark)
-                            {
-                                // Load remark data
-                                PlayerPrefs.SetInt
-                                    (
-                                        trackDataByRemark[id + (int)CloudLoad_TrackField.Title] + "_BattleRemark_" +
-                                        int.Parse(trackDataByRemark[id + (int)CloudLoad_TrackField.Difficulty]),
-                                        int.Parse(trackDataByRemark[id + (int)CloudLoad_TrackField.TotalField])
-                                    );
-                            }
-                        }
-                    }
+                    cloudLogging.Add(LoadBattleProgress_OnTrack(load.downloadHandler.text));
                     break;
 
-                default:
-                    break;
             }
 
-            cloudLogging.Add(load.downloadHandler.text != "Empty");
             Debug.Log("Server: Load Track Successful! (Save " + options + ") [" + load.downloadHandler.text + "]");
             load.Dispose();
         }
 
-        public IEnumerator LoadProgressProfile()
+        private string GetOptionProgress(int options)
+        {
+            switch (options)
+            {
+                case 1:
+                    return MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_Track_ProgressScoreData;
+
+                case 2:
+                    return MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_Track_ProgressPointData;
+
+                case 3:
+                    return MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_Track_ProgressBattleStatusData;
+
+                default:
+                    return string.Empty;
+            }
+        }
+
+        public bool LoadScoreProgress_OnTrack(string server_data)
+        {
+            if (server_data.Trim('{', '}') != string.Empty)
+            {
+                CloudData_TrackScoreData trackScoreInList = JsonUtility.FromJson<CloudData_TrackScoreData>(server_data);
+
+                // Save Data (Main Score)
+                foreach (Cloud_DataStructure_TrackScoreData cloudData in trackScoreInList.data)
+                {
+                    // Data taken: UserId, Title, Difficulty, Score, Combo
+                    int difficultyToIndex = MeloMelo_SQL_Services_DataStructure.DifficultyByIndex(cloudData.Difficulty);
+                    int localScore = PlayerPrefs.GetInt(cloudData.Title + "_score" + difficultyToIndex, 0);
+                    
+                    // Get the latest score result from database
+                    if (cloudData.Score > localScore)
+                    {
+                        // Load score data
+                        PlayerPrefs.SetInt(cloudData.Title + "_score" + difficultyToIndex, cloudData.Score);
+                    }
+                }
+
+                return true;
+            }
+            else return false;
+        }
+
+        public bool LoadPointProgress_OnTrack(string server_data)
+        {
+            if (server_data.Trim('{', '}') != string.Empty)
+            {
+                CloudData_TrackPointData trackPointInList = JsonUtility.FromJson<CloudData_TrackPointData>(server_data);
+
+                // Save Data (Point System)
+                foreach (Cloud_DataStructure_TrackPointData cloudData in trackPointInList.data)
+                {
+                    // Data taken: UserId, Title, Difficulty, Point
+                    int difficultyToIndex = MeloMelo_SQL_Services_DataStructure.DifficultyByIndex(cloudData.Difficulty);
+                    int localPoint = PlayerPrefs.GetInt(cloudData.Title + "_point" + difficultyToIndex, 0);
+
+                    // Get the latest point result from database
+                    if (cloudData.Points > localPoint)
+                    {
+                        // Load point data
+                        PlayerPrefs.SetInt(cloudData.Title + "_point" + difficultyToIndex, cloudData.Points);
+                    }
+                }
+
+                return true;
+            }
+            else return false;
+        }
+
+        public bool LoadBattleProgress_OnTrack(string server_data)
+        {
+            if (server_data.Trim('{', '}') != string.Empty)
+            {
+                CloudData_TrackBattleStatusData trackBattleStatusInList = JsonUtility.FromJson<CloudData_TrackBattleStatusData>(server_data);
+
+                // Save Data (Renark Status)
+                foreach (Cloud_DataStructure_TrackBattleStatusData cloudData in trackBattleStatusInList.data)
+                {
+                    int difficultyToIndex = MeloMelo_SQL_Services_DataStructure.DifficultyByIndex(cloudData.Difficulty);
+                    int localStatus = PlayerPrefs.GetInt(cloudData.Title + "_BattleRemark_" + difficultyToIndex, 6);
+
+                    // Get the latest status remark from database
+                    if (cloudData.Remark < localStatus)
+                    {
+                        // Load remark data
+                        PlayerPrefs.SetInt(cloudData.Title + "_BattleRemark_" + difficultyToIndex, cloudData.Remark);
+                    }
+                }
+
+                return true;
+            }
+            else return false;
+        }
+
+        // SQL Request: Load Track Combo Progress
+        public IEnumerator VerifyTrackComboProgress()
+        {
+            WWWForm addons = new WWWForm();
+            addons.AddField("User", portId);
+            counter++;
+
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_TrackComboProgressData, addons);
+            yield return load.SendWebRequest();
+
+            cloudLogging.Add(LoadTrackComboProgress(load.downloadHandler.text));
+            Debug.Log("Server: Load Track Combo Progress Successful! [" + load.downloadHandler.text + "]");
+            load.Dispose();
+        }
+
+        public bool LoadTrackComboProgress(string server_data)
+        {
+            if (server_data.Trim('{', '}') != string.Empty)
+            {
+                CloudData_TrackComboProgress progressList = JsonUtility.FromJson<CloudData_TrackComboProgress>(server_data);
+
+                foreach (Cloud_DataStructure_TrackComboProgress progress in progressList.data)
+                {
+                    // Update local score
+                    int difficulty_id = MeloMelo_SQL_Services_DataStructure.DifficultyByIndex(progress.difficulty);
+
+                    PlayerPrefs.SetInt(progress.Title + "_maxCombo" + difficulty_id, progress.maxCombo);
+                    PlayerPrefs.SetInt(progress.Title + "_overallCombo" + difficulty_id, progress.overall_combo);
+                    PlayerPrefs.SetInt(progress.Title + "_maxScore" + difficulty_id, progress.maxOut_count);
+                }
+
+                return true;
+            }
+            else return false;
+        }
+
+        // SQL Request: Load Profile
+        public IEnumerator VerifyProgressProfile()
         {
             WWWForm profile = new WWWForm();
             profile.AddField("User", portId);
             counter++;
 
-            UnityWebRequest load = UnityWebRequest.Post(urlWeb + "MeloMelo_ProfileLoader_2024.php", profile);
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_Profile, profile);
             yield return load.SendWebRequest();
 
-            if (load.downloadHandler.text != string.Empty)
-            {
-                string[] profileData = load.downloadHandler.text.Split("\t");
-                for (int piece = 0; piece < profileData.Length / (int)CloudLoad_ProfileField.TotalField; piece++)
-                {
-                    int id = piece * (int)CloudLoad_ProfileField.TotalField;
-
-                    // Load ratePoint data
-                    PlayerPrefs.SetInt
-                        (
-                            profileData[id + (int)CloudLoad_ProfileField.UserID] + "totalRatePoint",
-                            int.Parse(profileData[id + (int)CloudLoad_ProfileField.RatePoint])
-                        );
-
-                    // Load playedCount data
-                    PlayerPrefs.SetInt
-                        (
-                            profileData[id + (int)CloudLoad_ProfileField.UserID] + "PlayedCount_Data",
-                            int.Parse(profileData[id + (int)CloudLoad_ProfileField.PlayedCount])
-                        );
-
-                    // Load playedCount data
-                    PlayerPrefs.SetInt
-                        (
-                            profileData[id + (int)CloudLoad_ProfileField.UserID] + "_Credits",
-                            int.Parse(profileData[id + (int)CloudLoad_ProfileField.Credit])
-                        );
-                }
-            }
-
-            cloudLogging.Add(load.downloadHandler.text != string.Empty);
+            cloudLogging.Add(LoadProgressProfile(load.downloadHandler.text));
             Debug.Log("Server: Load Profile Successful! [" + load.downloadHandler.text + "]");
             load.Dispose();
         }
 
-        public IEnumerator LoadSettingCofiguration()
+        public bool LoadProgressProfile(string server_data)
+        {
+            if (server_data.Trim('{', '}') != string.Empty)
+            {
+                CloudData_Profile cloud_account = JsonUtility.FromJson<CloudData_Profile>(server_data);
+
+                // Load ratePoint data
+                PlayerPrefs.SetInt(cloud_account.profile.UserId + "totalRatePoint", cloud_account.profile.RatePoint);
+
+                // Load playedCount data
+                PlayerPrefs.SetInt(cloud_account.profile.UserId + "PlayedCount_Data", cloud_account.profile.PlayedCount);
+
+                // Load playedCount data
+                PlayerPrefs.SetInt(cloud_account.profile.UserId + "_Credits", cloud_account.profile.Credit);
+
+                return true;
+            }
+            else return false;
+        }
+
+        // SQL Request: Load Game Settings
+        public IEnumerator VerifyGameSettings()
         {
             WWWForm config = new WWWForm();
             config.AddField("User", portId);
             counter++;
 
-            UnityWebRequest load = UnityWebRequest.Post(urlWeb + "MeloMelo_SettingConfigOnLoad_2024.php", config);
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_GameSettings, config);
             yield return load.SendWebRequest();
 
-            if (load.downloadHandler.text != string.Empty)
-            {
-                string[] configurationData = load.downloadHandler.text.Split("\t");
-                for (int piece = 0; piece < configurationData.Length / (int)CloudLoad_SettingConfiguration.TotalField; piece++)
-                {
-                    int id = piece * (int)CloudLoad_SettingConfiguration.TotalField;
-
-                    // Load MV Setting data
-                    PlayerPrefs.SetString("MVOption", configurationData[id + (int)CloudLoad_SettingConfiguration.MV]);
-
-                    // Load NoteSpeed Setting data
-                    PlayerPrefs.SetInt("NoteSpeed", int.Parse(configurationData[id + (int)CloudLoad_SettingConfiguration.NoteSpeed]));
-
-                    // Load AutoRetreat Setting data
-                    PlayerPrefs.SetInt("AutoRetreat", int.Parse(configurationData[id + (int)CloudLoad_SettingConfiguration.AutoRetreat]));
-
-                    // Load Primary Display data
-                    PlayerPrefs.SetInt("ScoreDisplay", int.Parse(configurationData[id + (int)CloudLoad_SettingConfiguration.PrimaryDisplay]));
-
-                    // Load Secodary Display data
-                    PlayerPrefs.SetInt("ScoreDisplay2", int.Parse(configurationData[id + (int)CloudLoad_SettingConfiguration.SecondaryDisplay]));
-
-                    // Load Judge Type data
-                    PlayerPrefs.SetInt("JudgeMeter_Setup", int.Parse(configurationData[id + (int)CloudLoad_SettingConfiguration.JudgeType]));
-
-                    // Load Feedback 1
-                    PlayerPrefs.SetInt("Feedback_Display_Type_B", int.Parse(configurationData[id + (int)CloudLoad_SettingConfiguration.Feedback_TypeA]));
-
-                    // Load Feedback 2
-                    PlayerPrefs.SetInt("Feedback_Display_Type", int.Parse(configurationData[id + (int)CloudLoad_SettingConfiguration.Feedback_TypeB]));
-                }
-            }
-
-            cloudLogging.Add(load.downloadHandler.text != string.Empty);
-            Debug.Log("Server: Load Gameplay Settings Successful! [" + load.downloadHandler.text + "]");
+            cloudLogging.Add(LoadGameSettings(load.downloadHandler.text));
+            Debug.Log("Server: Load Game Settings Successful! [" + load.downloadHandler.text + "]");
             load.Dispose();
         }
 
-        public IEnumerator LoadPlayerSettings()
+        public bool LoadGameSettings(string server_data)
+        {
+            if (server_data.Trim('{', '}') != string.Empty)
+            {
+                CloudData_GameSettings settings = JsonUtility.FromJson<CloudData_GameSettings>(server_data);
+
+                // Load MV Setting data
+                PlayerPrefs.SetString("MVOption", settings.config.MV);
+
+                // Load NoteSpeed Setting data
+                PlayerPrefs.SetInt("NoteSpeed", settings.config.NoteSpeed);
+
+                // Load AutoRetreat Setting data
+                PlayerPrefs.SetInt("AutoRetreat", settings.config.AutoRetreat);
+
+                // Load Primary Display data
+                PlayerPrefs.SetInt("ScoreDisplay", settings.config.Display1);
+
+                // Load Secodary Display data
+                PlayerPrefs.SetInt("ScoreDisplay2", settings.config.Display2);
+
+                // Load Judge Type data
+                PlayerPrefs.SetInt("JudgeMeter_Setup", settings.config.JudgeType);
+
+                // Load Feedback 1
+                PlayerPrefs.SetInt("Feedback_Display_Type_B", settings.config.Judge_Feedback_Main);
+
+                // Load Feedback 2
+                PlayerPrefs.SetInt("Feedback_Display_Type", settings.config.Judge_Feedback_Sub);
+
+                // Load Active Skills
+                PlayerPrefs.SetString("Character_Active_Skill", settings.config.character_active_skill);
+            }
+            else
+            {
+                // Load MV Setting data
+                PlayerPrefs.SetString("MVOption", "T");
+
+                // Load NoteSpeed Setting data
+                PlayerPrefs.SetInt("NoteSpeed", 1);
+
+                // Load AutoRetreat Setting data
+                PlayerPrefs.SetInt("AutoRetreat", 0);
+
+                // Load Primary Display data
+                PlayerPrefs.SetInt("ScoreDisplay", 0);
+
+                // Load Secodary Display data
+                PlayerPrefs.SetInt("ScoreDisplay2", 0);
+
+                // Load Judge Type data
+                PlayerPrefs.SetInt("JudgeMeter_Setup", 0);
+
+                // Load Feedback 1
+                PlayerPrefs.SetInt("Feedback_Display_Type_B", 0);
+
+                // Load Feedback 2
+                PlayerPrefs.SetInt("Feedback_Display_Type", 0);
+
+                // Load Active Skills
+                PlayerPrefs.SetString("Character_Active_Skill", "T");
+            }
+
+            return true;
+        }
+
+        // SQL Request: Load Player Settings
+        public IEnumerator VerifyPlayerSettings()
         {
             WWWForm config = new WWWForm();
             config.AddField("User", portId);
             counter++;
 
-            UnityWebRequest load = UnityWebRequest.Post(urlWeb + "MeloMelo_Load_PlayerSettings_2024.php", config);
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_PlayerSettings, config);
             yield return load.SendWebRequest();
 
-            if (load.downloadHandler.text != string.Empty)
-            {
-                string[] configurationData = load.downloadHandler.text.Split("\t");
-                for (int piece = 0; piece < configurationData.Length / (int)CloudLoad_PlayerSettingData.TotalField; piece++)
-                {
-                    int id = piece * (int)CloudLoad_PlayerSettingData.TotalField;
-
-                    // Load game mechanics data
-                    PlayerPrefs.SetString("HowToPlay_Notice", configurationData[id + (int)CloudLoad_PlayerSettingData.HowToPlay]);
-
-                    // Load gameplay setup data
-                    PlayerPrefs.SetString("BattleSetup_Guide", configurationData[id + (int)CloudLoad_PlayerSettingData.Setup]);
-
-                    // Load control guide data
-                    PlayerPrefs.SetString("Control_notice", configurationData[id + (int)CloudLoad_PlayerSettingData.Control]);
-
-                    // Load background game music data
-                    PlayerPrefs.SetFloat(MeloMelo_PlayerSettings.GetBGM_ValueKey, float.Parse(configurationData[id + (int)CloudLoad_PlayerSettingData.BGM]));
-
-                    // Load sound effect data
-                    PlayerPrefs.SetFloat("SE_VolumeGET", float.Parse(configurationData[id + (int)CloudLoad_PlayerSettingData.SE]));
-                }
-            }
-
-            cloudLogging.Add(load.downloadHandler.text != string.Empty);
+            cloudLogging.Add(LoadPlayerSettings(load.downloadHandler.text));
             Debug.Log("Server: Load Player Data Successful! [" + load.downloadHandler.text + "]");
             load.Dispose();
         }
 
-        public IEnumerator LoadSelectionLastVisited()
+        public bool LoadPlayerSettings(string server_data)
         {
-            WWWForm info = new WWWForm();
-            info.AddField("User", portId);
-            counter++;
-
-            const string serverAPI = "MeloMelo_Load_MusicSelectionLastVisited_2024.php";
-            UnityWebRequest load = UnityWebRequest.Post(urlWeb + serverAPI, info);
-            yield return load.SendWebRequest();
-
-            if (load.downloadHandler.text != "Empty")
+            if (server_data.Trim('{', '}') != string.Empty)
             {
-                string[] value = load.downloadHandler.text.Split('\n');
+                CloudData_PlayerSettings settings = JsonUtility.FromJson<CloudData_PlayerSettings>(server_data);
 
-                for (int data = 0; data < value.Length / (int)CloudLoad_LastSelectionVisited.TotalField; data++)
-                {
-                    int id = data * (int)CloudLoad_LastSelectionVisited.TotalField;
+                // Load game mechanics data
+                PlayerPrefs.SetString("HowToPlay_Notice", settings.player.Tutorial_Gameplay == 0 ? "F" : "T");
 
-                    // Load area selection
-                    MeloMelo_TrackSelectionData selection = new MeloMelo_TrackSelectionData();
-                    selection.areaTitle = value[id + (int)CloudLoad_LastSelectionVisited.AreaSelection];
-                    selection.trackIndex = int.Parse(value[id + (int)CloudLoad_LastSelectionVisited.TrackSelection]);
-                    selection.difficulty = int.Parse(value[id + (int)CloudLoad_LastSelectionVisited.TrackDifficuly]);
-                    MeloMelo_GameSettings.selectionLisitng.Add(selection);
-                }
+                // Load gameplay setup data
+                PlayerPrefs.SetString("BattleSetup_Guide", settings.player.Tutorial_Gameplay == 0 ? "F" : "T");
+
+                // Load control guide data
+                PlayerPrefs.SetString("Control_notice", settings.player.Tutorial_Control == 0 ? "F" : "T");
+
+                // Load background game music data
+                PlayerPrefs.SetFloat(MeloMelo_PlayerSettings.GetBGM_ValueKey, settings.player.BGM_Audio);
+
+                // Load sound effect data
+                PlayerPrefs.SetFloat(MeloMelo_PlayerSettings.GetSE_ValueKey, settings.player.SE_Audio);
+            }
+            else
+            {
+                // Load game mechanics data
+                PlayerPrefs.SetString("HowToPlay_Notice", "T");
+
+                // Load gameplay setup data
+                PlayerPrefs.SetString("BattleSetup_Guide", "T");
+
+                // Load control guide data
+                PlayerPrefs.SetString("Control_notice", "T");
+
+                // Load background game music data
+                PlayerPrefs.SetFloat(MeloMelo_PlayerSettings.GetBGM_ValueKey, 0.5f);
+
+                // Load sound effect data
+                PlayerPrefs.SetFloat(MeloMelo_PlayerSettings.GetSE_ValueKey, 0.5f);
             }
 
-            cloudLogging.Add(load.downloadHandler.text != "Empty");
-            Debug.Log("CloudLoad - " + serverAPI + " [" + load.downloadHandler.text + "]");
+            return true;
+        }
+
+        // SQL Request: Load System Settings
+        public IEnumerator VerifySystemSettings()
+        {
+            WWWForm config = new WWWForm();
+            config.AddField("User", portId);
+            counter++;
+
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_SystemSettings, config);
+            yield return load.SendWebRequest();
+
+            cloudLogging.Add(LoadSystemSettings(load.downloadHandler.text));
+            Debug.Log("Server: Load System Data Successful! [" + load.downloadHandler.text + "]");
             load.Dispose();
         }
 
-        public IEnumerator LoadBattleFormationData()
+        public bool LoadSystemSettings(string server_data)
+        {
+            if (server_data.Trim('{', '}') != string.Empty)
+            {
+                CloudData_SystemSettings settings = JsonUtility.FromJson<CloudData_SystemSettings>(server_data);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAudioMute_ValueKey, settings.config.audio_mute);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAudioVoice_ValueKey, settings.config.voice_mute);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, settings.config.interface_animation);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetCharacterAnimation_ValueKey, settings.config.character_animation);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetEnemyAnimation_ValueKey, settings.config.enemy_animation);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetDamageIndicatorA_ValueKey, settings.config.damageIndicator_A);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey, settings.config.damageIndicator_B);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetFrameRateLimit_ValueKey, settings.config.frameRateLimit);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPeformanceOptimize_ValueKey, settings.config.performanceOptimize);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetUnitHealthOnCharacter_ValueKey, settings.config.unitHealthType_OnCharacter);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetUnitHealthOnEnemy_ValueKey, settings.config.unitHealthType_OnEnemy);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetSpeedMeter_ValueKey, settings.config.speedMeter);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetFacnyMovement_ValueKey, settings.config.fancyMovement);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSaveProgress_ValueKey, settings.config.autoSaveProgress);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSaveGameSettings_ValueKey, settings.config.autoSaveGameSettings);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSavePlaySettings_ValueKey, settings.config.autoSavePlayerSettings);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_DisplayKey, settings.config.playEventSettings_display);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_RewardKey, settings.config.playEventSettings_reward);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_SkipKey, settings.config.playEventSettings_skipOnGoing);
+            }
+            else
+            {
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAudioMute_ValueKey, 0);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAudioVoice_ValueKey, 0);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetInterfaceAnimation_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetCharacterAnimation_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetEnemyAnimation_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetDamageIndicatorA_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetDamageIndicatorB_ValueKey, 1);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetFrameRateLimit_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPeformanceOptimize_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetUnitHealthOnCharacter_ValueKey, 0);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetUnitHealthOnEnemy_ValueKey, 0);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetSpeedMeter_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetFacnyMovement_ValueKey, 0);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSaveProgress_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSaveGameSettings_ValueKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetAutoSavePlaySettings_ValueKey, 1);
+
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_DisplayKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_RewardKey, 1);
+                PlayerPrefs.SetInt(MeloMelo_PlayerSettings.GetPlayEventSettings_SkipKey, 0);
+            }
+
+            return true;
+        }
+
+        // SQL Request: Load Track Selection Last Pick
+        public IEnumerator VerifyTrackSelectionLastVisit()
         {
             WWWForm info = new WWWForm();
             info.AddField("User", portId);
             counter++;
 
-            const string serverAPI = "MeloMelo_Load_BattleFormation_2024.php";
-            UnityWebRequest load = UnityWebRequest.Post(urlWeb + serverAPI, info);
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_LastSelectionTrack, info);
             yield return load.SendWebRequest();
-            
-            if (load.downloadHandler.text != "Empty")
+
+            cloudLogging.Add(LoadTrackSelectionLastVisit(load.downloadHandler.text));
+            Debug.Log("CloudLoad - " + MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_LastSelectionTrack + " [" + load.downloadHandler.text + "]");
+            load.Dispose();
+        }
+
+        public bool LoadTrackSelectionLastVisit(string server_data)
+        {
+            if (server_data.Trim('{', '}') != string.Empty)
             {
-                string[] characterData = load.downloadHandler.text.Split("\t");
+                CloudData_TrackLastSelection selection = JsonUtility.FromJson<CloudData_TrackLastSelection>(server_data);
 
-                for (int i = 0; i < (int)CloudLoad_BattleFormationData.TotalField - 1; i++) 
-                { PlayerPrefs.SetString("Slot" + (i + 1) + "_charName", characterData[i]); }
+                foreach (Cloud_DataStructure_TrackLastSelection cloud_export_selection in selection.trackList)
+                {
+                    // Load area selection
+                    MeloMelo_TrackSelectionData local_import_selection = new MeloMelo_TrackSelectionData();
 
-                PlayerPrefs.SetString("CharacterFront", characterData[(int)CloudLoad_BattleFormationData.MainSlot]);
+                    local_import_selection.areaTitle = cloud_export_selection.AreaSelection;
+                    local_import_selection.trackIndex = cloud_export_selection.TrackSelection;
+                    local_import_selection.difficulty = MeloMelo_SQL_Services_DataStructure.DifficultyByIndex(cloud_export_selection.Difficulty);
+                    MeloMelo_GameSettings.selectionLisitng.Add(local_import_selection);
+                }
+
+                return true;
             }
+            else return false;
+        }
 
-            cloudLogging.Add(load.downloadHandler.text != "Empty");
+        // SQL Request: Load Battle Formation
+        public IEnumerator VerifyBattleFormationData()
+        {
+            WWWForm info = new WWWForm();
+            info.AddField("User", portId);
+            counter++;
+
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_BattleFormation, info);
+            yield return load.SendWebRequest();
+
+            cloudLogging.Add(LoadBattleFormationData(load.downloadHandler.text));
             Debug.Log("Server: Load Formation Data Successful! [" + load.downloadHandler.text + "]");
             load.Dispose();
         }
 
-        public IEnumerator LoadCharacterStatusData()
+        public bool LoadBattleFormationData(string server_data)
+        {
+            if (server_data.Trim('{', '}') != string.Empty)
+            {
+                CloudData_BattleFormation formation = JsonUtility.FromJson<CloudData_BattleFormation>(server_data);
+
+                PlayerPrefs.SetString("Slot1" + "_charName", formation.config.Slot1);
+                PlayerPrefs.SetString("Slot2" + "_charName", formation.config.Slot2);
+                PlayerPrefs.SetString("Slot3" + "_charName", formation.config.Slot3);
+                PlayerPrefs.SetString("CharacterFront", formation.config.MainSlot);
+
+                return true;
+            }
+            else return false;
+        }
+
+        // SQL Request: Load Character Status
+        public IEnumerator VerifyCharacterStatusData()
         {
             WWWForm info = new WWWForm();
             info.AddField("User", portId);
             counter++;
 
-            const string serverAPI = "MeloMelo_Load_CharacterStatusData_2024.php";
-            UnityWebRequest load = UnityWebRequest.Post(urlWeb + serverAPI, info);
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_CharacterStatus, info);
             yield return load.SendWebRequest();
 
-            if (load.downloadHandler.text != "Empty")
-            {
-                string[] characterStatus = load.downloadHandler.text.Split("\t");
-
-                for (int status = 0; status < characterStatus.Length / (int)CloudLoad_CharacterData.TotalField; status++)
-                {
-                    int id = status * (int)CloudLoad_LastSelectionVisited.TotalField;
-                    string className = characterStatus[id + (int)CloudLoad_CharacterData.Name];
-
-                    // Load progress to game application
-                    MeloMelo_CharacterInfo_Settings.UnlockCharacter(className);
-                    PlayerPrefs.SetInt(className + "_LEVEL", int.Parse(characterStatus[id + (int)CloudLoad_CharacterData.Level]));
-                    PlayerPrefs.SetInt(className + "_EXP", int.Parse(characterStatus[id + (int)CloudLoad_CharacterData.Experience]));
-
-                    // Extra: Character Stats
-                    MeloMelo_ExtraStats_Settings.IncreaseStrengthStats(className, int.Parse(characterStatus[id + (int)CloudLoad_CharacterData.TotalStrStats]));
-                    MeloMelo_ExtraStats_Settings.IncreaseVitalityStats(className, int.Parse(characterStatus[id + (int)CloudLoad_CharacterData.TotalVitStats]));
-                    MeloMelo_ExtraStats_Settings.IncreaseMagicStats(className, int.Parse(characterStatus[id + (int)CloudLoad_CharacterData.TotalMagStats]));
-
-                    // Extra: Attribute Point
-                    MeloMelo_ExtraStats_Settings.SetMasteryPoint(className, int.Parse(characterStatus[id + (int)CloudLoad_CharacterData.TotalMastery]));
-                    MeloMelo_ExtraStats_Settings.SetRebirthPoint(className, int.Parse(characterStatus[id + (int)CloudLoad_CharacterData.TotalRebirth]));
-                }
-            }
-
-            cloudLogging.Add(load.downloadHandler.text != "Empty");
+            cloudLogging.Add(LoadCharacterStatusData(load.downloadHandler.text));
             Debug.Log("Server: Load Character Status Successful! [" + load.downloadHandler.text + "]");
             load.Dispose();
         }
 
-        public IEnumerator LoadTrackDistributionChart()
+        public bool LoadCharacterStatusData(string server_data)
+        {
+            if (server_data.Trim('{', '}') != string.Empty)
+            {
+                CloudData_CharacterStatus dataStatus = JsonUtility.FromJson<CloudData_CharacterStatus>(server_data);
+                MeloMelo_CharacterInfo_Settings.CharacterAvailabilitySetup();
+
+                foreach (Cloud_DataStructure_CharacterStatus getStats in dataStatus.data)
+                {
+                    // Unlock character upon receiving
+                    MeloMelo_CharacterInfo_Settings.AssignCharacterAvailableSetup(getStats.NameId);
+
+                    // Load progress to game application
+                    if (MeloMelo_CharacterInfo_Settings.inGame_character_listing != null)
+                    {
+                        foreach (Character_Base_Data character_holder in MeloMelo_CharacterInfo_Settings.inGame_character_listing)
+                        {
+                            if (getStats.NameId == character_holder.className)
+                            {
+                                character_holder.LoadCharacterLevelData(getStats.Level_id);
+                                character_holder.LoadCharacterExperienceData(getStats.Exp_id);
+
+                                // Extra: Character Stats
+                                character_holder.LoadAdditionalCharacterData(getStats.baseStrStats, getStats.baseVitStats, getStats.baseMagStats, 0);
+
+                                // Extra: Attribute Point
+                                character_holder.LoadExtraInfoCharacterData(getStats.totalRebirthPoint, getStats.totalMasteryAdded, 0);
+
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                return true;
+            }
+            else return false;
+        }
+
+        // SQL Request: Load Track Distribution List
+        public IEnumerator VerifyTrackDistributionList()
         {
             WWWForm info = new WWWForm();
             info.AddField("User", portId);
             counter++;
 
-            const string serverAPI = "MeloMelo_Load_TrackDistributionList_2024.php";
-            UnityWebRequest load = UnityWebRequest.Post(urlWeb + serverAPI, info);
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + "MeloMelo_Load_TrackDistributionList_2024.php", info);
             yield return load.SendWebRequest();
 
-            if (load.downloadHandler.text != "Empty")
+            cloudLogging.Add(LoadTrackDistributionChart(load.downloadHandler.text));
+            Debug.Log("Server: Load Track Distribution List => [" + load.downloadHandler.text + "]");
+            load.Dispose();
+        }
+
+        public bool LoadTrackDistributionChart(string server_data)
+        {
+            if (server_data.Trim('{', '}') != string.Empty)
             {
-                string[] allChartData = load.downloadHandler.text.Split("\t");
+                CloudData_TrackDistributionList trackDataArray = JsonUtility.FromJson<CloudData_TrackDistributionList>(server_data);
 
                 for (int chart = 0; chart < 3; chart++)
                 {
@@ -4037,20 +4296,19 @@ namespace MeloMelo_Network
                     if (File.Exists(fileDirectory)) File.Delete(fileDirectory);
                     StreamWriter writeToLocal = new StreamWriter(fileDirectory);
 
-                    for (int data = 0; data < allChartData.Length / (int)CloudLoad_TrackList.TotalField; data++)
+                    for (int data = 0; data < trackDataArray.trackList.Length; data++)
                     {
-                        if (chart + 1 == int.Parse(allChartData[data * (int)CloudLoad_TrackList.TotalField + (int)CloudLoad_TrackList.ChartType]))
+                        if (chart + 1 == trackDataArray.trackList[data].Chart_ID)
                         {
-                            string chartLocal = JsonUtility.ToJson(GetDistributionInfo
-                                (
-                                    allChartData[data * (int)CloudLoad_TrackList.TotalField + (int)CloudLoad_TrackList.Title],
-                                    allChartData[data * (int)CloudLoad_TrackList.TotalField + (int)CloudLoad_TrackList.CoverImage],
-                                    allChartData[data * (int)CloudLoad_TrackList.TotalField + (int)CloudLoad_TrackList.Difficulty_ID],
-                                    allChartData[data * (int)CloudLoad_TrackList.TotalField + (int)CloudLoad_TrackList.Difficulty],
-                                    int.Parse(allChartData[data * (int)CloudLoad_TrackList.TotalField + (int)CloudLoad_TrackList.Score]),
-                                    int.Parse(allChartData[data * (int)CloudLoad_TrackList.TotalField + (int)CloudLoad_TrackList.Point])
-                                )) + "/t";
+                            TrackEventEntry newLocalEntry = new TrackEventEntry();
+                            newLocalEntry.title = trackDataArray.trackList[data].Title;
+                            newLocalEntry.cover = trackDataArray.trackList[data].Image_ID;
+                            newLocalEntry.difficulty = trackDataArray.trackList[data].Difficulty;
+                            newLocalEntry.level = trackDataArray.trackList[data].Level;
+                            newLocalEntry.score = trackDataArray.trackList[data].Score;
+                            newLocalEntry.point = trackDataArray.trackList[data].Point;
 
+                            string chartLocal = JsonUtility.ToJson(newLocalEntry) + "/t";
                             writeToLocal.WriteLine(chartLocal);
                         }
                     }
@@ -4058,56 +4316,59 @@ namespace MeloMelo_Network
                     writeToLocal.Close();
                     writeToLocal.Dispose();
                 }
-            }
-            else
-            {
-                string channel_Build = Application.isEditor ? "Assets/" : "MeloMelo_Data/";
-                for (int chart = 0; chart < 3; chart++)
-                {
-                    string fileDirectory = channel_Build + "StreamingAssets/LocalData/MeloMelo_LocalSave_ChartList/TempPass_ChartData_" + (chart + 1) + ".json";
-                    if (File.Exists(fileDirectory)) File.Delete(fileDirectory);
-                }
-            }
 
-            cloudLogging.Add(load.downloadHandler.text != "Empty");
-            Debug.Log("Server: Load Chart Distribution Successful! [" + load.downloadHandler.text + "]");
-            load.Dispose();
+                return true;
+            }
+            else return false;
+
+            //else
+            //{
+            //    string channel_Build = Application.isEditor ? "Assets/" : "MeloMelo_Data/";
+            //    for (int chart = 0; chart < 3; chart++)
+            //    {
+            //        string fileDirectory = channel_Build + "StreamingAssets/LocalData/MeloMelo_LocalSave_ChartList/TempPass_ChartData_" + (chart + 1) + ".json";
+            //        if (File.Exists(fileDirectory)) File.Delete(fileDirectory);
+            //    }
+
+            //    return false;
+            //}
         }
 
-        public IEnumerator LoadItemFromServer()
+        // SQL Request: Load Item To Storage
+        public IEnumerator VerifyItemObtainFromServer()
         {
             WWWForm info = new WWWForm();
             info.AddField("User", portId);
             counter++;
 
-            const string serverAPI = "MeloMelo_Load_VirtualItemData_2025.php";
-            UnityWebRequest load = UnityWebRequest.Post(urlWeb + serverAPI, info);
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_VirtualItemData, info);
             yield return load.SendWebRequest();
 
-            if (load.downloadHandler.text != "Empty")
-            {
-                string creatorText = string.Empty;
-                string[] allItemRetrieve = load.downloadHandler.text.Split("\n");
-                foreach (string itemData in allItemRetrieve) creatorText += itemData + "/";
-
-                if (creatorText != string.Empty)
-                {
-                    foreach (string itemSingle in creatorText.Split('/'))
-                    {
-                        if (itemSingle != string.Empty)
-                        {
-                            VirtualItemDatabase loadItemData = new VirtualItemDatabase().GetItemData(itemSingle);
-                            try { MeloMelo_ItemUsage_Settings.ImportItems(loadItemData); } catch { }
-                        }
-                    }
-                }
-            }
-
-            cloudLogging.Add(load.downloadHandler.text != "Empty");
+            cloudLogging.Add(LoadItemToStorage(load.downloadHandler.text));
             Debug.Log("Server: Load Item Data Successful! [" + load.downloadHandler.text + "]");
             load.Dispose();
         }
 
+        public bool LoadItemToStorage(string server_data)
+        {
+            if (server_data.Trim('{', '}') != string.Empty)
+            {
+                CloudData_ItemData item_list = JsonUtility.FromJson<CloudData_ItemData>(server_data);
+
+                foreach (Cloud_DataStructure_ItemData item in item_list.data)
+                {
+                    VirtualItemDatabase loadItemData = new VirtualItemDatabase();
+                    loadItemData.itemName = item.ItemName;
+                    loadItemData.amount = item.Amount;
+                    MeloMelo_ItemUsage_Settings.ImportItems(loadItemData);
+                }
+
+                return true;
+            }
+            else return false;
+        }
+
+        // SQL Request: Load Extension Marathon Content
         public IEnumerator LoadMarathonContentListing()
         {
             WWWForm info = new WWWForm();
@@ -4129,34 +4390,63 @@ namespace MeloMelo_Network
             load.Dispose();
         }
 
-        public IEnumerator LoadMarathonProgress()
+        // SQL Request: Load Marathon Progress
+        public IEnumerator VerifyMarathonProgress()
         {
             WWWForm info = new WWWForm();
             info.AddField("User", portId);
             counter++;
 
-            const string serverAPI = "MeloMelo_Load_MarathonProgress_2025.php";
-            UnityWebRequest load = UnityWebRequest.Post(urlWeb + serverAPI, info);
-            yield return load.SendWebRequest();
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_MarathonSaveData, info);
+            yield return load.SendWebRequest();         
 
-            if (load.downloadHandler.text != "Empty")
-            {
-                string[] context = load.downloadHandler.text.Split("\t");
-
-                for (int id = 0; id < context.Length / (int)CloudLoad_MarathonProgress.TotalField; id++)
-                {
-                    int current = id * (int)CloudLoad_MarathonProgress.TotalField;
-
-                    PlayerPrefs.SetInt("MarathonProgress_Title_" + context[current + (int)CloudLoad_MarathonProgress.Title], 1);
-                    PlayerPrefs.SetInt("MarathonProgress_PlayedCount_" + context[current + (int)CloudLoad_MarathonProgress.Title], int.Parse(context[current + (int)CloudLoad_MarathonProgress.PlayedCount]));
-                    PlayerPrefs.SetString("MarathonProgress_Cleared_" + context[current + (int)CloudLoad_MarathonProgress.Title], context[current + (int)CloudLoad_MarathonProgress.ClearedStatus] == "1" ? "T" : "F");
-                    PlayerPrefs.SetInt("MarathonProgress_Score_" + context[current + (int)CloudLoad_MarathonProgress.Title], int.Parse(context[current + (int)CloudLoad_MarathonProgress.Score]));
-                }
-            }
-
-            cloudLogging.Add(load.downloadHandler.text != "Empty");
+            cloudLogging.Add(LoadMarathonProgress(load.downloadHandler.text));
             Debug.Log("Server: Load Marathon Data Successful! [" + load.downloadHandler.text + "]");
             load.Dispose();
+        }
+
+        public bool LoadMarathonProgress(string server_data)
+        {
+            if (server_data.Trim('{', '}') != string.Empty)
+            {
+                CloudData_MarathonProgress allProgress = JsonUtility.FromJson<CloudData_MarathonProgress>(server_data);
+
+                foreach (Cloud_DataStructure_MarathonProgress progress in allProgress.data)
+                {
+                    PlayerPrefs.SetInt("MarathonProgress_Title_" + progress.Title, 1);
+                    PlayerPrefs.SetInt("MarathonProgress_PlayedCount_" + progress.Title, progress.playedCount);
+                    PlayerPrefs.SetString("MarathonProgress_Cleared_" + progress.Title, progress.cleared_status == 1 ? "T" : "F");
+                    PlayerPrefs.SetInt("MarathonProgress_Score_" + progress.Title, progress.totalScore);
+                }
+
+                return true;
+            }
+            else return false;
+        }
+
+        // SQL Request: Load ExchangePoint_Transcation
+        public IEnumerator VerifyExchangePointTranscation()
+        {
+            WWWForm info = new WWWForm();
+            info.AddField("User", portId);
+            counter++;
+
+            UnityWebRequest load = UnityWebRequest.Post(urlWeb + MeloMelo_SQL_Services_DataStructure.MeloMelo_Load_ExchangePoint_TranscationHistory, info);
+            yield return load.SendWebRequest();
+
+            cloudLogging.Add(LoadExchangePointTranscation(load.downloadHandler.text));
+            Debug.Log("Server: Load Exchange Transcation History Successful! [" + load.downloadHandler.text + "]");
+            load.Dispose();
+        }
+
+        private bool LoadExchangePointTranscation(string server_data)
+        {
+            if (server_data.Trim('{', '}') != string.Empty)
+            {
+                PlayerPrefs.SetString("Network_Ready_ExchangePoint_Transcation", server_data);
+                return true;
+            }
+            else return false;
         }
         #endregion
 
@@ -5204,7 +5494,7 @@ namespace MeloMelo_RPGEditor
         public CharacterStats GetCharacterStatus(int level)
         {
             if (level >= statsListing.ToArray().Length) return statsListing[statsListing.ToArray().Length - 1];
-            else return statsListing[level < 0 ? 0 : (level - 1)];
+            else return statsListing[level <= 0 ? 0 : (level - 1)];
         }
 
         public int GetCharacterMaxLevel() { return statsListing[statsListing.ToArray().Length - 1].GetLevel; }
@@ -5213,76 +5503,273 @@ namespace MeloMelo_RPGEditor
     public class StatsDistribution
     {
         public readonly int baseHealth = 10;
-        public ClassBase[] slot_Stats = new ClassBase[3];
+        private const int maxParty_size = 3;
+
+        public List<Character_Base_Data> slot_Stats = null;
+        public List<ClassBase> character_base_reference = null;
 
         public void load_Stats()
         {
-            for (int i = 0; i < slot_Stats.Length; i++)
+            slot_Stats = new List<Character_Base_Data>();
+            character_base_reference = new List<ClassBase>();
+
+            for (int i = 0; i < maxParty_size; i++)
             {
-                slot_Stats[i] = Resources.Load<ClassBase>("Character_Data/" + PlayerPrefs.GetString("Slot" + (i + 1) + "_charName", "None"));
-                slot_Stats[i].UpdateCurrentStats(false);
+                if (MeloMelo_CharacterInfo_Settings.inGame_character_listing != null)
+                {
+                    foreach (Character_Base_Data getCharacter in MeloMelo_CharacterInfo_Settings.inGame_character_listing)
+                    {
+                        if (PlayerPrefs.GetString("Slot" + (i + 1) + "_charName", "None") == "None")
+                        {
+                            slot_Stats.Add(null);
+                            character_base_reference.Add(null);
+                            break;
+                        }
+
+                        else if (PlayerPrefs.GetString("Slot" + (i + 1) + "_charName", "None") == getCharacter.className)
+                        {
+                            foreach (ClassBase character_details in MeloMelo_CharacterInfo_Settings.allCharacterListing)
+                            {
+                                if (PlayerPrefs.GetString("Slot" + (i + 1) + "_charName", "None") == character_details.name)
+                                {
+                                    slot_Stats.Add(getCharacter);
+                                    character_base_reference.Add(character_details);
+                                    break;
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    Character_Base_Data defaultCharacter = new Character_Base_Data();
+                    defaultCharacter.LoadCharacterData(Resources.Load<ClassBase>("Character_Data/Warrior"));
+
+                    slot_Stats.Add(defaultCharacter);
+                    slot_Stats.Add(null);
+                    slot_Stats.Add(null);
+
+                    character_base_reference.Add(Resources.Load<ClassBase>("Character_Data/Warrior"));
+                    character_base_reference.Add(null);
+                    character_base_reference.Add(null);
+                }
             }
+
+
         }
 
         public int get_unitSize()
         {
             int totalCount = 0;
 
-            foreach (ClassBase character in slot_Stats)
-                if (character.characterName != "None") totalCount++;
+            foreach (ClassBase character in character_base_reference)
+                if (character != null) totalCount++;
 
             return totalCount;
         }
 
+        public float get_unitPierceDamage(string index)
+        {
+            for (int i = 0; i < maxParty_size; i++)
+            {
+                if (character_base_reference[i] != null && character_base_reference[i].name == PlayerPrefs.GetString("CharacterFront"))
+                {
+                    StatsManage_Database unitBase = new StatsManage_Database(slot_Stats[i].className);
+
+                    ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
+                        character_base_reference[i].elementType == ClassBase.ElementStats.Light ? "Light" :
+                        character_base_reference[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                        character_base_reference[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+
+                    switch (index)
+                    {
+                        case "Enemy":
+                            break;
+
+                        case "Character":
+                            int getAddonsStats = (slot_Stats[i].fixedStats.strength + (slot_Stats[i].additionalStats != null ?
+                                    slot_Stats[i].additionalStats.strength : 0) + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].className)) 
+                                        * (MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className) == 0 ? 1 :
+                                MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className));
+
+                            int finalAddonsStats = MeloMelo_CharacterInfo_Settings.GetCharacterPhysical(baseStats.strength, getAddonsStats, 0, baseStats.strength);
+
+                            float pericingDamage = (float)MeloMelo_CharacterInfo_Settings.GetCharacterExceedLimit(
+                                baseStats.multipler, baseStats.limit,
+                                slot_Stats[i].level + (slot_Stats[i].additionalProfile != null ? slot_Stats[i].additionalProfile.rebirth_count : 0) 
+                                    * unitBase.GetCharacterMaxLevel(), finalAddonsStats);
+
+                            return pericingDamage;
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        public float get_unitBurstDamage(string index)
+        {
+            for (int i = 0; i < maxParty_size; i++)
+            {
+                if (character_base_reference[i] != null && character_base_reference[i].name == PlayerPrefs.GetString("CharacterFront"))
+                {
+                    StatsManage_Database unitBase = new StatsManage_Database(slot_Stats[i].className);
+
+                    ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
+                        character_base_reference[i].elementType == ClassBase.ElementStats.Light ? "Light" :
+                        character_base_reference[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                        character_base_reference[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+
+                    switch (index)
+                    {
+                        case "Enemy":
+                            break;
+
+                        case "Character":
+                            int getAddonsStats = (slot_Stats[i].fixedStats.magic + (slot_Stats[i].additionalStats != null ?
+                                    slot_Stats[i].additionalStats.magic : 0) + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].className))
+                                        * (MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className) == 0 ? 1 :
+                                MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className));
+
+                            int finalAddonsStats = MeloMelo_CharacterInfo_Settings.GetCharacterPhysical(baseStats.strength, getAddonsStats, 0, baseStats.strength);
+
+                            float brustDamage = (float)MeloMelo_CharacterInfo_Settings.GetCharacterExceedLimit(
+                                baseStats.multipler, baseStats.limit,
+                                slot_Stats[i].level + (slot_Stats[i].additionalProfile != null ? slot_Stats[i].additionalProfile.rebirth_count : 0) 
+                                * unitBase.GetCharacterMaxLevel(), finalAddonsStats);
+
+                            return brustDamage;
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        public float get_criticalRate(string index)
+        {
+            for (int i = 0; i < maxParty_size; i++)
+            {
+                if (character_base_reference[i] != null && character_base_reference[i].name == PlayerPrefs.GetString("CharacterFront"))
+                {
+                    StatsManage_Database unitBase = new StatsManage_Database(slot_Stats[i].className);
+
+                    ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
+                        character_base_reference[i].elementType == ClassBase.ElementStats.Light ? "Light" :
+                        character_base_reference[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                        character_base_reference[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+
+                    switch (index)
+                    {
+                        case "Enemy":
+                            break;
+
+                        case "Character":
+                            int totalPhysicalDamage = MeloMelo_CharacterInfo_Settings.GetCharacterPhysical(
+                                baseStats.strength,
+                                (slot_Stats[i].fixedStats.strength + (slot_Stats[i].additionalStats != null ?
+                                    slot_Stats[i].additionalStats.strength : 0) + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].className))
+                                        * (MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className) == 0 ? 1 :
+                                            MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className)), 0,
+                                baseStats.strength
+                                );
+
+                            float totalPhysicalDefense = MeloMelo_CharacterInfo_Settings.GetCharacterPhysicalDef(
+                                (slot_Stats[i].fixedStats.vitalilty + (slot_Stats[i].additionalStats != null ?
+                                    slot_Stats[i].additionalStats.vitalilty : 0) + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].className))
+                                        * (MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className) == 0 ? 1 :
+                                            MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className)), 0,
+                                baseStats.vitality
+                                );
+
+                            int totalMagicDamage = MeloMelo_CharacterInfo_Settings.GetCharacterMagic(
+                                 (slot_Stats[i].fixedStats.magic + (slot_Stats[i].additionalStats != null ?
+                                    slot_Stats[i].additionalStats.magic : 0) + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].className))
+                                        * (MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className) == 0 ? 1 :
+                                            MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className)), 0,
+                                 baseStats.magic
+                                 );
+
+                            float totalMagicDefense = MeloMelo_CharacterInfo_Settings.GetCharacterMagicDef(
+                                (slot_Stats[i].fixedStats.magic + (slot_Stats[i].additionalStats != null ?
+                                    slot_Stats[i].additionalStats.magic : 0) + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].className))
+                                        * (MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className) == 0 ? 1 :
+                                            MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className)),
+
+                                (slot_Stats[i].fixedStats.vitalilty + (slot_Stats[i].additionalStats != null ?
+                                    slot_Stats[i].additionalStats.vitalilty : 0) + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].className))
+                                        * (MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className) == 0 ? 1 :
+                                            MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className)),
+                                0, baseStats.multipler
+                                );
+
+                            float criticalRate = (float)MeloMelo_CharacterInfo_Settings.GetCharacterCriticalRate(
+                                totalPhysicalDamage, totalPhysicalDefense + totalMagicDamage + totalMagicDefense, 3,
+                                    slot_Stats[i].level + (slot_Stats[i].additionalProfile != null 
+                                        ? slot_Stats[i].additionalProfile.rebirth_count : 0) * unitBase.GetCharacterMaxLevel());
+
+                            return criticalRate;
+                    }
+                }
+            }
+
+            return 0;
+        }
+
         // Unit Damage: Get All Types
-        public int get_UnitDamage(string index)
+        public int get_UnitDamage(string index, float resistanceRate)
         {
             int DMG = 0;
-            for (int i = 0; i < 3; i++)
+            int extraVitPoint = 0;
+
+            for (int i = 0; i < maxParty_size; i++)
             {
-                slot_Stats[i].UpdateCurrentStats(false);
-                StatsManage_Database unitBase = new StatsManage_Database(slot_Stats[i].name);
-
-                ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
-                    slot_Stats[i].elementType == ClassBase.ElementStats.Light ? "Light" :
-                    slot_Stats[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
-                    slot_Stats[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
-
-                UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy
-                    [MeloMelo_GameSettings.GetAreaDifficultyMode() - 1].myEnemySlot[i];
-                ElemetStartingStats basicStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus("None");
-
-                switch (index)
+                if (character_base_reference[i] != null)
                 {
-                    case "Enemy":
-                        float damageAfterStats = currentUnit.str * basicStats.strength;
-                        int damageResistedValue = slot_Stats[i].icon != null ? unitBase.GetCharacterStatus(slot_Stats[i].level).GetVitality : 0;
+                    StatsManage_Database unitBase = new StatsManage_Database(slot_Stats[i].className);
 
-                        float damageResistedFromCharacter = damageResistedValue + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[i].name) 
-                            + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name);
+                    ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
+                        character_base_reference[i].elementType == ClassBase.ElementStats.Light ? "Light" :
+                        character_base_reference[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                        character_base_reference[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
 
-                        damageResistedFromCharacter *= MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name) == 0 ? 1 : 
-                            MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
+                    UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy
+                        [MeloMelo_GameSettings.GetAreaDifficultyMode() - 1].myEnemySlot[i];
+                    ElemetStartingStats basicStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus("None");
 
-                        damageResistedFromCharacter *= baseStats.vitality;
+                    switch (index)
+                    {
+                        case "Enemy":
+                            float damageAfterStats = currentUnit.str * basicStats.strength;
+                            int damageResistedValue = character_base_reference[i] != null ? unitBase.GetCharacterStatus(slot_Stats[i].level).GetVitality : 0;
 
-                        DMG += currentUnit.DMG + (int)damageAfterStats - (int)(damageResistedFromCharacter * 0.01f * 80);
-                        break;
+                            extraVitPoint = slot_Stats[i].additionalStats != null ? slot_Stats[i].additionalStats.vitalilty : 0;
+                            float damageResistedFromCharacter = damageResistedValue + extraVitPoint
+                                + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].className);
 
-                    case "Character":
-                        if (slot_Stats[i].icon != null)
-                        {
+                            damageResistedFromCharacter *= MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className) == 0 ? 1 :
+                                MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className);
+
+                            damageResistedFromCharacter *= baseStats.vitality;
+
+                            DMG += currentUnit.DMG + (int)damageAfterStats - (int)(damageResistedFromCharacter * 0.01f * (100 - resistanceRate));
+                            break;
+
+                        case "Character":
+                            extraVitPoint = slot_Stats[i].additionalStats != null ? slot_Stats[i].additionalStats.strength : 0;
                             float originalDamage = baseStats.strength + baseStats.strength * (unitBase.GetCharacterStatus(slot_Stats[i].level).GetStrength
-                                + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[i].name) + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name));
+                                    + extraVitPoint + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].className));
 
-                            originalDamage *= MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name) == 0 ? 1 :
-                                MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
+                            originalDamage *= MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className) == 0 ? 1 :
+                                MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className);
 
                             float damageResistedFromEnemy = currentUnit.vit * basicStats.vitality;
 
-                            DMG += (int)originalDamage - (int)(damageResistedFromEnemy * 0.01f * 80);
-                        }
-                        break;
+                            DMG += (int)originalDamage - (int)(damageResistedFromEnemy * 0.01f * (100 - resistanceRate));
+                            break;
+                    }
                 }
             }
 
@@ -5295,34 +5782,46 @@ namespace MeloMelo_RPGEditor
             float resistance = 0;
             int totalValueIncludeBoost = 0;
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < maxParty_size; i++)
             {
-                switch (index)
+                if (character_base_reference[i] != null)
                 {
-                    case "Character":
-                        slot_Stats[i].UpdateStatsCache(false);
-                        ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
-                            slot_Stats[i].elementType == ClassBase.ElementStats.Light ? "Light" :
-                            slot_Stats[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
-                            slot_Stats[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+                    switch (index)
+                    {
+                        case "Character":
+                            ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
+                                character_base_reference[i].elementType == ClassBase.ElementStats.Light ? "Light" :
+                                character_base_reference[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                                character_base_reference[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
 
-                        totalValueIncludeBoost += (slot_Stats[i].magic + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name) + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(slot_Stats[i].name))
-                            * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name) == 0 ? 1 : MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
-                        totalValueIncludeBoost -= (slot_Stats[i].vitality + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name) + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[i].name))
-                            * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name) == 0 ? 1 : MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
+                            if (slot_Stats[i].additionalStats != null)
+                            {
+                                totalValueIncludeBoost += (slot_Stats[i].fixedStats.magic + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].className) + slot_Stats[i].additionalStats.magic)
+                                * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className) == 0 ? 1 : MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className);
+                                totalValueIncludeBoost -= (slot_Stats[i].fixedStats.vitalilty + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].className) + slot_Stats[i].additionalStats.vitalilty)
+                                    * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className) == 0 ? 1 : MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className);
+                            }
+                            else
+                            {
+                                totalValueIncludeBoost += (slot_Stats[i].fixedStats.magic + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].className))
+                                * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className) == 0 ? 1 : MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className);
+                                totalValueIncludeBoost -= (slot_Stats[i].fixedStats.vitalilty + MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].className))
+                                    * MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className) == 0 ? 1 : MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className);
+                            }
 
-                        resistance += totalValueIncludeBoost * baseStats.multipler;
-                        if (resistance <= 0) resistance = 0;
-                        break;
+                            resistance += totalValueIncludeBoost * baseStats.multipler;
+                            if (resistance <= 0) resistance = 0;
+                            break;
 
-                    case "Enemy":
-                        UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy
-                            [MeloMelo_GameSettings.GetAreaDifficultyMode() - 1].myEnemySlot[i];
-                        ElemetStartingStats basicStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus("None");
+                        case "Enemy":
+                            UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy
+                                [MeloMelo_GameSettings.GetAreaDifficultyMode() - 1].myEnemySlot[i];
+                            ElemetStartingStats basicStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus("None");
 
-                        resistance += (currentUnit.mag - currentUnit.vit) * basicStats.multipler;
-                        if (resistance <= 0) resistance = 0;
-                        break;
+                            resistance += (currentUnit.mag - currentUnit.vit) * basicStats.multipler;
+                            if (resistance <= 0) resistance = 0;
+                            break;
+                    }
                 }
             }
             return (int)resistance;
@@ -5332,7 +5831,7 @@ namespace MeloMelo_RPGEditor
         public int get_UnitHealth(string index)
         {
             int HP = 0;
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < maxParty_size; i++)
             {
                 switch (index)
                 {
@@ -5340,28 +5839,30 @@ namespace MeloMelo_RPGEditor
                         UnitGroup currentUnit = SelectionMenu_Script.thisSelect.get_selection.get_form.Insert_Enemy[MeloMelo_GameSettings.GetAreaDifficultyMode() - 1].myEnemySlot[i];
                         ElemetStartingStats basicStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus("None");
 
-                        HP += (PlayerPrefs.HasKey("Mission_Played") ? 0 : PreSelection_Script.thisPre.get_AreaData.EnemyBaseHealth[MeloMelo_GameSettings.GetAreaDifficultyMode() - 1])
-                            + currentUnit.HP + (int)(baseHealth * basicStats.multipler * currentUnit.vit);
+                        HP += PlayerPrefs.HasKey("Mission_Played") ? 0 : currentUnit.HP + (int)(baseHealth * basicStats.multipler * currentUnit.vit);
+
+                        //HP += (PlayerPrefs.HasKey("Mission_Played") ? 0 : PreSelection_Script.thisPre.get_AreaData.EnemyBaseHealth[MeloMelo_GameSettings.GetAreaDifficultyMode() - 1])
+                        //+ currentUnit.HP + (int)(baseHealth * basicStats.multipler * currentUnit.vit);
                         break;
 
                     case "Character":
-                        if (slot_Stats[i].icon != null)
+                        if (character_base_reference[i] != null)
                         {
-                            StatsManage_Database statsData = new StatsManage_Database(slot_Stats[i].name);
-                            slot_Stats[i].UpdateCurrentStats(false);
+                            StatsManage_Database statsData = new StatsManage_Database(slot_Stats[i].className);
 
                             ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
-                                slot_Stats[i].elementType == ClassBase.ElementStats.Light ? "Light" :
-                                slot_Stats[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
-                                slot_Stats[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+                                character_base_reference[i].elementType == ClassBase.ElementStats.Light ? "Light" :
+                                character_base_reference[i].elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                                character_base_reference[i].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
 
-                            int addonsBoost = MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].name);
-                            int powerMultipleBoost = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name) == 0 ? 1 : 
-                                MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].name);
+                            int addonsBoost = MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[i].className);
+                            int powerMultipleBoost = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className) == 0 ? 1 : 
+                                MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[i].className);
 
+                            int extraVitPoint = slot_Stats[i].additionalStats != null ? slot_Stats[i].additionalStats.vitalilty : 0;
                             float originalValue = statsData.GetCharacterStatus(slot_Stats[i].level).GetHealth + (baseHealth * baseStats.multipler * 
-                                ((statsData.GetCharacterStatus(slot_Stats[i].level).GetVitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[i].name) + addonsBoost) * powerMultipleBoost));
-
+                                ((statsData.GetCharacterStatus(slot_Stats[i].level).GetVitality + extraVitPoint + addonsBoost) * powerMultipleBoost));
+                            
                             HP += (int)originalValue;
                         }
                         break;
@@ -5377,31 +5878,41 @@ namespace MeloMelo_RPGEditor
         public int get_UnitPower(string classType = "Character")
         {
             float power = 0;
-            for (int id = 0; id < slot_Stats.Length; id++)
+            for (int id = 0; id < maxParty_size; id++)
             {
-                if (slot_Stats[id].icon != null && classType == slot_Stats[id].name)
+                if (character_base_reference[id] != null && classType == slot_Stats[id].className)
                 {
                     StatsManage_Database getStartingStats = new StatsManage_Database(classType);
-                    slot_Stats[id].UpdateCurrentStats(false);
+                    //slot_Stats[id].UpdateCurrentStats(false);
 
                     ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
-                        slot_Stats[id].elementType == ClassBase.ElementStats.Light ? "Light" :
-                        slot_Stats[id].elementType == ClassBase.ElementStats.Dark ? "Dark" :
-                        slot_Stats[id].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+                        character_base_reference[id].elementType == ClassBase.ElementStats.Light ? "Light" :
+                        character_base_reference[id].elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                        character_base_reference[id].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
 
-                    int addonsBoost = MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[id].name);
-                    int boostByMultipler = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[id].name) == 0 ? 1 :
-                        MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[id].name);
+                    int addonsBoost = MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[id].className);
+                    int boostByMultipler = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[id].className) == 0 ? 1 :
+                        MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[id].className);
 
-                    power += baseStats.strength * ((getStartingStats.GetCharacterStatus(slot_Stats[id].level).GetStrength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[id].name) +
+                    if (slot_Stats[id].additionalStats != null)
+                    {
+                        power += baseStats.strength * ((getStartingStats.GetCharacterStatus(slot_Stats[id].level).GetStrength + slot_Stats[id].additionalStats.strength +
                         addonsBoost) * boostByMultipler);
 
-                    power += baseStats.magic * ((getStartingStats.GetCharacterStatus(slot_Stats[id].level).GetMagic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(slot_Stats[id].name) +
-                        addonsBoost) * boostByMultipler);
+                        power += baseStats.magic * ((getStartingStats.GetCharacterStatus(slot_Stats[id].level).GetMagic + slot_Stats[id].additionalStats.magic +
+                            addonsBoost) * boostByMultipler);
 
+                        power += baseStats.vitality * ((getStartingStats.GetCharacterStatus(slot_Stats[id].level).GetVitality + slot_Stats[id].additionalStats.vitalilty +
+                            addonsBoost) * boostByMultipler);
+                    }
+                    else
+                    {
+                        power += baseStats.strength * ((getStartingStats.GetCharacterStatus(slot_Stats[id].level).GetStrength + addonsBoost) * boostByMultipler);
 
-                    power += baseStats.vitality * ((getStartingStats.GetCharacterStatus(slot_Stats[id].level).GetVitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[id].name) + 
-                        addonsBoost) * boostByMultipler);
+                        power += baseStats.magic * ((getStartingStats.GetCharacterStatus(slot_Stats[id].level).GetMagic + addonsBoost) * boostByMultipler);
+
+                        power += baseStats.vitality * ((getStartingStats.GetCharacterStatus(slot_Stats[id].level).GetVitality + addonsBoost) * boostByMultipler);
+                    }
 
                     power += baseStats.multipler * baseHealth * getStartingStats.GetCharacterStatus(slot_Stats[id].level).GetHealth;
                     return (int)power;
@@ -5424,27 +5935,37 @@ namespace MeloMelo_RPGEditor
                         break;
 
                     case "Character":
-                        if (slot_Stats[unit].icon != null)
+                        if (character_base_reference[unit] != null)
                         {
-                            slot_Stats[unit].UpdateCurrentStats(false);
-                            StatsManage_Database getStartingStats = new StatsManage_Database(slot_Stats[unit].name);
+                            StatsManage_Database getStartingStats = new StatsManage_Database(slot_Stats[unit].className);
                             ElemetStartingStats baseStats = MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(
-                                slot_Stats[unit].elementType == ClassBase.ElementStats.Light ? "Light" :
-                                slot_Stats[unit].elementType == ClassBase.ElementStats.Dark ? "Dark" :
-                                slot_Stats[unit].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+                                character_base_reference[unit].elementType == ClassBase.ElementStats.Light ? "Light" :
+                                character_base_reference[unit].elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                                character_base_reference[unit].elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
 
-                            int addonsBoost = MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[unit].name);
-                            int boostByMultipler = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[unit].name) == 0 ? 1 :
-                                MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[unit].name);
+                            int addonsBoost = MeloMelo_ItemUsage_Settings.GetPowerBoost(slot_Stats[unit].className);
+                            int boostByMultipler = MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[unit].className) == 0 ? 1 :
+                                MeloMelo_ItemUsage_Settings.GetPowerBoostByMultiply(slot_Stats[unit].className);
 
-                            power += baseStats.strength * ((getStartingStats.GetCharacterStatus(slot_Stats[unit].level).GetStrength + MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(slot_Stats[unit].name) +
+                            if (slot_Stats[unit].additionalStats != null)
+                            {
+                                power += baseStats.strength * ((getStartingStats.GetCharacterStatus(slot_Stats[unit].level).GetStrength + slot_Stats[unit].additionalStats.strength +
                                 addonsBoost) * boostByMultipler);
 
-                            power += baseStats.magic * ((getStartingStats.GetCharacterStatus(slot_Stats[unit].level).GetMagic + MeloMelo_ExtraStats_Settings.GetExtraMagicStats(slot_Stats[unit].name) +
-                                addonsBoost) *  boostByMultipler);
+                                power += baseStats.magic * ((getStartingStats.GetCharacterStatus(slot_Stats[unit].level).GetMagic + slot_Stats[unit].additionalStats.magic +
+                                    addonsBoost) * boostByMultipler);
 
-                            power += baseStats.vitality * ((getStartingStats.GetCharacterStatus(slot_Stats[unit].level).GetVitality + MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(slot_Stats[unit].name) +
-                                addonsBoost) *  boostByMultipler);
+                                power += baseStats.vitality * ((getStartingStats.GetCharacterStatus(slot_Stats[unit].level).GetVitality + slot_Stats[unit].additionalStats.vitalilty +
+                                    addonsBoost) * boostByMultipler);
+                            }
+                            else
+                            {
+                                power += baseStats.strength * ((getStartingStats.GetCharacterStatus(slot_Stats[unit].level).GetStrength + addonsBoost) * boostByMultipler);
+
+                                power += baseStats.magic * ((getStartingStats.GetCharacterStatus(slot_Stats[unit].level).GetMagic + addonsBoost) * boostByMultipler);
+
+                                power += baseStats.vitality * ((getStartingStats.GetCharacterStatus(slot_Stats[unit].level).GetVitality + addonsBoost) * boostByMultipler);
+                            }
 
                             power += baseStats.multipler * baseHealth * getStartingStats.GetCharacterStatus(slot_Stats[unit].level).GetHealth;
                             PlayerPrefs.SetInt("Character_OverallPower", (int)power);
@@ -5478,9 +5999,9 @@ namespace MeloMelo_RPGEditor
         // Check for Unit Available
         public bool get_slotNotNull()
         {
-            for(int i = 0; i < slot_Stats.Length; i++)
+            for(int i = 0; i < maxParty_size; i++)
             {
-                if (slot_Stats[i].name != "None") { return true; }
+                if (slot_Stats[i] == null) { return true; }
             }
             return false;
         }
@@ -5621,7 +6142,7 @@ namespace MeloMelo_RPGEditor
         public void Update_Character_StorageStats(GameObject obj, string charName, float maxHP)
         {
             Name = charName;
-            try { WMHP = maxHP + Collections_Script.thisCollect.get_list.get_CharacterData[0].health; } catch { WMHP = maxHP + 100; }
+            try { WMHP = maxHP; /*+ Collections_Script.thisCollect.get_list.get_CharacterData[0].health*/; } catch { WMHP = maxHP + 100; }
 
             if (charName != "NA" && !GameManager.thisManager.DeveloperMode)
             {
@@ -5638,7 +6159,9 @@ namespace MeloMelo_RPGEditor
 
         public void WEXP_input()
         {
-            WEXP += MeloMelo_GameSettings.GetAreaDifficultyMode();
+            WEXP += (int)MeloMelo_GameSettings.BattleDifficultyMode.Expert == MeloMelo_GameSettings.GetAreaDifficultyMode() ? 10 :
+                MeloMelo_GameSettings.GetAreaDifficultyMode();
+
             PlayerPrefs.SetInt("Temp_Experience", (int)WEXP);
         }
 

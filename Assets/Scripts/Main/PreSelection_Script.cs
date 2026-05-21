@@ -21,6 +21,7 @@ public class PreSelection_Script : MonoBehaviour
     [SerializeField] private GameObject NextBtn;
     [SerializeField] private GameObject AvailableBox;
     [SerializeField] private GameObject[] DifficultyArea;
+    [SerializeField] private GameObject EnemyLevelRange;
 
     [Header("Nagivator: Component")]
     [SerializeField] private GameObject LeftNav;
@@ -126,7 +127,27 @@ public class PreSelection_Script : MonoBehaviour
         GameObject.Find("FileInfo").transform.GetChild(0).GetComponent<Text>().text = "TOTAL MUSIC: " + AreaDatabase.totalMusic;
         GameObject.Find("AchievementBoard").transform.GetChild(0).GetComponent<Text>().text = "Season " + AreaDatabase.season_num + "\n" + AreaDatabase.package_title;
 
+        EnemyLevelRange.SetActive(GetLevelRangeByArea(AreaDatabase.season_num, AreaDatabase.name) != "???");
+        EnemyLevelRange.transform.GetChild(1).GetComponent<Text>().text = GetLevelRangeByArea(AreaDatabase.season_num, AreaDatabase.name);
+
         GetAreaChecklistOpening();
+    }
+
+    private string GetLevelRangeByArea(int season, string areaName)
+    {
+        AreaInfo getArea = Resources.Load<AreaInfo>("Database_Area/Season" + season + "/" + areaName);
+        bool isAreaPlayable = getArea != null && getArea.totalMusic > 0;
+
+        if (isAreaPlayable)
+        {
+            EnemyStatsFilter[] playableScoreWithStats = Resources.Load<MusicScore>("Database_Area/" + getArea.AreaName + "/M1").Insert_Enemy;
+            if (playableScoreWithStats != null)
+            {
+                return "LEVEL " + playableScoreWithStats[MeloMelo_GameSettings.GetAreaDifficultyMode() - 1].level;
+            }
+        }
+
+        return "???";
     }
 
     private void GetAreaChecklistOpening()

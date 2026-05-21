@@ -14,8 +14,9 @@ public class CharacterInfo_DataBuild : MonoBehaviour
     private StatsDistribution reference;
 
     private ElemetStartingStats currentStats;
-    private ClassBase characterReference = null;
+    private Character_Base_Data characterReference = null;
     private StatsManage_Database characterStatsReference = null;
+    private ClassBase characterTemplate = null;
 
     void Start()
     {
@@ -25,7 +26,6 @@ public class CharacterInfo_DataBuild : MonoBehaviour
     void Update()
     {
         GetStatsUpdated();
-        characterReference.UpdateCurrentStats(false);
     }
 
     #region SETUP
@@ -34,66 +34,83 @@ public class CharacterInfo_DataBuild : MonoBehaviour
         if (characterReference != null && characterStatsReference != null)
         {
             currentStats =
-                MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(characterReference.elementType == ClassBase.ElementStats.Light ? "Light" :
-                characterReference.elementType == ClassBase.ElementStats.Dark ? "Dark" :
-                characterReference.elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
+                MeloMelo_ExtensionContent_Settings.GetStatsWithElementBonus(characterTemplate.elementType == ClassBase.ElementStats.Light ? "Light" :
+                characterTemplate.elementType == ClassBase.ElementStats.Dark ? "Dark" :
+                characterTemplate.elementType == ClassBase.ElementStats.Earth ? "Earth" : "None");
 
-            Health.text = Mathf.Clamp(GetCharacterHealth(), 0, GetCharacterHealth()).ToString();
-            AttackDamage.text = Mathf.Clamp(GetCharacterPhysical(currentStats.strength, currentStats.strength), 0, GetCharacterPhysical(currentStats.strength, currentStats.strength)).ToString();
-            AttackDefense.text = Mathf.Clamp(GetCharacterPhysicalDef(currentStats.vitality), 0, GetCharacterPhysicalDef(currentStats.vitality)).ToString();
-            MagicDefense.text = Mathf.Clamp(GetCharacterMagicDef(currentStats.multipler), 0, GetCharacterMagicDef(currentStats.multipler)).ToString();
-            MagicDamage.text = Mathf.Clamp(GetCharacterMagic(currentStats.magic), 0, GetCharacterMagic(currentStats.magic)).ToString();
+            if (characterReference.additionalStats != null)
+            {
+                int healthPoint_value =
+                    MeloMelo_CharacterInfo_Settings.GetCharacterHealth(
+                        reference.baseHealth,
+                        characterReference.fixedStats.vitalilty + characterReference.additionalStats.vitalilty,
+                        characterReference.fixedStats.baseHealth + characterReference.additionalStats.baseHealth
+                        );
+
+                int attackDamage_value =
+                    MeloMelo_CharacterInfo_Settings.GetCharacterPhysical(
+                        currentStats.strength,
+                        characterReference.fixedStats.strength + characterReference.additionalStats.strength,
+                        0,
+                        currentStats.strength
+                        );
+
+                float defense_value =
+                    MeloMelo_CharacterInfo_Settings.GetCharacterPhysicalDef(
+                        characterReference.fixedStats.vitalilty + characterReference.additionalStats.vitalilty,
+                        0,
+                        currentStats.vitality
+                        );
+
+                float magicDefense_value =
+                    MeloMelo_CharacterInfo_Settings.GetCharacterMagicDef(
+                        characterReference.fixedStats.magic + characterReference.additionalStats.magic,
+                        characterReference.fixedStats.vitalilty + characterReference.additionalStats.vitalilty,
+                        0,
+                        currentStats.multipler
+                        );
+
+                int magicDamage_value =
+                    MeloMelo_CharacterInfo_Settings.GetCharacterMagic(
+                        characterReference.fixedStats.magic + characterReference.additionalStats.magic,
+                        0,
+                        currentStats.magic
+                        );
+
+                Health.text = Mathf.Clamp(healthPoint_value, 0, healthPoint_value).ToString();
+                AttackDamage.text = Mathf.Clamp(attackDamage_value, 0, attackDamage_value).ToString();
+                AttackDefense.text = Mathf.Clamp(defense_value, 0, defense_value).ToString();
+                MagicDefense.text = Mathf.Clamp(magicDefense_value, 0, magicDefense_value).ToString();
+                MagicDamage.text = Mathf.Clamp(magicDamage_value, 0, magicDamage_value).ToString();
+            }
+            else
+            {
+                Health.text = MeloMelo_CharacterInfo_Settings.GetCharacterHealth(
+                        reference.baseHealth, characterReference.fixedStats.vitalilty, characterReference.fixedStats.baseHealth).ToString();
+
+                AttackDamage.text = MeloMelo_CharacterInfo_Settings.GetCharacterPhysical(
+                    currentStats.strength, characterReference.fixedStats.strength, 0, currentStats.strength).ToString();
+
+                AttackDefense.text = MeloMelo_CharacterInfo_Settings.GetCharacterPhysicalDef(
+                        characterReference.fixedStats.vitalilty, 0, currentStats.vitality).ToString();
+
+                float rawMagicDefenseValue = MeloMelo_CharacterInfo_Settings.GetCharacterMagicDef(
+                    characterReference.fixedStats.magic, characterReference.fixedStats.vitalilty, 0, currentStats.multipler);
+
+                MagicDefense.text = Mathf.Clamp(rawMagicDefenseValue, 0, rawMagicDefenseValue).ToString();
+
+                MagicDamage.text = MeloMelo_CharacterInfo_Settings.GetCharacterMagic(
+                    characterReference.fixedStats.magic, 0, currentStats.magic).ToString();
+            }
         }
     }
     #endregion
 
-    #region COMPONENT 
-    private int GetCharacterHealth(float multipler = 1)
-    {
-        int baseValue = characterStatsReference.GetCharacterStatus(characterReference.level).GetVitality;
-        int permanentValue = MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(characterReference.name);
-        int healthValue = characterStatsReference.GetCharacterStatus(characterReference.level).GetHealth + MeloMelo_ExtraStats_Settings.GetExtraBaseHealth(characterReference.name);
-
-        return (int)((baseValue + permanentValue) * (reference.baseHealth * multipler) + healthValue);
-    }
-
-    private int GetCharacterPhysical(float defaultValue, float multipler = 1)
-    {
-        int baseValue = characterStatsReference.GetCharacterStatus(characterReference.level).GetStrength;
-        int permanentValue = MeloMelo_ExtraStats_Settings.GetExtraStrengthStats(characterReference.name);
-        return (int)(defaultValue + (baseValue + permanentValue) * multipler);
-    }
-
-    private float GetCharacterPhysicalDef(float multipler = 1)
-    {
-        int baseValue = characterStatsReference.GetCharacterStatus(characterReference.level).GetVitality;
-        int permanentValue = MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(characterReference.name);
-        return (baseValue + permanentValue) * multipler;
-    }
-
-    private int GetCharacterMagic(float multipler = 1)
-    {
-        int baseValue = characterStatsReference.GetCharacterStatus(characterReference.level).GetMagic;
-        int permanentValue = MeloMelo_ExtraStats_Settings.GetExtraMagicStats(characterReference.name);
-        return (int)((baseValue + permanentValue) * multipler);
-    }
-
-    private float GetCharacterMagicDef(float multipler = 1)
-    {
-        int baseMagicFormula = characterStatsReference.GetCharacterStatus(characterReference.level).GetMagic;
-        int permanentMagValue = MeloMelo_ExtraStats_Settings.GetExtraMagicStats(characterReference.name);
-
-        int baseVitFormula = characterStatsReference.GetCharacterStatus(characterReference.level).GetVitality;
-        int permanentVitValue = MeloMelo_ExtraStats_Settings.GetExtraVitaltyStats(characterReference.name);
-
-        return (baseMagicFormula + permanentMagValue - (baseVitFormula + permanentVitValue)) * multipler;
-    }
-    #endregion
-
     #region MISC
-    public void GetCharacterBase(ClassBase character, StatsManage_Database characterStats)
+    public void GetCharacterBase(Character_Base_Data character, ClassBase template, StatsManage_Database characterStats)
     {
         characterReference = character;
+        characterTemplate = template;
         characterStatsReference = characterStats;
     }
     #endregion
